@@ -2,6 +2,9 @@ import React,{FC} from 'react'
 import Header from '../components/Header'
 
 const Home:FC = () =>{
+
+    const adb:string = "a"
+
     return(
         <>
         <Header/>

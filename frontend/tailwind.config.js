@@ -6,7 +6,8 @@ module.exports = {
       colors:{
         'primary':'#F7F1DD',
         'switch':'#033700',
-        'error':'#FF0000'
+        'error':'#FF0000',
+        
       },
     },
   },
