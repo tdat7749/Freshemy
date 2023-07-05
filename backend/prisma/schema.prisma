@@ -10,34 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model author {
-  id         Int          @id @default(autoincrement())
-  createAt   DateTime     @default(now())
-  updareAt   DateTime     @updatedAt
-  firstName  String
-  lastName   String
-  authorBook authorBook[]
+model exampleUser {
+  id       Int      @id @default(autoincrement())
+  createAt DateTime @default(now())
+  updareAt DateTime @updatedAt
+  Name     String
 }
-
-model book {
-  id            Int          @id @default(autoincrement())
-  createAt      DateTime     @default(now())
-  updareAt      DateTime     @updatedAt
-  title         String
-  isFiction     Boolean
-  dataPublished DateTime
-  authorId      Int
-  authorBook    authorBook[]
-}
-
-model authorBook {
-  bookId Int
-  book   book @relation(fields: [bookId], references: [id])
-
-  authorId Int
-  author   author @relation(fields: [authorId], references: [id])
-
-
-  @@id([authorId, bookId])
-}
-
