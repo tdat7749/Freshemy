@@ -72,7 +72,7 @@
 
 ## V/ Business Goals
 
-### Tính dễ sử dụng
+### Ease of use
 
 - Easy-to-use, easy-to-interact and user-friendly functions
 
@@ -80,17 +80,17 @@
 
 - At the same time, users can upload their videos and share them with others
 
-### Tính đa nền tảng
+### Cross-platform
 
 - Responsive application on different devices for a comfortable user experience
 
 ## VI/ Structure
 
-![Alt text](./assets/image.png)
+![image](https://github.com/cvn-intern/Freshemy/assets/70811800/2b2e1771-a642-48c2-8276-ca8146260cb5)
 
 ## V/ Use-case diagram
 
-![Alt text](./assets/image-1.png)
+![image-1](https://github.com/cvn-intern/Freshemy/assets/70811800/6760925a-07a2-4b39-a75a-689db8685f7f)
 
 ## VI/ Functional MVP Requirement
 
@@ -106,20 +106,20 @@
   - Users choose Vote to rate and comment on the course
   - Users can view courses related to the author when clicking on the author's name in the video description
 - Use-case:
-  ![Alt text](./assets/image-2.png)
+    ![image-2](https://github.com/cvn-intern/Freshemy/assets/70811800/71597ce0-3490-45bd-a781-5c9695d27a99)
 
 ### Manage Personal Courses
 
-- Purpose: Người dùng sau khi đăng nhập có thể quản lý các khóa học do mình đã tạo
+- Purpose: After logging in, users can manage the courses they have created
 - Targeted user: Logged in user
 - Description:
-  - Người dùng chọn My Course trên thanh navbar
-  - Người dùng gõ tên khóa học cần tìm trên thanh tìm kiếm để tìm kiếm khóa học theo tên
-  - Người dùng chọn một video mà mình muốn tìm kiếm để vào trang quản lý các bài học của khóa đó
-  - Người dùng nhấn vào nút "Create New" để tạo ra khóa học mới
-  - Người dùng nhấn vào icon "Delete" để xóa khóa học tương ứng
-  - Người dùng chọn icon "Edit" ở một khóa học bất kỳ để chỉnh sửa thông tin của khóa hoc (Add lesson, Edit lesson's info, Delete lesson, Update status course)
-  - Người dùng cũng có thể xem bình luận và đánh giá về khóa học của mình khi bấm vào bất kỳ khóa học nào
-  - Các khóa học được phân ra làm nhiều trang (tối đa 5 khóa học trên một trang)
-- Structure:
-  ![Alt text](./assets/image-3.png)
+  - User selects My Course on navbar
+  - Users type the course name to search on the search bar to search for the course by name
+  - Users select a video that they want to search to enter the management page of that course's lessons
+  - User clicks "Create New" button to create a new course
+  - User clicks on the "Delete" icon to delete the corresponding course
+  - The user selects the "Edit" icon in any course to edit the course's information (Add lesson, Edit lesson's info, Delete lesson, Update status course)
+  - Users can also see comments and reviews about their courses when clicking on any course
+  - Courses are divided into multiple pages (maximum 5 courses per page)
+- Use-case:
+    ![image-3](https://github.com/cvn-intern/Freshemy/assets/70811800/445f3617-d418-47e3-89f5-8d729082a3c5)
