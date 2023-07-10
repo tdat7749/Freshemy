@@ -1,4 +1,4 @@
-import exampleRouter from "./example.router";
 
-const routers = { exampleRouter: exampleRouter };
+
+const routers = {};
 export default routers;

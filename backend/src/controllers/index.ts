@@ -1,4 +1,4 @@
-import exampleController from "./example.controller";
 
-const controllers = { exampleController: exampleController };
+
+const controllers = {  };
 export default controllers;
