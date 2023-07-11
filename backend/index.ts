@@ -1,5 +1,5 @@
-import express, { Application, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client'
+import express, { Application, Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
 
 //////////////////////////////////////////////////////////////////////////
 import routers from "./src/routes";
@@ -7,7 +7,7 @@ import configs from "./src/configs";
 //////////////////////////////////////////////////////////////////////////
 
 const app: Application = express();
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -18,23 +18,23 @@ app.get("/", (_req, res: Response) => {
     res.send(`Server is running on port: ${port}`);
 });
 
-app.get('/api/todos', async (req: Request, res: Response) => {
+app.get("/api/todos", async (req: Request, res: Response) => {
     try {
         //@ts-ignore
         const allUsers = await prisma.todo.findMany();
         return res.json({
             success: true,
-            data: allUsers
+            data: allUsers,
         });
     } catch (error) {
         return res.json({
             success: false,
-            message: error
+            message: error,
         });
     }
 });
 
-app.post('/api/todos', async (req: Request, res: Response) => {
+app.post("/api/todos", async (req: Request, res: Response) => {
     try {
         const { title, description, completed } = req.body;
         //@ts-ignore
@@ -42,23 +42,22 @@ app.post('/api/todos', async (req: Request, res: Response) => {
             data: {
                 title,
                 description,
-                completed
-            }
+                completed,
+            },
         });
 
-        
         return res.json({
             success: true,
-            data: newTodo
+            data: newTodo,
         });
     } catch (error) {
         return res.json({
             success: false,
-            message: error
+            message: error,
         });
     }
 });
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-})
+});
