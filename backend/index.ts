@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 //////////////////////////////////////////////////////////////////////////
 import routers from "./src/routes";
 import configs from "./src/configs";
+
 //////////////////////////////////////////////////////////////////////////
 
 const app: Application = express();
@@ -12,26 +13,10 @@ const prisma = new PrismaClient();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const port: number = 3000;
+const port: number = configs.general.PORT;
 
 app.get("/", (_req, res: Response) => {
     res.send(`Servs runnings on portsss: ${port}`);
-});
-
-app.get("/api/todos", async (req: Request, res: Response) => {
-    try {
-        //@ts-ignore
-        const allUsers = await prisma.course.findMany();
-        return res.json({
-            success: "huhassssuaaaa",
-            data: allUsers,
-        });
-    } catch (error) {
-        return res.json({
-            success: false,
-            message: error,
-        });
-    }
 });
 
 app.listen(port, () => {
