@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 //////////////////////////////////////////////////////////////////////////
 import routers from "./src/routes";
 import configs from "./src/configs";
+
 //////////////////////////////////////////////////////////////////////////
 
 const app: Application = express();
@@ -12,10 +13,10 @@ const prisma = new PrismaClient();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const port: number = 3000;
+const port: number = configs.general.PORT;
 
-app.get("/a", (_req, res: Response) => {
-    res.send(`hello`);
+app.get("/", (_req, res: Response) => {
+    res.send(`Server is running on port: ${port}`);
 });
 
 app.listen(port, () => {
