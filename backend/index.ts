@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 const port: number = configs.general.PORT;
 
 app.get("/", (_req, res: Response) => {
-    res.send(`Servs runnings on portsss: ${port}`);
+    res.send(`Server is running on port: ${port}`);
 });
 
 app.listen(port, () => {
