@@ -10,7 +10,7 @@ const Header: React.FC<Props> = ({ isLogin }: Props) => {
   return (
     <>
       <div className="w-full h-[100px] max-w-full bg-background shadow-sm">
-        <div className="w-full flex items-center py-[10px] px-4">
+        <div className="w-full flex items-center py-[10px] px-4 tablet:px-[60px]">
           <img src={Logo} alt="Logo" className="" />
           <div className="hidden relative ml-[120px] tablet:block tablet:w-[1000px]">
             <input
@@ -38,7 +38,7 @@ const Header: React.FC<Props> = ({ isLogin }: Props) => {
               <div className="w-[60px] h-[60px] rounded-full bg-slate-600 flex items-center justify-center">A</div>
             </div>
           ) : (
-            <div className="ml-auto flex shrink-0 items-center">
+            <div className="ml-auto flex sh items-center">
               <span className="hidden tablet:block min-w-fit mr-4">
                 All Courses
               </span>
