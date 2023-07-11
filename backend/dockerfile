@@ -2,19 +2,19 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json ./
+
+COPY prisma ./
 
 COPY .env ./
 
 COPY tsconfig.json ./
 
-RUN npm install
-
-RUN npx prisma init --datasource-provider sqlite
-
-COPY schema.prisma ./prisma
-
 COPY . ./
+
+RUN NODE_ENV=development npm install
+
+RUN npx prisma generate --schema ./prisma/schema.prisma
 
 RUN npx tsc
 
