@@ -1,6 +1,7 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { PayloadAction} from "@reduxjs/toolkit";
-import axios from "axios";
+import {createSlice,createAsyncThunk} from '@reduxjs/toolkit'
+import type {PayloadAction} from '@reduxjs/toolkit'
+import axios from 'axios'
+
 
 // Đọc thêm tại đây : https://redux-toolkit.js.org/tutorials/quick-start
 // https://redux-toolkit.js.org/api/createAsyncThunk
