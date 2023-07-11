@@ -45,6 +45,8 @@ app.post('/api/todos', async (req: Request, res: Response) => {
                 completed
             }
         });
+
+        
         return res.json({
             success: true,
             data: newTodo
