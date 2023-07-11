@@ -19,5 +19,3 @@ RUN npx prisma generate --schema ./prisma/schema.prisma
 RUN npx tsc
 
 EXPOSE 3000
-
-CMD ["npm", "run", "dev"]
