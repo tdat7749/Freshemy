@@ -10,7 +10,19 @@ services:
     depends_on:
       - mysql-db
     networks:
-      - backend
+      - data
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:3000"
+    expose:
+      - 3001
+    environment:
+      - WDS_SOCKET_HOST=127.0.0.1 
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true 
+    volumes:
+      - ./frontend:/app
   mysql-db:
     image: mysql:8.0.33
     ports:
@@ -23,14 +35,15 @@ services:
     volumes:
       - ./backend/prisma/data:/var/lib/mysql
     networks:
-      - backend
-
+      - data
 
 volumes:
   mysql: ~
 networks:
-  backend:
+  data: 
     driver: bridge
 
 
 
+
+  
