@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 const port: number = 3000;
 
 app.get("/", (_req, res: Response) => {
-    res.send(`Servs rasfasfunning on port: ${port}`);
+    res.send(`Servs runnings on portsss: ${port}`);
 });
 
 app.get("/api/todos", async (req: Request, res: Response) => {
@@ -23,7 +23,7 @@ app.get("/api/todos", async (req: Request, res: Response) => {
         //@ts-ignore
         const allUsers = await prisma.course.findMany();
         return res.json({
-            success: "huhuaaaa",
+            success: "huhassssuaaaa",
             data: allUsers,
         });
     } catch (error) {
