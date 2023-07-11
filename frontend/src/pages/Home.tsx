@@ -5,7 +5,7 @@ const Home: React.FC = () => {
   return (
     <>
       <Header isLogin={false} />
-      <h1 className="text-3xl font-bold underline text-orange-300">Hellaao</h1>
+      <h1 className="text-3xl font-bold underline text-orange-300">Vuong 40k</h1>
     </>
   );
 };
