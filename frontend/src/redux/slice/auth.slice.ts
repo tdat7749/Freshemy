@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { User } from "../../types/user";
 import { login as loginAPI, getMe as getMeAPI } from "../../apis/auth";
@@ -7,12 +8,22 @@ import { User as UserType } from "../../types/user";
 type Auth = {
     user: User;
 };
+=======
+import { createSlice } from '@reduxjs/toolkit'
+import { User } from '../../types/user'
+
+
+type Auth = {
+    user: User
+}
+>>>>>>> 1101f896025d76ca31b1cf07a66bb59236713c79
 
 const initialState: Auth = {
     user: {
         email: undefined,
         first_name: undefined,
         last_name: undefined,
+<<<<<<< HEAD
         id: undefined,
     },
 };
@@ -60,3 +71,19 @@ export const getMe = async () => {
         console.log(error);
     }
 };
+=======
+        id: undefined
+    }
+}
+
+const AuthSlice = createSlice({
+    name: "auth",
+    initialState: initialState,
+    reducers: {
+
+    },
+    extraReducers: (builder) => {
+
+    }
+})
+>>>>>>> 1101f896025d76ca31b1cf07a66bb59236713c79
