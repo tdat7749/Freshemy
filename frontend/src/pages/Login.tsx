@@ -1,20 +1,26 @@
-import React,{FC, useRef} from 'react'
+import React,{FC,useRef} from 'react'
 import { Link } from 'react-router-dom'
-import Header from '../components/Header'
 import { Formik ,ErrorMessage,Field} from 'formik'
 import { Login as LoginType } from '../types/auth'
 import * as Yup from 'yup'
-import { useAppDispatch } from '../hooks/hooks'
+import { useAppDispatch,useAppSelector } from '../hooks/hooks'
 import { authActions } from '../redux/slice/index'
+ import { Navigate  } from 'react-router-dom'
+import Skeleton from '../assets/images/Skeleton.png';
 
 
-type Props = {
-    isLogin: boolean;
-};
 
-const Login:FC<Props> = ({isLogin}:Props) =>{
+const Login:FC = () =>{
 
     const dispatch = useAppDispatch()
+
+    const isLogin = useAppSelector(state => state.authSlice.isLogin);
+
+    const formikRef = useRef(null)
+
+    if (isLogin) return (
+        <Navigate to={"/"}/>
+    );
 
     const initialValue:LoginType = {
         email:"",
@@ -26,21 +32,19 @@ const Login:FC<Props> = ({isLogin}:Props) =>{
         password: Yup.string().required("Password is required")
     })
 
-    const formikRef = useRef(null)
-
     const handleOnSubmit = (values:LoginType) => {
         //@ts-ignore
         dispatch(authActions.login(values))
     }
 
+  
 
     return (
         <>
-        <Header isLogin={isLogin}/>
            <div className='px-[16px] tablet:px-[60px] flex items-center justify-center tablet:justify-center tablet:space-x-[120px] h-[calc(100vh-100px)]'>
-                <div className='w-[360px] tablet:max-w-[505px] rounded-[12px] bg-bgForm mx-auto tablet:mx-0 flex-1'>
+                <div className='w-[360px] tablet:max-w-[505px] tablet:h-[578px] rounded-[12px] bg-bgForm mx-auto tablet:mx-0 flex-1'>
                         <div className='w-full p-[16px]'>
-                            <h1 className='text-[32px] tablet:text-[40px] font-bold text-center text-text'>LOGIN TO FRESHEMY</h1>
+                            <h1 className='text-[32px] tablet:text-[40px] font-semibold text-center text-text my-[10px]'>LOGIN TO FRESHEMY</h1>
 
                             <Formik
                                 initialValues={initialValue}
@@ -49,7 +53,7 @@ const Login:FC<Props> = ({isLogin}:Props) =>{
                                 innerRef={formikRef}
                             >
                                 {(formik) => (
-                                     <form onSubmit={formik.handleSubmit}>
+                                     <form onSubmit={formik.handleSubmit} className='space-y-[20px]'>
                                      <div className=''>
                                          <label htmlFor='email' className='text-[24px] text-text'>Email</label>
                                          <Field type="text" name='email' className='w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none'/>
@@ -80,8 +84,8 @@ const Login:FC<Props> = ({isLogin}:Props) =>{
                             </Formik>
                         </div>
                 </div>
-                <div className='hidden tablet:block w-[400px] bg-red-100 h-[10px]'>
-                    <h1>ádadsasd</h1>
+                <div className='hidden tablet:block'>
+                    <img src={Skeleton}/>
                 </div>
            </div>
         </>
