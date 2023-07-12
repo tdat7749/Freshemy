@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState<string>("");
@@ -16,7 +17,7 @@ const ForgotPassword: React.FC = () => {
             );
     };
 
-    const handleResetPasswordClick = () => {
+    const handleResetPasswordClick = async () => {
         // Check valid email
         const isEmailValid = validateEmail(email);
         if (isEmailValid === null) {
@@ -25,6 +26,10 @@ const ForgotPassword: React.FC = () => {
             // CALL API TO FORGOT PASSWORD
             setIsValidEmail(true);
             setIsDisplayNoti(true);
+            const response = await axios.post("/api/auth/forgot-password", {
+                email: email,
+            });
+            console.log(response);
         }
     };
 
@@ -34,10 +39,10 @@ const ForgotPassword: React.FC = () => {
 
     return (
         <>
-            <Header isLogin={true} />
+            <Header isLogin={false} />
             <div className="h-[calc(100vh-200px)] flex items-center justify-center">
                 <div className="bg-primary m-4 rounded-xl tablet:w-[506px]">
-                    <div className="p-4">
+                    <form className="p-4">
                         <h1 className="font-bold text-[32px] text-center">FORGOT PASSWORD</h1>
                         {isDisplayNoti ? (
                             <div className="my-4 px-4 py-3 bg-[#8BC34A] rounded text-center">
@@ -75,7 +80,7 @@ const ForgotPassword: React.FC = () => {
                                 <span> Signup</span>
                             </Link>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
             <Footer />
