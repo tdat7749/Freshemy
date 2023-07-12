@@ -24,7 +24,7 @@ module.exports = {
         'primary':'#F7F1DD',
         'switch':'#033700',
         'error':'#FF0000',
-        
+        'backgroundHover':'#FFCF90'
       },
     },
   },

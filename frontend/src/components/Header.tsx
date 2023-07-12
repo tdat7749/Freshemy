@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Logo from "../assets/images/logo.png";
 import UserDropDown from "./UserDropDown";
 import SearchIcon from "./icons/SearchIcon";
+import Overlay from "./Overlay";
 
 interface HeaderProps {
     isLogin: boolean;
@@ -15,7 +16,8 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
 
     return (
         <>
-            {/* <div className="absolute z-10 w-screen h-screen bg-black"></div> */}
+            {display ? <Overlay toggleDropDown={toggleDropDown} /> : <></>}
+
             <div className="w-full h-[100px] max-w-full bg-background shadow-sm">
                 <div className="w-full flex items-center py-[10px] px-4 tablet:px-[60px]">
                     <img src={Logo} alt="Logo" className="" />
