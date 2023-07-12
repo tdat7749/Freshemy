@@ -4,6 +4,8 @@ import Header from '../components/Header'
 import { Formik ,ErrorMessage,Field} from 'formik'
 import { Login as LoginType } from '../types/auth'
 import * as Yup from 'yup'
+import { useAppDispatch } from '../hooks/hooks'
+import { authActions } from '../redux/slice/index'
 
 
 type Props = {
@@ -12,6 +14,7 @@ type Props = {
 
 const Login:FC<Props> = ({isLogin}:Props) =>{
 
+    const dispatch = useAppDispatch()
 
     const initialValue:LoginType = {
         email:"",
@@ -26,7 +29,8 @@ const Login:FC<Props> = ({isLogin}:Props) =>{
     const formikRef = useRef(null)
 
     const handleOnSubmit = (values:LoginType) => {
-        
+        //@ts-ignore
+        dispatch(authActions.login(values))
     }
 
 
@@ -37,6 +41,7 @@ const Login:FC<Props> = ({isLogin}:Props) =>{
                 <div className='w-[360px] tablet:max-w-[505px] rounded-[12px] bg-bgForm mx-auto tablet:mx-0 flex-1'>
                         <div className='w-full p-[16px]'>
                             <h1 className='text-[32px] tablet:text-[40px] font-bold text-center text-text'>LOGIN TO FRESHEMY</h1>
+
                             <Formik
                                 initialValues={initialValue}
                                 validationSchema={loginValidationSchema}
@@ -76,7 +81,7 @@ const Login:FC<Props> = ({isLogin}:Props) =>{
                         </div>
                 </div>
                 <div className='hidden tablet:block w-[400px] bg-red-100 h-[10px]'>
-                    <h1>Hêlo</h1>
+                    <h1>ádadsasd</h1>
                 </div>
            </div>
         </>

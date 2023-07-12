@@ -1,25 +1,34 @@
-import { Request, Response } from 'express'
-import { loginSchema } from 'src/validations/auth'
-import service from '../services'
-
+import { Request, Response } from "express";
+import { loginSchema } from "../validations/auth";
+import service from "../services";
+import { ValidationError } from "joi";
+import { convertJoiErrorToString } from "../commons/index";
+import { RequestHasLogin } from "../types/request";
 
 class AuthController {
-    async login(req: Request, res: Response) {
-        const { error: errorValidate } = loginSchema.validate(req.body)
+    async login(req: Request, res: Response): Promise<Response> {
+        const errorValidate: ValidationError | undefined = loginSchema.validate(req.body).error;
 
         if (errorValidate) {
-            //Return lỗi
+            return res.status(400).json(convertJoiErrorToString(errorValidate));
         }
 
-        const response = await service.AuthService.login(req)
+        const response = await service.AuthService.login(req);
 
-        //return res.status().json(isResponse)
+        return res.status(response.getStatusCode()).json(response);
     }
 
-    async refreshToken(req: Request, res: Response) { //return type Promise<Response>
-        const response = await service.AuthService.refreshToken(req)
-        //return res.status().json(response)
+    async refreshToken(req: Request, res: Response): Promise<Response> {
+        const response = await service.AuthService.refreshToken(req);
+
+        return res.status(response.getStatusCode()).json(response);
+    }
+
+    async getMe(req: RequestHasLogin, res: Response): Promise<Response> {
+        const response = await service.AuthService.refreshToken(req);
+
+        return res.status(response.getStatusCode()).json(response);
     }
 }
 
-
+export default AuthController;
