@@ -22,9 +22,10 @@ module.exports = {
       colors:{
         'background': '#F8FFF8',
         'primary':'#F7F1DD',
-        'switch':'#033700',
         'error':'#FF0000',
-        
+        'switch':'#033700',
+        'bgForm': '#F7F1DD',
+        'text':'#212B27'
       },
     },
   },

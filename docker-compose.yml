@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   backend:
     build: ./backend
@@ -42,12 +42,7 @@ services:
       - data
 
 volumes:
-  mysql: ~
+    mysql: ~
 networks:
-  data: 
-    driver: bridge
-
-
-
-
-  
+    data:
+        driver: bridge

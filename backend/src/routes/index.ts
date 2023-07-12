@@ -1,7 +1,6 @@
+import authRouter from "./auth.router";
 
-import authenRouter from "./authen.router.js"
 const routers = {
-    authenRouter: authenRouter
-
+    authRouter: authRouter,
 };
 export default routers;
