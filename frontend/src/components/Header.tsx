@@ -3,11 +3,11 @@ import Logo from "../assets/images/logo.png";
 import UserDropDown from "./UserDropDown";
 import SearchIcon from "./icons/SearchIcon";
 
-type Props = {
+interface HeaderProps {
     isLogin: boolean;
 };
 
-const Header: React.FC<Props> = ({ isLogin }: Props) => {
+const Header: React.FC<HeaderProps> = ({ isLogin }) => {
     return (
         <>
             <div className="w-full h-[100px] max-w-full bg-background shadow-sm">
