@@ -8,7 +8,7 @@ import LogoutIcon from "./icons/LogoutIcon";
 const UserDropDown: React.FC = () => {
     return (
         <>
-            <div className="hidden w-[342px] bg-white shadow-lg absolute top-[80px] right-4">
+            <div className="w-[342px] bg-white shadow-lg absolute top-[80px] right-4">
                 <div className="p-4 flex flex-col justify-start items-start">
                     <div className="flex justify-center items-center mb-[10px]">
                         <UserIcon />
