@@ -16,11 +16,8 @@
   "license": "ISC",
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
-<<<<<<< HEAD
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.13",
-=======
->>>>>>> 1101f896025d76ca31b1cf07a66bb59236713c79
     "@types/jsonwebtoken": "^9.0.2",
     "@typescript-eslint/parser": "^5.61.0",
     "eslint": "^8.44.0",
