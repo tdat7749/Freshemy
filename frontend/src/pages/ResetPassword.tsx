@@ -22,7 +22,9 @@ const ResetPassword: React.FC<{}> = () => {
             .oneOf([Yup.ref("password")], "Confirm password must match"),
     });
 
-    const handleSubmit = (values: FormValues) => {};
+    const handleSubmit = (values: FormValues) => {
+        // CALL API HERE...
+    };
 
     return (
         <>
