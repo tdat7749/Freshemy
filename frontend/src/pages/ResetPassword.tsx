@@ -1,6 +1,4 @@
 import React from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { useAppDispatch } from "../hooks/hooks";
 import * as Yup from "yup";
@@ -40,7 +38,6 @@ const ResetPassword: React.FC<{}> = () => {
 
     return (
         <>
-            <Header isLogin={false} />
             <Formik
                 initialValues={initialValues}
                 onSubmit={handleSubmit}
@@ -78,7 +75,9 @@ const ResetPassword: React.FC<{}> = () => {
                                         name="confirmPassword"
                                         type="password"
                                         className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${
-                                            formik.errors.confirmPassword && formik.touched.confirmPassword ? "border-error" : ""
+                                            formik.errors.confirmPassword && formik.touched.confirmPassword
+                                                ? "border-error"
+                                                : ""
                                         }`}
                                     />
                                     <ErrorMessage
@@ -98,7 +97,6 @@ const ResetPassword: React.FC<{}> = () => {
                     </div>
                 )}
             </Formik>
-            <Footer />
         </>
     );
 };

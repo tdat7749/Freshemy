@@ -18,6 +18,7 @@ type Auth = {
     user: User;
     isLogin: boolean;
     error: string;
+    message: string;
 };
 
 const initialState: Auth = {
@@ -29,6 +30,7 @@ const initialState: Auth = {
     },
     isLogin: false,
     error: "",
+    message: "",
 };
 
 export const authSlice = createSlice({
@@ -44,13 +46,15 @@ export const authSlice = createSlice({
             state.isLogin = true;
         },
         setError: (state, payload: PayloadAction<string>) => {
-            console.log(payload);
             state.error = payload.payload;
+        },
+        setMessage: (state, payload: PayloadAction<string>) => {
+            state.message = payload.payload;
         },
     },
 });
 
-export const { setUsers, setError } = authSlice.actions;
+export const { setUsers, setError, setMessage } = authSlice.actions;
 
 export default authSlice.reducer;
 
@@ -92,12 +96,21 @@ export const getMe = () => async (dispatch) => {
     }
 };
 
-export const forgotPassword = async (values: ForgotPasswordType) => {
+//@ts-ignore
+export const forgotPassword = (values: ForgotPasswordType) => async (dispatch, getState) => {
+    dispatch(setError(""));
+    dispatch(setMessage(""));
     try {
         const response = await forgotPasswordAPI(values.email);
-        console.log(response.data.message);
+        if (response) {
+            if (response.status >= 200 && response.status <= 299) {
+                dispatch(setMessage(response.data.message));
+            } else {
+                dispatch(setMessage(response.data.message));
+            }
+        }
     } catch (error: any) {
-        console.log(error);
+        dispatch(setError(error.data.message));
     }
 };
 export const refreshToken = async () => {
