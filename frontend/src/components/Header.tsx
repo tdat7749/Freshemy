@@ -16,9 +16,9 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
 
     return (
         <>
-            {display ? <Overlay toggleDropDown={toggleDropDown} /> : <></>}
+            {display && <Overlay toggleDropDown={toggleDropDown} />}
 
-            <div className="w-full h-[100px] max-w-full bg-background shadow-sm">
+            <div className="w-full h-[100px] max-w-full bg-background shadow-sm fixed top-0 left-0 z-[10]">
                 <div className="w-full flex items-center py-[10px] px-4 tablet:px-[60px]">
                     <img src={Logo} alt="Logo" className="" />
                     <div className="hidden relative ml-[120px] tablet:block tablet:w-[1000px]">
