@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { authActions } from "../redux/slice";
 
 const axiosPublic = axios.create({
     baseURL: "http://localhost:3001/api",
@@ -22,12 +23,18 @@ axiosPublic.interceptors.request.use(
 
 axiosPublic.interceptors.response.use(
     (response) => response,
-    async (error: any) => {
+    (error: any) => {
         const config = error?.config;
 
         if (error?.response?.status === 401 && !config.sent) {
             config.sent = true;
+            authActions.refreshToken();
         }
+
+        if (error) {
+            return Promise.reject(error.response);
+        }
+        // return error;
     }
 );
 
