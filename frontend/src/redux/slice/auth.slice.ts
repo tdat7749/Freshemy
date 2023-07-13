@@ -60,7 +60,6 @@ export const login = (values: LoginType) => async (dispatch) => {
         }
     } catch (error: any) {
         dispatch(setError(error.data.message));
-        console.log(error);
     }
 };
 

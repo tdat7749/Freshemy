@@ -6,6 +6,8 @@ import Login from './pages/Login'
  import { authActions } from './redux/slice';
 import { useAppDispatch,useAppSelector } from './hooks/hooks';
 import Header from './components/Header'
+import ChangePassword from './pages/ChangePassword';
+import Footer from './components/Footer';
 
 
 
@@ -32,7 +34,12 @@ function App() {
           <Route path="/login" element={<Login/>}>
 
           </Route>
+
+          <Route path="/change-password" element={<ChangePassword/>}>
+
+          </Route>
         </Routes>
+        <Footer/>
       </BrowserRouter>
     </>
   );

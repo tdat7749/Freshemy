@@ -5,3 +5,9 @@ export type User = {
     last_name?: string,
     id?: number
 }
+
+export type ChangePassword = {
+    current_password:string,
+    new_password:string,
+    confirm_password:string
+}

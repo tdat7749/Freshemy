@@ -7,7 +7,6 @@ import { RequestHasLogin } from "../types/request";
 
 class AuthController {
     async login(req: Request, res: Response): Promise<Response> {
-        console.log(req.body.email);
         const errorValidate: ValidationError | undefined = loginSchema.validate(req.body).error;
 
         if (errorValidate) {
@@ -33,6 +32,8 @@ class AuthController {
         console.log(response);
         return res.status(response.getStatusCode()).json(response);
     }
+
+    
 }
 
 export default AuthController;

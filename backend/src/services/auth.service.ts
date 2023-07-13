@@ -10,14 +10,15 @@ import { RequestHasLogin } from "../types/request";
 const login = async (req: Request): Promise<ResponseBase> => {
     try {
         const { email, password } = req.body;
-
-        console.log(await bcrypt.hash("bingan", 10), "bingan");
+        const hashed = await bcrypt.hash(password, 10)
+        console.log(hashed, password);
 
         const isFoundUser = await db.user.findUnique({
             where: {
                 email: email,
             },
         });
+        console.log(isFoundUser)
 
         if (isFoundUser) {
             if (!isFoundUser.is_verify) {
