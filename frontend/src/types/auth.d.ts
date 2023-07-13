@@ -13,5 +13,5 @@ export type Register = {
     last_name: string;
     email: string;
     password: string;
-    confirmPassword: string;
+    confirmPassword?: string;
 };

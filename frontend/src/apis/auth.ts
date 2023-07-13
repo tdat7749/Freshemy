@@ -22,7 +22,6 @@ export const register = async (values: RegisterType) => {
         last_name: values.last_name,
         email: values.email,
         password: values.password,
-        confirmPassword: values.confirmPassword,
     };
 
     const response = await apiCaller("POST", path, data);
