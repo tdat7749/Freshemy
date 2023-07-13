@@ -12,7 +12,7 @@ const SearchIcon: React.FC = () => {
                 className="absolute top-4 left-3"
             >
                 <circle cx="11" cy="11" r="6" stroke="#222222" />
-                <path d="M20 20L17 17" stroke="#222222" stroke-linecap="round" />
+                <path d="M20 20L17 17" stroke="#222222" strokeLinecap="round" />
             </svg>
         </>
     );

@@ -1,16 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import Logo from "../assets/images/logo.png";
 import UserDropDown from "./UserDropDown";
 import SearchIcon from "./icons/SearchIcon";
+import Overlay from "./Overlay";
 
 interface HeaderProps {
     isLogin: boolean;
-};
+}
 
 const Header: React.FC<HeaderProps> = ({ isLogin }) => {
+    const [display, setDisplay] = useState<boolean>(false);
+    const toggleDropDown = () => {
+        setDisplay(!display);
+    };
+
     return (
         <>
-            <div className="w-full h-[100px] max-w-full bg-background shadow-sm">
+            {display && <Overlay toggleDropDown={toggleDropDown} />}
+
+            <div className="w-full h-[100px] max-w-full bg-background shadow-sm fixed top-0 left-0 z-[10]">
                 <div className="w-full flex items-center py-[10px] px-4 tablet:px-[60px]">
                     <img src={Logo} alt="Logo" />
                     <div className="hidden relative ml-[120px] tablet:block tablet:w-[1000px]">
@@ -27,9 +35,13 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                 <span className="hidden tablet:block min-w-fit mr-5">All Courses</span>
                                 <span className="hidden tablet:block min-w-fit mr-5">Enroll Course</span>
                                 <span className="hidden tablet:block min-w-fit mr-5">My Courses</span>
-                                <div className="w-[60px] h-[60px] rounded-full bg-slate-600 flex items-center justify-center relative">
+                                <div
+                                    data-dropdown-toggle="dropdown"
+                                    className="w-[60px] h-[60px] rounded-full bg-slate-600 flex items-center justify-center relative"
+                                    onClick={toggleDropDown}
+                                >
                                     <span>A</span>
-                                    {<UserDropDown />}
+                                    {display ? <UserDropDown /> : <></>}
                                 </div>
                             </div>
                         </>
