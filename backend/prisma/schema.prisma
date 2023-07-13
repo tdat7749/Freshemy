@@ -4,7 +4,7 @@ datasource db {
 }
 
 generator client {
-  provider      = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 model Course {
@@ -45,6 +45,7 @@ model User {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   token       String   @db.LongText
+  is_verify   Boolean  @default(false)
 
   courses Course[]
 

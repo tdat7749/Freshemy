@@ -1,22 +1,40 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import ChangePassword from "./pages/ChangePassword";
+import {useEffect} from 'react'
+
+import { BrowserRouter,Routes,Route } from "react-router-dom";
+import Home from './pages/Home'
 import Login from './pages/Login'
+ import { authActions } from './redux/slice';
+import { useAppDispatch,useAppSelector } from './hooks/hooks';
+import Header from './components/Header'
 
 
 
 function App() {
-    return (
-        <>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<Home />}></Route>
-                    <Route path="/change-password" element={<ChangePassword isLogin={true}/>}></Route>
-                    <Route path="/login" element={<Login isLogin={true}/>}></Route>
 
-                </Routes>
-            </BrowserRouter>
-        </>
+  const dispatch = useAppDispatch()
+
+  const isLogin = useAppSelector(state => state?.authSlice?.isLogin) ?? false;
+
+  useEffect(() =>{
+    //@ts-ignore
+    dispatch(authActions.getMe())
+  },[dispatch])
+
+  return (
+    <>
+      <BrowserRouter>
+      <Header isLogin={isLogin}/>  
+        <Routes>
+          <Route path="/" element={<Home/>}>
+          
+          </Route>
+
+          <Route path="/login" element={<Login/>}>
+
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
