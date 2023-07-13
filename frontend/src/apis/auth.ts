@@ -7,8 +7,7 @@ export const login = async (email: string, password: string) => {
         password,
     };
 
-    const response = await apiCaller("POST", path, JSON.stringify(data));
-
+    const response = await apiCaller("POST", path, data);
     return response;
 };
 
@@ -35,5 +34,13 @@ export const resetPassword = async (confirmPassword: string, password: string, t
         token
     };
     const response = await apiCaller("POST", path, data);
+    return response;
+};
+
+export const refreshToken = async () => {
+    const path = "auth/refresh";
+
+    const response = await apiCaller("GET", path);
+
     return response;
 };
