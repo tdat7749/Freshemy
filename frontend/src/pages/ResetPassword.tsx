@@ -2,7 +2,10 @@ import React from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Formik, Field, Form, ErrorMessage } from "formik";
+import { useAppDispatch } from "../hooks/hooks";
 import * as Yup from "yup";
+import { authActions } from "../redux/slice";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface FormValues {
     password: string;
@@ -10,20 +13,29 @@ interface FormValues {
 }
 
 const ResetPassword: React.FC<{}> = () => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const { token } = useParams();
+    // Check token is undefined and navigate to homepage
+    if (token === undefined) {
+        navigate("/");
+    }
+
     const initialValues: FormValues = {
         password: "",
         confirmPassword: "",
     };
 
     const resetPasswordValidationSchema = Yup.object({
-        password: Yup.string().required("Password is required").min(6, "Weak password"),
+        password: Yup.string().required("Password is required").min(8, "Weak password").max(32, "Password is too long"),
         confirmPassword: Yup.string()
             .required("Confirm password is required")
             .oneOf([Yup.ref("password")], "Confirm password must match"),
     });
 
     const handleSubmit = (values: FormValues) => {
-        // CALL API HERE...
+        //@ts-ignore
+        dispatch(authActions.resetPassword(values, token));
     };
 
     return (
@@ -47,7 +59,9 @@ const ResetPassword: React.FC<{}> = () => {
                                         id="password"
                                         name="password"
                                         type="password"
-                                        className="px-2 py-[21px] rounded-lg border-[1px]"
+                                        className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${
+                                            formik.errors.password && formik.touched.password ? "border-error" : ""
+                                        }`}
                                     />
                                     <ErrorMessage
                                         name="password"
@@ -63,7 +77,9 @@ const ResetPassword: React.FC<{}> = () => {
                                         id="confirmPassword"
                                         name="confirmPassword"
                                         type="password"
-                                        className="px-2 py-[21px] rounded-lg border-[1px]"
+                                        className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${
+                                            formik.errors.confirmPassword && formik.touched.confirmPassword ? "border-error" : ""
+                                        }`}
                                     />
                                     <ErrorMessage
                                         name="confirmPassword"

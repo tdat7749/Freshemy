@@ -3,7 +3,7 @@ import { loginSchema } from "../validations/auth";
 import service from "../services";
 import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
-import { RequestHasLogin } from "../types/request";
+import { RequestForgotPassword, RequestHasLogin, RequestResetPassword } from "../types/request";
 
 class AuthController {
     async login(req: Request, res: Response): Promise<Response> {
@@ -27,6 +27,17 @@ class AuthController {
     async getMe(req: RequestHasLogin, res: Response): Promise<Response> {
         const response = await service.AuthService.refreshToken(req);
 
+        return res.status(response.getStatusCode()).json(response);
+    }
+
+    async forgotPassword(req: RequestForgotPassword, res: Response): Promise<Response> {
+        const response = await service.AuthService.forgotPassword(req);
+        
+        return res.status(response.getStatusCode()).json(response);
+    }
+
+    async resetPassword(req: RequestResetPassword, res: Response): Promise<Response> {
+        const response = await service.AuthService.resetPassword(req);
         return res.status(response.getStatusCode()).json(response);
     }
 }

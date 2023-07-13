@@ -1,29 +1,25 @@
-<<<<<<< HEAD
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { User } from "../../types/user";
-import { login as loginAPI, getMe as getMeAPI } from "../../apis/auth";
+import {
+    login as loginAPI,
+    getMe as getMeAPI,
+    forgotPassword as forgotPasswordAPI,
+    resetPassword as resetPasswordAPI,
+} from "../../apis/auth";
 import { Login as LoginType } from "../../types/auth";
+import { ForgotPassword as ForgotPasswordType } from "../../types/auth";
+import { ResetPassword as ResetPasswordType } from "../../types/auth";
 import { User as UserType } from "../../types/user";
 
 type Auth = {
     user: User;
 };
-=======
-import { createSlice } from '@reduxjs/toolkit'
-import { User } from '../../types/user'
-
-
-type Auth = {
-    user: User
-}
->>>>>>> 1101f896025d76ca31b1cf07a66bb59236713c79
 
 const initialState: Auth = {
     user: {
         email: undefined,
         first_name: undefined,
         last_name: undefined,
-<<<<<<< HEAD
         id: undefined,
     },
 };
@@ -71,19 +67,26 @@ export const getMe = async () => {
         console.log(error);
     }
 };
-=======
-        id: undefined
+
+export const forgotPassword = async (values: ForgotPasswordType) => {
+    try {
+        const response = await forgotPasswordAPI(values.email);
+        console.log(response.data.message);
+    } catch (error: any) {
+        console.log(error);
     }
-}
+};
 
-const AuthSlice = createSlice({
-    name: "auth",
-    initialState: initialState,
-    reducers: {
-
-    },
-    extraReducers: (builder) => {
-
+export const resetPassword = async (values: ResetPasswordType, token: string) => {
+    try {
+        const response = await resetPasswordAPI(values.confirmPassword, values.password, token);
+        if(response.data.status_code === 200) {
+            window.location.href = '/login'
+        }
+        if(response.data.status_code === 400) {
+            window.location.href = '/login'
+        }
+    } catch (error: any) {
+        console.log(error);
     }
-})
->>>>>>> 1101f896025d76ca31b1cf07a66bb59236713c79
+};

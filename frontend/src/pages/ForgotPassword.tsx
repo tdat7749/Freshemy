@@ -4,15 +4,16 @@ import Footer from "../components/Footer";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Link } from "react-router-dom";
-
-interface FormValues {
-    email: string;
-}
+import { useAppDispatch } from "../hooks/hooks";
+import { authActions } from "../redux/slice";
+import { ForgotPassword as ForgotPasswordType } from "../types/auth";
 
 const ForgotPassword: React.FC = () => {
     const [isDisplayNoti, setIsDisplayNoti] = useState<boolean>(false);
 
-    const initialValues: FormValues = {
+    const dispatch = useAppDispatch();
+
+    const initialValues: ForgotPasswordType = {
         email: "",
     };
 
@@ -20,9 +21,10 @@ const ForgotPassword: React.FC = () => {
         email: Yup.string().email("Invalid email").required("Email is required"),
     });
 
-    const handleSubmit = (values: FormValues) => {
-        // CALL API HERE...
+    const handleSubmit = (values: ForgotPasswordType) => {
         setIsDisplayNoti(true);
+        //@ts-ignore
+        dispatch(authActions.forgotPassword(values));
     };
 
     return (
@@ -54,7 +56,9 @@ const ForgotPassword: React.FC = () => {
                                         id="email"
                                         name="email"
                                         type="text"
-                                        className="px-2 py-[21px] rounded-lg border-[1px]"
+                                        className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${
+                                            formik.errors.email && formik.touched.email ? "border-error" : ""
+                                        }`}
                                     />
                                     <ErrorMessage
                                         name="email"
@@ -62,7 +66,10 @@ const ForgotPassword: React.FC = () => {
                                         className="text-[14px] text-error font-medium"
                                     />
                                 </div>
-                                <button className="w-full py-2 px-4 mr-1 bg-switch rounded-lg text-white text-[32px] hover:opacity-80" type="submit">
+                                <button
+                                    className="w-full py-2 px-4 mr-1 bg-switch rounded-lg text-white text-[32px] hover:opacity-80"
+                                    type="submit"
+                                >
                                     Reset password
                                 </button>
                                 <span className="block mt-3 mb-2 text-center">

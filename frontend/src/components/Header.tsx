@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
         <>
             <div className="w-full h-[100px] max-w-full bg-background shadow-sm">
                 <div className="w-full flex items-center py-[10px] px-4 tablet:px-[60px]">
-                    <img src={Logo} alt="Logo" className="" />
+                    <img src={Logo} alt="Logo" />
                     <div className="hidden relative ml-[120px] tablet:block tablet:w-[1000px]">
                         <input
                             type="text"
