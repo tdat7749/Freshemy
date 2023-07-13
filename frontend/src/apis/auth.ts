@@ -1,4 +1,5 @@
 import apiCaller from "../api-config/apiCaller";
+import { Register as RegisterType } from "../types/auth";
 
 export const login = async (email: string, password: string) => {
     const path = "auth/login";
@@ -6,6 +7,22 @@ export const login = async (email: string, password: string) => {
     const data = {
         email,
         password,
+    };
+
+    const response = await apiCaller("POST", path, data);
+    return response;
+};
+
+
+export const register = async (values: RegisterType) => {
+    const path = "/auth/signup";
+
+    const data = {
+        first_name: values.first_name, 
+        last_name: values.last_name,
+        email: values.email,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
     };
 
     const response = await apiCaller("POST", path, data);

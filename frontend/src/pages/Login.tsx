@@ -34,6 +34,7 @@ const Login:FC = () =>{
     })
 
     const handleOnSubmit = (values:LoginType) => {
+        console.log("login");
         //@ts-ignore
         dispatch(authActions.login(values))
     }
