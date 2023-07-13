@@ -11,7 +11,7 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Home />}></Route>
-                    <Route path="/change-password" element={<ChangePassword />}></Route>
+                    <Route path="/change-password" element={<ChangePassword isLogin={true}/>}></Route>
                     <Route path="/login" element={<Login isLogin={true}/>}></Route>
 
                 </Routes>

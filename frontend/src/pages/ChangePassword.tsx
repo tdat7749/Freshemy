@@ -1,11 +1,13 @@
 import React from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
-const ChangePassword: React.FC = () => {
+type Props = {
+    isLogin: boolean
+}
+const ChangePassword: React.FC<Props> = ({isLogin}:Props) => {
     return (
         <>
-            <Header isLogin={true} />
+            <Header isLogin={isLogin} />
             <form className=' w-[361px] tablet:w-[505px] h-[570px] tablet:h-[605px] pt-[15px] rounded-xl border-[2px]  bg-[#F7F1DD] flex flex-col mt-[130px] m-auto'>
             <h1 className='ml-[25px] tablet:ml-[55px] text-[32px] tablet:text-[40px]  font-bold mb-[5px]'>CHANGE PASSWORD</h1>
             <div className='ml-[15px] tablet:ml-[30px] h-[126px] tablet:h-[123px] mt-[10px]'>
