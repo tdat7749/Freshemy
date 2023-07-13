@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Logo from "../assets/images/logo.png";
 import UserDropDown from "./UserDropDown";
 import SearchIcon from "./icons/SearchIcon";
+import { Link } from "react-router-dom";
 import Overlay from "./Overlay";
 
 interface HeaderProps {
@@ -48,8 +49,12 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                     ) : (
                         <div className="ml-auto flex sh items-center">
                             <span className="hidden tablet:block min-w-fit mr-4">All Courses</span>
-                            <button className="py-2 px-4 mr-1 bg-green-700 rounded-lg text-white">Login</button>
-                            <button className="py-[7px] px-4 border-[1px] border-black rounded-lg">Signup</button>
+                            <Link to="/login">
+                                <button className="py-2 px-4 mr-1 bg-green-700 rounded-lg text-white">Login</button>
+                            </Link>
+                            <Link to="/signup">
+                                <button className="py-[7px] px-4 border-[1px] border-black rounded-lg">Signup</button>
+                            </Link>
                         </div>
                     )}
                 </div>

@@ -51,10 +51,13 @@ export const authSlice = createSlice({
         setMessage: (state, payload: PayloadAction<string>) => {
             state.message = payload.payload;
         },
+        setLogout: (state) => {
+            state.isLogin = false;
+        },
     },
 });
 
-export const { setUsers, setError, setMessage } = authSlice.actions;
+export const { setUsers, setError, setMessage, setLogout } = authSlice.actions;
 
 export default authSlice.reducer;
 
@@ -145,19 +148,16 @@ export const resetPassword = async (values: ResetPasswordType, token: string) =>
     }
 };
 //@ts-ignore
-export const logout = () => async (dispatch, getState) => {
-    try {
-        dispatch(
-            setUsers({
-                description: undefined,
-                first_name: undefined,
-                last_name: undefined,
-                email: undefined,
-            })
-        );
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
-    } catch (error: any) {
-        console.log(error);
-    }
+export const logout = () => async (dispatch) => {
+    dispatch(
+        setUsers({
+            description: undefined,
+            first_name: undefined,
+            last_name: undefined,
+            email: undefined,
+        })
+    );
+    dispatch(setLogout());
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
 };
