@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { User } from "../../types/user";
-import { login as loginAPI, getMe as getMeAPI, refreshToken as refreshTokenAPI } from "../../apis/auth";
-import { Login as LoginType } from "../../types/auth";
+import { register as registerAPI, login as loginAPI, getMe as getMeAPI, refreshToken as refreshTokenAPI } from "../../apis/auth";
+import { Login as LoginType, Register as RegisterType} from "../../types/auth";
 import { User as UserType } from "../../types/user";
 import Cookies from "js-cookie";
 
@@ -63,6 +63,23 @@ export const login = (values: LoginType) => async (dispatch) => {
         console.log(error);
     }
 };
+
+
+
+export const register = (values: RegisterType) => async ()  => {
+    try {
+        const response = await registerAPI(values);
+
+        if (response.status >= 200 && response.status <= 299) {
+            // Handle successful registration if needed
+        } else {
+            console.log(response.data.message);
+        }
+    } catch (error: any) {
+        console.log(error);
+    }
+};
+
 
 // @ts-ignore
 export const getMe = () => async (dispatch) => {

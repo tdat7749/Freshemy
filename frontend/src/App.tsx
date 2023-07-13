@@ -6,6 +6,7 @@ import Login from './pages/Login'
  import { authActions } from './redux/slice';
 import { useAppDispatch,useAppSelector } from './hooks/hooks';
 import Header from './components/Header'
+import Register from './pages/Register';
 
 function App() {
 
@@ -23,13 +24,9 @@ function App() {
       <BrowserRouter>
       <Header isLogin={isLogin}/>  
         <Routes>
-          <Route path="/" element={<Home/>}>
-          
-          </Route>
-
-          <Route path="/login" element={<Login/>}>
-
-          </Route>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/login" element={<Login/>}/>
+          <Route path="/register" element={<Register/>}/>
         </Routes>
       </BrowserRouter>
     </>
