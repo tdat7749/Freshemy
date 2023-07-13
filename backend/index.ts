@@ -21,7 +21,7 @@ app.use("/api/auth", routers.authRouter);
 const port: number = configs.general.PORT;
 
 app.get("/", (_req, res: Response) => {
-    res.send(`Server is running on port: ${port}`);
+    res.send(`Server is running on port 11111111111111: ${port}`);
 });
 
 app.listen(port, () => {
