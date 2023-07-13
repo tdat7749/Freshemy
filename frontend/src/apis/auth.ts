@@ -9,7 +9,6 @@ export const login = async (email: string, password: string) => {
     };
 
     const response = await apiCaller("POST", path, data);
-
     return response;
 };
 
