@@ -10,6 +10,8 @@ export const isLogin = async (req: RequestHasLogin, res: Response, next: NextFun
         const authHeader = req.headers.authorization;
         const jsonWebToken = authHeader?.split(" ")[1];
 
+        console.log(jsonWebToken);
+
         if (!jsonWebToken) {
             res.status(401).json({ message: "Unauthorized" });
         } else {

@@ -6,7 +6,9 @@ export const login = async (email: string, password: string) => {
         email,
         password,
     };
-    const response = await apiCaller("POST", path, data);
+
+    const response = await apiCaller("POST", path, JSON.stringify(data));
+
     return response;
 };
 
@@ -35,4 +37,3 @@ export const resetPassword = async (confirmPassword: string, password: string, t
     const response = await apiCaller("POST", path, data);
     return response;
 };
-

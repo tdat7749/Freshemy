@@ -22,35 +22,34 @@ const login = async (req: Request): Promise<ResponseBase> => {
             if (!isFoundUser.is_verify) {
                 return new ResponseError(401, "Unverified account", false);
             }
-            const isVerifyPassword = bcrypt.compare(password, isFoundUser.password);
-            if (!isVerifyPassword) {
+            const isVerifyPassword = await bcrypt.compare(password, isFoundUser.password);
+            if (isVerifyPassword) {
+                const accessToken = jwt.sign(
+                    {
+                        user_id: isFoundUser.id,
+                    },
+                    "PrivateKey",
+                    {
+                        expiresIn: "1h",
+                    },
+                );
+
+                const refreshToken = jwt.sign(
+                    {
+                        user_id: isFoundUser.id,
+                    },
+                    "PrivateKey",
+                    {
+                        expiresIn: "30d",
+                    },
+                );
+                return new ResponseSuccess(200, "Logged in successfully", true, { accessToken, refreshToken });
+            } else {
                 return new ResponseError(400, "Email or password is invalid", false);
             }
-
-            const accessToken = jwt.sign(
-                {
-                    user_id: isFoundUser.id,
-                },
-                "PrivateKey",
-                {
-                    expiresIn: "1h",
-                },
-            );
-
-            const refreshToken = jwt.sign(
-                {
-                    user_id: isFoundUser.id,
-                },
-                "PrivateKey",
-                {
-                    expiresIn: "30d",
-                },
-            );
-
-            return new ResponseSuccess(200, "Logged in successfully", true, { accessToken, refreshToken });
+        } else {
+            return new ResponseError(400, "Email or password is invalid", false);
         }
-
-        return new ResponseError(400, "Email or password is invalid", false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, "Bad request", false);

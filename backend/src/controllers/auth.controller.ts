@@ -7,10 +7,13 @@ import { RequestForgotPassword, RequestHasLogin, RequestResetPassword } from "..
 
 class AuthController {
     async login(req: Request, res: Response): Promise<Response> {
+        console.log(req.body.email);
         const errorValidate: ValidationError | undefined = loginSchema.validate(req.body).error;
 
         if (errorValidate) {
-            return res.status(400).json(convertJoiErrorToString(errorValidate));
+            return res
+                .status(400)
+                .json({ status_code: 400, message: convertJoiErrorToString(errorValidate), success: false });
         }
 
         const response = await service.AuthService.login(req);
@@ -25,8 +28,9 @@ class AuthController {
     }
 
     async getMe(req: RequestHasLogin, res: Response): Promise<Response> {
-        const response = await service.AuthService.refreshToken(req);
+        const response = await service.AuthService.getMe(req);
 
+        console.log(response);
         return res.status(response.getStatusCode()).json(response);
     }
 
