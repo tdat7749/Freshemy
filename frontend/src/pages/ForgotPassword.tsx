@@ -38,7 +38,7 @@ const ForgotPassword: React.FC = () => {
                 validationSchema={forgotPasswordValidationSchema}
             >
                 {(formik) => (
-                    <div className="h-screen mt-[80px] flex items-center justify-center">
+                    <div className="h-screen mt-[100px] flex items-center justify-center">
                         <div className="bg-primary m-4 rounded-xl tablet:w-[506px]">
                             <Form className="p-4" onSubmit={formik.handleSubmit} onChange={handleChange}>
                                 <h1 className="font-bold text-[32px] text-center">FORGOT PASSWORD</h1>

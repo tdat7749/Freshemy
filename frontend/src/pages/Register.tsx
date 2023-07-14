@@ -36,14 +36,13 @@ const Register: FC = () => {
     });
 
     const handleOnSubmit = async (values: RegisterType) => {
-        console.log("signup");
         //@ts-ignore
         dispatch(authActions.register(values));
     };
 
     return (
         <>
-            <div className="mt-[80px] h-screen flex items-center justify-center">
+            <div className="mt-[150px] h-screen flex items-center justify-center">
                 <div className="bg-primary m-4 rounded-xl tablet:w-[506px]">
                     <Formik
                         initialValues={initialValues}
@@ -160,7 +159,7 @@ const Register: FC = () => {
                                     <p className="text-text font-normal text-[20px] tablet:text-[22px]">
                                         Already have an account? 
                                         <span className="underline">
-                                            <Link to={"/login"}>Login</Link>
+                                            <Link to={"/login"}> Login</Link>
                                         </span>
                                     </p>
                                     <p className="text-text font-normal text-[20px] tablet:text-[22px]">
