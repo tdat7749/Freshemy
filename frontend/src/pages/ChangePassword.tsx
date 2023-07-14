@@ -47,7 +47,7 @@ const ChangePassword: React.FC = () => {
     };
 
     return (
-        <div className="px-[12px] tablet:px-[60px] flex items-center justify-center tablet:space-x-[120px]  h-[calc(100vh-100px)]">
+        <div className="flex items-center justify-center h-screen mt-[80px] ">
             <div className="  max-w-[360px] tablet:max-w-[505px] max-h-[630px] tablet:max-h-[700px] rounded-[12px] bg-bgForm mx-auto tablet:mx-0 flex-1">
                 <div className="w-full p-[12px]">
                     <h1 className="text-[32px] tablet:text-[40px] font-semibold text-center text-text my-[10px]">

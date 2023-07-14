@@ -39,7 +39,7 @@ const Login: FC = () => {
 
     return (
         <>
-            <div className="h-screen flex items-center justify-center">
+            <div className="mt-[80px] h-screen flex items-center justify-center">
                 <div className="bg-primary m-4 rounded-xl tablet:w-[506px]">
                     <Formik
                         initialValues={initialValue}

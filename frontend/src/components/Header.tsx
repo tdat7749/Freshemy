@@ -58,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                     Login
                                 </button>
                             </Link>
-                            <Link to="/signup">
+                            <Link to="/register">
                                 <button className="py-[7px] px-4 border-[1px] border-black rounded-lg">Signup</button>
                             </Link>
                         </div>
