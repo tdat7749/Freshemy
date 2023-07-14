@@ -30,12 +30,11 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />}></Route>
                     <Route element={<PrivateRoute isLogin={isLogin}/>}>
-
+                    <Route path="/change-password" element={<ChangePassword/>}></Route>
                     </Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                     <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                     <Route path="/login" element={<Login />}></Route>
-                    <Route path="/change-password" element={<ChangePassword/>}></Route>
                 </Routes>
                 <Footer/>
             </BrowserRouter>
