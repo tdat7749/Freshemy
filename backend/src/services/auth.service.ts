@@ -28,9 +28,9 @@ const login = async (req: Request): Promise<ResponseBase> => {
                     {
                         user_id: isFoundUser.id,
                     },
-                    "PrivateKey",
+                    configs.general.JWT_SECRET_KEY,
                     {
-                        expiresIn: "1h",
+                        expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
                     },
                 );
 
@@ -38,9 +38,9 @@ const login = async (req: Request): Promise<ResponseBase> => {
                     {
                         user_id: isFoundUser.id,
                     },
-                    "PrivateKey",
+                    configs.general.JWT_SECRET_KEY,
                     {
-                        expiresIn: "30d",
+                        expiresIn: configs.general.TOKEN_REFRESH_EXPIRED_TIME,
                     },
                 );
                 return new ResponseSuccess(200, "Logged in successfully", true, { accessToken, refreshToken });
@@ -60,21 +60,22 @@ const login = async (req: Request): Promise<ResponseBase> => {
 
 const refreshToken = async (res: Request): Promise<ResponseBase> => {
     try {
-        const rfToken = res.cookies.rfToken;
+        const rfTokenRaw = res.headers.rftoken as string;
+        const rfToken = rfTokenRaw.split("=")[1];
 
         if (!rfToken) {
             return new ResponseError(400, "Bad request", false);
         }
 
-        const isVerifyRefreshToken = jwt.verify(rfToken, "PrivateKey") as MyJwtPayload;
+        const isVerifyRefreshToken = jwt.verify(rfToken, configs.general.JWT_SECRET_KEY) as MyJwtPayload;
 
         const newAccessToken = jwt.sign(
             {
                 user_id: isVerifyRefreshToken?.user_id,
             },
-            "PrivateKey",
+            configs.general.JWT_SECRET_KEY,
             {
-                expiresIn: "1h",
+                expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
             },
         );
 
@@ -83,9 +84,9 @@ const refreshToken = async (res: Request): Promise<ResponseBase> => {
         if (error instanceof TokenExpiredError) {
             return new ResponseError(400, error.message, false);
         } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(401, error.message, false);
+            return new ResponseError(400, error.message, false);
         } else if (error instanceof NotBeforeError) {
-            return new ResponseError(401, error.message, false);
+            return new ResponseError(400, error.message, false);
         }
 
         return new ResponseError(500, "Internal Server", false);
@@ -115,7 +116,7 @@ const getMe = async (req: RequestHasLogin): Promise<ResponseBase> => {
         return new ResponseError(401, "Unauthorized", false);
     } catch (error: any) {
         if (error instanceof TokenExpiredError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(401, error.message, false);
         } else if (error instanceof JsonWebTokenError) {
             return new ResponseError(401, error.message, false);
         } else if (error instanceof NotBeforeError) {
@@ -172,7 +173,7 @@ const forgotPassword = async (req: RequestForgotPassword): Promise<ResponseBase>
             id: user.id,
         };
 
-        const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: "15m" });
+        const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME});
         const link = `${configs.general.DOMAIN_NAME}/reset-password/${token}`;
         const isSendEmailSuccess = sendEmail(user.email, link);
         if (isSendEmailSuccess) {

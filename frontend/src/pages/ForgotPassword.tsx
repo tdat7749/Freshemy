@@ -50,8 +50,8 @@ const ForgotPassword: React.FC = () => {
                                     <></>
                                 )}
 
-                                <div className="flex flex-col mb-3">
-                                    <label htmlFor="email" className="text-2xl mb-1">
+                                <form className="flex flex-col mb-3">
+                                    <label htmlFor="email" className="text-xl mb-1 tablet:text-2xl">
                                         Email
                                     </label>
                                     <Field
@@ -73,7 +73,7 @@ const ForgotPassword: React.FC = () => {
                                     {error !== "" && (
                                         <span className="text-[14px] text-error font-medium">{error}</span>
                                     )}
-                                </div>
+                                </form>
                                 <button
                                     className="w-full py-2 px-4 mr-1 bg-switch rounded-lg text-white text-[32px] hover:opacity-80"
                                     type="submit"
