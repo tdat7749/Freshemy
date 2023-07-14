@@ -7,7 +7,6 @@ import { RequestForgotPassword, RequestHasLogin, RequestResetPassword } from "..
 
 class AuthController {
     async login(req: Request, res: Response): Promise<Response> {
-        console.log(req.body.email);
         const errorValidate: ValidationError | undefined = loginSchema.validate(req.body).error;
 
         if (errorValidate) {

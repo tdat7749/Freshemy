@@ -172,7 +172,7 @@ const forgotPassword = async (req: RequestForgotPassword): Promise<ResponseBase>
             id: user.id,
         };
 
-        const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: "15m" });
+        const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME});
         const link = `${configs.general.DOMAIN_NAME}/reset-password/${token}`;
         const isSendEmailSuccess = sendEmail(user.email, link);
         if (isSendEmailSuccess) {
