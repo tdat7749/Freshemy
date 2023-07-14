@@ -8,41 +8,35 @@ import { useAppDispatch,useAppSelector } from './hooks/hooks';
 import Header from './components/Header'
 import ChangePassword from './pages/ChangePassword';
 import Footer from './components/Footer';
-
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 
 function App() {
+    const dispatch = useAppDispatch();
 
-  const dispatch = useAppDispatch()
+    const isLogin = useAppSelector((state) => state?.authSlice?.isLogin) ?? false;
 
-  const isLogin = useAppSelector(state => state?.authSlice?.isLogin) ?? false;
+    useEffect(() => {
+        //@ts-ignore
+        dispatch(authActions.getMe());
+    }, [dispatch]);
 
-  useEffect(() =>{
-    //@ts-ignore
-    dispatch(authActions.getMe())
-  },[dispatch])
-
-  return (
-    <>
-      <BrowserRouter>
-      <Header isLogin={isLogin}/>  
-        <Routes>
-          <Route path="/" element={<Home/>}>
-          
-          </Route>
-
-          <Route path="/login" element={<Login/>}>
-
-          </Route>
-
-          <Route path="/change-password" element={<ChangePassword/>}>
-
-          </Route>
-        </Routes>
-        <Footer/>
-      </BrowserRouter>
-    </>
-  );
+    return (
+        <>
+            <BrowserRouter>
+                <Header isLogin={isLogin} />
+                <Routes>
+                    <Route path="/" element={<Home />}></Route>
+                    <Route path="/forgot-password" element={<ForgotPassword />}></Route>
+                    <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
+                    <Route path="/login" element={<Login />}></Route>
+                    <Route path="/change-password" element={<ChangePassword/>}></Route>
+                </Routes>
+                <Footer/>
+            </BrowserRouter>
+        </>
+    );
 }
 
 
