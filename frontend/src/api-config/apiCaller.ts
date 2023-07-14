@@ -1,10 +1,12 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import { authActions } from "../redux/slice";
+import { refreshToken } from "../apis/auth";
 
 const axiosPublic = axios.create({
     baseURL: "http://localhost:3001/api",
 });
+
+const axiosApiInstance = axios.create();
 
 axiosPublic.interceptors.request.use(
     async (config: any) => {
@@ -23,14 +25,16 @@ axiosPublic.interceptors.request.use(
 
 axiosPublic.interceptors.response.use(
     (response) => response,
-    (error: any) => {
+    async (error: any) => {
         const config = error?.config;
-
         if (error?.response?.status === 401 && !config.sent) {
             config.sent = true;
-            authActions.refreshToken();
-        }
+            const response = await refreshToken();
+            const accessToken = response.data.accessToken;
 
+            axios.defaults.headers.common["Authorization"] = "Bearer " + accessToken;
+            return axiosApiInstance(config);
+        }
         if (error) {
             return Promise.reject(error.response);
         }
@@ -39,8 +43,12 @@ axiosPublic.interceptors.response.use(
 );
 
 export const apiCaller = (method: string, path: string, data?: any) => {
+    const refreshToken = Cookies.get("refreshToken");
     return axiosPublic({
         method,
+        headers: {
+            Cookie: `rfToken=${refreshToken}`,
+        },
         url: `${path}`,
         data,
     });
