@@ -162,9 +162,6 @@ const Register: FC = () => {
                                             <Link to={"/login"}> Login</Link>
                                         </span>
                                     </p>
-                                    <p className="text-text font-normal text-[20px] tablet:text-[22px]">
-                                        <Link to={"/forgot-confirmPassword"}>Forgot Password?</Link>
-                                    </p>
                                 </div>
                             </Form>
                         )}
