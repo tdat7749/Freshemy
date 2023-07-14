@@ -8,7 +8,7 @@ import {
     refreshToken as refreshTokenAPI,
 } from "../../apis/auth";
 
-import { Login as LoginType, Register as RegisterType} from "../../types/auth";
+import { Login as LoginType, Register as RegisterType } from "../../types/auth";
 import { ForgotPassword as ForgotPasswordType } from "../../types/auth";
 import { ResetPassword as ResetPasswordType } from "../../types/auth";
 import { User as UserType } from "../../types/user";
@@ -54,16 +54,20 @@ export const authSlice = createSlice({
         setLogout: (state) => {
             state.isLogin = false;
         },
+        setMessageEmpty: (state) => {
+            state.error = ""
+            state.message = ""
+        }
     },
 });
 
-export const { setUsers, setError, setMessage, setLogout } = authSlice.actions;
+export const { setUsers, setError, setMessage, setLogout, setMessageEmpty } = authSlice.actions;
 
 export default authSlice.reducer;
 
 // @ts-ignore
 export const login = (values: LoginType) => async (dispatch) => {
-    dispatch(setError(""));
+    dispatch(setMessageEmpty())
     try {
         const response = await loginAPI(values.email, values.password);
         if (response) {
@@ -82,17 +86,18 @@ export const login = (values: LoginType) => async (dispatch) => {
 
 
 
-export const register = (values: RegisterType) => async ()  => {
+export const register = (values: RegisterType) => async (dispatch: any) => {
+    dispatch(setMessageEmpty())
     try {
         const response = await registerAPI(values);
 
         if (response.status >= 200 && response.status <= 299) {
-            // Handle successful registration if needed
+            dispatch(setMessage(response.data.message));
         } else {
-            console.log(response.data.message);
+            dispatch(setError(response.data.error));
         }
     } catch (error: any) {
-        console.log(error);
+        dispatch(setError(error.data.message));
     }
 };
 
@@ -118,8 +123,7 @@ export const getMe = () => async (dispatch) => {
 
 //@ts-ignore
 export const forgotPassword = (values: ForgotPasswordType) => async (dispatch, getState) => {
-    dispatch(setError(""));
-    dispatch(setMessage(""));
+    dispatch(setMessageEmpty())
     try {
         const response = await forgotPasswordAPI(values.email);
         if (response) {

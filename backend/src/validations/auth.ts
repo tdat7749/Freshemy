@@ -56,8 +56,8 @@ export const registrationSchema: ObjectSchema<Registration> = Joi.object({
 
     // confirmPassword: Joi.string().valid(Joi.ref("password")).required().strict(),
 
-    confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
-        "any.only": "Passwords do not match",
+    confirm_password: Joi.string().valid(Joi.ref("password")).required().messages({
+        "any.only": "Password and comfirm password must be same",
         "any.required": "Confirm password is required",
     }),
 });

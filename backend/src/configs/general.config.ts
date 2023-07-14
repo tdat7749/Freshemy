@@ -11,4 +11,5 @@ export const general = {
     PASSWORD_SERVER: process.env.PASSWORD_SERVER,
     TOKEN_ACCESS_EXPIRED_TIME: process.env.TOKEN_ACCESS_EXPIRED_TIME,
     TOKEN_REFRESH_EXPIRED_TIME: process.env.TOKEN_REFRESH_EXPIRED_TIME,
+    HASH_SALT: parseInt(process.env.HASH_SALT as string)
 };

@@ -16,11 +16,12 @@ export const login = async (email: string, password: string) => {
 export const register = async (values: RegisterType) => {
     const path = "/auth/signup";
 
-    const data = {
-        first_name: values.first_name, 
+    const data: RegisterType = {
+        first_name: values.first_name,
         last_name: values.last_name,
         email: values.email,
         password: values.password,
+        confirm_password: values.confirm_password
     };
 
     const response = await apiCaller("POST", path, data);

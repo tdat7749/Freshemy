@@ -1,51 +1,43 @@
 import { Request } from "express";
 import * as bcrypt from "bcrypt";
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import { MyJwtPayload } from "../types/decodeToken";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
-
-import { RequestHasLogin, RequestForgotPassword, RequestResetPassword } from "../types/request";
-import nodemailer from "nodemailer";
+import { RequestHasLogin } from "../types/request";
+import { sendMail } from "../commons";
 import configs from "../configs";
-import { RegisterRequest } from "../types/request";
 import { db } from "../configs/db.config";
+import { SendMail } from "../types/sendmail";
 
-import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError } from "@prisma/client/runtime/library";
 
+// const generateToken = (userId: number): string => {
+//     const secretKey =
+//         "73fb7f5b99b27706cc6c2c708f8c8f57aa31a4a0e0712c06f00483ba69a9a5162c55af93437e4b9563930d012d76f9f9ff9108394a77f41af5f78db50537d79b";
+//     const expiresIn = "1h";
 
-const generateToken = (userId: number): string => {
-    const secretKey =
-        "73fb7f5b99b27706cc6c2c708f8c8f57aa31a4a0e0712c06f00483ba69a9a5162c55af93437e4b9563930d012d76f9f9ff9108394a77f41af5f78db50537d79b";
-    const expiresIn = "1h";
+//     const payload = { userId };
+//     const token = jwt.sign(payload, secretKey, { expiresIn });
 
-    const payload = { userId };
-    const token = jwt.sign(payload, secretKey, { expiresIn });
+//     return token;
+// };
 
-    return token;
-};
-
-const register = async (req: RegisterRequest): Promise<ResponseBase> => {
+const register = async (req: Request): Promise<ResponseBase> => {
     try {
-        const { email, password, confirmPassword, first_name, last_name } = req.body;
+        const { email, password, first_name, last_name } = req.body;
 
-        // Validate the email field
-        if (!email) {
-            return new ResponseError(400, "Email is required", false);
-        }
+        const isUserFoundByEmail = await db.user.findUnique({
+            where: {
+                email: email
+            }
+        })
 
-        // Check if the email already exists in the database
-        const existingUser = await db.user.findUnique({ where: { email } });
-        if (existingUser) {
+        if (isUserFoundByEmail) {
             return new ResponseError(400, "Email already exists", false);
         }
 
-        // Validate the confirmPassword field
-        if (password !== confirmPassword) {
-            return new ResponseError(400, "Passwords do not match", false);
-        }
-
         // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, configs.general.HASH_SALT);
 
         // Create a new user in the database
         const newUser = await db.user.create({
@@ -54,26 +46,17 @@ const register = async (req: RegisterRequest): Promise<ResponseBase> => {
                 password: hashedPassword,
                 first_name,
                 last_name,
-                url_avatar: "",
-                token: "",
             },
         });
 
         if (newUser) {
-            // Generate a token for the registered user
-            const token = generateToken(newUser.id);
-
-            // Update the user record with the generated token
-            await db.user.update({
-                where: { id: newUser.id },
-                data: { token },
-            });
-            return new ResponseSuccess(200, "Registered successfully", true, { token });
+            return new ResponseSuccess(200, "Sign up successfully", true);
         }
-        return new ResponseError(500, "Failed to register user", false);
+
+        return new ResponseError(400, "Signup failed", false)
     } catch (error: any) {
-        if (error instanceof PrismaClientUnknownRequestError) {
-            return new ResponseError(400, "Bad request", false);
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false);
         }
         return new ResponseError(500, "Internal Server", false);
     }
@@ -123,7 +106,7 @@ const login = async (req: Request): Promise<ResponseBase> => {
         }
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, "Bad request", false);
+            return new ResponseError(400, error.toString(), false);
         }
         return new ResponseError(500, "Internal Server", false);
     }
@@ -186,67 +169,53 @@ const getMe = async (req: RequestHasLogin): Promise<ResponseBase> => {
 
         return new ResponseError(401, "Unauthorized", false);
     } catch (error: any) {
-        if (error instanceof TokenExpiredError) {
-            return new ResponseError(401, error.message, false);
-        } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(401, error.message, false);
-        } else if (error instanceof NotBeforeError) {
-            return new ResponseError(401, error.message, false);
-        }
-
         return new ResponseError(500, "Internal Server", false);
     }
 };
 
-const sendEmail = (email: string, link: string): boolean => {
-    var transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-            user: configs.general.EMAIL_SERVER,
-            pass: configs.general.PASSWORD_SERVER,
-        },
-    });
-    var mainOptions = {
-        from: "Freshemy",
-        to: `${email}`,
-        subject: "Link verification for reseting password",
-        text: "You recieved message from " + email,
-        html: "<p>This is your link verification for your account to reset password:</b></br>" + link,
-    };
+// const sendEmail = (email: string, link: string): boolean => {
+//     var mainOptions = {
+//         from: "Freshemy",
+//         to: `${email}`,
+//         subject: "Link verification for reseting password",
+//         text: "You recieved message from " + email,
+//         html: "<p>This is your link verification for your account to reset password:</b></br>" + link,
+//     };
+// };
 
-    transporter.sendMail(mainOptions, function (err) {
-        if (err) {
-            console.log(err);
-            return false;
-        }
-    });
-    return true;
-};
-
-const forgotPassword = async (req: RequestForgotPassword): Promise<ResponseBase> => {
+const forgotPassword = async (req: Request): Promise<ResponseBase> => {
     try {
         const { email } = req.body;
 
-        let user = await configs.db.user.findUnique({
+        const isFoundUser = await configs.db.user.findUnique({
             where: {
                 email: email,
             },
         });
 
-        if (user === null) {
+        if (isFoundUser === null) {
             return new ResponseError(404, "Invalid email", false);
         }
 
         const payload = {
-            email: user.email,
-            id: user.id,
+            email: isFoundUser.email,
+            id: isFoundUser.id,
         };
 
-        const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME});
+        const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME });
+
         const link = `${configs.general.DOMAIN_NAME}/reset-password/${token}`;
-        const isSendEmailSuccess = sendEmail(user.email, link);
+
+        const mailOptions: SendMail = {
+            from: "Freshemy",
+            to: `${email}`,
+            subject: "Link verification for reseting password",
+            text: "You recieved message from " + email,
+            html: "<p>This is your link verification for your account to reset password:</b></br>" + link,
+        };
+
+        const isSendEmailSuccess = sendMail(mailOptions);
+
         if (isSendEmailSuccess) {
             return new ResponseSuccess(200, "Request Succesfully", true);
         } else {
@@ -265,7 +234,7 @@ const forgotPassword = async (req: RequestForgotPassword): Promise<ResponseBase>
     }
 };
 
-const resetPassword = async (req: RequestResetPassword): Promise<ResponseBase> => {
+const resetPassword = async (req: Request): Promise<ResponseBase> => {
     try {
         const { password, confirmPassword, token } = req.body;
         const salt = bcrypt.genSaltSync(10);

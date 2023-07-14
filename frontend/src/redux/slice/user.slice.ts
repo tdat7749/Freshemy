@@ -1,15 +1,15 @@
-import { createSlice ,PayloadAction} from "@reduxjs/toolkit";
-import {changePassword as changePasswordAPI} from '../../apis/user'
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { changePassword as changePasswordAPI } from '../../apis/user'
 import { ChangePassword as ChangePasswordType } from "../../types/user";
 
 type UserSlice = {
-    error:string,
-    message:string
+    error: string,
+    message: string
 }
 
-const initialState:UserSlice = {
-    error:"",
-    message:""
+const initialState: UserSlice = {
+    error: "",
+    message: ""
 }
 
 
@@ -23,26 +23,29 @@ export const userSlice = createSlice({
         setMessage: (state, payload: PayloadAction<string>) => {
             state.message = payload.payload
         },
+        setMessageEmpty: (state) => {
+            state.error = ""
+            state.message = ""
+        }
     },
 });
 
 
 export default userSlice.reducer;
 
-export const {setError,setMessage} = userSlice.actions
+export const { setError, setMessage, setMessageEmpty } = userSlice.actions
 
 // @ts-ignore
 export const changePassword = (values: ChangePasswordType) => async (dispatch, getState) => {
-    dispatch(setError(""))
-    dispatch(setMessage(""))
+    dispatch(setMessageEmpty())
     try {
         const response = await changePasswordAPI(values);
-        if(response){
+        if (response) {
             if (response.status >= 200 && response.status <= 299) {
                 dispatch(setMessage(response.data.message))
             } else {
                 dispatch(setError(response.data.message))
-            }   
+            }
         }
     } catch (error: any) {
         dispatch(setError(error.data.message));

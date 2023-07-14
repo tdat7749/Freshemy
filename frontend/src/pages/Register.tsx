@@ -1,4 +1,4 @@
-import React, { FC, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field, Form } from "formik";
 import { Register as RegisterType } from "../types/auth";
@@ -7,13 +7,21 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { authActions } from "../redux/slice/index";
 import { Navigate } from "react-router-dom";
 import Skeleton from "../assets/images/Skeleton.png";
+import { setMessageEmpty } from "../redux/slice/auth.slice";
 
 const Register: FC = () => {
     const dispatch = useAppDispatch();
 
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
+    let errorMessage = useAppSelector(state => state.authSlice.error)
+    let successMessage = useAppSelector(state => state.authSlice.message)
+
 
     const formikRef = useRef(null);
+
+    useEffect(() => {
+        dispatch(setMessageEmpty())
+    }, [dispatch])
 
     if (isLogin) return <Navigate to={"/"} />;
 
@@ -22,7 +30,7 @@ const Register: FC = () => {
         last_name: "",
         email: "",
         password: "",
-        confirmPassword: "",
+        confirm_password: "",
     };
 
     const registerValidationSchema = Yup.object({
@@ -30,8 +38,8 @@ const Register: FC = () => {
         last_name: Yup.string().required("Last Name is required"),
         email: Yup.string().email("Invalid email").required("Email is required"),
         password: Yup.string().required("Password is required"),
-        confirmPassword: Yup.string()
-            .required("Password is required")
+        confirm_password: Yup.string()
+            .required("Confirm password is required")
             .oneOf([Yup.ref("password")], "Wrong confirm password"),
     });
 
@@ -39,6 +47,13 @@ const Register: FC = () => {
         //@ts-ignore
         dispatch(authActions.register(values));
     };
+
+    const handleDeleteMessage = () => {
+        errorMessage = ""
+        successMessage = ""
+    }
+
+
 
     return (
         <>
@@ -51,7 +66,7 @@ const Register: FC = () => {
                         innerRef={formikRef}
                     >
                         {(formik) => (
-                            <Form onSubmit={formik.handleSubmit} className="p-4">
+                            <Form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
                                 <h1 className="font-bold text-[32px] text-center">SIGN UP</h1>
 
                                 <div className="flex gap-[30px] shrink-0s">
@@ -62,11 +77,10 @@ const Register: FC = () => {
                                         <Field
                                             type="text"
                                             name="first_name"
-                                            className={`${
-                                                formik.errors.first_name && formik.touched.first_name
-                                                    ? "border-error"
-                                                    : ""
-                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                            className={`${formik.errors.first_name && formik.touched.first_name
+                                                ? "border-error"
+                                                : ""
+                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                         />
                                         <ErrorMessage
                                             name="first_name"
@@ -81,11 +95,10 @@ const Register: FC = () => {
                                         <Field
                                             type="text"
                                             name="last_name"
-                                            className={`${
-                                                formik.errors.last_name && formik.touched.last_name
-                                                    ? "border-error"
-                                                    : ""
-                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                            className={`${formik.errors.last_name && formik.touched.last_name
+                                                ? "border-error"
+                                                : ""
+                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                         />
                                         <ErrorMessage
                                             name="last_name"
@@ -101,9 +114,8 @@ const Register: FC = () => {
                                     <Field
                                         type="text"
                                         name="email"
-                                        className={`${
-                                            formik.errors.email && formik.touched.email ? "border-error" : ""
-                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                        className={`${formik.errors.email && formik.touched.email ? "border-error" : ""
+                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                     />
                                     <ErrorMessage
                                         name="email"
@@ -118,9 +130,8 @@ const Register: FC = () => {
                                     <Field
                                         type="password"
                                         name="password"
-                                        className={`${
-                                            formik.errors.password && formik.touched.password ? "border-error" : ""
-                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                        className={`${formik.errors.password && formik.touched.password ? "border-error" : ""
+                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                     />
                                     <ErrorMessage
                                         name="password"
@@ -129,23 +140,24 @@ const Register: FC = () => {
                                     />
                                 </div>
                                 <div className="">
-                                    <label htmlFor="confirmPassword" className="text-xl mb-1 tablet:text-2xl">
+                                    <label htmlFor="confirm_password" className="text-xl mb-1 tablet:text-2xl">
                                         Confirm Password
                                     </label>
                                     <Field
                                         type="password"
-                                        name="confirmPassword"
-                                        className={`${
-                                            formik.errors.confirmPassword && formik.touched.confirmPassword
-                                                ? "border-error"
-                                                : ""
-                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                        name="confirm_password"
+                                        className={`${formik.errors.confirm_password && formik.touched.confirm_password
+                                            ? "border-error"
+                                            : ""
+                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                     />
                                     <ErrorMessage
-                                        name="confirmPassword"
+                                        name="confirm_password"
                                         component="span"
                                         className="text-[14px] text-error font-medium"
                                     />
+                                    {errorMessage !== "" && (<span className="text-[14px] text-error font-medium">{errorMessage}</span>)}
+                                    {successMessage !== "" && (<span className="text-[14px] text-success font-medium">{successMessage}</span>)}
                                 </div>
                                 <div className="py-[12px]">
                                     <button
@@ -157,7 +169,7 @@ const Register: FC = () => {
                                 </div>
                                 <div className="text-center space-y-[8px]">
                                     <p className="text-text font-normal text-[20px] tablet:text-[22px]">
-                                        Already have an account? 
+                                        Already have an account?
                                         <span className="underline">
                                             <Link to={"/login"}> Login</Link>
                                         </span>
