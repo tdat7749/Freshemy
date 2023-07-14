@@ -10,6 +10,7 @@ import ChangePassword from './pages/ChangePassword';
 import Footer from './components/Footer';
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import PrivateRoute from "./routes/PrivateRoute";
 
 
 function App() {
@@ -28,6 +29,9 @@ function App() {
                 <Header isLogin={isLogin} />
                 <Routes>
                     <Route path="/" element={<Home />}></Route>
+                    <Route element={<PrivateRoute isLogin={isLogin}/>}>
+
+                    </Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                     <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                     <Route path="/login" element={<Login />}></Route>

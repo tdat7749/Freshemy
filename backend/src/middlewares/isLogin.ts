@@ -4,18 +4,17 @@ import jwt, { TokenExpiredError, JsonWebTokenError, NotBeforeError } from "jsonw
 import { MyJwtPayload } from "../types/decodeToken";
 import { db } from "../configs/db.config";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import configs from "../configs";
 
 export const isLogin = async (req: RequestHasLogin, res: Response, next: NextFunction) => {
     try {
         const authHeader = req.headers.authorization;
         const jsonWebToken = authHeader?.split(" ")[1];
 
-        console.log(jsonWebToken);
-
         if (!jsonWebToken) {
             res.status(401).json({ message: "Unauthorized" });
         } else {
-            const decodeJsonWebToken = jwt.verify(jsonWebToken, "PrivateKey") as MyJwtPayload;
+            const decodeJsonWebToken = jwt.verify(jsonWebToken, configs.general.JWT_SECRET_KEY) as MyJwtPayload;
             if (decodeJsonWebToken) {
                 const isFoundUser = await db.user.findUnique({
                     where: {
@@ -34,11 +33,11 @@ export const isLogin = async (req: RequestHasLogin, res: Response, next: NextFun
             return res.status(401).json({ message: error.toString() });
         }
         if (error instanceof TokenExpiredError) {
-            return res.status(400).json({ message: error.message });
+            return res.status(401).json({ message: error.message });
         } else if (error instanceof JsonWebTokenError) {
-            return res.status(400).json({ message: error.message });
+            return res.status(401).json({ message: error.message });
         } else if (error instanceof NotBeforeError) {
-            return res.status(400).json({ message: error.message });
+            return res.status(401).json({ message: error.message });
         }
 
         return res.status(500).json({ message: "Internal Server" });

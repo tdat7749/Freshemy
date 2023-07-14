@@ -6,7 +6,7 @@ const axiosPublic = axios.create({
     baseURL: "http://localhost:3001/api",
 });
 
-const axiosApiInstance = axios.create();
+const axiosInstance = axios.create();
 
 axiosPublic.interceptors.request.use(
     async (config: any) => {
@@ -27,13 +27,16 @@ axiosPublic.interceptors.response.use(
     (response) => response,
     async (error: any) => {
         const config = error?.config;
-        if (error?.response?.status === 401 && !config.sent) {
-            config.sent = true;
+        if (error?.response?.status === 401 && !config._retry) {
+            config._retry = true;
             const response = await refreshToken();
-            const accessToken = response.data.accessToken;
+            const accessToken = response.data.data.accessToken;
 
-            axios.defaults.headers.common["Authorization"] = "Bearer " + accessToken;
-            return axiosApiInstance(config);
+            config.headers = {
+                ...config.headers,
+                authorization: `Bearer ${accessToken}`,
+            };
+            return axiosInstance(config);
         }
         if (error) {
             return Promise.reject(error.response);
@@ -47,7 +50,9 @@ export const apiCaller = (method: string, path: string, data?: any) => {
     return axiosPublic({
         method,
         headers: {
-            Cookie: `rfToken=${refreshToken}`,
+            "Access-Control-Allow-Credentials": true,
+            "Access-Control-Allow-Origin": "*",
+            rftoken: `rfToken=${refreshToken}`,
         },
         url: `${path}`,
         data,
