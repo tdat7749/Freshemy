@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import Logo from "../assets/images/logo.png";
 import UserDropDown from "./UserDropDown";
 import SearchIcon from "./icons/SearchIcon";
-import Overlay from "./Overlay";
+import DefaultAvatar from "../assets/images/default-avatar.png";
+import { Link } from "react-router-dom";
 
 interface HeaderProps {
     isLogin: boolean;
@@ -10,13 +11,15 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ isLogin }) => {
     const [display, setDisplay] = useState<boolean>(false);
-    const toggleDropDown = () => {
-        setDisplay(!display);
-    };
 
     return (
         <>
-            {display && <Overlay toggleDropDown={toggleDropDown} />}
+            {display && (
+                <div
+                    className="fixed z-10 w-screen h-screen backdrop-brightness-90 tablet:hidden"
+                    onClick={() => setDisplay(!display)}
+                ></div>
+            )}
 
             <div className="w-full h-[100px] max-w-full bg-background shadow-sm fixed top-0 left-0 z-[10]">
                 <div className="w-full flex items-center py-[10px] px-4 tablet:px-[60px]">
@@ -37,10 +40,12 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                 <span className="hidden tablet:block min-w-fit mr-5">My Courses</span>
                                 <div
                                     data-dropdown-toggle="dropdown"
-                                    className="w-[60px] h-[60px] rounded-full bg-slate-600 flex items-center justify-center relative"
-                                    onClick={toggleDropDown}
+                                    className="w-[60px] h-[60px] rounded-full flex items-center justify-center relative border-[1px]"
+                                    onClick={() => {
+                                        setDisplay(!display);
+                                    }}
                                 >
-                                    <span>A</span>
+                                    <img src={DefaultAvatar} alt="A" className="w-10 h-10 rounded-ful"/>
                                     {display ? <UserDropDown /> : <></>}
                                 </div>
                             </div>
@@ -48,8 +53,14 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                     ) : (
                         <div className="ml-auto flex sh items-center">
                             <span className="hidden tablet:block min-w-fit mr-4">All Courses</span>
-                            <button className="py-2 px-4 mr-1 bg-green-700 rounded-lg text-white">Login</button>
-                            <button className="py-[7px] px-4 border-[1px] border-black rounded-lg">Signup</button>
+                            <Link to="/login">
+                                <button className="py-2 px-4 mr-1 bg-switch rounded-lg text-white hover:opacity-80">
+                                    Login
+                                </button>
+                            </Link>
+                            <Link to="/signup">
+                                <button className="py-[7px] px-4 border-[1px] border-black rounded-lg">Signup</button>
+                            </Link>
                         </div>
                     )}
                 </div>
