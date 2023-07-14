@@ -108,7 +108,7 @@ const Login: FC = () => {
                     </Formik>
                 </div>
                 <div className="hidden tablet:block">
-                    <img src={Skeleton} />
+                    <img src={Skeleton} alt="Login img"/>
                 </div>
             </div>
         </>
