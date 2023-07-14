@@ -4,9 +4,19 @@ import ChangePasswordIcon from "./icons/Edit_light";
 import MyEnrollCourseIcon from "./icons/MyEnrollCourse";
 import MyCourseIcon from "./icons/MyCourseIcon";
 import LogoutIcon from "./icons/LogoutIcon";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../hooks/hooks";
+import { authActions } from "../redux/slice";
 
 const UserDropDown: React.FC = () => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        // @ts-ignore
+        dispatch(authActions.logout());
+        navigate("/");
+    };
+
     return (
         <>
             <div className="z-20 w-[342px] bg-white shadow-xl absolute top-[70px] right-0 py-4 flex flex-col justify-start items-start rounded-lg">
@@ -34,12 +44,13 @@ const UserDropDown: React.FC = () => {
                         <span className="ml-3">My courses</span>
                     </div>
                 </Link>
-                <Link to={"/logout"} className="w-full hover:bg-backgroundHover">
-                    <div className="flex justify-start items-center py-[10px] px-4">
-                        <LogoutIcon />
-                        <span className="text-error ml-3">Logout</span>
-                    </div>
-                </Link>
+                <div
+                    className="w-full flex justify-start items-center py-[10px] px-4 hover:bg-backgroundHover cursor-pointer"
+                    onClick={handleLogout}
+                >
+                    <LogoutIcon />
+                    <span className="text-error ml-3">Logout</span>
+                </div>
             </div>
         </>
     );
