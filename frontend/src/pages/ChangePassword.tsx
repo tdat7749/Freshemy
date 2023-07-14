@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Formik, Field, ErrorMessage } from "formik";
 import { ChangePassword as ChangePasswordType } from "../types/user";
 import * as Yup from "yup";
@@ -6,6 +6,7 @@ import { useAppDispatch } from "../hooks/hooks";
 import { userActions } from "../redux/slice";
 import { useAppSelector } from "../hooks/hooks";
 import { Link } from "react-router-dom";
+import { setError, setMessage } from "../redux/slice/user.slice";
 const ChangePassword: React.FC = () => {
     let message = useAppSelector((state) => state.userSlice.message) ?? "";
     let error = useAppSelector((state) => state.userSlice.error) ?? "";
@@ -19,6 +20,11 @@ const ChangePassword: React.FC = () => {
         new_password: "",
         confirm_password: "",
     };
+
+    useEffect(() =>{
+        dispatch(setError(""))
+        dispatch(setMessage(""))
+    },[dispatch])
 
     const changePasswordValidationSchema = Yup.object({
         current_password: Yup.string().required("Current Password is required"),
