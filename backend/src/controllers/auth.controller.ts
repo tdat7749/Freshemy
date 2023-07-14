@@ -7,7 +7,6 @@ import { RequestForgotPassword, RequestHasLogin, RequestResetPassword } from "..
 
 class AuthController {
     async login(req: Request, res: Response): Promise<Response> {
-        console.log(req.body.email);
         const errorValidate: ValidationError | undefined = loginSchema.validate(req.body).error;
 
         if (errorValidate) {
@@ -22,6 +21,7 @@ class AuthController {
     }
 
     async refreshToken(req: Request, res: Response): Promise<Response> {
+        console.log(req);
         const response = await service.AuthService.refreshToken(req);
 
         return res.status(response.getStatusCode()).json(response);
@@ -30,13 +30,12 @@ class AuthController {
     async getMe(req: RequestHasLogin, res: Response): Promise<Response> {
         const response = await service.AuthService.getMe(req);
 
-        console.log(response);
         return res.status(response.getStatusCode()).json(response);
     }
 
     async forgotPassword(req: RequestForgotPassword, res: Response): Promise<Response> {
         const response = await service.AuthService.forgotPassword(req);
-        
+
         return res.status(response.getStatusCode()).json(response);
     }
 

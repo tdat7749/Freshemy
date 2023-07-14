@@ -12,7 +12,7 @@ const Login: FC = () => {
     const dispatch = useAppDispatch();
 
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
-    const error = useAppSelector((state) => state.authSlice.error) || "1";
+    const error = useAppSelector((state) => state.authSlice.error) || "";
 
     const formikRef = useRef(null);
 

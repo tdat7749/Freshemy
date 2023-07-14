@@ -7,6 +7,7 @@ import ResetPassword from "./pages/ResetPassword";
 import { authActions } from "./redux/slice";
 import { useAppDispatch, useAppSelector } from "./hooks/hooks";
 import Header from "./components/Header";
+import PrivateRoute from "./routes/PrivateRoute";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -24,6 +25,9 @@ function App() {
                 <Header isLogin={isLogin} />
                 <Routes>
                     <Route path="/" element={<Home />}></Route>
+                    <Route element={<PrivateRoute isLogin={isLogin}/>}>
+
+                    </Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                     <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                     <Route path="/login" element={<Login />}></Route>

@@ -60,6 +60,7 @@ export default authSlice.reducer;
 
 // @ts-ignore
 export const login = (values: LoginType) => async (dispatch) => {
+    dispatch(setError(""));
     try {
         const response = await loginAPI(values.email, values.password);
         if (response) {
