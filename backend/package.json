@@ -25,7 +25,8 @@
     "eslint-plugin-prettier": "^4.2.1",
     "luxon": "^3.3.0",
     "nodemon": "^2.0.22",
-    "prettier": "2.8.8"
+    "prettier": "2.8.8",
+    "prisma": "^5.0.0"
   },
   "dependencies": {
     "-": "^0.0.1",
@@ -44,7 +45,6 @@
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.1",
     "nodemailer": "^6.9.3",
-    "prisma": "^4.16.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.6"
