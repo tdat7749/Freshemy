@@ -25,7 +25,8 @@ module.exports = {
         'error':'#FF0000',
         'switch':'#033700',
         'bgForm': '#F7F1DD',
-        'text':'#212B27'
+        'text':'#212B27',
+        'backgroundHover':'#FFCF90'
       },
     },
   },

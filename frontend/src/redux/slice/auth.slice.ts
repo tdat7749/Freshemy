@@ -1,7 +1,16 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { User } from "../../types/user";
-import { register as registerAPI, login as loginAPI, getMe as getMeAPI, refreshToken as refreshTokenAPI } from "../../apis/auth";
+import {
+    register as registerAPI, login as loginAPI,
+    getMe as getMeAPI,
+    forgotPassword as forgotPasswordAPI,
+    resetPassword as resetPasswordAPI,
+    refreshToken as refreshTokenAPI,
+} from "../../apis/auth";
+
 import { Login as LoginType, Register as RegisterType} from "../../types/auth";
+import { ForgotPassword as ForgotPasswordType } from "../../types/auth";
+import { ResetPassword as ResetPasswordType } from "../../types/auth";
 import { User as UserType } from "../../types/user";
 import Cookies from "js-cookie";
 
@@ -9,6 +18,7 @@ type Auth = {
     user: User;
     isLogin: boolean;
     error: string;
+    message: string;
 };
 
 const initialState: Auth = {
@@ -20,6 +30,7 @@ const initialState: Auth = {
     },
     isLogin: false,
     error: "",
+    message: "",
 };
 
 export const authSlice = createSlice({
@@ -35,13 +46,15 @@ export const authSlice = createSlice({
             state.isLogin = true;
         },
         setError: (state, payload: PayloadAction<string>) => {
-            console.log(payload);
             state.error = payload.payload;
+        },
+        setMessage: (state, payload: PayloadAction<string>) => {
+            state.message = payload.payload;
         },
     },
 });
 
-export const { setUsers, setError } = authSlice.actions;
+export const { setUsers, setError, setMessage } = authSlice.actions;
 
 export default authSlice.reducer;
 
@@ -100,6 +113,23 @@ export const getMe = () => async (dispatch) => {
     }
 };
 
+//@ts-ignore
+export const forgotPassword = (values: ForgotPasswordType) => async (dispatch, getState) => {
+    dispatch(setError(""));
+    dispatch(setMessage(""));
+    try {
+        const response = await forgotPasswordAPI(values.email);
+        if (response) {
+            if (response.status >= 200 && response.status <= 299) {
+                dispatch(setMessage(response.data.message));
+            } else {
+                dispatch(setMessage(response.data.message));
+            }
+        }
+    } catch (error: any) {
+        dispatch(setError(error.data.message));
+    }
+};
 export const refreshToken = async () => {
     try {
         const response = await refreshTokenAPI();
@@ -118,6 +148,19 @@ export const refreshToken = async () => {
     }
 };
 
+export const resetPassword = async (values: ResetPasswordType, token: string) => {
+    try {
+        const response = await resetPasswordAPI(values.confirmPassword, values.password, token);
+        if (response.data.status_code === 200) {
+            window.location.href = "/login";
+        }
+        if (response.data.status_code === 400) {
+            window.location.href = "/login";
+        }
+    } catch (error: any) {
+        console.log(error);
+    }
+};
 //@ts-ignore
 export const logout = () => async (dispatch, getState) => {
     try {

@@ -15,14 +15,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
 app.use("/api/auth", routers.authRouter);
 
 const port: number = configs.general.PORT;
-
-app.get("/", (_req, res: Response) => {
-    res.send(`Server is running on port 11111111111111: ${port}`);
-});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

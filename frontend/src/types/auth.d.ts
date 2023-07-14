@@ -8,6 +8,14 @@ export type Token = {
     refreshToken: string;
 };
 
+export type ForgotPassword = {
+    email: string;
+};
+
+export type ResetPassword = {
+    confirmPassword: string;
+    password: string;
+};
 export type Register = {
     first_name: string;
     last_name: string;
@@ -15,3 +23,4 @@ export type Register = {
     password: string;
     confirmPassword?: string;
 };
+
