@@ -4,7 +4,7 @@ dotenv.config();
 
 export const general = {
     DOMAIN_NAME: process.env.DOMAIN_NAME,
-    PORT: parseInt(process.env.PORT || "3000"),
+    PORT: parseInt(process.env.PORT || "3001"),
     DATABASE_URL: process.env.DATABASE_URL,
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY as string,
     EMAIL_SERVER: process.env.EMAIL_SERVER,
