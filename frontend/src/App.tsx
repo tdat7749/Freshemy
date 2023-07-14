@@ -7,6 +7,7 @@ import ResetPassword from "./pages/ResetPassword";
 import { authActions } from "./redux/slice";
 import { useAppDispatch, useAppSelector } from "./hooks/hooks";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ function App() {
                     <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                     <Route path="/login" element={<Login />}></Route>
                 </Routes>
+                <Footer />
             </BrowserRouter>
         </>
     );
