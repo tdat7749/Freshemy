@@ -61,3 +61,11 @@ export const refreshToken = async () => {
 
     return response;
 };
+
+export const verifyEmail = async (token: string) => {
+    const path = `auth/verifyEmail/${token}`
+
+    const response = await apiCaller("GET", path)
+
+    return response
+}

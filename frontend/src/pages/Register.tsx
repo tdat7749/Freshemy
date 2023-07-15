@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Formik, ErrorMessage, Field, Form } from "formik";
+import { Formik, ErrorMessage, Field } from "formik";
 import { Register as RegisterType } from "../types/auth";
 import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
@@ -66,7 +66,7 @@ const Register: FC = () => {
                         innerRef={formikRef}
                     >
                         {(formik) => (
-                            <Form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
+                            <form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
                                 <h1 className="font-bold text-[32px] text-center">SIGN UP</h1>
 
                                 <div className="flex gap-[30px] shrink-0s">
@@ -175,7 +175,7 @@ const Register: FC = () => {
                                         </span>
                                     </p>
                                 </div>
-                            </Form>
+                            </form>
                         )}
                     </Formik>
                 </div>

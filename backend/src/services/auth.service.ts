@@ -10,18 +10,6 @@ import configs from "../configs";
 import { db } from "../configs/db.config";
 import { SendMail } from "../types/sendmail";
 
-
-// const generateToken = (userId: number): string => {
-//     const secretKey =
-//         "73fb7f5b99b27706cc6c2c708f8c8f57aa31a4a0e0712c06f00483ba69a9a5162c55af93437e4b9563930d012d76f9f9ff9108394a77f41af5f78db50537d79b";
-//     const expiresIn = "1h";
-
-//     const payload = { userId };
-//     const token = jwt.sign(payload, secretKey, { expiresIn });
-
-//     return token;
-// };
-
 const register = async (req: Request): Promise<ResponseBase> => {
     try {
         const { email, password, first_name, last_name } = req.body;
@@ -50,9 +38,28 @@ const register = async (req: Request): Promise<ResponseBase> => {
         });
 
         if (newUser) {
-            return new ResponseSuccess(200, "Sign up successfully", true);
-        }
+            const payload = {
+                email: newUser.email,
+                id: newUser.id,
+            };
 
+            const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME });
+
+            const link = `${configs.general.DOMAIN_NAME}/verifyEmail/${token}`;
+            const mailOptions: SendMail = {
+                from: "Freshemy",
+                to: `${newUser.email}`,
+                subject: "Email Verification",
+                text: "You recieved message from " + newUser.email,
+                html: "<p>Here is the link to verify your email, please click here:</b></br>" + link
+            };
+
+            const isSendEmailSuccess = sendMail(mailOptions);
+            if (isSendEmailSuccess) {
+                return new ResponseSuccess(200, "Signup successful, please check your email", true);
+            }
+            return new ResponseError(400, "Email sending failed, please login to the account you just registered to be sent confirmation email again", false);
+        }
         return new ResponseError(400, "Signup failed", false)
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -61,6 +68,56 @@ const register = async (req: Request): Promise<ResponseBase> => {
         return new ResponseError(500, "Internal Server", false);
     }
 };
+
+
+const verifyEmailWhenSignUp = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const { token } = req.params
+
+        const isVerifyToken = jwt.verify(token, configs.general.JWT_SECRET_KEY) as MyJwtPayload
+
+        if (isVerifyToken) {
+            const isUserFound = await db.user.findUnique({
+                where: {
+                    email: isVerifyToken.email
+                }
+            })
+
+            console.log(isUserFound?.is_verify, "Đây đây")
+
+            if (isUserFound?.is_verify === true) {
+                return new ResponseSuccess(200, "This account has been verified before", true)
+            }
+            const isVerifyUser = await db.user.update({
+                where: {
+                    email: isUserFound?.email
+                },
+                data: {
+                    is_verify: true
+                }
+            })
+
+            if (isVerifyUser) {
+                return new ResponseSuccess(200, "Account verification successful", true)
+            }
+        }
+        return new ResponseError(400, "Verify email failed", true)
+
+    } catch (error: any) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false)
+        }
+        if (error instanceof TokenExpiredError) {
+            return new ResponseError(400, error.message, false);
+        } else if (error instanceof JsonWebTokenError) {
+            return new ResponseError(400, error.message, false);
+        } else if (error instanceof NotBeforeError) {
+            return new ResponseError(400, error.message, false);
+        }
+
+        return new ResponseError(500, "Internal Server", false)
+    }
+}
 
 const login = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -192,16 +249,6 @@ const getMe = async (req: RequestHasLogin): Promise<ResponseBase> => {
     }
 };
 
-// const sendEmail = (email: string, link: string): boolean => {
-//     var mainOptions = {
-//         from: "Freshemy",
-//         to: `${email}`,
-//         subject: "Link verification for reseting password",
-//         text: "You recieved message from " + email,
-//         html: "<p>This is your link verification for your account to reset password:</b></br>" + link,
-//     };
-// };
-
 const forgotPassword = async (req: Request): Promise<ResponseBase> => {
     try {
         const { email } = req.body;
@@ -289,7 +336,8 @@ const AuthService = {
     getMe,
     forgotPassword,
     resetPassword,
-    register
+    register,
+    verifyEmailWhenSignUp
 };
 
 export default AuthService;
