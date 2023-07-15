@@ -72,35 +72,54 @@ const login = async (req: Request): Promise<ResponseBase> => {
             },
         });
 
-        if (isFoundUser) {
-            if (!isFoundUser.is_verify) {
-                return new ResponseError(401, "Unverified account", false);
-            }
-            const isVerifyPassword = await bcrypt.compare(password, isFoundUser.password);
-            if (isVerifyPassword) {
-                const accessToken = jwt.sign(
-                    {
-                        user_id: isFoundUser.id,
-                    },
-                    configs.general.JWT_SECRET_KEY,
-                    {
-                        expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
-                    },
-                );
+        if (!isFoundUser) return new ResponseError(400, "Email or password is invalid", false);
 
-                const refreshToken = jwt.sign(
-                    {
-                        user_id: isFoundUser.id,
-                    },
-                    configs.general.JWT_SECRET_KEY,
-                    {
-                        expiresIn: configs.general.TOKEN_REFRESH_EXPIRED_TIME,
-                    },
-                );
-                return new ResponseSuccess(200, "Logged in successfully", true, { accessToken, refreshToken });
-            } else {
-                return new ResponseError(400, "Email or password is invalid", false);
+        const isVerifyPassword = await bcrypt.compare(password, isFoundUser.password);
+        if (isVerifyPassword) {
+            if (!isFoundUser.is_verify) {
+                const payload = {
+                    email: isFoundUser.email,
+                    user_id: isFoundUser.id
+                }
+
+                const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME });
+
+                const link = `${configs.general.DOMAIN_NAME}/verifyEmail/${token}`;
+
+                const mailOptions: SendMail = {
+                    from: "Freshemy",
+                    to: `${isFoundUser.email}`,
+                    subject: "Email Verification",
+                    text: "You recieved message from " + isFoundUser.email,
+                    html: "<p>Here is the link to verify your email, please click here:</b></br>" + link
+                };
+
+                const isSendEmailSuccess = sendMail(mailOptions);
+                if (!isSendEmailSuccess) {
+                    return new ResponseError(400, "Email sending failed, please login to the account you just registered to be sent confirmation email again", false);
+                }
+                return new ResponseError(400, "Unverified account, We have sent you a verification link, please check your email soon before it expires!", false);
             }
+            const accessToken = jwt.sign(
+                {
+                    user_id: isFoundUser.id,
+                },
+                configs.general.JWT_SECRET_KEY,
+                {
+                    expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
+                },
+            );
+
+            const refreshToken = jwt.sign(
+                {
+                    user_id: isFoundUser.id,
+                },
+                configs.general.JWT_SECRET_KEY,
+                {
+                    expiresIn: configs.general.TOKEN_REFRESH_EXPIRED_TIME,
+                },
+            );
+            return new ResponseSuccess(200, "Logged in successfully", true, { accessToken, refreshToken });
         } else {
             return new ResponseError(400, "Email or password is invalid", false);
         }

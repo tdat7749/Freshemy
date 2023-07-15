@@ -37,7 +37,7 @@ const Register: FC = () => {
         first_name: Yup.string().required("First Name is required"),
         last_name: Yup.string().required("Last Name is required"),
         email: Yup.string().email("Invalid email").required("Email is required"),
-        password: Yup.string().required("Password is required"),
+        password: Yup.string().required("Password is required").min(8, "Weak password").max(32, "Password is too long"),
         confirm_password: Yup.string()
             .required("Confirm password is required")
             .oneOf([Yup.ref("password")], "Wrong confirm password"),
