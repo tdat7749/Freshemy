@@ -52,6 +52,12 @@ class AuthController {
         return res.status(response.getStatusCode()).json(response);
     }
 
+    async verifyEmailWhenSignUp(req: Request, res: Response): Promise<Response> {
+        const response = await service.AuthService.verifyEmailWhenSignUp(req)
+
+        return res.status(response.getStatusCode()).json(response)
+    }
+
     async login(req: Request, res: Response): Promise<Response> {
         const errorValidate: ValidationError | undefined = loginSchema.validate(req.body).error;
 
@@ -67,7 +73,6 @@ class AuthController {
     }
 
     async refreshToken(req: Request, res: Response): Promise<Response> {
-        console.log(req);
         const response = await service.AuthService.refreshToken(req);
 
         return res.status(response.getStatusCode()).json(response);

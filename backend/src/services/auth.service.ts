@@ -50,9 +50,28 @@ const register = async (req: Request): Promise<ResponseBase> => {
         });
 
         if (newUser) {
-            return new ResponseSuccess(200, "Sign up successfully", true);
-        }
+            const payload = {
+                email: newUser.email,
+                id: newUser.id,
+            };
 
+            const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME });
+
+            const link = `${configs.general.DOMAIN_NAME}/verifyEmail/${token}`;
+            const mailOptions: SendMail = {
+                from: "Freshemy",
+                to: `${newUser.email}`,
+                subject: "Email Verification",
+                text: "You recieved message from " + newUser.email,
+                html: "<p>Here is the link to verify your email, please click here:</b></br>" + link
+            };
+
+            const isSendEmailSuccess = sendMail(mailOptions);
+            if (isSendEmailSuccess) {
+                return new ResponseSuccess(200, "Signup successful, please check your email", true);
+            }
+            return new ResponseError(400, "Email sending failed, please login to the account you just registered to be sent confirmation email again", false);
+        }
         return new ResponseError(400, "Signup failed", false)
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -61,6 +80,56 @@ const register = async (req: Request): Promise<ResponseBase> => {
         return new ResponseError(500, "Internal Server", false);
     }
 };
+
+
+const verifyEmailWhenSignUp = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const { token } = req.params
+
+        const isVerifyToken = jwt.verify(token, configs.general.JWT_SECRET_KEY) as MyJwtPayload
+
+        if (isVerifyToken) {
+            const isUserFound = await db.user.findUnique({
+                where: {
+                    email: isVerifyToken.email
+                }
+            })
+
+            console.log(isUserFound?.is_verify, "Đây đây")
+
+            if (isUserFound?.is_verify === true) {
+                return new ResponseSuccess(200, "This account has been verified before", true)
+            }
+            const isVerifyUser = await db.user.update({
+                where: {
+                    email: isUserFound?.email
+                },
+                data: {
+                    is_verify: true
+                }
+            })
+
+            if (isVerifyUser) {
+                return new ResponseSuccess(200, "Account verification successful", true)
+            }
+        }
+        return new ResponseError(400, "Verify email failed", true)
+
+    } catch (error: any) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false)
+        }
+        if (error instanceof TokenExpiredError) {
+            return new ResponseError(400, error.message, false);
+        } else if (error instanceof JsonWebTokenError) {
+            return new ResponseError(400, error.message, false);
+        } else if (error instanceof NotBeforeError) {
+            return new ResponseError(400, error.message, false);
+        }
+
+        return new ResponseError(500, "Internal Server", false)
+    }
+}
 
 const login = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -74,7 +143,7 @@ const login = async (req: Request): Promise<ResponseBase> => {
 
         if (isFoundUser) {
             if (!isFoundUser.is_verify) {
-                return new ResponseError(401, "Unverified account", false);
+                return new ResponseError(400, "Unverified account", false);
             }
             const isVerifyPassword = await bcrypt.compare(password, isFoundUser.password);
             if (isVerifyPassword) {
@@ -270,7 +339,8 @@ const AuthService = {
     getMe,
     forgotPassword,
     resetPassword,
-    register
+    register,
+    verifyEmailWhenSignUp
 };
 
 export default AuthService;
