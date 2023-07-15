@@ -1,16 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { authActions } from "../redux/slice";
 import { ForgotPassword as ForgotPasswordType } from "../types/auth";
+import { setMessageEmpty } from "../redux/slice/auth.slice";
 
 const ForgotPassword: React.FC = () => {
     let error = useAppSelector((state) => state.authSlice.error) ?? "";
     let message = useAppSelector((state) => state.authSlice.message) ?? "";
 
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(setMessageEmpty())
+    }, [dispatch])
 
     const initialValues: ForgotPasswordType = {
         email: "",
@@ -38,7 +43,7 @@ const ForgotPassword: React.FC = () => {
                 validationSchema={forgotPasswordValidationSchema}
             >
                 {(formik) => (
-                    <div className="h-[calc(100vh-200px)] flex items-center justify-center">
+                    <div className="h-screen mt-[100px] flex items-center justify-center">
                         <div className="bg-primary m-4 rounded-xl tablet:w-[506px]">
                             <Form className="p-4" onSubmit={formik.handleSubmit} onChange={handleChange}>
                                 <h1 className="font-bold text-[32px] text-center">FORGOT PASSWORD</h1>
@@ -58,9 +63,8 @@ const ForgotPassword: React.FC = () => {
                                         id="email"
                                         name="email"
                                         type="text"
-                                        className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${
-                                            formik.errors.email && formik.touched.email ? "border-error" : ""
-                                        }`}
+                                        className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${formik.errors.email && formik.touched.email ? "border-error" : ""
+                                            }`}
                                     />
                                     <ErrorMessage
                                         name="email"
@@ -68,7 +72,7 @@ const ForgotPassword: React.FC = () => {
                                         className="text-[14px] text-error font-medium"
                                     />
                                     {message !== "" && (
-                                        <span className="text-[14px] text-green-900 font-medium">{message}</span>
+                                        <span className="text-[14px] text-success font-medium">{message}</span>
                                     )}
                                     {error !== "" && (
                                         <span className="text-[14px] text-error font-medium">{error}</span>

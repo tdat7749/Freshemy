@@ -10,4 +10,6 @@ authRouter.get("/me", isLogin, controllers.authController.getMe);
 authRouter.post("/forgot-password", controllers.authController.forgotPassword);
 authRouter.post("/reset-password", controllers.authController.resetPassword);
 
+authRouter.post("/signup", controllers.authController.register);
+
 export default authRouter;

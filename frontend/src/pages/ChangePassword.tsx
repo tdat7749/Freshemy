@@ -6,7 +6,7 @@ import { useAppDispatch } from "../hooks/hooks";
 import { userActions } from "../redux/slice";
 import { useAppSelector } from "../hooks/hooks";
 import { Link } from "react-router-dom";
-import { setError, setMessage } from "../redux/slice/user.slice";
+import { setMessageEmpty } from "../redux/slice/user.slice";
 const ChangePassword: React.FC = () => {
     let message = useAppSelector((state) => state.userSlice.message) ?? "";
     let error = useAppSelector((state) => state.userSlice.error) ?? "";
@@ -21,10 +21,9 @@ const ChangePassword: React.FC = () => {
         confirm_password: "",
     };
 
-    useEffect(() =>{
-        dispatch(setError(""))
-        dispatch(setMessage(""))
-    },[dispatch])
+    useEffect(() => {
+        dispatch(setMessageEmpty())
+    }, [dispatch])
 
     const changePasswordValidationSchema = Yup.object({
         current_password: Yup.string().required("Current Password is required"),
@@ -40,14 +39,14 @@ const ChangePassword: React.FC = () => {
         //@ts-ignore
         dispatch(userActions.changePassword(values));
     };
-    
+
     const handleChange = () => {
         error = "";
         message = "";
     };
 
     return (
-        <div className="px-[12px] tablet:px-[60px] flex items-center justify-center tablet:space-x-[120px]  h-[calc(100vh-100px)]">
+        <div className="flex items-center justify-center h-screen mt-[100px] ">
             <div className="  max-w-[360px] tablet:max-w-[505px] max-h-[630px] tablet:max-h-[700px] rounded-[12px] bg-bgForm mx-auto tablet:mx-0 flex-1">
                 <div className="w-full p-[12px]">
                     <h1 className="text-[32px] tablet:text-[40px] font-semibold text-center text-text my-[10px]">
@@ -74,11 +73,10 @@ const ChangePassword: React.FC = () => {
                                     <Field
                                         type="password"
                                         name="current_password"
-                                        className={`' w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none ' ${
-                                            formik.errors.current_password &&
+                                        className={`' w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none ' ${formik.errors.current_password &&
                                             formik.touched.current_password &&
                                             "border-error"
-                                        } `}
+                                            } `}
                                     />
                                     <br />
                                     <ErrorMessage
@@ -95,9 +93,8 @@ const ChangePassword: React.FC = () => {
                                     <Field
                                         type="password"
                                         name="new_password"
-                                        className={`' w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none ' ${
-                                            formik.errors.new_password && formik.touched.new_password && "border-error"
-                                        }`}
+                                        className={`' w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none ' ${formik.errors.new_password && formik.touched.new_password && "border-error"
+                                            }`}
                                     />
                                     <ErrorMessage
                                         name="new_password"
@@ -113,11 +110,10 @@ const ChangePassword: React.FC = () => {
                                     <Field
                                         type="password"
                                         name="confirm_password"
-                                        className={`' w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none ' ${
-                                            formik.errors.confirm_password &&
+                                        className={`' w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none ' ${formik.errors.confirm_password &&
                                             formik.touched.confirm_password &&
                                             "border-error"
-                                        }`}
+                                            }`}
                                     />
                                     <ErrorMessage
                                         name="confirm_password"
@@ -131,7 +127,7 @@ const ChangePassword: React.FC = () => {
                                     </span>
                                 )}
                                 {message !== "" && (
-                                    <span className=" ml-[30px] tablet:ml-[100px] text-[20px] text-green-500 font-medium">
+                                    <span className=" ml-[30px] tablet:ml-[100px] text-[20px] text-success font-medium">
                                         {message}
                                     </span>
                                 )}
