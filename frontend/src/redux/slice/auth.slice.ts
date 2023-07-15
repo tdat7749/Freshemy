@@ -6,6 +6,7 @@ import {
     forgotPassword as forgotPasswordAPI,
     resetPassword as resetPasswordAPI,
     refreshToken as refreshTokenAPI,
+    verifyEmail as verifyEmailAPI
 } from "../../apis/auth";
 
 import { Login as LoginType, Register as RegisterType } from "../../types/auth";
@@ -57,16 +58,16 @@ export const authSlice = createSlice({
         setMessageEmpty: (state) => {
             state.error = ""
             state.message = ""
-        }
+        },
     },
 });
 
-export const { setUsers, setError, setMessage, setLogout, setMessageEmpty } = authSlice.actions;
+export const { setUsers, setError, setMessage, setLogout, setMessageEmpty, } = authSlice.actions;
 
 export default authSlice.reducer;
 
-// @ts-ignore
-export const login = (values: LoginType) => async (dispatch) => {
+
+export const login = (values: LoginType) => async (dispatch: any) => {
     dispatch(setMessageEmpty())
     try {
         const response = await loginAPI(values.email, values.password);
@@ -102,8 +103,7 @@ export const register = (values: RegisterType) => async (dispatch: any) => {
 };
 
 
-// @ts-ignore
-export const getMe = () => async (dispatch) => {
+export const getMe = () => async (dispatch: any) => {
     try {
         const response = await getMeAPI();
 
@@ -117,12 +117,10 @@ export const getMe = () => async (dispatch) => {
             }
         }
     } catch (error: any) {
-        console.log(error);
     }
 };
 
-//@ts-ignore
-export const forgotPassword = (values: ForgotPasswordType) => async (dispatch, getState) => {
+export const forgotPassword = (values: ForgotPasswordType) => async (dispatch: any) => {
     dispatch(setMessageEmpty())
     try {
         const response = await forgotPasswordAPI(values.email);
@@ -168,8 +166,8 @@ export const resetPassword = async (values: ResetPasswordType, token: string) =>
         console.log(error);
     }
 };
-//@ts-ignore
-export const logout = () => async (dispatch) => {
+
+export const logout = () => async (dispatch: any) => {
     dispatch(
         setUsers({
             description: undefined,
@@ -182,3 +180,19 @@ export const logout = () => async (dispatch) => {
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
 };
+
+
+export const verifyEmail = (token: string) => async (dispatch: any): Promise<void> => {
+    try {
+        const response = await verifyEmailAPI(token)
+        if (response) {
+            if (response.status === 200) {
+                dispatch(setMessage(response.data.message))
+            } else {
+                dispatch(setError(response.data.message))
+            }
+        }
+    } catch (error: any) {
+        dispatch(setError(error.data.message))
+    }
+}
