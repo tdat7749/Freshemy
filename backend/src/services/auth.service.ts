@@ -10,18 +10,6 @@ import configs from "../configs";
 import { db } from "../configs/db.config";
 import { SendMail } from "../types/sendmail";
 
-
-// const generateToken = (userId: number): string => {
-//     const secretKey =
-//         "73fb7f5b99b27706cc6c2c708f8c8f57aa31a4a0e0712c06f00483ba69a9a5162c55af93437e4b9563930d012d76f9f9ff9108394a77f41af5f78db50537d79b";
-//     const expiresIn = "1h";
-
-//     const payload = { userId };
-//     const token = jwt.sign(payload, secretKey, { expiresIn });
-
-//     return token;
-// };
-
 const register = async (req: Request): Promise<ResponseBase> => {
     try {
         const { email, password, first_name, last_name } = req.body;
@@ -141,35 +129,54 @@ const login = async (req: Request): Promise<ResponseBase> => {
             },
         });
 
-        if (isFoundUser) {
-            if (!isFoundUser.is_verify) {
-                return new ResponseError(400, "Unverified account", false);
-            }
-            const isVerifyPassword = await bcrypt.compare(password, isFoundUser.password);
-            if (isVerifyPassword) {
-                const accessToken = jwt.sign(
-                    {
-                        user_id: isFoundUser.id,
-                    },
-                    configs.general.JWT_SECRET_KEY,
-                    {
-                        expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
-                    },
-                );
+        if (!isFoundUser) return new ResponseError(400, "Email or password is invalid", false);
 
-                const refreshToken = jwt.sign(
-                    {
-                        user_id: isFoundUser.id,
-                    },
-                    configs.general.JWT_SECRET_KEY,
-                    {
-                        expiresIn: configs.general.TOKEN_REFRESH_EXPIRED_TIME,
-                    },
-                );
-                return new ResponseSuccess(200, "Logged in successfully", true, { accessToken, refreshToken });
-            } else {
-                return new ResponseError(400, "Email or password is invalid", false);
+        const isVerifyPassword = await bcrypt.compare(password, isFoundUser.password);
+        if (isVerifyPassword) {
+            if (!isFoundUser.is_verify) {
+                const payload = {
+                    email: isFoundUser.email,
+                    user_id: isFoundUser.id
+                }
+
+                const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME });
+
+                const link = `${configs.general.DOMAIN_NAME}/verifyEmail/${token}`;
+
+                const mailOptions: SendMail = {
+                    from: "Freshemy",
+                    to: `${isFoundUser.email}`,
+                    subject: "Email Verification",
+                    text: "You recieved message from " + isFoundUser.email,
+                    html: "<p>Here is the link to verify your email, please click here:</b></br>" + link
+                };
+
+                const isSendEmailSuccess = sendMail(mailOptions);
+                if (!isSendEmailSuccess) {
+                    return new ResponseError(400, "Email sending failed, please login to the account you just registered to be sent confirmation email again", false);
+                }
+                return new ResponseError(400, "Unverified account, We have sent you a verification link, please check your email soon before it expires!", false);
             }
+            const accessToken = jwt.sign(
+                {
+                    user_id: isFoundUser.id,
+                },
+                configs.general.JWT_SECRET_KEY,
+                {
+                    expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
+                },
+            );
+
+            const refreshToken = jwt.sign(
+                {
+                    user_id: isFoundUser.id,
+                },
+                configs.general.JWT_SECRET_KEY,
+                {
+                    expiresIn: configs.general.TOKEN_REFRESH_EXPIRED_TIME,
+                },
+            );
+            return new ResponseSuccess(200, "Logged in successfully", true, { accessToken, refreshToken });
         } else {
             return new ResponseError(400, "Email or password is invalid", false);
         }
@@ -241,16 +248,6 @@ const getMe = async (req: RequestHasLogin): Promise<ResponseBase> => {
         return new ResponseError(500, "Internal Server", false);
     }
 };
-
-// const sendEmail = (email: string, link: string): boolean => {
-//     var mainOptions = {
-//         from: "Freshemy",
-//         to: `${email}`,
-//         subject: "Link verification for reseting password",
-//         text: "You recieved message from " + email,
-//         html: "<p>This is your link verification for your account to reset password:</b></br>" + link,
-//     };
-// };
 
 const forgotPassword = async (req: Request): Promise<ResponseBase> => {
     try {
