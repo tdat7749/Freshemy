@@ -34,13 +34,13 @@ const Register: FC = () => {
     };
 
     const registerValidationSchema = Yup.object({
-        first_name: Yup.string().required("First Name is required"),
-        last_name: Yup.string().required("Last Name is required"),
-        email: Yup.string().email("Invalid email").required("Email is required"),
-        password: Yup.string().required("Password is required").min(8, "Weak password").max(32, "Password is too long"),
+        first_name: Yup.string().required("First Name is required").trim(),
+        last_name: Yup.string().required("Last Name is required").trim(),
+        email: Yup.string().email("Invalid email").required("Email is required").trim(),
+        password: Yup.string().required("Password is required").min(8, "Weak password").max(32, "Password is too long").trim(),
         confirm_password: Yup.string()
             .required("Confirm password is required")
-            .oneOf([Yup.ref("password")], "Wrong confirm password"),
+            .oneOf([Yup.ref("password")], "Wrong confirm password").trim(),
     });
 
     const handleOnSubmit = async (values: RegisterType) => {

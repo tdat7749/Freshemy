@@ -45,14 +45,25 @@ const register = async (req: Request): Promise<ResponseBase> => {
 
             const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME });
 
-            const link = `${configs.general.DOMAIN_NAME}/verifyEmail/${token}`;
+            const link = `${configs.general.DOMAIN_NAME}/verify-email/${token}`;
             const mailOptions: SendMail = {
                 from: "Freshemy",
                 to: `${newUser.email}`,
-                subject: "Email Verification",
+                subject: "Freshdemy - Verification email",
                 text: "You recieved message from " + newUser.email,
-                html: "<p>Here is the link to verify your email, please click here:</b></br>" + link
+                html: `
+                    <p>Hi ${newUser.email}</p>, </br>
+                    <p>Thanks for getting started with our [Freshemy]!</p></br>
+                    
+                    <p>We need a little more information to complete your registration, including a confirmation of your email address.</p> </br>
+                    
+                    <p>Click below to confirm your email address: </p> </br>
+                    
+                    ${link} </br>
+                    
+                    <p>If you have problems, please paste the above URL into your web browser.</p>`
             };
+
 
             const isSendEmailSuccess = sendMail(mailOptions);
             if (isSendEmailSuccess) {
@@ -108,11 +119,11 @@ const verifyEmailWhenSignUp = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(400, error.toString(), false)
         }
         if (error instanceof TokenExpiredError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, "The verification code has expired, please login so we can resend it", false);
         } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, "The verification code is not correct", false);
         } else if (error instanceof NotBeforeError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, "This verification code was never generated", false);
         }
 
         return new ResponseError(500, "Internal Server", false)
@@ -141,14 +152,24 @@ const login = async (req: Request): Promise<ResponseBase> => {
 
                 const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME });
 
-                const link = `${configs.general.DOMAIN_NAME}/verifyEmail/${token}`;
+                const link = `${configs.general.DOMAIN_NAME}/verify-email/${token}`;
 
                 const mailOptions: SendMail = {
                     from: "Freshemy",
                     to: `${isFoundUser.email}`,
-                    subject: "Email Verification",
+                    subject: "Freshdemy - Verification email",
                     text: "You recieved message from " + isFoundUser.email,
-                    html: "<p>Here is the link to verify your email, please click here:</b></br>" + link
+                    html: `
+                    <p>Hi ${isFoundUser.email}</p>, </br>
+                    <p>Thanks for getting started with our [Freshemy]!</p></br>
+                    
+                    <p>We need a little more information to complete your registration, including a confirmation of your email address.</p> </br>
+                    
+                    <p>Click below to confirm your email address: </p> </br>
+                    
+                    ${link} </br>
+                    
+                    <p>If you have problems, please paste the above URL into your web browser.</p>`
                 };
 
                 const isSendEmailSuccess = sendMail(mailOptions);
@@ -260,7 +281,7 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
         });
 
         if (isFoundUser === null) {
-            return new ResponseError(404, "Invalid email", false);
+            return new ResponseError(404, "Invalid emailEmail does not exist", false);
         }
 
         const payload = {
@@ -275,7 +296,7 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
         const mailOptions: SendMail = {
             from: "Freshemy",
             to: `${email}`,
-            subject: "Link verification for reseting password",
+            subject: "Freshdemy - Link verification for reseting password",
             text: "You recieved message from " + email,
             html: "<p>This is your link verification for your account to reset password:</b></br>" + link,
         };
@@ -283,7 +304,7 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
         const isSendEmailSuccess = sendMail(mailOptions);
 
         if (isSendEmailSuccess) {
-            return new ResponseSuccess(200, "Request Succesfully", true);
+            return new ResponseSuccess(200, "Sent a verification code to your email", true);
         } else {
             return new ResponseError(500, "Internal Server", false);
         }
