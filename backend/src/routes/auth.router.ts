@@ -9,7 +9,7 @@ authRouter.get("/refresh", controllers.authController.refreshToken);
 authRouter.get("/me", isLogin, controllers.authController.getMe);
 authRouter.post("/forgot-password", controllers.authController.forgotPassword);
 authRouter.post("/reset-password", controllers.authController.resetPassword);
-authRouter.get("/verifyEmail/:token", controllers.authController.verifyEmailWhenSignUp)
+authRouter.get("/verify-email/:token", controllers.authController.verifyEmailWhenSignUp)
 
 authRouter.post("/signup", controllers.authController.register);
 
