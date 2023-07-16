@@ -13,6 +13,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Register from './pages/Register';
 import PrivateRoute from "./routes/PrivateRoute";
 import Verify from './pages/Verify';
+import NotFound from './pages/NotFound';
 
 
 function App() {
@@ -38,7 +39,8 @@ function App() {
                     <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                     <Route path="/login" element={<Login />}></Route>
                     <Route path="/register" element={<Register />}></Route>
-                    <Route path="/verifyEmail/:token" element={<Verify />}></Route>
+                    <Route path="/verify-email/:token" element={<Verify />}></Route>
+                    <Route path='/*' element={<NotFound />}></Route>
 
                 </Routes>
                 <Footer />

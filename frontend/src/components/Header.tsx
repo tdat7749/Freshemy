@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                         setDisplay(!display);
                                     }}
                                 >
-                                    <img src={DefaultAvatar} alt="A" className="w-10 h-10 rounded-ful"/>
+                                    <img src={DefaultAvatar} alt="A" className="w-10 h-10 rounded-ful" />
                                     {display ? <UserDropDown /> : <></>}
                                 </div>
                             </div>
