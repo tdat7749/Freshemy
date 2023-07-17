@@ -30,7 +30,6 @@ axiosPublic.interceptors.response.use(
         if (error?.response?.status === 401 && !config._retry) {
             config._retry = true;
             const response = await refreshToken();
-            console.log(response)
             const accessToken = response.data.data.accessToken;
             if (accessToken) {
                 Cookies.set("accessToken", accessToken)
@@ -42,7 +41,6 @@ axiosPublic.interceptors.response.use(
             }
         }
         if (error) {
-            console.log(error.response)
             return Promise.reject(error.response);
         }
         // return error;
