@@ -18,3 +18,14 @@ export const MESSAGE_ERROR_LOGIN_UNVERIFIED =
 export const MESSAGE_SUCCESS_LOGIN = "Logged in successfully";
 
 export const MESSAGE_ERROR_INTERNAL_SERVER = "Internal Server";
+
+export const MESSAGE_ERROR_FIRST_NAME_STRING = "First Name must be a string";
+export const MESSAGE_ERROR_FIRST_NAME_REQUIRED = "First Name is required";
+
+export const MESSAGE_ERROR_LAST_NAME_STRING = "Last Name must be a string";
+export const MESSAGE_ERROR_LAST_NAME_REQUIRED = "Last Name is required";
+
+export const MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED = "Confirm Password is required";
+
+export const MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED =
+    "Password and comfirm password must be same";

@@ -24,6 +24,7 @@ const Register: FC = () => {
 
     if (isLogin) return <Navigate to={"/"} />;
 
+    
     const initialValues: RegisterType = {
         first_name: "",
         last_name: "",

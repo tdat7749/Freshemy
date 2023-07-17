@@ -5,6 +5,12 @@ import {
     MESSAGE_ERROR_PASSWORD_STRING,
     MESSAGE_ERROR_PASSWORD_REQUIRED,
     MESSAGE_ERROR_EMAIL_REQUIRED,
+    MESSAGE_ERROR_FIRST_NAME_STRING,
+    MESSAGE_ERROR_LAST_NAME_STRING,
+    MESSAGE_ERROR_FIRST_NAME_REQUIRED,
+    MESSAGE_ERROR_LAST_NAME_REQUIRED,
+    MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED,
+    MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED,
 } from "../utils/constant";
 
 type Login = {
@@ -41,30 +47,30 @@ export const registrationSchema: ObjectSchema<Registration> = Joi.object({
         .regex(/^\S+@\S+\.\S+$/)
         .required()
         .messages({
-            "string.base": "Email must be a string",
-            "any.required": "Email is required",
-            "string.regex": "Incorrect email",
+            "string.base": MESSAGE_ERROR_EMAIL_STRING,
+            "any.required": MESSAGE_ERROR_EMAIL_REQUIRED,
+            "string.regex": MESSAGE_ERROR_EMAIL_INCORRECT,
         }),
 
     password: Joi.string().required().messages({
-        "string.base": "Password must be a string",
-        "any.required": "Password is required",
+        "string.base": MESSAGE_ERROR_PASSWORD_STRING,
+        "any.required": MESSAGE_ERROR_PASSWORD_REQUIRED,
     }),
 
     first_name: Joi.string().required().messages({
-        "string.base": "First name must be a string",
-        "any.required": "First name is required",
+        "string.base": MESSAGE_ERROR_FIRST_NAME_STRING,
+        "any.required": MESSAGE_ERROR_FIRST_NAME_REQUIRED,
     }),
 
     last_name: Joi.string().required().messages({
-        "string.base": "Last name must be a string",
-        "any.required": "Last name is required",
+        "string.base": MESSAGE_ERROR_LAST_NAME_STRING,
+        "any.required": MESSAGE_ERROR_LAST_NAME_REQUIRED,
     }),
 
     // confirmPassword: Joi.string().valid(Joi.ref("password")).required().strict(),
 
     confirm_password: Joi.string().valid(Joi.ref("password")).required().messages({
-        "any.only": "Password and comfirm password must be same",
-        "any.required": "Confirm password is required",
+        "any.only": MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED,
+        "any.required": MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED,
     }),
 });
