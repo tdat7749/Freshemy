@@ -1,3 +1,9 @@
+export const HTTP_POST = "POST";
+export const HTTP_GET = "GET";
+export const HTTP_PATCH = "PATCH";
+export const HTTP_PUT = "PUT";
+export const HTTP_DELETE = "DELETE";
+
 export const MESSAGE_ERROR_PASSWORD_WRONG = "Wrong password";
 export const MESSAGE_ERROR_WEAK_PASSWORD = "Weak Password"
 export const MESSAGE_ERROR_TOO_LONG_PASSWORD = "Password is too long"
