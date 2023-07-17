@@ -94,8 +94,6 @@ const verifyEmailWhenSignUp = async (req: Request): Promise<ResponseBase> => {
                 }
             })
 
-            console.log(isUserFound?.is_verify, "Đây đây")
-
             if (isUserFound?.is_verify === true) {
                 return new ResponseSuccess(200, "This account has been verified before", true)
             }
@@ -281,7 +279,7 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
         });
 
         if (isFoundUser === null) {
-            return new ResponseError(404, "Invalid emailEmail does not exist", false);
+            return new ResponseError(404, "Email does not exist", false);
         }
 
         const payload = {

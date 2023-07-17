@@ -10,7 +10,6 @@ export const convertJoiErrorToString = (error: ValidationError): string => {
 export const sendMail = (mailOptions: SendMail) => {
     transporter.sendMail(mailOptions, function (err) {
         if (err) {
-            console.log(err);
             return false;
         }
     });

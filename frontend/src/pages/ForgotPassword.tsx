@@ -89,7 +89,7 @@ const ForgotPassword: React.FC = () => {
                                 </span>
                                 <div className="text-center">
                                     Don't have an account?
-                                    <Link to={"/signup"}>
+                                    <Link to={"/register"}>
                                         <span> Signup</span>
                                     </Link>
                                 </div>
