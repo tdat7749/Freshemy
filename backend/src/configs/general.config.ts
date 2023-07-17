@@ -11,5 +11,8 @@ export const general = {
     PASSWORD_SERVER: process.env.PASSWORD_SERVER,
     TOKEN_ACCESS_EXPIRED_TIME: process.env.TOKEN_ACCESS_EXPIRED_TIME,
     TOKEN_REFRESH_EXPIRED_TIME: process.env.TOKEN_REFRESH_EXPIRED_TIME,
-    HASH_SALT: parseInt(process.env.HASH_SALT as string)
+    HASH_SALT: parseInt(process.env.HASH_SALT as string),
+    REDIS_PASSWORD: process.env.REDIS_PASSWORD,
+    REDIS_HOST: process.env.REDIS_HOST,
+    REDIS_PORT: parseInt(process.env.REDIS_PORT as string)
 };
