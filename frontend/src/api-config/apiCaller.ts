@@ -31,12 +31,14 @@ axiosPublic.interceptors.response.use(
             config._retry = true;
             const response = await refreshToken();
             const accessToken = response.data.data.accessToken;
-
-            config.headers = {
-                ...config.headers,
-                authorization: `Bearer ${accessToken}`,
-            };
-            return axiosInstance(config);
+            if (accessToken) {
+                Cookies.set("accessToken", accessToken)
+                config.headers = {
+                    ...config.headers,
+                    authorization: `Bearer ${accessToken}`,
+                };
+                return axiosInstance(config);
+            }
         }
         if (error) {
             return Promise.reject(error.response);

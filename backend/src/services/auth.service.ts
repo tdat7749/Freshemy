@@ -1,12 +1,132 @@
 import { Request } from "express";
 import * as bcrypt from "bcrypt";
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import { MyJwtPayload } from "../types/decodeToken";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { RequestHasLogin, RequestForgotPassword, RequestResetPassword } from "../types/request";
-import nodemailer from "nodemailer";
+import { RequestHasLogin } from "../types/request";
+import { sendMail } from "../commons";
 import configs from "../configs";
+import { db } from "../configs/db.config";
+import { SendMail } from "../types/sendmail";
+
+const register = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const { email, password, first_name, last_name } = req.body;
+
+        const isUserFoundByEmail = await db.user.findUnique({
+            where: {
+                email: email
+            }
+        })
+
+        if (isUserFoundByEmail) {
+            return new ResponseError(400, "Email already exists", false);
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, configs.general.HASH_SALT);
+
+        // Create a new user in the database
+        const newUser = await db.user.create({
+            data: {
+                email,
+                password: hashedPassword,
+                first_name,
+                last_name,
+            },
+        });
+
+        if (newUser) {
+            const payload = {
+                email: newUser.email,
+                id: newUser.id,
+            };
+
+            const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME });
+
+            const link = `${configs.general.DOMAIN_NAME}/verify-email/${token}`;
+            const mailOptions: SendMail = {
+                from: "Freshemy",
+                to: `${newUser.email}`,
+                subject: "Freshdemy - Verification email",
+                text: "You recieved message from " + newUser.email,
+                html: `
+                    <p>Hi ${newUser.email}</p>, </br>
+                    <p>Thanks for getting started with our [Freshemy]!</p></br>
+                    
+                    <p>We need a little more information to complete your registration, including a confirmation of your email address.</p> </br>
+                    
+                    <p>Click below to confirm your email address: </p> </br>
+                    
+                    ${link} </br>
+                    
+                    <p>If you have problems, please paste the above URL into your web browser.</p>`
+            };
+
+
+            const isSendEmailSuccess = sendMail(mailOptions);
+            if (isSendEmailSuccess) {
+                return new ResponseSuccess(200, "Signup successful, please check your email", true);
+            }
+            return new ResponseError(400, "Email sending failed, please login to the account you just registered to be sent confirmation email again", false);
+        }
+        return new ResponseError(400, "Signup failed", false)
+    } catch (error: any) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false);
+        }
+        return new ResponseError(500, "Internal Server", false);
+    }
+};
+
+
+const verifyEmailWhenSignUp = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const { token } = req.params
+
+        const isVerifyToken = jwt.verify(token, configs.general.JWT_SECRET_KEY) as MyJwtPayload
+
+        if (isVerifyToken) {
+            const isUserFound = await db.user.findUnique({
+                where: {
+                    email: isVerifyToken.email
+                }
+            })
+
+            if (isUserFound?.is_verify === true) {
+                return new ResponseSuccess(200, "This account has been verified before", true)
+            }
+            const isVerifyUser = await db.user.update({
+                where: {
+                    email: isUserFound?.email
+                },
+                data: {
+                    is_verify: true
+                }
+            })
+
+            if (isVerifyUser) {
+                return new ResponseSuccess(200, "Account verification successful", true)
+            }
+        }
+        return new ResponseError(400, "Verify email failed", true)
+
+    } catch (error: any) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false)
+        }
+        if (error instanceof TokenExpiredError) {
+            return new ResponseError(400, "The verification code has expired, please login so we can resend it", false);
+        } else if (error instanceof JsonWebTokenError) {
+            return new ResponseError(400, "The verification code is not correct", false);
+        } else if (error instanceof NotBeforeError) {
+            return new ResponseError(400, "This verification code was never generated", false);
+        }
+
+        return new ResponseError(500, "Internal Server", false)
+    }
+}
 
 const login = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -18,41 +138,70 @@ const login = async (req: Request): Promise<ResponseBase> => {
             },
         });
 
-        if (isFoundUser) {
-            if (!isFoundUser.is_verify) {
-                return new ResponseError(401, "Unverified account", false);
-            }
-            const isVerifyPassword = await bcrypt.compare(password, isFoundUser.password);
-            if (isVerifyPassword) {
-                const accessToken = jwt.sign(
-                    {
-                        user_id: isFoundUser.id,
-                    },
-                    configs.general.JWT_SECRET_KEY,
-                    {
-                        expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
-                    },
-                );
+        if (!isFoundUser) return new ResponseError(400, "Email or password is invalid", false);
 
-                const refreshToken = jwt.sign(
-                    {
-                        user_id: isFoundUser.id,
-                    },
-                    configs.general.JWT_SECRET_KEY,
-                    {
-                        expiresIn: configs.general.TOKEN_REFRESH_EXPIRED_TIME,
-                    },
-                );
-                return new ResponseSuccess(200, "Logged in successfully", true, { accessToken, refreshToken });
-            } else {
-                return new ResponseError(400, "Email or password is invalid", false);
+        const isVerifyPassword = await bcrypt.compare(password, isFoundUser.password);
+        if (isVerifyPassword) {
+            if (!isFoundUser.is_verify) {
+                const payload = {
+                    email: isFoundUser.email,
+                    user_id: isFoundUser.id
+                }
+
+                const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME });
+
+                const link = `${configs.general.DOMAIN_NAME}/verify-email/${token}`;
+
+                const mailOptions: SendMail = {
+                    from: "Freshemy",
+                    to: `${isFoundUser.email}`,
+                    subject: "Freshdemy - Verification email",
+                    text: "You recieved message from " + isFoundUser.email,
+                    html: `
+                    <p>Hi ${isFoundUser.email}</p>, </br>
+                    <p>Thanks for getting started with our [Freshemy]!</p></br>
+                    
+                    <p>We need a little more information to complete your registration, including a confirmation of your email address.</p> </br>
+                    
+                    <p>Click below to confirm your email address: </p> </br>
+                    
+                    ${link} </br>
+                    
+                    <p>If you have problems, please paste the above URL into your web browser.</p>`
+                };
+
+                const isSendEmailSuccess = sendMail(mailOptions);
+                if (!isSendEmailSuccess) {
+                    return new ResponseError(400, "Email sending failed, please login to the account you just registered to be sent confirmation email again", false);
+                }
+                return new ResponseError(400, "Unverified account, We have sent you a verification link, please check your email soon before it expires!", false);
             }
+            const accessToken = jwt.sign(
+                {
+                    user_id: isFoundUser.id,
+                },
+                configs.general.JWT_SECRET_KEY,
+                {
+                    expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
+                },
+            );
+
+            const refreshToken = jwt.sign(
+                {
+                    user_id: isFoundUser.id,
+                },
+                configs.general.JWT_SECRET_KEY,
+                {
+                    expiresIn: configs.general.TOKEN_REFRESH_EXPIRED_TIME,
+                },
+            );
+            return new ResponseSuccess(200, "Logged in successfully", true, { accessToken, refreshToken });
         } else {
             return new ResponseError(400, "Email or password is invalid", false);
         }
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, "Bad request", false);
+            return new ResponseError(400, error.toString(), false);
         }
         return new ResponseError(500, "Internal Server", false);
     }
@@ -115,69 +264,45 @@ const getMe = async (req: RequestHasLogin): Promise<ResponseBase> => {
 
         return new ResponseError(401, "Unauthorized", false);
     } catch (error: any) {
-        if (error instanceof TokenExpiredError) {
-            return new ResponseError(401, error.message, false);
-        } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(401, error.message, false);
-        } else if (error instanceof NotBeforeError) {
-            return new ResponseError(401, error.message, false);
-        }
-
         return new ResponseError(500, "Internal Server", false);
     }
 };
 
-const sendEmail = (email: string, link: string): boolean => {
-    var transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-            user: configs.general.EMAIL_SERVER,
-            pass: configs.general.PASSWORD_SERVER,
-        },
-    });
-    var mainOptions = {
-        from: "Freshemy",
-        to: `${email}`,
-        subject: "Link verification for reseting password",
-        text: "You recieved message from " + email,
-        html: "<p>This is your link verification for your account to reset password:</b></br>" + link,
-    };
-
-    transporter.sendMail(mainOptions, function (err) {
-        if (err) {
-            console.log(err);
-            return false;
-        }
-    });
-    return true;
-};
-
-const forgotPassword = async (req: RequestForgotPassword): Promise<ResponseBase> => {
+const forgotPassword = async (req: Request): Promise<ResponseBase> => {
     try {
         const { email } = req.body;
 
-        let user = await configs.db.user.findUnique({
+        const isFoundUser = await configs.db.user.findUnique({
             where: {
                 email: email,
             },
         });
 
-        if (user === null) {
-            return new ResponseError(404, "Invalid email", false);
+        if (isFoundUser === null) {
+            return new ResponseError(404, "Email does not exist", false);
         }
 
         const payload = {
-            email: user.email,
-            id: user.id,
+            email: isFoundUser.email,
+            id: isFoundUser.id,
         };
 
-        const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME});
+        const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, { expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME });
+
         const link = `${configs.general.DOMAIN_NAME}/reset-password/${token}`;
-        const isSendEmailSuccess = sendEmail(user.email, link);
+
+        const mailOptions: SendMail = {
+            from: "Freshemy",
+            to: `${email}`,
+            subject: "Freshdemy - Link verification for reseting password",
+            text: "You recieved message from " + email,
+            html: "<p>This is your link verification for your account to reset password:</b></br>" + link,
+        };
+
+        const isSendEmailSuccess = sendMail(mailOptions);
+
         if (isSendEmailSuccess) {
-            return new ResponseSuccess(200, "Request Succesfully", true);
+            return new ResponseSuccess(200, "Sent a verification code to your email", true);
         } else {
             return new ResponseError(500, "Internal Server", false);
         }
@@ -194,7 +319,7 @@ const forgotPassword = async (req: RequestForgotPassword): Promise<ResponseBase>
     }
 };
 
-const resetPassword = async (req: RequestResetPassword): Promise<ResponseBase> => {
+const resetPassword = async (req: Request): Promise<ResponseBase> => {
     try {
         const { password, confirmPassword, token } = req.body;
         const salt = bcrypt.genSaltSync(10);
@@ -230,6 +355,8 @@ const AuthService = {
     getMe,
     forgotPassword,
     resetPassword,
+    register,
+    verifyEmailWhenSignUp
 };
 
 export default AuthService;

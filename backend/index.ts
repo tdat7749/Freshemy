@@ -4,7 +4,12 @@ import routers from "./src/routes";
 import configs from "./src/configs";
 import cors from "cors";
 
+
 const app: Application = express();
+
+
+// Sử dụng middleware cookie-parser để xử lý cookie
+app.use(cookieParser());
 
 var corsOptions = {
     origin: "*",
@@ -16,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api/auth", routers.authRouter);
-app.use("/api/users",routers.userRouter)
+app.use("/api/users", routers.userRouter)
 
 const port: number = configs.general.PORT;
 

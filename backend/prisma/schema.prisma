@@ -41,10 +41,10 @@ model User {
   email       String   @unique @db.VarChar(50)
   password    String   @db.LongText
   description String?
-  url_avatar  String   @db.MediumText
+  url_avatar  String?  @db.MediumText
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-  token       String   @db.LongText
+  token       String?  @db.LongText
   is_verify   Boolean  @default(false)
 
   courses Course[]

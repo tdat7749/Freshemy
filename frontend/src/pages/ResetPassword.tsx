@@ -44,7 +44,7 @@ const ResetPassword: React.FC<{}> = () => {
                 validationSchema={resetPasswordValidationSchema}
             >
                 {(formik) => (
-                    <div className="h-[calc(100vh-200px)] flex items-center justify-center">
+                    <div className="h-screen mt-[100px] flex items-center justify-center">
                         <div className="bg-primary m-4 rounded-xl tablet:w-[506px]">
                             <Form className="p-4" onSubmit={formik.handleSubmit}>
                                 <h1 className="font-bold text-[32px] text-center">RESET PASSWORD</h1>

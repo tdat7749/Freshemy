@@ -1,16 +1,19 @@
-import {useEffect} from 'react'
+import { useEffect } from 'react'
 
-import { BrowserRouter,Routes,Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './pages/Home'
 import Login from './pages/Login'
- import { authActions } from './redux/slice';
-import { useAppDispatch,useAppSelector } from './hooks/hooks';
+import { authActions } from './redux/slice';
+import { useAppDispatch, useAppSelector } from './hooks/hooks';
 import Header from './components/Header'
 import ChangePassword from './pages/ChangePassword';
 import Footer from './components/Footer';
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Register from './pages/Register';
 import PrivateRoute from "./routes/PrivateRoute";
+import Verify from './pages/Verify';
+import NotFound from './pages/NotFound';
 
 
 function App() {
@@ -29,14 +32,18 @@ function App() {
                 <Header isLogin={isLogin} />
                 <Routes>
                     <Route path="/" element={<Home />}></Route>
-                    <Route element={<PrivateRoute isLogin={isLogin}/>}>
-                    <Route path="/change-password" element={<ChangePassword/>}></Route>
+                    <Route element={<PrivateRoute isLogin={isLogin} />}>
+                        <Route path="/change-password" element={<ChangePassword />}></Route>
                     </Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                     <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                     <Route path="/login" element={<Login />}></Route>
+                    <Route path="/register" element={<Register />}></Route>
+                    <Route path="/verify-email/:token" element={<Verify />}></Route>
+                    <Route path='/*' element={<NotFound />}></Route>
+
                 </Routes>
-                <Footer/>
+                <Footer />
             </BrowserRouter>
         </>
     );
