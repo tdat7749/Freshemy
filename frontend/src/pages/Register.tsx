@@ -2,29 +2,29 @@ import React, { FC, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field } from "formik";
 import { Register as RegisterType } from "../types/auth";
-import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { authActions } from "../redux/slice/index";
 import { Navigate } from "react-router-dom";
 import Skeleton from "../assets/images/Skeleton.png";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
+import { registerValidationSchema } from "../validations/auth";
 
 const Register: FC = () => {
     const dispatch = useAppDispatch();
 
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
-    let errorMessage = useAppSelector(state => state.authSlice.error)
-    let successMessage = useAppSelector(state => state.authSlice.message)
-
+    let errorMessage = useAppSelector((state) => state.authSlice.error);
+    let successMessage = useAppSelector((state) => state.authSlice.message);
 
     const formikRef = useRef(null);
 
     useEffect(() => {
-        dispatch(setMessageEmpty())
-    }, [dispatch])
+        dispatch(setMessageEmpty());
+    }, [dispatch]);
 
     if (isLogin) return <Navigate to={"/"} />;
 
+    
     const initialValues: RegisterType = {
         first_name: "",
         last_name: "",
@@ -33,27 +33,15 @@ const Register: FC = () => {
         confirm_password: "",
     };
 
-    const registerValidationSchema = Yup.object({
-        first_name: Yup.string().required("First Name is required").trim(),
-        last_name: Yup.string().required("Last Name is required").trim(),
-        email: Yup.string().email("Invalid email").required("Email is required").trim(),
-        password: Yup.string().required("Password is required").min(8, "Weak password").max(32, "Password is too long").trim(),
-        confirm_password: Yup.string()
-            .required("Confirm password is required")
-            .oneOf([Yup.ref("password")], "Wrong confirm password").trim(),
-    });
-
     const handleOnSubmit = async (values: RegisterType) => {
         //@ts-ignore
         dispatch(authActions.register(values));
     };
 
     const handleDeleteMessage = () => {
-        errorMessage = ""
-        successMessage = ""
-    }
-
-
+        errorMessage = "";
+        successMessage = "";
+    };
 
     return (
         <>
@@ -77,10 +65,11 @@ const Register: FC = () => {
                                         <Field
                                             type="text"
                                             name="first_name"
-                                            className={`${formik.errors.first_name && formik.touched.first_name
-                                                ? "border-error"
-                                                : ""
-                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                            className={`${
+                                                formik.errors.first_name && formik.touched.first_name
+                                                    ? "border-error"
+                                                    : ""
+                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                         />
                                         <ErrorMessage
                                             name="first_name"
@@ -95,10 +84,11 @@ const Register: FC = () => {
                                         <Field
                                             type="text"
                                             name="last_name"
-                                            className={`${formik.errors.last_name && formik.touched.last_name
-                                                ? "border-error"
-                                                : ""
-                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                            className={`${
+                                                formik.errors.last_name && formik.touched.last_name
+                                                    ? "border-error"
+                                                    : ""
+                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                         />
                                         <ErrorMessage
                                             name="last_name"
@@ -114,8 +104,9 @@ const Register: FC = () => {
                                     <Field
                                         type="text"
                                         name="email"
-                                        className={`${formik.errors.email && formik.touched.email ? "border-error" : ""
-                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                        className={`${
+                                            formik.errors.email && formik.touched.email ? "border-error" : ""
+                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                     />
                                     <ErrorMessage
                                         name="email"
@@ -130,8 +121,9 @@ const Register: FC = () => {
                                     <Field
                                         type="password"
                                         name="password"
-                                        className={`${formik.errors.password && formik.touched.password ? "border-error" : ""
-                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                        className={`${
+                                            formik.errors.password && formik.touched.password ? "border-error" : ""
+                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                     />
                                     <ErrorMessage
                                         name="password"
@@ -146,23 +138,29 @@ const Register: FC = () => {
                                     <Field
                                         type="password"
                                         name="confirm_password"
-                                        className={`${formik.errors.confirm_password && formik.touched.confirm_password
-                                            ? "border-error"
-                                            : ""
-                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                        className={`${
+                                            formik.errors.confirm_password && formik.touched.confirm_password
+                                                ? "border-error"
+                                                : ""
+                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                     />
                                     <ErrorMessage
                                         name="confirm_password"
                                         component="span"
                                         className="text-[14px] text-error font-medium"
                                     />
-                                    {errorMessage !== "" && (<span className="text-[14px] text-error font-medium">{errorMessage}</span>)}
-                                    {successMessage !== "" && (<span className="text-[14px] text-success font-medium">{successMessage}</span>)}
+                                    {errorMessage !== "" && (
+                                        <span className="text-[14px] text-error font-medium">{errorMessage}</span>
+                                    )}
+                                    {successMessage !== "" && (
+                                        <span className="text-[14px] text-success font-medium">{successMessage}</span>
+                                    )}
                                 </div>
                                 <div className="py-[12px]">
                                     <button
+                                        disabled={(errorMessage !== "") ? true:false}
                                         type="submit"
-                                        className="bg-switch hover:opacity-80 text-white h-[68px] py-[8px] font-medium text-[32px] rounded-lg w-full"
+                                        className="bg-switch hover:opacity-80 text-white h-[68px] py-[8px] font-medium text-[32px] rounded-lg w-full active:active:bg-green-700 disabled:opacity-50"
                                     >
                                         Create Account
                                     </button>

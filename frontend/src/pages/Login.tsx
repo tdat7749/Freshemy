@@ -29,12 +29,12 @@ const Login: FC = () => {
         password: "",
     };
 
-    const handleOnSubmit = (values: LoginType) => {
+    const handleOnSubmit:(values: LoginType) => void = (values: LoginType) => {
         //@ts-ignore
         dispatch(authActions.login(values));
     };
 
-    const handleChange = () => {
+    const handleChange:() => void = () => {
         error = "";
     };
 
@@ -90,6 +90,7 @@ const Login: FC = () => {
                                 <button
                                     className="w-full py-2 px-4 mr-1 bg-switch rounded-lg text-white text-[32px] hover:opacity-80"
                                     type="submit"
+                                    disabled={error !== "" ? true : false}
                                 >
                                     Login
                                 </button>

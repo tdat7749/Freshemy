@@ -11,10 +11,14 @@ import { db } from "../configs/db.config";
 import { SendMail } from "../types/sendmail";
 import {
     MESSAGE_ERROR_EMAIL_NOT_EXIST,
-    MESSAGE_ERROR_INTERNAL_SERVER,
     MESSAGE_SUCCESS_REQUEST,
     MESSAGE_SUCCESS_VERIFCATION_FORGOT_PASSWORD,
     MESSSAGE_ERROR_VALIDATION_FAIL,
+    MESSAGE_ERROR_LOGIN_FAILED,
+    MESSAGE_SUCCESS_LOGIN,
+    MESSAGE_ERROR_INTERNAL_SERVER,
+    MESSAGE_ERROR_SEND_EMAIL,
+    MESSAGE_ERROR_LOGIN_UNVERIFIED,
 } from "src/utils/constant";
 
 const register = async (req: Request): Promise<ResponseBase> => {
@@ -148,7 +152,7 @@ const login = async (req: Request): Promise<ResponseBase> => {
             },
         });
 
-        if (!isFoundUser) return new ResponseError(400, "Email or password is invalid", false);
+        if (!isFoundUser) return new ResponseError(400, MESSAGE_ERROR_LOGIN_FAILED, false);
 
         const isVerifyPassword = await bcrypt.compare(password, isFoundUser.password);
         if (isVerifyPassword) {
@@ -184,17 +188,9 @@ const login = async (req: Request): Promise<ResponseBase> => {
 
                 const isSendEmailSuccess = sendMail(mailOptions);
                 if (!isSendEmailSuccess) {
-                    return new ResponseError(
-                        400,
-                        "Email sending failed, please login to the account you just registered to be sent confirmation email again",
-                        false,
-                    );
+                    return new ResponseError(400, MESSAGE_ERROR_SEND_EMAIL, false);
                 }
-                return new ResponseError(
-                    400,
-                    "Unverified account, We have sent you a verification link, please check your email soon before it expires!",
-                    false,
-                );
+                return new ResponseError(400, MESSAGE_ERROR_LOGIN_UNVERIFIED, false);
             }
             const accessToken = jwt.sign(
                 {
@@ -215,15 +211,15 @@ const login = async (req: Request): Promise<ResponseBase> => {
                     expiresIn: configs.general.TOKEN_REFRESH_EXPIRED_TIME,
                 },
             );
-            return new ResponseSuccess(200, "Logged in successfully", true, { accessToken, refreshToken });
+            return new ResponseSuccess(200, MESSAGE_SUCCESS_LOGIN, true, { accessToken, refreshToken });
         } else {
-            return new ResponseError(400, "Email or password is invalid", false);
+            return new ResponseError(400, MESSAGE_ERROR_LOGIN_FAILED, false);
         }
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
-        return new ResponseError(500, "Internal Server", false);
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
 
