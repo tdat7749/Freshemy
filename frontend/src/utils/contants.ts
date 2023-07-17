@@ -1,1 +1,1 @@
-export const EXAMPLE_MESSAGE = "Example messagezzz";
+export const MESSAGE_ERROR_PASSWORD_WRONG = "Wrong password";
