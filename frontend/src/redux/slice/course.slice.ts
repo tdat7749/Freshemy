@@ -1,22 +1,27 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { getMyCourses as getMyCoursesAPI } from "../../apis/courses";
-import { getMyCourses as getMyCoursesType } from "../../types/course";
+import { Course as CourseType, getMyCourses as getMyCoursesType } from "../../types/course";
 
 type CourseSlice = {
     message: string;
     error: string;
+    course: CourseType[],
 };
 
 const initialState: CourseSlice = {
     message: "",
     error: "",
+    course: []
 };
 
-export const courseSlide = createSlice({
+export const courseSlice = createSlice({
     name: "course",
     initialState: initialState,
     reducers: {
+        setCourseList: (state, payload: PayloadAction<CourseType[]>) => {
+            state.course = payload.payload;
+        },
         setError: (state, payload: PayloadAction<string>) => {
             state.error = payload.payload;
         },
@@ -26,9 +31,9 @@ export const courseSlide = createSlice({
     },
 });
 
-export default courseSlide.reducer;
+export default courseSlice.reducer;
 
-export const { setMessage, setError } = courseSlide.actions;
+export const { setCourseList, setMessage, setError } = courseSlice.actions;
 
 // @ts-ignore
 export const getMyCourses = (values: getMyCoursesType) => async (dispatch, getState) => {
@@ -36,7 +41,7 @@ export const getMyCourses = (values: getMyCoursesType) => async (dispatch, getSt
         const response = await getMyCoursesAPI(values.page_index, values.keyword);
         if (response) {
             if (response.status >= 200) {
-                dispatch(setMessage(response.data.message));
+                dispatch(setCourseList(response.data.courses));
             } else {
                 dispatch(setError(response.data.message));
             }

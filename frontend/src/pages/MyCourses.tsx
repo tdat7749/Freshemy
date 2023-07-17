@@ -5,12 +5,15 @@ import { Link } from "react-router-dom";
 import CourseCard from "../components/CourseCard";
 import Pagination from "../components/Pagination";
 import Navbar from "../components/Navbar";
-import { useAppDispatch } from "../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { courseAction } from "../redux/slice";
-import { getMyCourses as getMyCoursesType } from "../types/course";
+import { Course, getMyCourses as getMyCoursesType } from "../types/course";
 
 const MyCourses: React.FC = () => {
     const dispatch = useAppDispatch();
+    let courseList:Course[] = useAppSelector((state) => state.courseSlice.course) ?? "";
+
+    console.log("Courselist", courseList);
 
     const initialValue: getMyCoursesType = {
         page_index: 1,
