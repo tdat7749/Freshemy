@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { authActions } from "../redux/slice";
 import { ForgotPassword as ForgotPasswordType } from "../types/auth";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
-import Message from "../utils";
+import { MESSAGE_ERROR_EMAIL_INVALID, MESSAGE_ERROR_EMAIL_REQUIRED } from "../utils/contants";
 
 const ForgotPassword: React.FC = () => {
     let error:string = useAppSelector((state) => state.authSlice.error) ?? "";
@@ -23,7 +23,7 @@ const ForgotPassword: React.FC = () => {
     };
 
     const forgotPasswordValidationSchema = Yup.object({
-        email: Yup.string().email(Message.MESSAGE_ERROR_EMAIL_INVALID).required(Message.MESSAGE_ERROR_EMAIL_REQUIRED),
+        email: Yup.string().email(MESSAGE_ERROR_EMAIL_INVALID).required(MESSAGE_ERROR_EMAIL_REQUIRED),
     });
 
     const handleSubmit = (values: ForgotPasswordType) => {
