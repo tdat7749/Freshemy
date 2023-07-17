@@ -1,1 +1,1 @@
-export const EXAMPLE_MESSAGE = "Example message";
+export const EXAMPLE_MESSAGE = "Example messagezzz";
