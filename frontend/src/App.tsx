@@ -14,6 +14,7 @@ import Register from './pages/Register';
 import PrivateRoute from "./routes/PrivateRoute";
 import Verify from './pages/Verify';
 import NotFound from './pages/NotFound';
+import Cookies from 'js-cookie';
 
 
 function App() {
@@ -22,8 +23,11 @@ function App() {
     const isLogin = useAppSelector((state) => state?.authSlice?.isLogin) ?? false;
 
     useEffect(() => {
-        //@ts-ignore
-        dispatch(authActions.getMe());
+        const accessToken = Cookies.get("accessToken")
+        if(accessToken){
+            //@ts-ignore
+            dispatch(authActions.getMe());
+        }
     }, [dispatch]);
 
     return (
@@ -36,10 +40,10 @@ function App() {
                         <Route path="/change-password" element={<ChangePassword />}></Route>
                     </Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
-                    <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
-                    <Route path="/login" element={<Login />}></Route>
-                    <Route path="/register" element={<Register />}></Route>
-                    <Route path="/verify-email/:token" element={<Verify />}></Route>
+                        <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
+                        <Route path="/login" element={<Login />}></Route>
+                        <Route path="/register" element={<Register />}></Route>
+                        <Route path="/verify-email/:token" element={<Verify />}></Route>
                     <Route path='/*' element={<NotFound />}></Route>
 
                 </Routes>
