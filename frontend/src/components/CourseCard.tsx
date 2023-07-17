@@ -5,6 +5,7 @@ import EditIcon from "../components/icons/EditIcon";
 import DeleteIcon from "../components/icons/DeleteIcon";
 
 type Course = {
+    id: number;
     title: string;
     summary: string;
     author: string;
@@ -12,6 +13,15 @@ type Course = {
 
 const CourseCard: FC<Course> = (props: Course) => {
     const [isDisplayDropDown, setIsDisplayDropDown] = useState<boolean>(false);
+
+    const handleEditCourse = (id: number) => {
+
+    }
+
+    const handleDeleteCourse = (id: number) => {
+        
+    }
+
     return (
         <div className="flex pt-4 pb-3 border-b-[1px]">
             <div className="flex flex-col tablet:flex-row">
@@ -37,11 +47,11 @@ const CourseCard: FC<Course> = (props: Course) => {
                         isDisplayDropDown ? "block" : "hidden"
                     }`}
                 >
-                    <div className="flex items-center mb-2 hover:bg-backgroundHover cursor-pointer">
+                    <div className="flex items-center mb-2 hover:bg-backgroundHover cursor-pointer" onClick={() => handleEditCourse(props.id)}>
                         <EditIcon />
                         <span className="ml-2">Edit</span>
                     </div>
-                    <div className="flex items-center hover:bg-backgroundHover cursor-pointer">
+                    <div className="flex items-center hover:bg-backgroundHover cursor-pointer" onClick={() => handleDeleteCourse(props.id)}>
                         <DeleteIcon />
                         <span className="ml-2">Delete</span>
                     </div>
