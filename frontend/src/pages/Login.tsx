@@ -2,18 +2,19 @@ import { FC, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field, Form } from "formik";
 import { Login as LoginType } from "../types/auth";
-import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { authActions } from "../redux/slice/index";
 import { Navigate } from "react-router-dom";
 import Skeleton from "../assets/images/Skeleton.png";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
+import { loginValidationSchema } from "../validations/auth";
+
 
 const Login: FC = () => {
     const dispatch = useAppDispatch();
 
-    const isLogin = useAppSelector((state) => state.authSlice.isLogin);
-    let error = useAppSelector((state) => state.authSlice.error) ?? "";
+    const isLogin:boolean = useAppSelector((state) => state.authSlice.isLogin);
+    let error:string = useAppSelector((state) => state.authSlice.error) ?? "";
 
     const formikRef = useRef(null);
 
@@ -27,11 +28,6 @@ const Login: FC = () => {
         email: "",
         password: "",
     };
-
-    const loginValidationSchema = Yup.object({
-        email: Yup.string().email("Invalid email").required("Email is required"),
-        password: Yup.string().required("Password is required"),
-    });
 
     const handleOnSubmit = (values: LoginType) => {
         //@ts-ignore
