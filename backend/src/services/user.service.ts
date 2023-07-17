@@ -4,6 +4,14 @@ import { db } from '../configs/db.config'
 import * as bcrypt from "bcrypt";
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 import configs from "../configs";
+import {
+    MESSAGE_ERROR_PASSWORD_NEW_DIFFERENT_FROM_CONFIRM,
+    MESSAGE_SUCCESS_CHANGE_PASSWORD,
+    MESSAGE_ERROR_PASSWORD_WRONG,
+    MESSAGE_ERROR_USER_NOT_FOUND,
+    MESSAGE_ERROR_BAD_REQUEST,
+    MESSAGE_ERROR_INTERNAL_SERVER
+} from "../utils/constant"
 
 
 const changePassword = async (req: RequestHasLogin): Promise<ResponseBase> => {
@@ -11,40 +19,40 @@ const changePassword = async (req: RequestHasLogin): Promise<ResponseBase> => {
         const { current_password, new_password, confirm_password } = req.body
 
         if (new_password !== confirm_password) {
-            return new ResponseError(400, "New password and comfirm password must be same", false)
+            return new ResponseError(400, MESSAGE_ERROR_PASSWORD_NEW_DIFFERENT_FROM_CONFIRM, false)
         }
 
-        const findUser = await db.user.findFirst({
+        const user = await db.user.findFirst({
             where: {
                 id: req.user_id,
                 is_verify: true
             }
         })
-        if (findUser) {
-            const isCorrectPassword = await bcrypt.compare(current_password, findUser.password)
+        if (user) {
+            const isCorrectPassword = await bcrypt.compare(current_password, user.password)
             if (isCorrectPassword) {
-                const hashedNewPassword = await bcrypt.hash(new_password, configs.general.HASH_SALT) //.env
+                const hashedNewPassword = await bcrypt.hash(new_password, configs.general.HASH_SALT) 
 
                 await db.user.update({
                     where: {
-                        id: findUser.id
+                        id: user.id
                     },
                     data: {
                         password: hashedNewPassword
                     }
                 })
-                return new ResponseSuccess(200, "Change password successfully", true)
+                return new ResponseSuccess(200, MESSAGE_SUCCESS_CHANGE_PASSWORD, true)
             }
 
-            return new ResponseError(400, "Wrong password", false)
+            return new ResponseError(400, MESSAGE_ERROR_PASSWORD_WRONG, false)
         }
 
-        return new ResponseError(404, "User is not found", false)
+        return new ResponseError(404, MESSAGE_ERROR_USER_NOT_FOUND, false)
     } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, "Bad request", false);
+            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
         }
-        return new ResponseError(500, "Internal Server", false);
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 }
 
