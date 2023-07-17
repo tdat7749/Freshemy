@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { authActions } from "../redux/slice";
 import { ForgotPassword as ForgotPasswordType } from "../types/auth";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
-import Message from "../utils";
+import { forgotPasswordValidationSchema } from "../validations/auth";
+
 
 const ForgotPassword: React.FC = () => {
     let error:string = useAppSelector((state) => state.authSlice.error) ?? "";
@@ -21,10 +21,6 @@ const ForgotPassword: React.FC = () => {
     const initialValues: ForgotPasswordType = {
         email: "",
     };
-
-    const forgotPasswordValidationSchema = Yup.object({
-        email: Yup.string().email(Message.MESSAGE_ERROR_EMAIL_INVALID).required(Message.MESSAGE_ERROR_EMAIL_REQUIRED),
-    });
 
     const handleSubmit = (values: ForgotPasswordType) => {
         //@ts-ignore
