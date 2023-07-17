@@ -7,7 +7,6 @@ import { ForgotPassword as ForgotPasswordType } from "../types/auth";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { forgotPasswordValidationSchema } from "../validations/auth";
 
-
 const ForgotPassword: React.FC = () => {
     let error:string = useAppSelector((state) => state.authSlice.error) ?? "";
     let message:string = useAppSelector((state) => state.authSlice.message) ?? "";
