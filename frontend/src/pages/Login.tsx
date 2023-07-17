@@ -29,12 +29,12 @@ const Login: FC = () => {
         password: "",
     };
 
-    const handleOnSubmit = (values: LoginType) => {
+    const handleOnSubmit:(values: LoginType) => void = (values: LoginType) => {
         //@ts-ignore
         dispatch(authActions.login(values));
     };
 
-    const handleChange = () => {
+    const handleChange:() => void = () => {
         error = "";
     };
 
