@@ -27,6 +27,6 @@ export const registerValidationSchema = Yup.object({
         .trim(),
     confirm_password: Yup.string()
         .required(MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED)
-        .oneOf([Yup.ref(MESSAGE_ERROR_PASSWORD_REQUIRED)], MESSAGE_ERROR_WRONG_CONFIRM_PASSWORD_REQUIRED)
+        .oneOf([Yup.ref("password")], MESSAGE_ERROR_WRONG_CONFIRM_PASSWORD_REQUIRED)
         .trim(),
 });
