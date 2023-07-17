@@ -19,7 +19,8 @@ import {
     MESSAGE_ERROR_INTERNAL_SERVER,
     MESSAGE_ERROR_SEND_EMAIL,
     MESSAGE_ERROR_LOGIN_UNVERIFIED,
-} from "src/utils/constant";
+    MESSAGE_ERROR_UNAUTHORIZED,
+} from "../utils/constant";
 
 const register = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -307,8 +308,17 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
             expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
         });
 
-        const link = `${configs.general.DOMAIN_NAME}/reset-password/${token}`;
+        const updateUser = await configs.db.user.update({
+            where: {
+                email: email,
+            },
+            data: {
+                token: token
+            },
+        });
 
+        const link = `${configs.general.DOMAIN_NAME}/reset-password/${token}`;
+        console.log(token);
         const mailOptions: SendMail = {
             from: "Freshemy",
             to: `${email}`,
@@ -344,12 +354,25 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
         const decoded = jwt.verify(token, configs.general.JWT_SECRET_KEY!);
         var id = (<any>decoded).id;
         const hash = bcrypt.hashSync(password, salt);
+
+        const isFoundUser = await configs.db.user.findUnique({
+            where: {
+                id: id,
+            },
+            select: {
+                token: true
+            }
+        });
+        if(isFoundUser?.token !== token){
+            return new ResponseError(404,MESSAGE_ERROR_UNAUTHORIZED, false);
+        }
         const updateUser = await configs.db.user.update({
             where: {
                 id: id,
             },
             data: {
                 password: hash,
+                token: null
             },
         });
         if (updateUser) return new ResponseSuccess(200, MESSAGE_SUCCESS_REQUEST, true);
