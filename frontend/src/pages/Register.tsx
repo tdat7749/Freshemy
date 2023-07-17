@@ -158,8 +158,9 @@ const Register: FC = () => {
                                 </div>
                                 <div className="py-[12px]">
                                     <button
+                                        disabled={(errorMessage !== "") ? true:false}
                                         type="submit"
-                                        className="bg-switch hover:opacity-80 text-white h-[68px] py-[8px] font-medium text-[32px] rounded-lg w-full"
+                                        className="bg-switch hover:opacity-80 text-white h-[68px] py-[8px] font-medium text-[32px] rounded-lg w-full active:active:bg-green-700 disabled:opacity-50"
                                     >
                                         Create Account
                                     </button>
