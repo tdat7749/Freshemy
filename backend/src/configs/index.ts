@@ -1,2 +1,8 @@
-export { db } from "./db.config";
-export { general } from "./general.config";
+import { db } from "./db.config";
+import { general } from "./general.config";
+
+const configs = {
+    general: general,
+    db: db,
+};
+export default configs;

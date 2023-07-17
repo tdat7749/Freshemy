@@ -1,16 +1,10 @@
-import React,{FC} from 'react'
-import Header from '../components/Header'
+import React from "react";
 
-const Home:FC = () =>{
+const Home: React.FC = () => {
+  return (
+    <>
+    </>
+  );
+};
 
-    const adb:string = "a"
-
-    return(
-        <>
-        <Header/>
-           <h1 className='text-3xl font-bold underline text-orange-300'>Hellaao</h1>
-        </>
-    )
-}
-
-export default Home
+export default Home;
