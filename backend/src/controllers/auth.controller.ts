@@ -6,9 +6,7 @@ import { RequestHasLogin } from "../types/request";
 import service from "../services/index";
 
 class AuthController {
-
     async register(req: Request, res: Response): Promise<Response> {
-
         const errorValidate: ValidationError | undefined = registrationSchema.validate(req.body).error;
 
         if (errorValidate) {
@@ -25,9 +23,9 @@ class AuthController {
     }
 
     async verifyEmailWhenSignUp(req: Request, res: Response): Promise<Response> {
-        const response = await service.AuthService.verifyEmailWhenSignUp(req)
+        const response = await service.AuthService.verifyEmailWhenSignUp(req);
 
-        return res.status(response.getStatusCode()).json(response)
+        return res.status(response.getStatusCode()).json(response);
     }
 
     async login(req: Request, res: Response): Promise<Response> {

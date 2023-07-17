@@ -32,7 +32,7 @@ axiosPublic.interceptors.response.use(
             const response = await refreshToken();
             const accessToken = response.data.data.accessToken;
             if (accessToken) {
-                Cookies.set("accessToken", accessToken)
+                Cookies.set("accessToken", accessToken);
                 config.headers = {
                     ...config.headers,
                     authorization: `Bearer ${accessToken}`,

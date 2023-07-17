@@ -1,12 +1,13 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { User } from "../../types/user";
 import {
-    register as registerAPI, login as loginAPI,
+    register as registerAPI,
+    login as loginAPI,
     getMe as getMeAPI,
     forgotPassword as forgotPasswordAPI,
     resetPassword as resetPasswordAPI,
     refreshToken as refreshTokenAPI,
-    verifyEmail as verifyEmailAPI
+    verifyEmail as verifyEmailAPI,
 } from "../../apis/auth";
 
 import { Login as LoginType, Register as RegisterType } from "../../types/auth";
@@ -56,21 +57,20 @@ export const authSlice = createSlice({
             state.isLogin = false;
         },
         setMessageEmpty: (state) => {
-            state.error = ""
-            state.message = ""
+            state.error = "";
+            state.message = "";
         },
     },
 });
 
-export const { setUsers, setError, setMessage, setLogout, setMessageEmpty, } = authSlice.actions;
+export const { setUsers, setError, setMessage, setLogout, setMessageEmpty } = authSlice.actions;
 
 export default authSlice.reducer;
 
-
 export const login = (values: LoginType) => async (dispatch: any) => {
-    dispatch(setMessageEmpty())
+    dispatch(setMessageEmpty());
     try {
-        const response = await loginAPI(values.email, values.password);
+        const response = await loginAPI(values);
         if (response) {
             if (response.status >= 200 && response.status <= 299) {
                 Cookies.set("accessToken", response.data.data.accessToken);
@@ -85,10 +85,8 @@ export const login = (values: LoginType) => async (dispatch: any) => {
     }
 };
 
-
-
 export const register = (values: RegisterType) => async (dispatch: any) => {
-    dispatch(setMessageEmpty())
+    dispatch(setMessageEmpty());
     try {
         const response = await registerAPI(values);
 
@@ -101,7 +99,6 @@ export const register = (values: RegisterType) => async (dispatch: any) => {
         dispatch(setError(error.data.message));
     }
 };
-
 
 export const getMe = () => async (dispatch: any) => {
     try {
@@ -116,12 +113,11 @@ export const getMe = () => async (dispatch: any) => {
                 window.location.href = "/login";
             }
         }
-    } catch (error: any) {
-    }
+    } catch (error: any) {}
 };
 
 export const forgotPassword = (values: ForgotPasswordType) => async (dispatch: any) => {
-    dispatch(setMessageEmpty())
+    dispatch(setMessageEmpty());
     try {
         const response = await forgotPasswordAPI(values.email);
         if (response) {
@@ -181,18 +177,19 @@ export const logout = () => async (dispatch: any) => {
     Cookies.remove("refreshToken");
 };
 
-
-export const verifyEmail = (token: string) => async (dispatch: any): Promise<void> => {
-    try {
-        const response = await verifyEmailAPI(token)
-        if (response) {
-            if (response.status === 200) {
-                dispatch(setMessage(response.data.message))
-            } else {
-                dispatch(setError(response.data.message))
+export const verifyEmail =
+    (token: string) =>
+    async (dispatch: any): Promise<void> => {
+        try {
+            const response = await verifyEmailAPI(token);
+            if (response) {
+                if (response.status === 200) {
+                    dispatch(setMessage(response.data.message));
+                } else {
+                    dispatch(setError(response.data.message));
+                }
             }
+        } catch (error: any) {
+            dispatch(setError(error.data.message));
         }
-    } catch (error: any) {
-        dispatch(setError(error.data.message))
-    }
-}
+    };
