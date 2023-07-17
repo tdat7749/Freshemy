@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -14,6 +13,7 @@ import Register from './pages/Register';
 import PrivateRoute from "./routes/PrivateRoute";
 import Verify from './pages/Verify';
 import NotFound from './pages/NotFound';
+import MyCourses from './pages/MyCourses';
 import Cookies from 'js-cookie';
 
 
@@ -38,6 +38,7 @@ function App() {
                     <Route path="/" element={<Home />}></Route>
                     <Route element={<PrivateRoute isLogin={isLogin} />}>
                         <Route path="/change-password" element={<ChangePassword />}></Route>
+                        <Route path="/my-courses" element={<MyCourses />}></Route>
                     </Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                         <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
