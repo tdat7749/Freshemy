@@ -42,3 +42,9 @@ export const MESSAGE_ERROR_LAST_NAME_REQUIRED = "Last Name is required";
 
 export const MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED =
     "Password and comfirm password must be same";
+
+export const MESSAGE_ERROR_COURSE_SLUG_IS_USED = "This slug is already in use"
+
+export const MESSAGE_SUCCESS_COURSE_CREATED = "Create a new successful course"
+
+export const MESSAGE_ERROR_COURSE_CREATE_FAILED = "Create a new failed course"

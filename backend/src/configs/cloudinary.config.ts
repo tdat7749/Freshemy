@@ -1,9 +1,9 @@
-import cloudinary from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import config from ".";
+import multer from 'multer'
 
-const cloudinaryV2 = cloudinary.v2;
 
-cloudinaryV2.config({
+cloudinary.config({
     cloud_name: config.general.CLOUDINARY_NAME,
     api_key: config.general.CLOUDINARY_API_KEY,
     api_secret: config.general.CLOUDINARY_API_SECRET,
@@ -11,4 +11,19 @@ cloudinaryV2.config({
     secure: false,
 });
 
-export default cloudinaryV2;
+
+
+const storage = multer.diskStorage({
+    filename: (req, file: Express.Multer.File, cb) => {
+        cb(null, "/tmp/")
+    },
+})
+
+export const upload = multer({
+    storage: storage,
+    limits: {
+        fieldSize: (1024 * 1024) * 4 //4MB
+    }
+})
+
+export default cloudinary;
