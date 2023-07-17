@@ -22,9 +22,9 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
             )}
 
             <div className="w-full h-[100px] max-w-full bg-background shadow-sm fixed top-0 left-0 z-[10]">
-                <div className="w-full flex items-center py-[10px] px-4 tablet:px-[60px]">
-                    <Link to={"/"}>
-                        <img src={Logo} alt="Logo" />
+                <div className="w-full h-full flex items-center py-[10px] px-4 tablet:px-[60px]">
+                    <Link to={"/"} className="w-[60px] h-[60px] shrink-0">
+                        <img src={Logo} alt="Logo"/>
                     </Link>
                     <div className="hidden relative ml-[120px] tablet:block tablet:w-[1000px]">
                         <input
@@ -37,9 +37,15 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                     {isLogin ? (
                         <>
                             <div className="ml-auto flex shrink-0 items-center">
-                                <span className="hidden tablet:block min-w-fit mr-5">All Courses</span>
-                                <span className="hidden tablet:block min-w-fit mr-5">Enroll Course</span>
-                                <span className="hidden tablet:block min-w-fit mr-5">My Courses</span>
+                                <Link to={"/all-courses"} className="hidden tablet:block min-w-fit mr-5">
+                                    All Courses
+                                </Link>
+                                <Link to={"/my-enrolled-courses"} className="hidden tablet:block min-w-fit mr-5">
+                                    Enroll Course
+                                </Link>
+                                <Link to={"/my-courses"} className="hidden tablet:block min-w-fit mr-5">
+                                    My Courses
+                                </Link>
                                 <div
                                     data-dropdown-toggle="dropdown"
                                     className="w-[60px] h-[60px] rounded-full flex items-center justify-center relative border-[1px]"
