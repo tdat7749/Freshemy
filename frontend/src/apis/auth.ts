@@ -1,5 +1,5 @@
 import apiCaller from "../api-config/apiCaller";
-import { Register as RegisterType, Login as LoginType } from "../types/auth";
+import { Register as RegisterType, Login as LoginType, ResetPassword as ResetPasswordType } from "../types/auth";
 import { HTTP_GET, HTTP_POST } from "../utils/contants";
 
 export const login = async (values: LoginType) => {
@@ -43,12 +43,12 @@ export const forgotPassword = async (email: string) => {
     return response;
 };
 
-export const resetPassword = async (confirmPassword: string, password: string, token: string) => {
+export const resetPassword = async (values: ResetPasswordType) => {
     const path = `auth/reset-password`;
     const data = {
-        confirmPassword,
-        password,
-        token,
+        confirmPassword: values.confirmPassword,
+        password: values.password,
+        token: values.token,
     };
     const response = await apiCaller(HTTP_POST, path, data);
     return response;
