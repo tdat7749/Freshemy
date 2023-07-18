@@ -42,3 +42,14 @@ export const MESSAGE_ERROR_LAST_NAME_REQUIRED = "Last Name is required";
 
 export const MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED =
     "Password and comfirm password must be same";
+
+
+//data success
+export const MESSAGE_SUCCESS_GET_DATA = "Get data successfully";
+//register course
+export const MESSAGE_SUCCESS_REGISTER_COURSE = "Subcribe successfully"
+export const MESSAGE_SUCCESS_UN_REGISTER_COURSE = "Unsubcribe successfully"
+export const MESSAGE_ERROR_MISSING_DATA = "Course id is required"
+export const MESSAGE_ERROR_WRONG_DATA_TYPE = "Course id must be a number"
+//data failed
+export const MESSAGE_ERROR_GET_DATA = "Cannot find requested resources"
