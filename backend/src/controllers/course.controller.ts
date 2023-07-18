@@ -7,6 +7,7 @@ import services from "../services";
 
 class CourseController {
     async createCourse(req: RequestHasLogin, res: Response) {
+        console.log(req.body)
         const errorValidate: ValidationError | undefined = createCourseSchema.validate(req.body).error;
 
         if (errorValidate) {

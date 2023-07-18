@@ -14,6 +14,11 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 export const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status } = req.body;
+
+    // Vì formData gửi dữ liệu bằng string nên ở đây phải convert nó về
+    const categoriesConvert = categories.map((item: string) => { category_id: parseInt(item) })
+    const statusConvert = status === "0" ? false : true
+
     const user_id = req.user_id;
     const thumbnail = req.file as Express.Multer.File;
 
@@ -52,9 +57,9 @@ export const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> 
                         summary: summary,
                         thumbnail: uploadFileResult.url,
                         user_id: user_id,
-                        status: status,
+                        status: statusConvert,
                         courses_categories: {
-                            create: listCategoryId,
+                            create: categoriesConvert,
                         },
                     },
                 });

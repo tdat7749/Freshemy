@@ -1,31 +1,30 @@
-import React, { FC, useEffect, useRef,useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 // import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field } from "formik";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 // import { Navigate } from "react-router-dom";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
-import { CreateCourse as CreateCourseType, Category as CategoryType } from "../types/course";
-import { createCourseActions } from "../redux/slice";
+import { CreateCourse as CreateCourseType } from "../types/course";
+import { courseActions } from "../redux/slice";
 import { createValidationSchema } from "../validations/course";
 
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
 
-    const [thumbnail,setThumbnail] = useState<File | null>(null)
+    const [thumbnail, setThumbnail] = useState<File | null>(null)
 
     // const isLogin = useAppSelector((state) => state.Slice.isLogin);
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
-    let categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
-    let categoriesCreateSelector = useAppSelector((state) => state.courseSlice.createCourse.categories);
+    const isLoading = useAppSelector(state => state.courseSlice.isLoading)
+    //let categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
+    //let categoriesCreateSelector = useAppSelector((state) => state.courseSlice.createCourse.categories);
     const formikRef = useRef(null);
 
     useEffect(() => {
         dispatch(setMessageEmpty());
-    }, [dispatch]);
-    useEffect(() => {
         //@ts-ignore
-        dispatch(createCourseActions.getCategories());
+        //dispatch(courseActions.getCategories());
     }, [dispatch]);
 
     // if (isLogin) return <Navigate to={"/"} />;
@@ -33,44 +32,59 @@ const CreateCourse: FC = () => {
     const initialValues: CreateCourseType = {
         title: "",
         categories: [],
-        status: "uncomplete",
+        status: 0,
         summary: "",
         description: "",
+        thumbnail: null
     };
 
     const handleOnSubmit = async (values: CreateCourseType) => {
-        values.categories = categoriesCreateSelector
-        const data = {
-            ...values,
-            thumbnail:thumbnail
-        }
+
+        // Trong request form thì value chỉ được là text hoặc file
+        let formData = new FormData()
+        formData.append("title", values.title)
+        formData.append("description", values.description)
+        formData.append("slug", "abc-adas-zzzz") // chỗ này tìm 1 hàm convert qua slug ở trên mạng, ném hàm đó vào folder utils hay gì cũng đc
+        formData.append("status", values.status.toString())
+        formData.append("thumbnail", thumbnail as File)
+        formData.append("summary", values.summary)
+        const fakeCategories = [1, 2] // chỗ này fake thôi, khi nào có API category thì xóa đi get dữ liệu từ form
+
+        fakeCategories.forEach(function (item) {
+            formData.append("categories[]", item.toString())
+        })
+
+        // values.categories.forEach(function (item) {
+        //     formData.append("categories[]", item.id.toString())
+        // })
+
         // @ts-ignore
-        dispatch(createCourseActions.createCourse(data));
+        dispatch(courseActions.createCourses(formData));
     };
 
     const handleDeleteMessage = () => {
         errorMessage = "";
     };
 
-    const handleAddCategories = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const index = categoriesSelector.findIndex(
-            (category: CategoryType) => category.id === parseInt(event.target.value)
-        );
-        dispatch(createCourseActions.addCategories(index));
-    };
+    // const handleAddCategories = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const index = categoriesSelector.findIndex(
+    //         (category: CategoryType) => category.id === parseInt(event.target.value)
+    //     );
+    //     dispatch(courseActions.addCategories(index));
+    // };
 
-    const handleRemoveCategory = (id: number) => {
-        const index = categoriesCreateSelector.findIndex((category: CategoryType) => category.id === id);
-        dispatch(createCourseActions.removeCategories(index));
-    };
+    // const handleRemoveCategory = (id: number) => {
+    //     const index = categoriesCreateSelector.findIndex((category: CategoryType) => category.id === id);
+    //     dispatch(courseActions.removeCategories(index));
+    // };
 
-    const onChangeInputFile = (event:React.ChangeEvent<HTMLInputElement>) =>{
+    const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         setThumbnail(event.currentTarget.files![0])
     }
 
     const handleCancel = () => {
         setThumbnail(null);
-        dispatch(createCourseActions.reset());
+        dispatch(courseActions.reset());
     }
 
     return (
@@ -105,9 +119,8 @@ const CreateCourse: FC = () => {
                                             <Field
                                                 type="text"
                                                 name="title"
-                                                className={`${
-                                                    formik.errors.title && formik.touched.title ? "border-error" : ""
-                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                                className={`${formik.errors.title && formik.touched.title ? "border-error" : ""
+                                                    } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                             />
                                             <ErrorMessage
                                                 name="title"
@@ -119,7 +132,7 @@ const CreateCourse: FC = () => {
                                             <label htmlFor="category" className="text-[24px] text-text">
                                                 Categories
                                             </label>
-                                            <div className="flex flex-row">
+                                            {/* <div className="flex flex-row">
                                                 <div className="flex bg-white overflow-y-auto w-[90%]">
                                                     {categoriesCreateSelector?.map((category: CategoryType) => {
                                                         return (
@@ -138,11 +151,10 @@ const CreateCourse: FC = () => {
                                                 <Field
                                                     name="categories"
                                                     as="select"
-                                                    className={`${
-                                                        formik.errors.categories && formik.touched.categories
-                                                            ? "border-error"
-                                                            : ""
-                                                    } w-[10%] h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                                    className={`${formik.errors.categories && formik.touched.categories
+                                                        ? "border-error"
+                                                        : ""
+                                                        } w-[10%] h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                                     onChange={handleAddCategories}
                                                     default=""
                                                 >
@@ -156,7 +168,7 @@ const CreateCourse: FC = () => {
                                                         }
                                                     )}
                                                 </Field>
-                                            </div>
+                                            </div> */}
                                             <ErrorMessage
                                                 name="category"
                                                 component="span"
@@ -173,14 +185,13 @@ const CreateCourse: FC = () => {
                                             <Field
                                                 name="status"
                                                 as="select"
-                                                className={`${
-                                                    formik.errors.status && formik.touched.status ? "border-error" : ""
-                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                                className={`${formik.errors.status && formik.touched.status ? "border-error" : ""
+                                                    } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                             >
-                                                <option key="uncompleted" value="status1">
+                                                <option key="uncompleted" value={0}>
                                                     Uncompleted
                                                 </option>
-                                                <option key="complete" value="status2">
+                                                <option key="complete" value={1}>
                                                     Complete
                                                 </option>
                                             </Field>
@@ -202,11 +213,10 @@ const CreateCourse: FC = () => {
                                             as="textarea"
                                             name="description"
                                             placeholder="Explain your queries"
-                                            className={`${
-                                                formik.errors.description && formik.touched.description
-                                                    ? "border-error"
-                                                    : ""
-                                            } block h-[95%] w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:shadow-md1`}
+                                            className={`${formik.errors.description && formik.touched.description
+                                                ? "border-error"
+                                                : ""
+                                                } block h-[95%] w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:shadow-md1`}
                                         />
                                         <ErrorMessage
                                             name="description"
@@ -222,9 +232,8 @@ const CreateCourse: FC = () => {
                                     <Field
                                         type="text"
                                         name="summary"
-                                        className={`${
-                                            formik.errors.summary && formik.touched.summary ? "border-error" : ""
-                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                        className={`${formik.errors.summary && formik.touched.summary ? "border-error" : ""
+                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                     />
                                     <ErrorMessage
                                         name="summary"
@@ -240,10 +249,11 @@ const CreateCourse: FC = () => {
                                 )}
                                 <div className="py-[12px]">
                                     <button
+                                        disabled={isLoading ? true : false}
                                         type="submit"
                                         className="bg-switch hover:opacity-80 text-white h-[68px] py-[8px] font-medium text-[32px] rounded-lg w-full active:active:bg-green-700 disabled:opacity-50"
                                     >
-                                        Save
+                                        {isLoading ? "Loading..." : "Save"}
                                     </button>
                                     <button
                                         type="button"
