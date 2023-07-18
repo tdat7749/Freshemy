@@ -26,8 +26,8 @@ export const isLogin = async (req: RequestHasLogin, res: Response, next: NextFun
                     req.user_id = isFoundUser.id;
                 }
             }
-            next();
         }
+        next();
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return res.status(401).json({ message: error.toString() });
