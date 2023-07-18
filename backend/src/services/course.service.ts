@@ -32,7 +32,7 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
 
         const isUpdateCourse = await configs.db.course.update({
             where: {
-                id: id
+                id: id,
             },
             data: {
                 title: title,
