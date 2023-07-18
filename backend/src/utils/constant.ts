@@ -12,7 +12,7 @@ export const MESSAGE_ERROR_USER_NOT_FOUND = " User is not found "
 export const MESSAGE_ERROR_INTERNAL_SERVER = " Internal Server "
 export const MESSAGE_ERROR_BAD_REQUEST = "Bad request"
 export const MESSAGE_ERROR_PASSWORD_IS_STRING = "Password must be a string"
-
+export const MESSAGE_ERROR_MISSING_REQUEST_BODY = "Validation failed"
 
 //success
 export const MESSAGE_SUCCESS_CHANGE_PASSWORD = "Change password succesfully"
@@ -42,3 +42,8 @@ export const MESSAGE_ERROR_LAST_NAME_REQUIRED = "Last Name is required";
 
 export const MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED =
     "Password and comfirm password must be same";
+
+export const MESSAGE_SUCCESS_GET_DATA = "Get data successfully";
+export const MESSAGE_SUCCESS_CREATE_DATA = "Create successfully";
+export const MESSAGE_SUCCESS_UPDATE_DATA = "Update successfully";
+export const MESSAGE_SUCCESS_DELETE_DATA = "Delete successfully";

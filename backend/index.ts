@@ -22,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api/auth", routers.authRouter);
 app.use("/api/users", routers.userRouter)
+app.use("/api/sections", routers.sectionRouter);
 
 const port: number = configs.general.PORT;
 
