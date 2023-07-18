@@ -78,8 +78,6 @@ const updateSection = async (req: Request) : Promise<ResponseBase> => {
         const { id } = req.params;
         const { title } = req.body;
         const section_id = +id;
-        console.log(id)
-        console.log(title)
         const section = await configs.db.section.update({
             where: {
                 id: section_id
@@ -110,12 +108,15 @@ const deleteSection = async (req: Request) : Promise<ResponseBase> => {
     try{
         const { id } = req.params;
         const section_id = +id;
-        const isFoundSection = await configs.db.section.delete({
+        const isDelete = await configs.db.section.update({
             where: {
                 id: section_id
             },
+            data: {
+                is_delete: true,
+            },
         })
-        if (isFoundSection) return new ResponseSuccess(200, MESSAGE_SUCCESS_DELETE_DATA, true);
+        if (isDelete) return new ResponseSuccess(200, MESSAGE_SUCCESS_DELETE_DATA, true);
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
