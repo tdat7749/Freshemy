@@ -4,11 +4,8 @@ import { useAppDispatch } from "../hooks/hooks";
 import * as Yup from "yup";
 import { authActions } from "../redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
+import { ResetPassword as ResetPasswordType } from "../types/auth";
 
-interface FormValues {
-    password: string;
-    confirmPassword: string;
-}
 
 const ResetPassword: React.FC<{}> = () => {
     const dispatch = useAppDispatch();
@@ -19,9 +16,10 @@ const ResetPassword: React.FC<{}> = () => {
         navigate("/");
     }
 
-    const initialValues: FormValues = {
+    const initialValues: ResetPasswordType = {
         password: "",
         confirmPassword: "",
+        token:""
     };
 
     const resetPasswordValidationSchema = Yup.object({
@@ -31,9 +29,18 @@ const ResetPassword: React.FC<{}> = () => {
             .oneOf([Yup.ref("password")], "Confirm password must match"),
     });
 
-    const handleSubmit = (values: FormValues) => {
+    const handleSubmit = (values: ResetPasswordType) => {
+        const data = {
+            ...values,
+            token:token
+        }
         //@ts-ignore
-        dispatch(authActions.resetPassword(values, token));
+        dispatch(authActions.resetPassword(data)).then((response) =>{
+            if(response.payload.status_code === 200){
+                //@ts-ignore
+                navigate("/login")
+            }
+        });
     };
 
     return (

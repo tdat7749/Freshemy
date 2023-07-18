@@ -6,8 +6,12 @@ import userSlice from "./slice/user.slice";
 const store: ToolkitStore = configureStore({
     reducer: {
         authSlice: authSlice,
-        userSlice: userSlice
+        userSlice: userSlice,
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+        }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

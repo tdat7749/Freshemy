@@ -7,5 +7,5 @@ const routers = {
     userRouter: userRouter,
     courseRouter: courseRouter,
     sectionRouter: sectionRouter
-};
+}
 export default routers;

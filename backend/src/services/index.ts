@@ -8,4 +8,5 @@ const services = {
     CourseService,
     SectionService
 };
+
 export default services;
