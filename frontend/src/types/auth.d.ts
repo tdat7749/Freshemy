@@ -15,6 +15,7 @@ export type ForgotPassword = {
 export type ResetPassword = {
     confirmPassword: string;
     password: string;
+    token: string;
 };
 export type Register = {
     first_name: string;
@@ -23,4 +24,3 @@ export type Register = {
     password: string;
     confirm_password: string;
 };
-
