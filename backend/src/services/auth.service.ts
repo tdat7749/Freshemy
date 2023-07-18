@@ -36,6 +36,7 @@ const register = async (req: Request): Promise<ResponseBase> => {
 
         // Create a new user in the database
         const newUser = await db.user.create({
+            //@ts-ignore
             data: {
                 email,
                 password: hashedPassword,
