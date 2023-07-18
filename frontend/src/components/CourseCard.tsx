@@ -1,11 +1,14 @@
 import { FC, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ThreeDotIcon from "../components/icons/ThreedotIcon";
 import EditIcon from "../components/icons/EditIcon";
 import DeleteIcon from "../components/icons/DeleteIcon";
+import { courseAction } from "../redux/slice";
+import { useAppDispatch } from "../hooks/hooks";
 
 type Course = {
     id: number;
+    slug: string;
     title: string;
     summary: string;
     author: string;
@@ -13,14 +16,17 @@ type Course = {
 
 const CourseCard: FC<Course> = (props: Course) => {
     const [isDisplayDropDown, setIsDisplayDropDown] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
-    const handleEditCourse = (id: number) => {
+    const handleEditCourse = (slug: string) => {
+        navigate(`/my-courses/edit/${slug}`);
+    };
 
-    }
-
-    const handleDeleteCourse = (id: number) => {
-        
-    }
+    const handleDeleteCourse = (courseId: number) => {
+        // @ts-ignore
+        dispatch(courseAction.deleteCourse(courseId));
+    };
 
     return (
         <div className="flex pt-4 pb-3 border-b-[1px]">
@@ -47,11 +53,17 @@ const CourseCard: FC<Course> = (props: Course) => {
                         isDisplayDropDown ? "block" : "hidden"
                     }`}
                 >
-                    <div className="flex items-center mb-2 hover:bg-backgroundHover cursor-pointer" onClick={() => handleEditCourse(props.id)}>
+                    <div
+                        className="flex items-center mb-2 hover:bg-backgroundHover cursor-pointer"
+                        onClick={() => handleEditCourse(props.slug)}
+                    >
                         <EditIcon />
                         <span className="ml-2">Edit</span>
                     </div>
-                    <div className="flex items-center hover:bg-backgroundHover cursor-pointer" onClick={() => handleDeleteCourse(props.id)}>
+                    <div
+                        className="flex items-center hover:bg-backgroundHover cursor-pointer"
+                        onClick={() => handleDeleteCourse(props.id)}
+                    >
                         <DeleteIcon />
                         <span className="ml-2">Delete</span>
                     </div>

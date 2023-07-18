@@ -1,10 +1,11 @@
 // import apiCaller from "../api-config/apiCaller";
-// import { HTTP_GET } from "../utils/contants";
+// import { HTTP_GET, HTTP_DELETE } from "../utils/contants";
 
 export const getMyCourses = async (page_index: number, keyword: string) => {
     // const path = `/api/courses/search-my-courses?pageIndex=${page_index}&keyword=${keyword}`;
 
     // const response = await apiCaller(HTTP_GET, path);
+    console.log({ page_index, keyword });
     const response = {
         success: true,
         message: "Get course successful",
@@ -21,7 +22,7 @@ export const getMyCourses = async (page_index: number, keyword: string) => {
                     author: "Duong Song",
                     category: ["NodeJS, MYSQL"],
                     number_section: 10,
-                    slug: "slug-template",
+                    slug: "MySQL",
                 },
                 {
                     id: 2,
@@ -31,7 +32,7 @@ export const getMyCourses = async (page_index: number, keyword: string) => {
                     author: "Duong Song",
                     category: ["NodeJS, MYSQL"],
                     number_section: 10,
-                    slug: "slug-template",
+                    slug: "MYSQL1",
                 },
                 {
                     id: 3,
@@ -41,10 +42,24 @@ export const getMyCourses = async (page_index: number, keyword: string) => {
                     author: "Duong Song",
                     category: ["NodeJS, MYSQL"],
                     number_section: 10,
-                    slug: "slug-template",
+                    slug: "MYSQL2",
                 },
             ],
-            message: "Get course successfully"
+            message: "Get course successfully",
+        },
+    };
+    return response;
+};
+
+export const deleteCourse = async (courseId: number) => {
+    // const path = `/api/courses/${courseId}`;
+    // const response = await apiCaller(HTTP_DELETE, path);
+    const response = {
+        status: 200,
+        data: {
+            success: true,
+            message: `Delete course ${courseId} successful`,
+            status_code: 200,
         },
     };
     return response;

@@ -10,6 +10,6 @@ export type Course = {
 };
 
 export type getMyCourses = {
-    page_index: number;
+    pageIndex: number;
     keyword: string;
 };
