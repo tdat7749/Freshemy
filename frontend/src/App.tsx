@@ -40,7 +40,7 @@ function App() {
                         <Route path="/change-password" element={<ChangePassword />}></Route>
                         <Route path="/my-courses" element={<MyCourses />}></Route>
                     </Route>
-                    <Route path="/my-courses/edit/:slug" element={<EditCourse />}></Route>
+                    <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                     <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                     <Route path="/login" element={<Login />}></Route>

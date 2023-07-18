@@ -5,7 +5,6 @@ import { convertJoiErrorToString } from "../commons/index";
 import { RequestHasLogin } from "../types/request";
 import service from "../services/index";
 
-
 class SectionController {
     async getSection(req: Request, res: Response): Promise<Response> {
         const response = await service.SectionService.getSection(req);
