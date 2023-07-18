@@ -1,84 +1,73 @@
+import { Request, Response } from "express";
+import { ResponseError, ResponseSuccess } from "../commons/response";
+import CategoryService from "../services/category.service";
 
-import { Request, Response } from 'express';
-import { CreateCategoryDTO, UpdateCategoryDTO } from '../DTOS/category.dto';
-import { ResponseError, ResponseSuccess } from '../commons/response';
-
-import CategoryService from '../services/category.service';
-
-export class CategoryController {
-    private categoryService: typeof CategoryService;
-
-    constructor() {
-        this.categoryService = CategoryService;
-    }
-
-    public createCategory = async (req: Request, res: Response) => {
+class CategoryController {
+    async createCategory(req: Request, res: Response): Promise<Response> {
         try {
-            const createCategoryDTO: CreateCategoryDTO = req.body;
-            const category = await this.categoryService.createCategory(createCategoryDTO);
-            res.json(new ResponseSuccess(200, 'Category created successfully', true, category));
+            const { title } = req.body;
+            const category = await CategoryService.createCategory({ title });
+            return res.json(new ResponseSuccess(200, "Category created successfully", true, category));
         } catch (error: any) {
-            res.status(500).json(new ResponseError(500, 'Internal Server Error', false));
+            return res.status(500).json(new ResponseError(500, "Internal Server Error", false));
         }
     }
 
-    public getAllCategories = async (req: Request, res: Response) => {
+    async getAllCategories(req: Request, res: Response): Promise<Response> {
         try {
-            const categories = await this.categoryService.getAllCategories();
-            res.json(new ResponseSuccess(200, 'Categories retrieved successfully', true, categories));
+            const categories = await CategoryService.getAllCategories();
+            return res.json(new ResponseSuccess(200, "Categories retrieved successfully", true, categories));
         } catch (error: any) {
-            res.status(500).json(new ResponseError(500, 'Internal Server Error', false));
+            return res.status(500).json(new ResponseError(500, "Internal Server Error", false));
         }
     }
 
-    public getCategoryById = async (req: Request, res: Response) => {
+    async getCategoryById(req: Request, res: Response): Promise<Response> {
         try {
             const categoryId: number = parseInt(req.params.id);
-            const category = await this.categoryService.getCategoryById(categoryId);
+            const category = await CategoryService.getCategoryById(categoryId);
             if (category) {
-                res.json(new ResponseSuccess(200, 'Category retrieved successfully', true, category));
+                return res.json(new ResponseSuccess(200, "Category retrieved successfully", true, category));
             } else {
-                res.status(404).json(new ResponseError(404, 'Category not found', false));
+                return res.status(404).json(new ResponseError(404, "Category not found", false));
             }
         } catch (error: any) {
-            res.status(500).json(new ResponseError(500, 'Internal Server Error', false));
+            return res.status(500).json(new ResponseError(500, "Internal Server Error", false));
         }
     }
 
-    public editCategory = async (req: Request, res: Response): Promise<Response> => {
+    async editCategory(req: Request, res: Response): Promise<Response> {
         try {
             const categoryId: number = parseInt(req.params.id);
-            const updateCategoryDTO: UpdateCategoryDTO = req.body;
+            const { title } = req.body;
 
-            const updatedCategory = await this.categoryService.editCategory(categoryId, updateCategoryDTO);
+            const updatedCategory = await CategoryService.editCategory(categoryId, { title });
 
             if (updatedCategory) {
-                return res.json(new ResponseSuccess(200, 'Category updated successfully', true, updatedCategory));
+                return res.json(new ResponseSuccess(200, "Category updated successfully", true, updatedCategory));
             } else {
-                return res.status(404).json(new ResponseError(404, 'Category not found', false));
+                return res.status(404).json(new ResponseError(404, "Category not found", false));
             }
         } catch (error: any) {
-            return res.status(500).json(new ResponseError(500, 'Internal Server Error', false));
+            return res.status(500).json(new ResponseError(500, "Internal Server Error", false));
         }
     }
 
-    public deleteCategory = async (req: Request, res: Response): Promise<Response> => {
+    async deleteCategory(req: Request, res: Response): Promise<Response> {
         try {
             const categoryId: number = parseInt(req.params.id);
 
-            const deletedCategory = await this.categoryService.deleteCategory(categoryId);
+            const deletedCategory = await CategoryService.deleteCategory(categoryId);
 
             if (deletedCategory) {
-                return res.json(new ResponseSuccess(200, 'Category deleted successfully', true));
+                return res.json(new ResponseSuccess(200, "Category deleted successfully", true));
             } else {
-                return res.status(404).json(new ResponseError(404, 'Category not found', false));
+                return res.status(404).json(new ResponseError(404, "Category not found", false));
             }
         } catch (error: any) {
-            return res.status(500).json(new ResponseError(500, 'Internal Server Error', false));
+            return res.status(500).json(new ResponseError(500, "Internal Server Error", false));
         }
     }
-
-
 }
 
 export default CategoryController;

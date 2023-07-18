@@ -1,40 +1,44 @@
-import { Request, Response, NextFunction, RequestHandler } from 'express';
-import { CreateCourseDTO } from '../DTOS/course.dto';
-import { ResponseError, ResponseSuccess } from '../commons/response';
-import { CourseService } from '../services/course.service';
-import { RequestCreateCourseWithUserId } from '../types/request';
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
+import { Request, Response } from "express";
+import { ResponseError, ResponseSuccess } from "../commons/response";
+import CourseService from "../services/course.service";
+import { RequestHasLogin, RequestMyCourseWithUser } from "../types/request";
 
-export class CourseController {
-    private courseService: CourseService;
+class CourseController {
+    async searchMyCourses(req: RequestHasLogin, res: Response): Promise<Response> {
+        try {
+            const { pageIndex, keyword } = req.query;
+            const parsedPageIndex = parseInt(pageIndex as string, 10);
+            const parsedKeyword = keyword as string;
+            const userId = req.user_id || 0; // Gán giá trị mặc định là 0 nếu không có giá trị user_id
 
-    constructor() {
-        this.courseService = new CourseService();
+            const result = await CourseService.searchMyCourses(parsedPageIndex, parsedKeyword, userId);
+
+            return res.status(result.status_code).json(result);
+        } catch (error: any) {
+            return res.status(500).json({
+                success: false,
+                message: error.message || "Internal Server Error",
+                status_code: 500,
+            });
+        }
     }
 
-
-    public createCourse = async (req: RequestCreateCourseWithUserId, res: Response) => {
+    async deleteMyCourse(req: Request, res: Response): Promise<Response> {
         try {
-            const createCourseDTO: CreateCourseDTO = req.body;
-            const userId: number = req.user.id;
-            const thumbnail = req.file;
+            const { id } = req.params;
+            const courseId = parseInt(id, 10);
 
-            if (!thumbnail) {
-                return res.status(400).json(new ResponseError(400, 'Thumbnail file is required', false));
-            }
+            const result = await CourseService.deleteMyCourse(courseId);
 
-            const course = await this.courseService.createCourse(createCourseDTO, userId, thumbnail);
-
-            if (course) {
-                return res.status(200).json(new ResponseSuccess(200, 'Create course successfully', true));
-            } else {
-                return res.status(500).json(new ResponseError(500, 'Failed to create course', false));
-            }
+            return res.status(result.status_code).json(result);
         } catch (error: any) {
-            return res.status(500).json(new ResponseError(500, 'Internal Server Error', false));
+            return res.status(500).json({
+                success: false,
+                message: error.message || "Internal Server Error",
+                status_code: 500,
+            });
         }
-    };
+    }
 }
 
 export default CourseController;

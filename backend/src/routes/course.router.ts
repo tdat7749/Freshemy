@@ -1,27 +1,18 @@
-import express, { RequestHandler } from 'express';
-import { CourseController } from '../controllers/course.controller';
-import { isLogin } from '../middlewares/isLogin';
-import multer from 'multer';
-import { RequestCreateCourseWithUserId } from "../types/request";
+import express from "express";
+import CourseController from "../controllers/course.controller";
 
+import { isLogin } from "../middlewares/isLogin";
+import { RequestMyCourseWithUser } from "../types/request";
+
+import { Request, Response, NextFunction } from "express";
 
 const router = express.Router();
 const courseController = new CourseController();
 
-// Configure multer storage and file upload
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/course-thumbnails');
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, file.fieldname + '-' + uniqueSuffix);
-    },
-});
+router.use(isLogin);
 
-const upload = multer({ storage });
+router.get("/search-my-courses", (req, res) => courseController.searchMyCourses(req, res));
 
-router.post('/courses', isLogin, upload.single('thumbnail'), courseController.createCourse as unknown as RequestHandler);
-
+router.delete("/delete-my-course/:id", isLogin, courseController.deleteMyCourse.bind(courseController));
 
 export default router;

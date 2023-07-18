@@ -1,17 +1,20 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { CreateCategoryDTO, UpdateCategoryDTO } from '../DTOS/category.dto';
+import { PrismaClient } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
-import {
-    MESSAGE_ERROR_INTERNAL_SERVER,
-    MESSAGE_ERROR_BAD_REQUEST
-} from "../utils/constant";
+import { MESSAGE_ERROR_INTERNAL_SERVER, MESSAGE_ERROR_BAD_REQUEST } from "../utils/constant";
+import { db } from "../configs/db.config";
 
-const prisma = new PrismaClient();
+type CreateCategoryDTO = {
+    title: string;
+};
 
+type UpdateCategoryDTO = {
+    title: string;
+};
 export const createCategory = async (createCategoryDTO: CreateCategoryDTO) => {
     try {
-        const category = await prisma.category.create({
+        const category = await db.category.create({
             data: createCategoryDTO,
             select: {
                 id: true,
@@ -27,10 +30,9 @@ export const createCategory = async (createCategoryDTO: CreateCategoryDTO) => {
     }
 };
 
-
 export const getAllCategories = async () => {
     try {
-        const categories = await prisma.category.findMany();
+        const categories = await db.category.findMany();
         return new ResponseSuccess(200, "Get all categories successfully", true, categories);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -40,10 +42,9 @@ export const getAllCategories = async () => {
     }
 };
 
-
 export const getCategoryById = async (categoryId: number) => {
     try {
-        const category = await prisma.category.findUnique({
+        const category = await db.category.findUnique({
             where: {
                 id: categoryId,
             },
@@ -64,7 +65,7 @@ export const getCategoryById = async (categoryId: number) => {
 
 export const editCategory = async (categoryId: number, updateCategoryDTO: UpdateCategoryDTO) => {
     try {
-        const existingCategory = await prisma.category.findUnique({
+        const existingCategory = await db.category.findUnique({
             where: {
                 id: categoryId,
             },
@@ -74,7 +75,7 @@ export const editCategory = async (categoryId: number, updateCategoryDTO: Update
             return new ResponseError(404, "Category not found", false);
         }
 
-        const updatedCategory = await prisma.category.update({
+        const updatedCategory = await db.category.update({
             where: {
                 id: categoryId,
             },
@@ -96,7 +97,7 @@ export const editCategory = async (categoryId: number, updateCategoryDTO: Update
 
 export const deleteCategory = async (categoryId: number) => {
     try {
-        const existingCategory = await prisma.category.findUnique({
+        const existingCategory = await db.category.findUnique({
             where: {
                 id: categoryId,
             },
@@ -106,7 +107,7 @@ export const deleteCategory = async (categoryId: number) => {
             return new ResponseError(404, "Category not found", false);
         }
 
-        await prisma.category.delete({
+        await db.category.delete({
             where: {
                 id: categoryId,
             },
@@ -121,16 +122,12 @@ export const deleteCategory = async (categoryId: number) => {
     }
 };
 
-
-
-
 const CategoryService = {
     createCategory,
     getAllCategories,
     getCategoryById,
     editCategory,
-    deleteCategory
+    deleteCategory,
 };
 
 export default CategoryService;
-

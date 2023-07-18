@@ -1,42 +1,110 @@
-import { Course, PrismaClient } from '@prisma/client';
-import { CreateCourseDTO } from '../DTOS/course.dto';
-import FileUploader from '../middlewares/FileUpload';
+// course.service.ts
+import { db } from "../configs/db.config";
 
-const prisma = new PrismaClient();
+export const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<any> => {
+    try {
+        const parsedPageIndex = parseInt(pageIndex.toString(), 10);
+        const parsedKeyword = keyword;
 
-export class CourseService {
-    public async createCourse(createCourseDTO: CreateCourseDTO, userId: number, thumbnail: Express.Multer.File): Promise<Course | null> {
-        try {
-            const { title, slug, status, description, summary, categories } = createCourseDTO;
+        const skip = (parsedPageIndex - 1) * 10;
+        const take = 10;
 
-            // Process and save the thumbnail file
-            const uploader = new FileUploader();
-            const thumbnailFileName = await uploader.uploadImage(thumbnail, 'course-thumbnails');
-
-            const course = await prisma.course.create({
-                data: {
-                    title,
-                    slug,
-                    status,
-                    description,
-                    summary,
-                    user_id: userId,
-                    thumbnail: thumbnailFileName,
+        const courses = await db.course.findMany({
+            skip,
+            take,
+            where: {
+                title: {
+                    contains: parsedKeyword,
                 },
-            });
+                user_id: userId, // Lọc theo user_id của Trần Văn C
+            },
+            include: {
+                user: true,
+                courses_categories: {
+                    include: {
+                        category: true,
+                    },
+                },
+                ratings: {
+                    include: {
+                        user: true,
+                    },
+                },
+                sections: true,
+            },
+        });
 
-            if (course) {
-                // Create associations with categories
-                await prisma.courseCategory.createMany({
-                    data: categories.map((categoryId: number) => ({ course_id: course.id, category_id: categoryId })),
-                });
-            }
+        const totalRecord = await db.course.count({
+            where: {
+                title: {
+                    contains: parsedKeyword,
+                },
+                user_id: userId, // Lọc theo user_id của Trần Văn C
+            },
+        });
 
-            return course;
-        } catch (error: any) {
-            console.error('Error creating course:', error);
-            // Perform additional error handling actions if needed
-            return null;
-        }
+        const totalPage = Math.ceil(totalRecord / take);
+
+        const myCoursesData = courses.map((course) => {
+            const ratingsSum = course.ratings.reduce((total, rating) => total + rating.value, 0);
+            const averageRating = course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0;
+
+            return {
+                id: course.id,
+                title: course.title,
+                summary: course.summary,
+                rate: averageRating,
+                author: `${course.user?.first_name} ${course.user?.last_name}`,
+                category: course.courses_categories.map((cc) => cc.category.title),
+                number_section: course.sections.length,
+                slug: course.slug,
+            };
+        });
+
+        return {
+            success: true,
+            message: "Get data successfully",
+            status_code: 200,
+            data: {
+                total_page: totalPage,
+                total_record: totalRecord,
+                courses: myCoursesData,
+            },
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error.message || "Internal Server Error",
+            status_code: 500,
+        };
     }
-}
+};
+
+export const deleteMyCourse = async (courseId: number): Promise<any> => {
+    try {
+        await db.course.delete({
+            where: {
+                id: courseId,
+            },
+        });
+
+        return {
+            success: true,
+            message: "Delete successfully",
+            status_code: 200,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error.message || "Internal Server Error",
+            status_code: 500,
+        };
+    }
+};
+
+const CourseService = {
+    searchMyCourses,
+    deleteMyCourse,
+};
+
+export default CourseService;
