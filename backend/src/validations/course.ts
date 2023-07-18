@@ -13,7 +13,7 @@ import {
     MESSAGE_ERROR_SUMMARY_STRING,
     MESSAGE_ERROR_THUMBNAIL_REQUIRED,
     MESSSAGE_ERROR_SLUG_MALFORMED,
-} from "src/utils/constant";
+} from "../utils/constant";
 
 type CreateCourse = {
     title: string;
