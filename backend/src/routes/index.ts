@@ -5,6 +5,6 @@ import userRouter from "./user.router";
 const routers = {
     authRouter: authRouter,
     userRouter: userRouter,
-    courseRouter: courseRouter,
+    courseRouter: courseRouter
 };
 export default routers;
