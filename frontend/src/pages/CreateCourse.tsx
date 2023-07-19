@@ -11,14 +11,14 @@ import { createValidationSchema } from "../validations/course";
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
 
-    const [thumbnail, setThumbnail] = useState<File | null>(null)
+    const [thumbnail, setThumbnail] = useState<File | null>(null);
 
     // const isLogin = useAppSelector((state) => state.Slice.isLogin);
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
-    const isLoading = useAppSelector(state => state.courseSlice.isLoading)
+    const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
     let categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
-    let categoriesCreateSelector = useAppSelector((state) => state.courseSlice.newCourse.categories);
+    let categoriesCreateSelector = useAppSelector((state) => state.courseSlice.selectCategories);
     const formikRef = useRef(null);
 
     useEffect(() => {
@@ -35,27 +35,26 @@ const CreateCourse: FC = () => {
         status: 0,
         summary: "",
         description: "",
-        thumbnail: null
+        thumbnail: null,
     };
 
     const handleOnSubmit = async (values: CreateCourseType) => {
-
         // Trong request form thì value chỉ được là text hoặc file
-        const categoriesId : number[] = categoriesCreateSelector.map((category: CategoryType) => {
+        const categoriesId: number[] = categoriesCreateSelector.map((category: CategoryType) => {
             return category.id;
         });
-        console.log(categoriesId)
+        console.log(categoriesId);
 
-        let formData = new FormData()
-        formData.append("title", values.title)
-        formData.append("description", values.description)
-        formData.append("slug", "abc-adas-zzzz") // chỗ này tìm 1 hàm convert qua slug ở trên mạng, ném hàm đó vào folder utils hay gì cũng đc
-        formData.append("status", values.status.toString())
-        formData.append("thumbnail", thumbnail as File)
-        formData.append("summary", values.summary)
+        let formData = new FormData();
+        formData.append("title", values.title);
+        formData.append("description", values.description);
+        formData.append("slug", "abc-adas-zzzaaz"); // chỗ này tìm 1 hàm convert qua slug ở trên mạng, ném hàm đó vào folder utils hay gì cũng đc
+        formData.append("status", values.status.toString());
+        formData.append("thumbnail", thumbnail as File);
+        formData.append("summary", values.summary);
         categoriesId.forEach((item) => {
-            formData.append("categories[]", item.toString())
-        })
+            formData.append("categories[]", item.toString());
+        });
 
         // @ts-ignore
         dispatch(courseActions.createCourses(formData));
@@ -78,13 +77,13 @@ const CreateCourse: FC = () => {
     };
 
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setThumbnail(event.currentTarget.files![0])
-    }
+        setThumbnail(event.currentTarget.files![0]);
+    };
 
     const handleCancel = () => {
         setThumbnail(null);
         dispatch(courseActions.reset());
-    }
+    };
 
     return (
         <>
@@ -103,12 +102,12 @@ const CreateCourse: FC = () => {
                                 onChange={handleDeleteMessage}
                             >
                                 <h1 className="font-bold text-[32px] text-center">SIGN UP</h1>
-                                <Field
-                                    name="thumb"
-                                    type="file"
-                                    onChange={onChangeInputFile}
+                                <Field name="thumbnail" type="file" onChange={onChangeInputFile} />
+                                <ErrorMessage
+                                    name="thumbnail"
+                                    component="span"
+                                    className="text-[14px] text-error font-medium"
                                 />
-
                                 <div className="container flex flex-row h-full">
                                     <div className="container-item flex flex-col w-1/2 mr-8">
                                         <div className="title item">
@@ -118,8 +117,9 @@ const CreateCourse: FC = () => {
                                             <Field
                                                 type="text"
                                                 name="title"
-                                                className={`${formik.errors.title && formik.touched.title ? "border-error" : ""
-                                                    } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                                className={`${
+                                                    formik.errors.title && formik.touched.title ? "border-error" : ""
+                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                             />
                                             <ErrorMessage
                                                 name="title"
@@ -136,7 +136,7 @@ const CreateCourse: FC = () => {
                                                     {categoriesCreateSelector?.map((category: CategoryType) => {
                                                         return (
                                                             <div key={category.id}>
-                                                                <div>{category.category}</div>
+                                                                <div>{category.title}</div>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleRemoveCategory(category.id)}
@@ -150,10 +150,11 @@ const CreateCourse: FC = () => {
                                                 <Field
                                                     name="categories"
                                                     as="select"
-                                                    className={`${formik.errors.categories && formik.touched.categories
-                                                        ? "border-error"
-                                                        : ""
-                                                        } w-[10%] h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                                    className={`${
+                                                        formik.errors.categories && formik.touched.categories
+                                                            ? "border-error"
+                                                            : ""
+                                                    } w-[10%] h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                                     onChange={handleAddCategories}
                                                     default=""
                                                 >
@@ -161,7 +162,7 @@ const CreateCourse: FC = () => {
                                                         (category: CategoryType, index: number) => {
                                                             return (
                                                                 <option key={index} value={category.id}>
-                                                                    {category.category}
+                                                                    {category.title}
                                                                 </option>
                                                             );
                                                         }
@@ -184,8 +185,9 @@ const CreateCourse: FC = () => {
                                             <Field
                                                 name="status"
                                                 as="select"
-                                                className={`${formik.errors.status && formik.touched.status ? "border-error" : ""
-                                                    } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                                className={`${
+                                                    formik.errors.status && formik.touched.status ? "border-error" : ""
+                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                             >
                                                 <option key="0" value={0}>
                                                     Uncompleted
@@ -212,10 +214,11 @@ const CreateCourse: FC = () => {
                                             as="textarea"
                                             name="description"
                                             placeholder="Explain your queries"
-                                            className={`${formik.errors.description && formik.touched.description
-                                                ? "border-error"
-                                                : ""
-                                                } block h-[95%] w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:shadow-md1`}
+                                            className={`${
+                                                formik.errors.description && formik.touched.description
+                                                    ? "border-error"
+                                                    : ""
+                                            } block h-[95%] w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:shadow-md1`}
                                         />
                                         <ErrorMessage
                                             name="description"
@@ -231,8 +234,9 @@ const CreateCourse: FC = () => {
                                     <Field
                                         type="text"
                                         name="summary"
-                                        className={`${formik.errors.summary && formik.touched.summary ? "border-error" : ""
-                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                        className={`${
+                                            formik.errors.summary && formik.touched.summary ? "border-error" : ""
+                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                     />
                                     <ErrorMessage
                                         name="summary"

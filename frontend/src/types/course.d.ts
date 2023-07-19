@@ -1,10 +1,10 @@
 export type Category = {
     id: number,
-    category: String
+    title: String
 }
 
 export type NewCourse = {
-    title: string,
+    title:  string,
     categories: Category[],
     status: number,
     summary: string,

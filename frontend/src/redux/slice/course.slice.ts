@@ -5,7 +5,7 @@ import { createCourse as createCourseAPI, getCategories as getCategoriesAPI } fr
 import { NewCourse, Category } from "../../types/course";
 
 type CourseSlice = {
-    newCourse: NewCourse;
+    selectCategories: Category[];
     categories: Category[];
     error: string;
     message: string;
@@ -24,15 +24,20 @@ export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejec
     }
 );
 
+export const getCategories = createAsyncThunk<Response<Category[]>, null, { rejectValue: Response<null> }>  (
+    "course/getCategories",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await getCategoriesAPI();
+            return response.data as Response<Category[]>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 const initialState: CourseSlice = {
-    newCourse: {
-        title: "",
-        categories: [],
-        status: 0,
-        summary: "",
-        description: "",
-        thumbnail: null,
-    },
+    selectCategories: [],
     categories: [],
     error: "",
     message: "",
@@ -55,22 +60,18 @@ export const courseSlice = createSlice({
         },
         addCategories: (state, payload: PayloadAction<number>) => {
             const category = state.categories.splice(payload.payload, 1)[0];
-            state.newCourse.categories.push(category);
+            state.selectCategories.push(category);
         },
         removeCategories: (state, payload: PayloadAction<number>) => {
-            const category: Category = state.newCourse.categories.splice(payload.payload, 1)[0];
+            const category: Category = state.selectCategories.splice(payload.payload, 1)[0];
             state.categories.push(category);
         },
         setCategories: (state, payload: PayloadAction<Category[]>) => {
             state.categories = payload.payload;
         },
         reset: (state) => {
-            state.categories = [...state.categories, ...state.newCourse.categories];
-            state.newCourse.title = "";
-            state.newCourse.categories = [];
-            state.newCourse.status = 0;
-            state.newCourse.summary = "";
-            state.newCourse.description = "";
+            state.categories = [...state.categories, ...state.selectCategories];
+            state.selectCategories = [];
         },
     },
     extraReducers: (builder) => {
@@ -87,6 +88,21 @@ export const courseSlice = createSlice({
             state.error = action.payload?.message as string;
             state.isLoading = false;
         });
+
+
+        builder.addCase(getCategories.pending, (state) => {
+            state.error = "";
+            state.message = "";
+            state.isLoading = true;
+        });
+        builder.addCase(getCategories.fulfilled, (state, action) => {
+            state.categories = action.payload.data as Category[]
+            state.isLoading = false;
+        });
+        builder.addCase(getCategories.rejected, (state, action) => {
+            state.error = action.payload?.message as string;
+            state.isLoading = false;
+        });
     },
 });
 
@@ -95,11 +111,4 @@ export const { setError, setCategories, addCategories, removeCategories, reset }
 export default courseSlice.reducer;
 
 
-export const getCategories = () => async (dispatch: any) => {
-    try {
-        const response = await getCategoriesAPI();
-        dispatch(setCategories(response.data.data));
-    } catch (error: any) {
-        dispatch(setError(error?.data.message));
-    }
-};
+
