@@ -55,8 +55,18 @@ const createSection = async (req: Request) : Promise<ResponseBase> => {
                 course_id: course_id
             },
         })
-
-        if (section) return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true);
+        const next = await configs.db.section.findMany({
+            take: 1,
+            orderBy: {
+              id: "desc",
+            },
+        });
+        const data = {
+            id: next[0].id,
+            title: next[0].title,
+            course_id: next[0].course_id,
+        }
+        if (section) return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true,data);
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
