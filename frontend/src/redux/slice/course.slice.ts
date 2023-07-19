@@ -3,13 +3,23 @@ import { Response } from "../../types/response";
 
 import { createCourse as createCourseAPI, getCategories as getCategoriesAPI } from "../../apis/course";
 import { NewCourse, Category } from "../../types/course";
+import { getMyCourses as getMyCoursesAPI, deleteCourse as deleteCourseAPI } from "../../apis/courses";
+import {
+    Course as CourseType,
+    PagingCourse,
+    deleteCourse as deleteCourseType,
+    getMyCourses as getMyCoursesType,
+} from "../../types/course";
+
 
 type CourseSlice = {
     selectCategories: Category[];
     categories: Category[];
+    courses: CourseType[];
     error: string;
     message: string;
     isLoading: boolean;
+    totalPage: number;
 };
 
 export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejectValue: Response<null> }>(
@@ -36,12 +46,38 @@ export const getCategories = createAsyncThunk<Response<Category[]>, null, { reje
     }
 );
 
+export const getMyCourses = createAsyncThunk<Response<PagingCourse>, getMyCoursesType, { rejectValue: Response<null> }>(
+    "course/getMyCourses",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await getMyCoursesAPI(body);
+            return response.data as Response<PagingCourse>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const deleteCourse = createAsyncThunk<Response<null>, deleteCourseType, { rejectValue: Response<null> }>(
+    "course/deleteCourse",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await deleteCourseAPI(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 const initialState: CourseSlice = {
     selectCategories: [],
     categories: [],
+    courses: [],
     error: "",
     message: "",
     isLoading: false,
+    totalPage: 1,
 };
 
 export const courseSlice = createSlice({
@@ -72,6 +108,9 @@ export const courseSlice = createSlice({
         reset: (state) => {
             state.categories = [...state.categories, ...state.selectCategories];
             state.selectCategories = [];
+        },
+        setDeleteCourse: (state, action: PayloadAction<number>) => {
+            state.courses = state.courses.filter((course: CourseType) => course.id !== action.payload);
         },
     },
     extraReducers: (builder) => {
@@ -106,7 +145,7 @@ export const courseSlice = createSlice({
     },
 });
 
-export const { setError, setCategories, addCategories, removeCategories, reset } = courseSlice.actions;
+export const { setError, setCategories, addCategories, removeCategories, reset, setDeleteCourse } = courseSlice.actions;
 
 export default courseSlice.reducer;
 
