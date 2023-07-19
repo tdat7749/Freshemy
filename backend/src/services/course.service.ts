@@ -20,7 +20,7 @@ import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonw
 // import { ResponseBase } from "../commons/response";
 import cloudinary from "../configs/cloudinary.config";
 import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
-import { Console } from "console";
+
 const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
         const { id, title, slug, summary, description, categories, status } = req.body;

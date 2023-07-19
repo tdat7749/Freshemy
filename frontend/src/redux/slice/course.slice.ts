@@ -4,6 +4,7 @@ import { getMyCourses as getMyCoursesAPI, deleteCourse as deleteCourseAPI } from
 import {
     Course,
     Course as CourseType,
+    GetCourseInfo,
     PagingCourse,
     deleteCourse as deleteCourseType,
     getMyCourses as getMyCoursesType,
@@ -29,6 +30,19 @@ export const getMyCourses = createAsyncThunk<Response<PagingCourse>, getMyCourse
         }
     }
 );
+
+export const getCourseInfo = createAsyncThunk<Response<GetCourseInfo>, getMyCoursesType, { rejectValue: Response<null> }>(
+    "course/getCourseInfo",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await getMyCoursesAPI(body);
+            return response.data as Response<GetCourseInfo>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 
 export const deleteCourse = createAsyncThunk<Response<null>, deleteCourseType, { rejectValue: Response<null> }>(
     "course/deleteCourse",

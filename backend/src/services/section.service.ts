@@ -20,14 +20,13 @@ const getSection = async (req: Request): Promise<ResponseBase> => {
         const isFoundSection = await configs.db.section.findFirst({
             where: {
                 id: section_id,
-                is_delete: false
+                is_delete: false,
             },
         });
         const data = {
             id: isFoundSection?.id,
             title: isFoundSection?.title,
         };
-        console.log(isFoundSection);
         if (isFoundSection) return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, data);
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
     } catch (error: any) {
@@ -55,13 +54,31 @@ const createSection = async (req: Request): Promise<ResponseBase> => {
                 course_id: course_id,
             },
         });
-
-        if (section) return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true);
+        const next = await configs.db.section.findMany({
+            take: 1,
+            orderBy: {
+                id: "desc",
+            },
+        });
+        const data = {
+            id: next[0].id,
+            title: next[0].title,
+            course_id: next[0].course_id,
+        };
+        if (section) return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true, data);
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
+        if (error instanceof TokenExpiredError) {
+            return new ResponseError(400, error.message, false);
+        } else if (error instanceof JsonWebTokenError) {
+            return new ResponseError(401, error.message, false);
+        } else if (error instanceof NotBeforeError) {
+            return new ResponseError(401, error.message, false);
+        }
+
         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
@@ -108,7 +125,7 @@ const deleteSection = async (req: Request): Promise<ResponseBase> => {
             data: {
                 is_delete: true,
             },
-        })
+        });
         if (isDelete) return new ResponseSuccess(200, MESSAGE_SUCCESS_DELETE_DATA, true);
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
     } catch (error: any) {

@@ -15,6 +15,10 @@ export type getMyCourses = {
     keyword?: string;
 };
 
+export type GetCourseInfo = {
+    courses: Course[];
+};
+
 export type CreateCourse = {
     title: string;
     categories: Category[];

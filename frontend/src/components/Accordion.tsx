@@ -8,6 +8,9 @@ import EditSectionIcon from "./icons/EditSectionIcon";
 
 type AccordionType = {
     section: Section;
+    handleEditSection: (id: number) => void;
+    handleDeleteSection: (id: number) => void;
+    handledisplayDeleteModal: (id: number) => void;
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
@@ -15,19 +18,6 @@ const Accordion: React.FC<AccordionType> = (props) => {
 
     // const lessonList: Lesson[] = useAppSelector((state) => state.lessonSlice.lessontionList) ?? [];
 
-    console.log(props.section.id);
-
-    const handleAddLesson = () => {
-        console.log("addd");
-    };
-
-    const handleEditSection = () => {
-        console.log("edit");
-    };
-
-    const handleDeleteSection = () => {
-        console.log("delete");
-    };
     return (
         <>
             <div>
@@ -52,13 +42,13 @@ const Accordion: React.FC<AccordionType> = (props) => {
                             <span>{props.section.title}</span>
                         </div>
                         <div className="flex gap-2">
-                            <div className="cursor-pointer" onClick={handleAddLesson}>
+                            <div className="cursor-pointer">
                                 <AddIcon />
                             </div>
-                            <div className="cursor-pointer" onClick={handleEditSection}>
+                            <div className="cursor-pointer" onClick={() => props.handleEditSection(props.section.id)}>
                                 <EditSectionIcon />
                             </div>
-                            <div className="cursor-pointer" onClick={handleDeleteSection}>
+                            <div className="cursor-pointer" onClick={() => props.handledisplayDeleteModal(props.section.id)}>
                                 <DeleteIcon />
                             </div>
                         </div>

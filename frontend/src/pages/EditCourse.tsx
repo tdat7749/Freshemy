@@ -7,9 +7,12 @@ import { sectionActions } from "../redux/slice";
 import { useParams } from "react-router-dom";
 import Accordion from "../components/Accordion";
 import { AddSection as AddSectionType, Section } from "../types/section";
+import DeleteModal from "../components/DeleteModal";
 
 const EditCourse: React.FC = () => {
     const [section, setSection] = useState<string>("");
+    const [isDisplayDeleteModal, setIsDisplayDeleteModal] = useState<boolean>(false);
+    const [idItem, setIdItem] = useState<number>(-1);
 
     const sectionLists: Section[] = useAppSelector((state) => state.sectionSlice.sectionList) ?? [];
 
@@ -23,6 +26,10 @@ const EditCourse: React.FC = () => {
         description: "",
     };
 
+    // useEffect(() => {
+    //     dispatch()
+    // }, [dispatch]);
+
     const dispatch = useAppDispatch();
 
     const handleOnSubmit = () => {};
@@ -34,6 +41,30 @@ const EditCourse: React.FC = () => {
         };
         // @ts-ignore
         dispatch(sectionActions.addSection(values));
+    };
+
+    const handledisplayDeleteModal = (id: number) => {
+        setIdItem(id);
+        setIsDisplayDeleteModal(!isDisplayDeleteModal);
+    };
+
+    const handleCancelModal = () => {
+        setIsDisplayDeleteModal(!isDisplayDeleteModal);
+    };
+
+    const handleEditSection = () => {
+        // @ts-ignore
+        dispatch(sectionActions.editSection({ idItem }));
+    };
+
+    const handleDeleteSection = () => {
+        //@ts-ignore
+        dispatch(sectionActions.deleteSection(idItem)).then((response) => {
+            if (response.payload.status_code === 200) {
+                dispatch(sectionActions.setDeleteSection(idItem));
+            }
+        });
+        setIsDisplayDeleteModal(!isDisplayDeleteModal);
     };
 
     return (
@@ -206,12 +237,21 @@ const EditCourse: React.FC = () => {
                     {/* handle list lesson */}
                     <div className="mt-2">
                         {sectionLists.map((section, index) => (
-                            <Accordion key={index} section={section} />
+                            <Accordion
+                                key={index}
+                                section={section}
+                                handleDeleteSection={handleDeleteSection}
+                                handleEditSection={handleEditSection}
+                                handledisplayDeleteModal={handledisplayDeleteModal}
+                            />
                         ))}
                     </div>
-                    {/* POPUP */}
                 </div>
             </div>
+            {/* POPUP DELETE */}
+            {isDisplayDeleteModal && (
+                <DeleteModal handleDelete={handleDeleteSection} handleCancel={handleCancelModal} />
+            )}
         </>
     );
 };
