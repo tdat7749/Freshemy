@@ -37,7 +37,7 @@ function App() {
                 <Header isLogin={isLogin} />
                 <Routes>
                     <Route path="/" element={<Home />}></Route>
-                    <Route element={<PrivateRoute isLogin={isLogin} />}>
+                    <Route element={<PrivateRoute />}>
                         <Route path="/change-password" element={<ChangePassword />}></Route>
                         <Route path="/my-courses" element={<MyCourses />}></Route>
                     </Route>

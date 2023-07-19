@@ -16,6 +16,9 @@ export const loginValidationSchema = Yup.object({
     password: Yup.string().required(MESSAGE_ERROR_PASSWORD_REQUIRED),
 });
 
+export const forgotPasswordValidationSchema = Yup.object({
+    email: Yup.string().email(MESSAGE_ERROR_EMAIL_INVALID).required(MESSAGE_ERROR_EMAIL_REQUIRED),
+});
 export const registerValidationSchema = Yup.object({
     first_name: Yup.string().required(MESSAGE_ERROR_FIRST_NAME_REQUIRED).trim(),
     last_name: Yup.string().required(MESSAGE_ERROR_LAST_NAME_REQUIRED).trim(),

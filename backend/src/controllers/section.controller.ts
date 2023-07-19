@@ -4,32 +4,18 @@ import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
 import { RequestHasLogin } from "../types/request";
 import service from "../services/index";
-import { LessonSchema } from "../validations/lesson";
+import { SectionSchema } from "../validations/section";
 
-class LessonController {
-    async getLesson(req: Request, res: Response): Promise<Response> {
-        const response = await service.LessonService.getLesson(req);
 
-        return res.status(response.getStatusCode()).json(response);
-    }
-
-    async createLesson(req: Request, res: Response): Promise<Response> {
-        const errorValidate: ValidationError | undefined = LessonSchema.validate(req.body).error;
-
-        if (errorValidate) {
-            return res.status(400).json({
-                status_code: 400,
-                message: convertJoiErrorToString(errorValidate),
-                success: false,
-            });
-        }
-        const response = await service.LessonService.createLesson(req);
+class SectionController {
+    async getSection(req: Request, res: Response): Promise<Response> {
+        const response = await service.SectionService.getSection(req);
 
         return res.status(response.getStatusCode()).json(response);
     }
 
-    async updateLesson(req: Request, res: Response): Promise<Response> {
-        const errorValidate: ValidationError | undefined = LessonSchema.validate(req.body).error;
+    async createSection(req: Request, res: Response): Promise<Response> {
+        const errorValidate: ValidationError | undefined = SectionSchema.validate(req.body).error;
 
         if (errorValidate) {
             return res.status(400).json({
@@ -39,16 +25,32 @@ class LessonController {
             });
         }
 
-        const response = await service.LessonService.updateLesson(req);
+        const response = await service.SectionService.createSection(req);
 
         return res.status(response.getStatusCode()).json(response);
     }
 
-    async deleteLesson(req: Request, res: Response): Promise<Response> {
-        const response = await service.LessonService.deleteLesson(req);
+    async updateSection(req: Request, res: Response): Promise<Response> {
+        const errorValidate: ValidationError | undefined = SectionSchema.validate(req.body).error;
+
+        if (errorValidate) {
+            return res.status(400).json({
+                status_code: 400,
+                message: convertJoiErrorToString(errorValidate),
+                success: false,
+            });
+        }
+
+        const response = await service.SectionService.updateSection(req);
+
+        return res.status(response.getStatusCode()).json(response);
+    }
+
+    async deleteSection(req: Request, res: Response): Promise<Response> {
+        const response = await service.SectionService.deleteSection(req);
 
         return res.status(response.getStatusCode()).json(response);
     }
 }
 
-export default LessonController;
+export default SectionController;
