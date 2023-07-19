@@ -1,7 +1,6 @@
 export type Section = {
     id: number;
     title: string;
-    course_id: number;
 };
 
 export type AddSection = {

@@ -66,6 +66,14 @@ export const sectionSlice = createSlice({
         setDeleteSection: (state, action: PayloadAction<number>) => {
             state.sectionList = state.sectionList.filter((section: Section) => section.id !== action.payload);
         },
+        setEditSection: (state, action: PayloadAction<Section>) => {
+            state.sectionList = state.sectionList.map((section: Section) => {
+                if (section.id === action.payload.id) {
+                    section.title = action.payload.title;
+                }
+                return section;
+            });
+        },
     },
     extraReducers: (builder) => {
         // add section
@@ -119,6 +127,6 @@ export const sectionSlice = createSlice({
     },
 });
 
-export const { setDeleteSection } = sectionSlice.actions;
+export const { setDeleteSection, setEditSection } = sectionSlice.actions;
 
 export default sectionSlice.reducer;

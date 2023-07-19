@@ -30,6 +30,7 @@ class SectionController {
     }
 
     async updateSection(req: Request, res: Response): Promise<Response> {
+        
         const errorValidate: ValidationError | undefined = SectionSchema.validate(req.body).error;
 
         if (errorValidate) {

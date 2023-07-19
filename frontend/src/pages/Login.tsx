@@ -8,7 +8,6 @@ import { Navigate } from "react-router-dom";
 import Skeleton from "../assets/images/Skeleton.png";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { loginValidationSchema } from "../validations/auth";
-import PopupAddLesson from "../components/PopupAddLesson";
 
 const Login: FC = () => {
     const dispatch = useAppDispatch();
@@ -47,7 +46,6 @@ const Login: FC = () => {
 
     return (
         <>
-            <PopupAddLesson />
             <div className="mt-[100px] h-screen flex items-center justify-center">
                 <div className="bg-primary m-4 rounded-xl tablet:w-[506px]">
                     <Formik

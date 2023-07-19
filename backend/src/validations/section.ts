@@ -10,7 +10,6 @@ type Section = {
     course_id: number;
 };
 
-
 export const SectionSchema: ObjectSchema<Section> = Joi.object({
     title: Joi.string().required().messages({
         "any.required": MESSAGE_ERROR_COURSE_TITLE_REQUIRED,

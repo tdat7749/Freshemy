@@ -59,7 +59,7 @@ const EditCourse: React.FC = () => {
         // @ts-ignore
         dispatch(sectionActions.editSection({ id, title })).then((response) => {
             if (response.payload.status_code === 200) {
-                dispatch(sectionActions.setDeleteSection(idItem));
+                dispatch(sectionActions.setEditSection({ id, title }));
             }
         });
         setIsDisplayEditModal(!isDisplayEditModal);
@@ -265,7 +265,7 @@ const EditCourse: React.FC = () => {
             {isDisplayEditModal && (
                 <div className="absolute z-50 w-full h-full top-0 bg-black/50 flex justify-center items-center ">
                     <div className="bg-[#F8FFF8] p-4 w-[400px] flex flex-col items-center justify-center rounded-lg">
-                        <div className="flex flex-col gap-1 w-full">
+                        <form className="flex flex-col gap-1 w-full">
                             <div className="">Title</div>
                             <input
                                 type="text"
@@ -273,7 +273,7 @@ const EditCourse: React.FC = () => {
                                 className="px-2 py-[14px] rounded-lg border-[1px] outline-none flex-1"
                                 onChange={(e) => setItemTitle(e.target.value)}
                             />
-                        </div>
+                        </form>
                         <div className="mt-2 flex justify-end w-full">
                             <button
                                 className="py-2 px-4 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
