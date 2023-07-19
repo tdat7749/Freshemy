@@ -77,3 +77,8 @@ export const MESSAGE_ERROR_CATEGORIES_ARRAY_NUMBER = "Categories must be a array
 export const MESSAGE_ERROR_CATEGORIES_REQUIRED = "Categories is required";
 
 export const MESSAGE_ERROR_THUMBNAIL_REQUIRED = "Thumbnail is required";
+
+export const MESSAGE_ERROR_SECTION_ID_REQUIRED = "Section id is required";
+
+export const MESSAGE_ERROR_COURSE_ID_REQUIRED = "Course id is required";
+

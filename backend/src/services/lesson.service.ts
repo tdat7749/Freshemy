@@ -50,11 +50,10 @@ const createLesson = async (req: Request) : Promise<ResponseBase> => {
         const lesson = await configs.db.lesson.create({
             data: {
                 title: title,
-                section_id: section_id,
+                section_id: 1,
                 url_video: ""
             },
         })
-
         if (lesson) return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true);
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
     } catch (error: any) {

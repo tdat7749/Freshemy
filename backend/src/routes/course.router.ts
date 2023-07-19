@@ -5,7 +5,7 @@ import { uploadFile } from "../middlewares/multer";
 
 const courseRouter: Router = Router();
 
-courseRouter.put("/change-information", controllers.courseController.editCourse);
+courseRouter.put("/change-information",isLogin, controllers.courseController.editCourse);
 courseRouter.post("/", isLogin, uploadFile, controllers.courseController.createCourse);
-
+courseRouter.patch("/change-thumbnail",isLogin,uploadFile, controllers.courseController.editThumbnail);
 export default courseRouter;

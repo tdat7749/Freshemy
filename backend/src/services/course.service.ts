@@ -12,6 +12,7 @@ import {
     MESSAGE_SUCCESS_COURSE_CREATED,
     MESSAGE_ERROR_COURSE_CREATE_FAILED,
     MESSAGE_ERROR_COURSE_SLUG_IS_USED,
+    MESSAGE_SUCCESS_UPDATE_DATA,
 } from "../utils/constant";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
@@ -19,6 +20,7 @@ import { RequestHasLogin } from "../types/request";
 // import { ResponseBase } from "../commons/response";
 import cloudinary from "../configs/cloudinary.config";
 import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
+import { Console } from "console";
 const editCourse = async (req: Request) : Promise<ResponseBase> => {
     try{
         const {
@@ -27,7 +29,8 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
             slug,
             summary,
             description,
-            categories
+            categories,
+            status
         } = req.body;
 
         const isUpdateCourse = await configs.db.course.update({
@@ -39,6 +42,7 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
                 slug: slug,
                 summary: summary,
                 description: description,
+                status: status
             }
         })
         if(!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
@@ -98,6 +102,57 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
         }
 
         return new ResponseError(500, "Internal Server", false);
+    }
+}
+
+const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
+    try{
+        const thumbnail = req.file as Express.Multer.File;
+        const { course_id } = req.body;
+        const idConvert = +course_id
+        const isFoundCourse = await db.course.findUnique({
+            where: {
+                id: idConvert,
+            },
+        });
+
+        console.log(isFoundCourse)
+        if (!isFoundCourse) {
+            return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        }
+
+
+        const uploadFileResult = await new Promise<undefined | UploadApiResponse>((resolve, rejects) => {
+            cloudinary.uploader.upload(thumbnail.path, (error: UploadApiErrorResponse, result: UploadApiResponse) => {
+                if (error) {
+                    rejects(undefined);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+        if (uploadFileResult) {
+            const isUpdate = await db.course.update({
+                where: {
+                    id: idConvert
+                },
+                data: {
+                    thumbnail: uploadFileResult.url
+                }
+            })
+            if(isUpdate) return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
+            else {
+                await cloudinary.uploader.destroy(uploadFileResult.public_id);
+            }
+            return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        }
+        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+    }catch(error:any){
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false);
+        }
+
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 }
 
@@ -167,5 +222,6 @@ export const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> 
 
 export default {
     createCourse,
-    editCourse
+    editCourse,
+    editThumbnail
 };
