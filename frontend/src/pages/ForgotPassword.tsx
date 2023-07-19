@@ -6,8 +6,10 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { authActions } from "../redux/slice";
 import { ForgotPassword as ForgotPasswordType } from "../types/auth";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
+import { Navigate } from "react-router-dom";
 
 const ForgotPassword: React.FC = () => {
+    const isLogin = useAppSelector(state => state.authSlice.isLogin)
     let error = useAppSelector((state) => state.authSlice.error) ?? "";
     let message = useAppSelector((state) => state.authSlice.message) ?? "";
 
@@ -16,6 +18,10 @@ const ForgotPassword: React.FC = () => {
     useEffect(() => {
         dispatch(setMessageEmpty())
     }, [dispatch])
+
+    if (isLogin) return (
+        <Navigate to={"/"} />
+    )
 
     const initialValues: ForgotPasswordType = {
         email: "",
