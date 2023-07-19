@@ -43,8 +43,6 @@ const MyCourses: React.FC = () => {
         setKeyword(userInput);
     };
 
-    console.log(courseList);
-
     return (
         <>
             <Navbar />
