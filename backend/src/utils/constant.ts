@@ -18,34 +18,33 @@ export const MESSAGE_ERROR_USER_NOT_FOUND = " User is not found ";
 export const MESSAGE_ERROR_INTERNAL_SERVER = " Internal Server ";
 export const MESSAGE_ERROR_BAD_REQUEST = "Bad request";
 export const MESSAGE_ERROR_PASSWORD_IS_STRING = "Password must be a string";
-
 //success
 export const MESSAGE_SUCCESS_CHANGE_PASSWORD = "Change password succesfully";
 export const MESSAGE_ERROR_EMAIL_STRING = "Email must be a string";
 export const MESSAGE_ERROR_EMAIL_INCORRECT = "Incorrect email";
-
 export const MESSAGE_ERROR_PASSWORD_STRING = "Password must be a string";
-
 export const MESSAGE_ERROR_LOGIN_FAILED = "Email or password is invalid";
-
 export const MESSAGE_ERROR_SEND_EMAIL =
     "Email sending failed, please login to the account you just registered to be sent confirmation email again";
-
 export const MESSAGE_ERROR_LOGIN_UNVERIFIED =
     "Unverified account, We have sent you a verification link, please check your email soon before it expires!";
-
 export const MESSAGE_SUCCESS_LOGIN = "Logged in successfully";
-
 export const MESSAGE_ERROR_FIRST_NAME_STRING = "First Name must be a string";
 export const MESSAGE_ERROR_FIRST_NAME_REQUIRED = "First Name is required";
-
 export const MESSAGE_ERROR_LAST_NAME_STRING = "Last Name must be a string";
 export const MESSAGE_ERROR_LAST_NAME_REQUIRED = "Last Name is required";
-
 export const MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED =
     "Password and comfirm password must be same";
-
+//data success
 export const MESSAGE_SUCCESS_GET_DATA = "Get data successfully";
+//register course
+export const MESSAGE_SUCCESS_REGISTER_COURSE = "Subcribe successfully"
+export const MESSAGE_SUCCESS_UN_REGISTER_COURSE = "Unsubcribe successfully"
+export const MESSAGE_ERROR_MISSING_DATA = "Course id is required"
+export const MESSAGE_ERROR_WRONG_DATA_TYPE = "Course id must be a number"
+//data failed
+export const MESSAGE_ERROR_GET_DATA = "Cannot find requested resources"
+
 export const MESSAGE_SUCCESS_CREATE_DATA = "Create successfully";
 export const MESSAGE_SUCCESS_UPDATE_DATA = "Update successfully";
 export const MESSAGE_SUCCESS_DELETE_DATA = "Delete successfully";
