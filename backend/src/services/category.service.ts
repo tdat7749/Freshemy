@@ -2,7 +2,16 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
-import { MESSAGE_ERROR_INTERNAL_SERVER, MESSAGE_ERROR_BAD_REQUEST } from "../utils/constant";
+import {
+    MESSAGE_ERROR_INTERNAL_SERVER,
+    MESSAGE_ERROR_BAD_REQUEST,
+    MESSAGE_SUCCESS_GET_ALL_CATEGORIES,
+    MESSAGE_SUCCESS_GET_CATEGORY_BY_ID,
+    MESSAGE_ERROR_CATEGORY_NOT_FOUND,
+    MESSAGE_SUCCESS_UPDATED_CATEGORY,
+    MESSAGE_SUCCESS_DELETED_CATEGORY,
+    MESSAGE_SUCCESS_CREATED_CATEGORY,
+} from "../utils/constant";
 import { db } from "../configs/db.config";
 
 type CreateCategoryDTO = {
@@ -21,7 +30,7 @@ export const createCategory = async (createCategoryDTO: CreateCategoryDTO) => {
                 title: true,
             },
         });
-        return new ResponseSuccess(200, "Category created successfully", true, category);
+        return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATED_CATEGORY, true, category);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
@@ -33,7 +42,7 @@ export const createCategory = async (createCategoryDTO: CreateCategoryDTO) => {
 export const getAllCategories = async () => {
     try {
         const categories = await db.category.findMany();
-        return new ResponseSuccess(200, "Get all categories successfully", true, categories);
+        return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_ALL_CATEGORIES, true, categories);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
@@ -51,9 +60,9 @@ export const getCategoryById = async (categoryId: number) => {
         });
 
         if (category) {
-            return new ResponseSuccess(200, "Get category by id successfully", true, category);
+            return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_CATEGORY_BY_ID, true, category);
         } else {
-            return new ResponseError(404, "Category not found", false);
+            return new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false);
         }
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -72,7 +81,7 @@ export const editCategory = async (categoryId: number, updateCategoryDTO: Update
         });
 
         if (!existingCategory) {
-            return new ResponseError(404, "Category not found", false);
+            return new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false);
         }
 
         const updatedCategory = await db.category.update({
@@ -86,7 +95,7 @@ export const editCategory = async (categoryId: number, updateCategoryDTO: Update
             },
         });
 
-        return new ResponseSuccess(200, "Category updated successfully", true, updatedCategory);
+        return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATED_CATEGORY, true, updatedCategory);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
@@ -104,7 +113,7 @@ export const deleteCategory = async (categoryId: number) => {
         });
 
         if (!existingCategory) {
-            return new ResponseError(404, "Category not found", false);
+            return new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false);
         }
 
         await db.category.delete({
@@ -113,7 +122,7 @@ export const deleteCategory = async (categoryId: number) => {
             },
         });
 
-        return new ResponseSuccess(200, "Category deleted successfully", true);
+        return new ResponseSuccess(200, MESSAGE_SUCCESS_DELETED_CATEGORY, true);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);

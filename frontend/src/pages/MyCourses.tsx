@@ -44,8 +44,8 @@ const MyCourses: React.FC = () => {
         setKeyword(userInput);
     };
 
-    const handleEditCourse = (slug: string) => {
-        navigate(`/my-courses/edit/${slug}`);
+    const handleEditCourse = (id: number) => {
+        navigate(`/my-courses/edit/${id}`);
     };
 
     const handleDeleteCourse = (courseId: number) => {

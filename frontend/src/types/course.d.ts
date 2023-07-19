@@ -1,3 +1,18 @@
+export type Category = {
+    id: number,
+    title: String
+}
+
+export type NewCourse = {
+    title:  string,
+    categories: string,
+    status: number,
+    summary: string,
+    description: string,
+    thumbnail: File | null
+}
+
+
 export type Course = {
     id: number;
     title: string;
@@ -13,6 +28,10 @@ export type Course = {
 export type getMyCourses = {
     pageIndex: number;
     keyword?: string;
+};
+
+export type GetCourseInfo = {
+    courses: Course[];
 };
 
 export type CreateCourse = {

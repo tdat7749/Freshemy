@@ -1,4 +1,5 @@
 export class ResponseBase {
+    [x: string]: any;
     private status_code: number;
     private message: string;
     private success: boolean;

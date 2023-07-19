@@ -16,6 +16,7 @@ import Verify from "./pages/Verify";
 import NotFound from "./pages/NotFound";
 import MyCourses from "./pages/MyCourses";
 import Cookies from "js-cookie";
+import EditCourse from "./pages/EditCourse";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -40,6 +41,7 @@ function App() {
                         <Route path="/change-password" element={<ChangePassword />}></Route>
                         <Route path="/my-courses" element={<MyCourses />}></Route>
                     </Route>
+                    <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
                     <Route path="/create-course" element={<CreateCourse />}></Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                     <Route path="/reset-password/:token" element={<ResetPassword />}></Route>

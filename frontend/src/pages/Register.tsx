@@ -57,7 +57,7 @@ const Register: FC = () => {
                             <form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
                                 <h1 className="font-bold text-[32px] text-center">SIGN UP</h1>
 
-                                <div className="flex gap-[30px] shrink-0s">
+                                <div className="flex gap-[30px] shrink-0">
                                     <div className="flex-1">
                                         <label htmlFor="first_name" className="text-[24px] text-text">
                                             First Name
