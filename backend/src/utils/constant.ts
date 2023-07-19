@@ -72,3 +72,20 @@ export const MESSAGE_ERROR_CATEGORIES_ARRAY_NUMBER = "Categories must be a array
 export const MESSAGE_ERROR_CATEGORIES_REQUIRED = "Categories is required";
 
 export const MESSAGE_ERROR_THUMBNAIL_REQUIRED = "Thumbnail is required";
+
+
+// Category
+export const MESSAGE_SUCCESS_GET_ALL_CATEGORIES = "Get All Categories Successfully"
+export const MESSAGE_SUCCESS_GET_CATEGORY_BY_ID = "Get Category By Id Successfully"
+export const MESSAGE_SUCCESS_CREATED_CATEGORY = "Category Created Successfully"
+export const MESSAGE_SUCCESS_RETRIEVED_CATEGORY = "Categories Retrieved Successfully"
+export const MESSAGE_SUCCESS_UPDATED_CATEGORY = "Category Updated Successfully"
+export const MESSAGE_SUCCESS_DELETED_CATEGORY = "Category Deleted Successfully"
+
+export const MESSAGE_ERROR_CATEGORY_NOT_FOUND = "Category Not Found"
+
+// Course
+export const MESSAGE_SUCCESS_SEARCH_MY_COURSE = "Search My Course Successfully"
+export const MESSAGE_SUCCESS_DELETED_COURSE = "Course Deleted Successfully"
+
+export const MESSAGE_ERROR_COURSE_NOT_FOUND = "Course Not Found"

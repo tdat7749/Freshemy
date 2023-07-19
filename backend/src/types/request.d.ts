@@ -88,3 +88,22 @@ export interface User {
     enrolleds: Enrolled[];
     ratings: Rating[];
 }
+
+// course.model.ts
+interface CourseInfo {
+    id: number;
+    title: string;
+    summary: string;
+    thumbnail: string;
+    rate: number;
+    author: string;
+    category: string[];
+    number_section: number;
+    slug: string;
+}
+
+interface ResponseData {
+    total_page: number;
+    total_record: number;
+    courses: CourseInfo[];
+}
