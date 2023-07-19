@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 // import { Navigate } from "react-router-dom";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { CreateCourse as CreateCourseType, Category as CategoryType } from "../types/course";
-import { createCourseActions } from "../redux/slice";
 import { createValidationSchema } from "../validations/course";
 
 const CreateCourse: FC = () => {
@@ -53,15 +52,15 @@ const CreateCourse: FC = () => {
     };
 
     const handleAddCategories = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const index = categoriesSelector.findIndex(
-            (category: CategoryType) => category.id === parseInt(event.target.value)
-        );
-        dispatch(createCourseActions.addCategories(index));
+        // const index = categoriesSelector.findIndex(
+        //     (category: CategoryType) => category.id === parseInt(event.target.value)
+        // );
+        // dispatch(createCourseActions.addCategories(index));
     };
 
     const handleRemoveCategory = (id: number) => {
-        const index = categoriesCreateSelector.findIndex((category: CategoryType) => category.id === id);
-        dispatch(createCourseActions.removeCategories(index));
+        // const index = categoriesCreateSelector.findIndex((category: CategoryType) => category.id === id);
+        // dispatch(createCourseActions.removeCategories(index));
     };
 
     const onChangeInputFile = (event:React.ChangeEvent<HTMLInputElement>) =>{
@@ -70,7 +69,7 @@ const CreateCourse: FC = () => {
 
     const handleCancel = () => {
         setThumbnail(null);
-        dispatch(createCourseActions.reset());
+        // dispatch(createCourseActions.reset());
     }
 
     return (
