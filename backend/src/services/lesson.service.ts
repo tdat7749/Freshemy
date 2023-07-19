@@ -11,6 +11,7 @@ import {
 } from "../utils/constant";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
+import { RequestHasLogin } from "../types/request";
 
 const getLesson = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -44,15 +45,16 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const createLesson = async (req: Request): Promise<ResponseBase> => {
+const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const videoPath = req.file?.path as string;
         const { title, section_id } = req.body;
+
         const lesson = await configs.db.lesson.create({
             data: {
                 title: title,
-                section_id: section_id,
-                url_video: `${configs.general.PUBLIC_URL}/${videoPath}`,
+                section_id: +section_id,
+                url_video: `${configs.general.PUBLIC_URL}\\${videoPath}`,
             },
         });
         if (lesson) return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true);
