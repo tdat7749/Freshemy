@@ -2,13 +2,13 @@ import { Request, Response } from "express";
 import service from "../services/index";
 import CourseService from "../services/course.service";
 import { RequestHasLogin } from "../types/request";
-import { createCourseSchema } from "../validations/course";
+import { createCourseSchema, updateCourseSchema } from "../validations/course";
 import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons";
 import services from "../services";
 class CourseController {
     async editCourse(req: Request, res: Response): Promise<Response> {
-        const errorValidate: ValidationError | undefined = createCourseSchema.validate(req.body).error;
+        const errorValidate: ValidationError | undefined = updateCourseSchema.validate(req.body).error;
 
         if (errorValidate) {
             return res.status(400).json({

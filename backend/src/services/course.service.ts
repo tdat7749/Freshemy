@@ -47,11 +47,11 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
         })
         if(!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
 
-        let afterCategories = []
+        let newCategories = []
         for (let i = 0; i < categories.length; i++) {
-            afterCategories.push(categories[i])
+            newCategories.push(categories[i])
         }
-        const beforeCategories = await configs.db.courseCategory.findMany({
+        const currentCategories = await configs.db.courseCategory.findMany({
             where: {
                 course_id: id
             },
@@ -67,19 +67,20 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
         })
         if(!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
 
-        let oldCategories = []
-        for (let i = 0; i < beforeCategories.length; i++) oldCategories.push(beforeCategories[i].category_id);
-        var result = afterCategories.filter(value => oldCategories.includes(value));
-        var result1 = afterCategories.filter(function(val) {
-            return oldCategories.indexOf(val) == -1;
+        let extractCategories: number[] = []
+        for (let i = 0; i < currentCategories.length; i++) extractCategories.push(currentCategories[i].category_id);
+
+        var resultDuplicate = newCategories.filter(value => extractCategories.includes(value));
+        var resultUnique = newCategories.filter(function(val) {
+            return extractCategories.indexOf(val) == -1;
         });
-        result = result.concat(result1);
+        const finalResult = resultDuplicate.concat(resultUnique);
         
         let data = []
-        for (let i = 0; i < result.length; i++) {
+        for (let i = 0; i < finalResult.length; i++) {
             data.push({
                 course_id: id,
-                category_id: result[i]
+                category_id: finalResult[i]
             })
         }
 
