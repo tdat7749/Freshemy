@@ -15,6 +15,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 import Verify from "./pages/Verify";
 import NotFound from "./pages/NotFound";
 import MyCourses from "./pages/MyCourses";
+import PopupAddLesson from "./components/PopupAddLesson";
 import Cookies from "js-cookie";
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
                     <Route path="/login" element={<Login />}></Route>
                     <Route path="/register" element={<Register />}></Route>
                     <Route path="/verify-email/:token" element={<Verify />}></Route>
+                    <Route path="/popup-add-lesson" element={<PopupAddLesson />}></Route>
                     <Route path="/*" element={<NotFound />}></Route>
                 </Routes>
                 <Footer />
