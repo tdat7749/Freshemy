@@ -68,7 +68,7 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
         if(!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
 
         let extractCategories: number[] = []
-        for (let i = 0; i < currentCategories.length; i++) extractCategories.push(beforeCategories[i].category_id);
+        for (let i = 0; i < currentCategories.length; i++) extractCategories.push(currentCategories[i].category_id);
 
         var resultDuplicate = newCategories.filter(value => extractCategories.includes(value));
         var resultUnique = newCategories.filter(function(val) {
