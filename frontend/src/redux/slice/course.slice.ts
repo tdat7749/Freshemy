@@ -2,16 +2,17 @@ import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Response } from "../../types/response";
 
 import { createCourse as createCourseAPI, getCategories as getCategoriesAPI } from "../../apis/course";
-import { CreateCourse, Category } from "../../types/course"
+import { NewCourse, Category } from "../../types/course";
+
 type CourseSlice = {
+    newCourse: NewCourse;
     categories: Category[];
     error: string;
     message: string;
-    isLoading: boolean
+    isLoading: boolean;
 };
 
-
-export const createCourses = createAsyncThunk<Response<null>, CreateCourse, { rejectValue: Response<null> }>(
+export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejectValue: Response<null> }>(
     "course/createCourse",
     async (body, ThunkAPI) => {
         try {
@@ -23,12 +24,19 @@ export const createCourses = createAsyncThunk<Response<null>, CreateCourse, { re
     }
 );
 
-
 const initialState: CourseSlice = {
+    newCourse: {
+        title: "",
+        categories: [],
+        status: 0,
+        summary: "",
+        description: "",
+        thumbnail: null,
+    },
     categories: [],
     error: "",
     message: "",
-    isLoading: false
+    isLoading: false,
 };
 
 export const courseSlice = createSlice({
@@ -46,68 +54,52 @@ export const courseSlice = createSlice({
             state.message = "";
         },
         addCategories: (state, payload: PayloadAction<number>) => {
-            //const category = state.categories.splice(payload.payload, 1)[0];
-            //state.createCourse.categories.push(category);
+            const category = state.categories.splice(payload.payload, 1)[0];
+            state.newCourse.categories.push(category);
         },
         removeCategories: (state, payload: PayloadAction<number>) => {
-            //const category: Category = state.createCourse.categories.splice(payload.payload, 1)[0];
-            //state.categories.push(category);
+            const category: Category = state.newCourse.categories.splice(payload.payload, 1)[0];
+            state.categories.push(category);
         },
         setCategories: (state, payload: PayloadAction<Category[]>) => {
             state.categories = payload.payload;
         },
         reset: (state) => {
-            // state.categories = [...state.categories, ...state.createCourse.categories]
-            // state.createCourse.title = '';
-            // state.createCourse.categories = [];
-            // state.createCourse.status = 0;
-            // state.createCourse.summary = '';
-            // state.createCourse.description = '';
+            state.categories = [...state.categories, ...state.newCourse.categories];
+            state.newCourse.title = "";
+            state.newCourse.categories = [];
+            state.newCourse.status = 0;
+            state.newCourse.summary = "";
+            state.newCourse.description = "";
         },
-        // setMessageEmpty: (state) => {
-        //     state.error = "";
-        //     state.message = "";
-        // },
     },
     extraReducers: (builder) => {
         builder.addCase(createCourses.pending, (state) => {
-            state.error = ""
-            state.message = ""
-            state.isLoading = true
-        })
+            state.error = "";
+            state.message = "";
+            state.isLoading = true;
+        });
         builder.addCase(createCourses.fulfilled, (state, action) => {
-            state.message = action.payload.message
-            state.isLoading = false
-        })
+            state.message = action.payload.message;
+            state.isLoading = false;
+        });
         builder.addCase(createCourses.rejected, (state, action) => {
-            state.error = action.payload?.message as string
-            state.isLoading = false
-        })
-    }
+            state.error = action.payload?.message as string;
+            state.isLoading = false;
+        });
+    },
 });
 
 export const { setError, setCategories, addCategories, removeCategories, reset } = courseSlice.actions;
 
 export default courseSlice.reducer;
 
-// export const createCourse = (values: CreateCourse) => async (dispatch: any) => {
-//     try {
-//         const response = await createCourseApi(values);
-//         if (response) {
-//             if (response.status >= 200 && response.status <= 299) {
-//                 dispatch(setError(response.data.message));
-//             } else {
-//                 dispatch(setError(response.data.message));
-//             }
-//         }
-//     } catch (error: any) {
-//         dispatch(setError(error.data.message));
-//     }
-// };
 
 export const getCategories = () => async (dispatch: any) => {
-    const response = await getCategoriesAPI();
-    dispatch(setCategories(response.data.data.categories))
-
+    try {
+        const response = await getCategoriesAPI();
+        dispatch(setCategories(response.data.data));
+    } catch (error: any) {
+        dispatch(setError(error?.data.message));
+    }
 };
-

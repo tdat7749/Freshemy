@@ -3,7 +3,7 @@ export type Category = {
     category: String
 }
 
-export type CreateCourse = {
+export type NewCourse = {
     title: string,
     categories: Category[],
     status: number,
