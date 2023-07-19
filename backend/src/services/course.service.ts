@@ -89,7 +89,7 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
         })
 
         if(!isUpdate) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-        return new ResponseSuccess(200, MESSAGE_SUCCESS_LOGIN, true);
+        return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
     } catch (error: any){
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
