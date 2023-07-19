@@ -12,7 +12,7 @@ type Course = {
     thumbnail: string;
     author: string;
     handleDeleteCourse: (courseId: number) => void;
-    handleEditCourse: (slug: string) => void
+    handleEditCourse: (id: number) => void
 };
 
 const CourseCard: FC<Course> = (props: Course) => {
@@ -47,7 +47,7 @@ const CourseCard: FC<Course> = (props: Course) => {
                 >
                     <div
                         className="flex items-center mb-2 hover:bg-backgroundHover cursor-pointer"
-                        onClick={() => props.handleEditCourse(props.slug)}
+                        onClick={() => props.handleEditCourse(props.id)}
                     >
                         <EditIcon />
                         <span className="ml-2">Edit</span>
