@@ -34,6 +34,7 @@ import {
     MESSAGE_ERROR_COURSE_SLUG_IS_USED,
     MESSAGE_SUCCESS_UPDATE_DATA,
 } from "../utils/constant"
+
 const getCourseDetail = async (req: Request): Promise<ResponseBase>=>{
     try {
         const {slug} = req.params
@@ -204,10 +205,10 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
                 slug: slug,
                 summary: summary,
                 description: description,
-                status: status
-            }
-        })
-        if(!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+                status: status,
+            },
+        });
+        if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
 
         let newCategories = []
         for (let i = 0; i < categories.length; i++) {
@@ -215,19 +216,19 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
         }
         const currentCategories = await configs.db.courseCategory.findMany({
             where: {
-                course_id: id
+                course_id: id,
             },
             select: {
-                category_id: true
-            }
-        })
+                category_id: true,
+            },
+        });
 
         const isDelete = await configs.db.courseCategory.deleteMany({
             where: {
-                course_id: id
-            }
-        })
-        if(!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+                course_id: id,
+            },
+        });
+        if (!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
 
         let extractCategories: number[] = []
         for (let i = 0; i < currentCategories.length; i++) extractCategories.push(currentCategories[i].category_id);
@@ -248,10 +249,10 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
 
         const isUpdate = await configs.db.courseCategory.createMany({
             data: data,
-        })
+        });
 
         if(!isUpdate) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-        return new ResponseSuccess(200, MESSAGE_SUCCESS_LOGIN, true);
+        return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
     } catch (error: any){
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
@@ -266,24 +267,23 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
 
         return new ResponseError(500, "Internal Server", false);
     }
-}
+};
 
 const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
-    try{
+    try {
         const thumbnail = req.file as Express.Multer.File;
         const { course_id } = req.body;
-        const idConvert = +course_id
+        const idConvert = +course_id;
         const isFoundCourse = await db.course.findUnique({
             where: {
                 id: idConvert,
             },
         });
 
-        console.log(isFoundCourse)
+        console.log(isFoundCourse);
         if (!isFoundCourse) {
             return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         }
-
 
         const uploadFileResult = await new Promise<undefined | UploadApiResponse>((resolve, rejects) => {
             cloudinary.uploader.upload(thumbnail.path, (error: UploadApiErrorResponse, result: UploadApiResponse) => {
@@ -297,27 +297,27 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
         if (uploadFileResult) {
             const isUpdate = await db.course.update({
                 where: {
-                    id: idConvert
+                    id: idConvert,
                 },
                 data: {
-                    thumbnail: uploadFileResult.url
-                }
-            })
-            if(isUpdate) return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
+                    thumbnail: uploadFileResult.url,
+                },
+            });
+            if (isUpdate) return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
             else {
                 await cloudinary.uploader.destroy(uploadFileResult.public_id);
             }
             return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         }
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-    }catch(error:any){
+    } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
 
         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
-}
+};
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status } = req.body;

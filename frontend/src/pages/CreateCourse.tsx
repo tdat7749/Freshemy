@@ -8,6 +8,7 @@ import { NewCourse as CreateCourseType, Category as CategoryType } from "../type
 import { courseActions } from "../redux/slice";
 import { createValidationSchema } from "../validations/course";
 import slugify from "slugify";
+
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
 
