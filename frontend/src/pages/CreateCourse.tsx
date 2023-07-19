@@ -44,7 +44,6 @@ const CreateCourse: FC = () => {
             return category.id;
         });
         const slug = slugify(values.title);
-        console.log(slug)
         let formData = new FormData();
         formData.append("title", values.title);
         formData.append("description", values.description);
@@ -101,13 +100,21 @@ const CreateCourse: FC = () => {
                                 className="p-4 w-[990px]"
                                 onChange={handleDeleteMessage}
                             >
-                                <h1 className="font-bold text-[32px] text-center">SIGN UP</h1>
-                                <Field name="thumbnail" type="file" onChange={onChangeInputFile} />
-                                <ErrorMessage
-                                    name="thumbnail"
-                                    component="span"
-                                    className="text-[14px] text-error font-medium"
-                                />
+                                <h1 className="font-bold text-[32px] text-center">Create Course</h1>
+                                <div>
+                                    <Field
+                                        name="thumbnail"
+                                        type="file"
+                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                            onChangeInputFile(event);
+                                        }}
+                                    />
+                                    <ErrorMessage
+                                        name="thumbnail"
+                                        component="span"
+                                        className="text-[14px] text-error font-medium"
+                                    />
+                                </div>
                                 <div className="container flex flex-row h-full">
                                     <div className="container-item flex flex-col w-1/2 mr-8">
                                         <div className="title item">
