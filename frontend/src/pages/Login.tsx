@@ -14,6 +14,8 @@ const Login: FC = () => {
     const dispatch = useAppDispatch();
 
     const isLogin:boolean = useAppSelector((state) => state.authSlice.isLogin);
+    const isLoading:boolean = useAppSelector((state => state.authSlice.isLoading))
+
     let error:string = useAppSelector((state) => state.authSlice.error) ?? "";
 
     const formikRef = useRef(null);
@@ -31,7 +33,13 @@ const Login: FC = () => {
 
     const handleOnSubmit:(values: LoginType) => void = (values: LoginType) => {
         //@ts-ignore
-        dispatch(authActions.login(values));
+        dispatch(authActions.login(values)).then((response) =>{
+            
+            if(response.payload.status_code === 200){
+                //@ts-ignore
+                dispatch(authActions.getMe())
+            }
+        });
     };
 
     const handleChange:() => void = () => {
@@ -90,7 +98,7 @@ const Login: FC = () => {
                                 <button
                                     className="w-full py-2 px-4 mr-1 bg-switch rounded-lg text-white text-[32px] hover:opacity-80"
                                     type="submit"
-                                    disabled={error !== "" ? true : false}
+                                    disabled={(error !== "" ? true : false) || (isLoading)}
                                 >
                                     Login
                                 </button>

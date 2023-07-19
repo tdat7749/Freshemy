@@ -14,5 +14,8 @@ export const general = {
     HASH_SALT: parseInt(process.env.HASH_SALT as string),
     REDIS_PASSWORD: process.env.REDIS_PASSWORD,
     REDIS_HOST: process.env.REDIS_HOST,
-    REDIS_PORT: parseInt(process.env.REDIS_PORT as string)
+    REDIS_PORT: parseInt(process.env.REDIS_PORT as string),
+    CLOUDINARY_NAME: process.env.CLOUDINARY_NAME,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 };
