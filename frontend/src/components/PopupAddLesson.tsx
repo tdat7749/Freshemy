@@ -17,7 +17,7 @@ const PopupAddLesson: React.FC = () => {
     const initialValue: AddLessonType = {
         title: "",
         description: "",
-        videos: null,
+        video: null,
     };
 
     useEffect(() => {
@@ -94,17 +94,17 @@ const PopupAddLesson: React.FC = () => {
                                     />
                                 </div>
                                 <div className="ml-[20px] mr-[20px]">
-                                    <label htmlFor="videos" className="text-[20px] text-text">
+                                    <label htmlFor="video" className="text-[20px] text-text">
                                         Upload video
                                     </label>{" "}
                                     <br />
                                     <input
-                                        id="videos"
+                                        id="video"
                                         ref={formikRef}
                                         type="File"
-                                        name="videos"
+                                        name="video"
                                         className={`' w-full h-[48px] rounded-[8px] px-[8px] border-[1px] border-black bg-white outline-none mt-[15px]' ${
-                                            formik.errors.videos && formik.touched.videos && "border-error"
+                                            formik.errors.video && formik.touched.video && "border-error"
                                         }`}
                                         onChange={handleAddVideo}
                                     />
