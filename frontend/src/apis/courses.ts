@@ -1,66 +1,19 @@
-// import apiCaller from "../api-config/apiCaller";
-// import { HTTP_GET, HTTP_DELETE } from "../utils/contants";
+import apiCaller from "../api-config/apiCaller";
+import { HTTP_GET, HTTP_DELETE } from "../utils/contants";
+import { getMyCourses as getMyCoursesType, deleteCourse as deleteCourseType } from "../types/course";
 
-export const getMyCourses = async (page_index: number, keyword: string) => {
-    // const path = `/api/courses/search-my-courses?pageIndex=${page_index}&keyword=${keyword}`;
+export const getMyCourses = async (values: getMyCoursesType) => {
+    const path = `courses/search-my-courses?pageIndex=${values.pageIndex}&keyword=${values.keyword}`;
 
-    // const response = await apiCaller(HTTP_GET, path);
-    console.log({ page_index, keyword });
-    const response = {
-        success: true,
-        message: "Get course successful",
-        status: 200,
-        data: {
-            total_page: 4,
-            total_record: 20,
-            courses: [
-                {
-                    id: 1,
-                    title: "Khóa học MYSQL dành cho newbie",
-                    summary: "Đây là khóa học rẻ chưa từng có",
-                    rate: 5,
-                    author: "Duong Song",
-                    category: ["NodeJS, MYSQL"],
-                    number_section: 10,
-                    slug: "MySQL",
-                },
-                {
-                    id: 2,
-                    title: "Khóa học MYSQL dành cho newbie 2",
-                    summary: "Đây là khóa học rẻ chưa từng có",
-                    rate: 5,
-                    author: "Duong Song",
-                    category: ["NodeJS, MYSQL"],
-                    number_section: 10,
-                    slug: "MYSQL1",
-                },
-                {
-                    id: 3,
-                    title: "Khóa học MYSQL dành cho newbie 3",
-                    summary: "Đây là khóa học rẻ chưa từng có",
-                    rate: 5,
-                    author: "Duong Song",
-                    category: ["NodeJS, MYSQL"],
-                    number_section: 10,
-                    slug: "MYSQL2",
-                },
-            ],
-            message: "Get course successfully",
-        },
-    };
+    const response = await apiCaller(HTTP_GET, path);
+
     return response;
 };
 
-export const deleteCourse = async (courseId: number) => {
-    // const path = `/api/courses/${courseId}`;
-    // const response = await apiCaller(HTTP_DELETE, path);
-    const response = {
-        status: 200,
-        data: {
-            success: true,
-            message: `Delete course ${courseId} successful`,
-            status_code: 200,
-        },
-    };
+export const deleteCourse = async (values: deleteCourseType) => {
+    const path = `/api/courses/${values.courseId}`;
+
+    const response = await apiCaller(HTTP_DELETE, path);
+
     return response;
 };

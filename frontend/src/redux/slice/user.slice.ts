@@ -1,55 +1,65 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { changePassword as changePasswordAPI } from '../../apis/user'
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { changePassword as changePasswordAPI } from "../../apis/user";
 import { ChangePassword as ChangePasswordType } from "../../types/user";
+import { Response } from "../../types/response";
 
 type UserSlice = {
-    error: string,
-    message: string
-}
+    error: string;
+    message: string;
+    isLoading: boolean;
+};
 
 const initialState: UserSlice = {
     error: "",
-    message: ""
-}
+    message: "",
+    isLoading: false,
+};
 
+export const changePassword = createAsyncThunk<Response<null>, ChangePasswordType, { rejectValue: Response<null> }>(
+    "auth/verifyEmail",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await changePasswordAPI(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
 
 export const userSlice = createSlice({
     name: "user",
     initialState: initialState,
     reducers: {
         setError: (state, payload: PayloadAction<string>) => {
-            state.error = payload.payload
+            state.error = payload.payload;
         },
         setMessage: (state, payload: PayloadAction<string>) => {
-            state.message = payload.payload
+            state.message = payload.payload;
         },
         setMessageEmpty: (state) => {
-            state.error = ""
-            state.message = ""
-        }
+            state.error = "";
+            state.message = "";
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(changePassword.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+        builder.addCase(changePassword.fulfilled, (state, action) => {
+            state.message = action.payload.message;
+            state.isLoading = false;
+        });
+        builder.addCase(changePassword.rejected, (state, action) => {
+            state.error = action.payload?.message as string;
+
+            state.isLoading = false;
+        });
     },
 });
 
-
 export default userSlice.reducer;
 
-export const { setError, setMessage, setMessageEmpty } = userSlice.actions
-
-// @ts-ignore
-export const changePassword = (values: ChangePasswordType) => async (dispatch, getState) => {
-    dispatch(setMessageEmpty())
-    try {
-        const response = await changePasswordAPI(values);
-        if (response) {
-            if (response.status >= 200 && response.status <= 299) {
-                dispatch(setMessage(response.data.message))
-            } else {
-                dispatch(setError(response.data.message))
-            }
-        }
-    } catch (error: any) {
-        dispatch(setError(error.data.message));
-    }
-};
-
-
+export const { setError, setMessage, setMessageEmpty } = userSlice.actions;

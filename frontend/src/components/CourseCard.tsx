@@ -3,20 +3,21 @@ import { Link, useNavigate } from "react-router-dom";
 import ThreeDotIcon from "../components/icons/ThreedotIcon";
 import EditIcon from "../components/icons/EditIcon";
 import DeleteIcon from "../components/icons/DeleteIcon";
-import { courseAction } from "../redux/slice";
-import { useAppDispatch } from "../hooks/hooks";
+// import { courseAction } from "../redux/slice";
+// import { useAppDispatch } from "../hooks/hooks";
 
 type Course = {
     id: number;
     slug: string;
     title: string;
     summary: string;
+    thumbnail: string;
     author: string;
 };
 
 const CourseCard: FC<Course> = (props: Course) => {
     const [isDisplayDropDown, setIsDisplayDropDown] = useState<boolean>(false);
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const handleEditCourse = (slug: string) => {
@@ -25,13 +26,15 @@ const CourseCard: FC<Course> = (props: Course) => {
 
     const handleDeleteCourse = (courseId: number) => {
         // @ts-ignore
-        dispatch(courseAction.deleteCourse(courseId));
+        //dispatch(courseAction.deleteCourse(courseId));
     };
 
     return (
         <div className="flex pt-4 pb-3 border-b-[1px]">
             <div className="flex flex-col tablet:flex-row">
-                <div className="w-[256px] h-[180px] bg-gray-600 rounded-lg"></div>
+                <div className="w-[256px] h-[180px] bg-gray-600 rounded-lg">
+                    <img src={props.thumbnail} alt="" />
+                </div>
                 <div className="flex-2 tablet:ml-4">
                     <h2 className="text-xl">{props.title}</h2>
                     <p className="text-base italic">{props.summary}</p>

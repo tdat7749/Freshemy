@@ -1,7 +1,5 @@
 import AuthController from "./auth.controller";
-
 import UserController from "./user.controller";
-
 import CategoryController from "./category.controller";
 import CourseController from "./course.controller";
 

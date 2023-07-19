@@ -16,7 +16,7 @@ const MyCourses: React.FC = () => {
     const inputRef = React.useRef<HTMLInputElement>(null);
     const dispatch = useAppDispatch();
 
-    let courseList: Course[] = useAppSelector((state) => state.courseSlice.course) ?? "";
+    let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
     let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
 
     useEffect(() => {
@@ -43,10 +43,12 @@ const MyCourses: React.FC = () => {
         setKeyword(userInput);
     };
 
+    console.log(courseList);
+
     return (
         <>
             <Navbar />
-            <div className="h-full container px-4 m-auto">
+            <div className="min-h-screen h-full container px-4 m-auto">
                 <h1 className="text-center text-[32px] mt-11 mb-5">MY COURSE</h1>
                 <div className="w-full flex justify-between items-center shrink-0">
                     <div className="flex-1">
@@ -79,6 +81,7 @@ const MyCourses: React.FC = () => {
                         <CourseCard
                             key={course.id}
                             id={course.id}
+                            thumbnail={course.thumbnail}
                             slug={course.slug}
                             title={course.title}
                             summary={course.summary}
