@@ -11,27 +11,6 @@ import {
 } from "../utils/constant";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
-export const deleteMyCourse = async (courseId: number): Promise<any> => {
-    try {
-        await db.course.delete({
-            where: {
-                id: courseId,
-            },
-        });
-
-        return {
-            success: true,
-            message: "Delete successfully",
-            status_code: 200,
-        };
-    } catch (error: any) {
-        return {
-            success: false,
-            message: error.message || "Internal Server Error",
-            status_code: 500,
-        };
-    }
-};
 
 export const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status } = req.body;
@@ -112,7 +91,8 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
                 title: {
                     contains: parsedKeyword,
                 },
-                user_id: userId, // Lọc theo user_id của Trần Văn C
+                user_id: userId, 
+                is_delete: false, // Exclude deleted courses
             },
             include: {
                 user: true,
@@ -135,7 +115,7 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
                 title: {
                     contains: parsedKeyword,
                 },
-                user_id: userId, // Lọc theo user_id của Trần Văn C
+                user_id: userId, 
             },
         });
 
@@ -167,6 +147,47 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
                 total_record: totalRecord,
                 courses: myCoursesData,
             },
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error.message || "Internal Server Error",
+            status_code: 500,
+        };
+    }
+};
+
+export const deleteMyCourse = async (courseId: number): Promise<any> => {
+    try {
+        // Check if the course exists
+        const existingCourse = await db.course.findUnique({
+            where: {
+                id: courseId,
+            },
+        });
+
+        if (!existingCourse) {
+            return {
+                success: false,
+                message: "Course not found",
+                status_code: 404,
+            };
+        }
+
+        // Set is_delete field to true to mark the course as deleted
+        await db.course.update({
+            where: {
+                id: courseId,
+            },
+            data: {
+                is_delete: true,
+            },
+        });
+
+        return {
+            success: true,
+            message: "Delete successfully",
+            status_code: 200,
         };
     } catch (error: any) {
         return {
