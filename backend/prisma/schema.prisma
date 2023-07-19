@@ -69,6 +69,7 @@ model Enrolled {
 
 model Rating {
   id         Int      @id @default(autoincrement())
+  score      Float // Add the rating value field
   content    String   @db.LongText
   created_at DateTime @default(now())
 
