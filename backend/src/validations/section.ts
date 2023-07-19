@@ -20,3 +20,15 @@ export const SectionSchema: ObjectSchema<Section> = Joi.object({
         "any.required": MESSAGE_ERROR_COURSE_ID_REQUIRED,
     }),
 });
+
+type UpdateSection = {
+    title: string;
+};
+
+
+export const UpdateSectionSchema: ObjectSchema<UpdateSection> = Joi.object({
+    title: Joi.string().required().messages({
+        "any.required": MESSAGE_ERROR_COURSE_TITLE_REQUIRED,
+        "string.base": MESSAGE_ERROR_COURSE_TITLE_STRING,
+    })
+});

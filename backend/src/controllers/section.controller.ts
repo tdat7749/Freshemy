@@ -4,7 +4,7 @@ import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
 import { RequestHasLogin } from "../types/request";
 import service from "../services/index";
-import { SectionSchema } from "../validations/section";
+import { SectionSchema, UpdateSectionSchema } from "../validations/section";
 
 class SectionController {
     async getSection(req: Request, res: Response): Promise<Response> {
@@ -30,8 +30,7 @@ class SectionController {
     }
 
     async updateSection(req: Request, res: Response): Promise<Response> {
-        
-        const errorValidate: ValidationError | undefined = SectionSchema.validate(req.body).error;
+        const errorValidate: ValidationError | undefined = UpdateSectionSchema.validate(req.body).error;
 
         if (errorValidate) {
             return res.status(400).json({
