@@ -6,6 +6,9 @@ import { createCourseSchema, updateCourseSchema } from "../validations/course";
 import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons";
 import services from "../services";
+import { ResponseError, ResponseSuccess } from "../commons/response";
+import { MESSAGE_ERROR_INTERNAL_SERVER } from "../utils/constant";
+
 class CourseController {
     async editCourse(req: Request, res: Response): Promise<Response> {
         const errorValidate: ValidationError | undefined = updateCourseSchema.validate(req.body).error;
@@ -31,13 +34,16 @@ class CourseController {
 
             const result = await CourseService.searchMyCourses(parsedPageIndex, parsedKeyword, userId);
 
-            return res.status(result.status_code).json(result);
+            if (result instanceof ResponseSuccess) {
+                return res.json(result);
+            } else if (result instanceof ResponseError) {
+                return res.status(result.getStatusCode()).json(result);
+            } else {
+                // Handle unexpected response
+                return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+            }
         } catch (error: any) {
-            return res.status(500).json({
-                success: false,
-                message: error.message || "Internal Server Error",
-                status_code: 500,
-            });
+            return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
         }
     }
 
@@ -48,13 +54,16 @@ class CourseController {
 
             const result = await CourseService.deleteMyCourse(courseId);
 
-            return res.status(result.status_code).json(result);
+            if (result instanceof ResponseSuccess) {
+                return res.status(result.getStatusCode()).json(result);
+            } else if (result instanceof ResponseError) {
+                return res.status(result.getStatusCode()).json(result);
+            } else {
+                // Handle unexpected response
+                return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+            }
         } catch (error: any) {
-            return res.status(500).json({
-                success: false,
-                message: error.message || "Internal Server Error",
-                status_code: 500,
-            });
+            return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
         }
     }
 
