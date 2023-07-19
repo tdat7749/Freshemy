@@ -1,4 +1,4 @@
-import { AddSection as AddSectionType } from "../types/section";
+import { AddSection as AddSectionType, EditSection as EditSectionType } from "../types/section";
 import apiCaller from "../api-config/apiCaller";
 import { HTTP_DELETE, HTTP_POST, HTTP_PUT } from "../utils/contants";
 
@@ -8,9 +8,9 @@ export const addSection = async (values: AddSectionType) => {
     return response;
 };
 
-export const editSection = async (id: number) => {
-    const path = `/sections/${id}`;
-    const response = await apiCaller(HTTP_PUT, path);
+export const editSection = async (values: EditSectionType) => {
+    const path = `/sections/${values.id}`;
+    const response = await apiCaller(HTTP_PUT, path, values.title);
     return response;
 };
 

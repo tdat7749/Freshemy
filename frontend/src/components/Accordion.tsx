@@ -8,9 +8,9 @@ import EditSectionIcon from "./icons/EditSectionIcon";
 
 type AccordionType = {
     section: Section;
-    handleEditSection: (id: number) => void;
     handleDeleteSection: (id: number) => void;
-    handledisplayDeleteModal: (id: number) => void;
+    handleDisplayDeleteModal: (id: number) => void;
+    handleDisplayEditModal: (id: number, title: string) => void;
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
@@ -45,10 +45,16 @@ const Accordion: React.FC<AccordionType> = (props) => {
                             <div className="cursor-pointer">
                                 <AddIcon />
                             </div>
-                            <div className="cursor-pointer" onClick={() => props.handleEditSection(props.section.id)}>
+                            <div
+                                className="cursor-pointer"
+                                onClick={() => props.handleDisplayEditModal(props.section.id, props.section.title)}
+                            >
                                 <EditSectionIcon />
                             </div>
-                            <div className="cursor-pointer" onClick={() => props.handledisplayDeleteModal(props.section.id)}>
+                            <div
+                                className="cursor-pointer"
+                                onClick={() => props.handleDisplayDeleteModal(props.section.id)}
+                            >
                                 <DeleteIcon />
                             </div>
                         </div>

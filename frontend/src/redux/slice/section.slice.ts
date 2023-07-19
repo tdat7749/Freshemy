@@ -4,7 +4,7 @@ import {
     deleteSection as deleteSectionAPI,
     editSection as editSectionAPI,
 } from "../../apis/section";
-import { Section } from "../../types/section";
+import { EditSection as EditSectionType, Section } from "../../types/section";
 import { Response } from "../../types/response";
 
 type SectionSlice = {
@@ -27,7 +27,7 @@ export const addSection = createAsyncThunk<Response<null>, Section, { rejectValu
     }
 );
 
-export const editSection = createAsyncThunk<Response<null>, number, { rejectValue: Response<null> }>(
+export const editSection = createAsyncThunk<Response<null>, EditSectionType, { rejectValue: Response<null> }>(
     "course/editSection",
     async (body, ThunkAPI) => {
         try {

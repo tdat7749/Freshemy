@@ -9,3 +9,10 @@ export type AddSection = {
     title: string;
 };
 
+export type EditSection = {
+    id: number;
+    title: string;
+};
+
+
+

@@ -12,7 +12,9 @@ import DeleteModal from "../components/DeleteModal";
 const EditCourse: React.FC = () => {
     const [section, setSection] = useState<string>("");
     const [isDisplayDeleteModal, setIsDisplayDeleteModal] = useState<boolean>(false);
+    const [isDisplayEditModal, setIsDisplayEditModal] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
+    const [itemTitle, setItemTitle] = useState<string>("");
 
     const sectionLists: Section[] = useAppSelector((state) => state.sectionSlice.sectionList) ?? [];
 
@@ -26,13 +28,7 @@ const EditCourse: React.FC = () => {
         description: "",
     };
 
-    // useEffect(() => {
-    //     dispatch()
-    // }, [dispatch]);
-
     const dispatch = useAppDispatch();
-
-    const handleOnSubmit = () => {};
 
     const handleAddSection = () => {
         const values: AddSectionType = {
@@ -43,18 +39,9 @@ const EditCourse: React.FC = () => {
         dispatch(sectionActions.addSection(values));
     };
 
-    const handledisplayDeleteModal = (id: number) => {
+    const handleDisplayDeleteModal = (id: number) => {
         setIdItem(id);
         setIsDisplayDeleteModal(!isDisplayDeleteModal);
-    };
-
-    const handleCancelModal = () => {
-        setIsDisplayDeleteModal(!isDisplayDeleteModal);
-    };
-
-    const handleEditSection = () => {
-        // @ts-ignore
-        dispatch(sectionActions.editSection({ idItem }));
     };
 
     const handleDeleteSection = () => {
@@ -67,6 +54,28 @@ const EditCourse: React.FC = () => {
         setIsDisplayDeleteModal(!isDisplayDeleteModal);
     };
 
+    const handleEditSection = (id: number, title: string) => {
+        console.log(id, title);
+        // @ts-ignore
+        dispatch(sectionActions.editSection({ id, title })).then((response) => {
+            if (response.payload.status_code === 200) {
+                dispatch(sectionActions.setDeleteSection(idItem));
+            }
+        });
+        setIsDisplayEditModal(!isDisplayEditModal);
+    };
+
+    const handleCancelModal = () => {
+        setIsDisplayDeleteModal(!isDisplayDeleteModal);
+    };
+
+    const handleDisplayEditModal = (id: number, title: string) => {
+        setIdItem(id);
+        setItemTitle(title);
+        setIsDisplayEditModal(!isDisplayEditModal);
+    };
+
+    const handleOnSubmit = () => {};
     return (
         <>
             <Navbar />
@@ -241,8 +250,8 @@ const EditCourse: React.FC = () => {
                                 key={index}
                                 section={section}
                                 handleDeleteSection={handleDeleteSection}
-                                handleEditSection={handleEditSection}
-                                handledisplayDeleteModal={handledisplayDeleteModal}
+                                handleDisplayEditModal={handleDisplayEditModal}
+                                handleDisplayDeleteModal={handleDisplayDeleteModal}
                             />
                         ))}
                     </div>
@@ -251,6 +260,36 @@ const EditCourse: React.FC = () => {
             {/* POPUP DELETE */}
             {isDisplayDeleteModal && (
                 <DeleteModal handleDelete={handleDeleteSection} handleCancel={handleCancelModal} />
+            )}
+            {/* POPUP EDIT */}
+            {isDisplayEditModal && (
+                <div className="absolute z-50 w-full h-full top-0 bg-black/50 flex justify-center items-center ">
+                    <div className="bg-[#F8FFF8] p-4 w-[400px] flex flex-col items-center justify-center rounded-lg">
+                        <div className="flex flex-col gap-1 w-full">
+                            <div className="">Title</div>
+                            <input
+                                type="text"
+                                value={itemTitle}
+                                className="px-2 py-[14px] rounded-lg border-[1px] outline-none flex-1"
+                                onChange={(e) => setItemTitle(e.target.value)}
+                            />
+                        </div>
+                        <div className="mt-2 flex justify-end w-full">
+                            <button
+                                className="py-2 px-4 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
+                                onClick={() => handleEditSection(idItem, itemTitle)}
+                            >
+                                Save
+                            </button>
+                            <button
+                                className="py-2 px-4 mr-1 bg-white rounded-lg text-xl hover:opacity-80 border-[1px] border-black"
+                                onClick={() => setIsDisplayEditModal(!isDisplayEditModal)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </>
     );
