@@ -1,18 +1,14 @@
-import express from "express";
-import CourseController from "../controllers/course.controller";
-
+import { Router } from "express";
+import controllers from "../controllers/index";
+import { uploadFile } from "../middlewares/multer";
 import { isLogin } from "../middlewares/isLogin";
-import { RequestMyCourseWithUser } from "../types/request";
 
-import { Request, Response, NextFunction } from "express";
+const courseRouter: Router = Router();
 
-const router = express.Router();
-const courseController = new CourseController();
+courseRouter.get("/search-my-courses", isLogin, controllers.courseController.searchMyCourses);
 
-router.use(isLogin);
+courseRouter.delete("/:id", isLogin, controllers.courseController.deleteMyCourse);
 
-router.get("/search-my-courses", (req, res) => courseController.searchMyCourses(req, res));
+courseRouter.post("/", isLogin, uploadFile, controllers.courseController.createCourse);
 
-router.delete("/delete-my-course/:id", isLogin, courseController.deleteMyCourse.bind(courseController));
-
-export default router;
+export default courseRouter;

@@ -1,21 +1,21 @@
-import { useEffect } from 'react'
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from './pages/Home'
-import Login from './pages/Login'
-import { authActions } from './redux/slice';
-import { useAppDispatch, useAppSelector } from './hooks/hooks';
-import Header from './components/Header'
-import ChangePassword from './pages/ChangePassword';
-import Footer from './components/Footer';
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import { authActions } from "./redux/slice";
+import { useAppDispatch, useAppSelector } from "./hooks/hooks";
+import Header from "./components/Header";
+import ChangePassword from "./pages/ChangePassword";
+import Footer from "./components/Footer";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import Register from './pages/Register';
+import CreateCourse from "./pages/CreateCourse";
+import Register from "./pages/Register";
 import PrivateRoute from "./routes/PrivateRoute";
-import Verify from './pages/Verify';
-import NotFound from './pages/NotFound';
-import MyCourses from './pages/MyCourses';
-import Cookies from 'js-cookie';
-
+import Verify from "./pages/Verify";
+import NotFound from "./pages/NotFound";
+import MyCourses from "./pages/MyCourses";
+import Cookies from "js-cookie";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -23,8 +23,8 @@ function App() {
     const isLogin = useAppSelector((state) => state?.authSlice?.isLogin) ?? false;
 
     useEffect(() => {
-        const accessToken = Cookies.get("accessToken")
-        if(accessToken){
+        const accessToken = Cookies.get("accessToken");
+        if (accessToken) {
             //@ts-ignore
             dispatch(authActions.getMe());
         }
@@ -40,20 +40,18 @@ function App() {
                         <Route path="/change-password" element={<ChangePassword />}></Route>
                         <Route path="/my-courses" element={<MyCourses />}></Route>
                     </Route>
+                    <Route path="/create-course" element={<CreateCourse />}></Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
-                        <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
-                        <Route path="/login" element={<Login />}></Route>
-                        <Route path="/register" element={<Register />}></Route>
-                        <Route path="/verify-email/:token" element={<Verify />}></Route>
-                    <Route path='/*' element={<NotFound />}></Route>
-
+                    <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
+                    <Route path="/login" element={<Login />}></Route>
+                    <Route path="/register" element={<Register />}></Route>
+                    <Route path="/verify-email/:token" element={<Verify />}></Route>
+                    <Route path="/*" element={<NotFound />}></Route>
                 </Routes>
                 <Footer />
             </BrowserRouter>
         </>
     );
 }
-
-
 
 export default App;
