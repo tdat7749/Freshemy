@@ -2,15 +2,16 @@ import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Response } from "../../types/response";
 
 import { createCourse as createCourseAPI, getCategories as getCategoriesAPI } from "../../apis/course";
-import { NewCourse, Category } from "../../types/course";
 import { getMyCourses as getMyCoursesAPI, deleteCourse as deleteCourseAPI } from "../../apis/courses";
 import {
+    NewCourse,
+    Category,
+    Course,
     Course as CourseType,
     PagingCourse,
     deleteCourse as deleteCourseType,
     getMyCourses as getMyCoursesType,
 } from "../../types/course";
-
 
 type CourseSlice = {
     selectCategories: Category[];
@@ -34,7 +35,7 @@ export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejec
     }
 );
 
-export const getCategories = createAsyncThunk<Response<Category[]>, null, { rejectValue: Response<null> }>  (
+export const getCategories = createAsyncThunk<Response<Category[]>, null, { rejectValue: Response<null> }>(
     "course/getCategories",
     async (body, ThunkAPI) => {
         try {
@@ -128,18 +129,50 @@ export const courseSlice = createSlice({
             state.isLoading = false;
         });
 
-
         builder.addCase(getCategories.pending, (state) => {
             state.error = "";
             state.message = "";
             state.isLoading = true;
         });
         builder.addCase(getCategories.fulfilled, (state, action) => {
-            state.categories = action.payload.data as Category[]
+            state.categories = action.payload.data as Category[];
             state.isLoading = false;
         });
         builder.addCase(getCategories.rejected, (state, action) => {
             state.error = action.payload?.message as string;
+            state.isLoading = false;
+        });
+
+        builder.addCase(getMyCourses.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+
+        builder.addCase(getMyCourses.fulfilled, (state, action) => {
+            state.courses = action.payload.data?.courses as Course[];
+            state.totalPage = action.payload.data?.total_page as number;
+            state.isLoading = false;
+        });
+
+        builder.addCase(getMyCourses.rejected, (state, action) => {
+            state.message = action.payload?.message as string;
+            state.isLoading = false;
+        });
+
+        builder.addCase(deleteCourse.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+
+        builder.addCase(deleteCourse.fulfilled, (state, action) => {
+            state.isLoading = false;
+        });
+
+        builder.addCase(deleteCourse.rejected, (state, action) => {
+            state.message = action.payload?.message as string;
+            state.error = action.error as string;
             state.isLoading = false;
         });
     },
@@ -148,6 +181,3 @@ export const courseSlice = createSlice({
 export const { setError, setCategories, addCategories, removeCategories, reset, setDeleteCourse } = courseSlice.actions;
 
 export default courseSlice.reducer;
-
-
-
