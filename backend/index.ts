@@ -23,6 +23,7 @@ app.use(cookieParser());
 app.use("/api/auth", routers.authRouter);
 app.use("/api/users", routers.userRouter)
 app.use("/api/courses",routers.courseRouter);
+app.use("/api/lessons",routers.lessonRouter);
 const port: number = configs.general.PORT;
 
 app.listen(port, () => {

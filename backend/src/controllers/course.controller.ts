@@ -1,11 +1,11 @@
 import { Request, Response } from 'express'
 import service from "../services";
-import { enrolledCourseSchema } from "../validations/course";
 import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
 import { RequestHasLogin } from "../types/request";
-import { createCourseSchema } from "../validations/course";
 import services from "../services";
+import { createCourseSchema } from "../validations/course";
+import { enrolledCourseSchema } from "../validations/course";
 
 
 class CourseController {

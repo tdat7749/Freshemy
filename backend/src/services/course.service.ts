@@ -64,34 +64,38 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase>=>{
         });   
         
         if(course) {
-            const categories: Category[]= []
-            const sections: Section[]=[]
-            course.courses_categories.forEach(category => {
-                categories.push( category.category )
-            })
-            course.sections.forEach(section=> {
-                const lessons: Lesson[]= []
-                section.lessions.forEach(lesson => {
-                    lessons.push(lesson)
+            if(course.is_delete) {
+                return new ResponseError(404,MESSAGE_ERROR_GET_DATA,false) 
+            } else {
+                const categories: Category[]= []
+                const sections: Section[]=[]
+                course.courses_categories.forEach(category => {
+                    categories.push( category.category )
                 })
-                section.lessions=lessons;
-                sections.push(section)
-            })
-            const courseData : CourseDetailResponseData = {
-                id: course.id,
-                slug: course.slug,
-                title: course.title,
-                categories: categories,
-                summary: course.summary,
-                author: course.user,
-                ratings: 5,
-                thumbnail: course.thumbnail,
-                description: course.description,
-                sections: sections,
-                created_at: course.created_at,
-                updated_at: course.updated_at,
-            }
-                return new ResponseSuccess(200,MESSAGE_SUCCESS_GET_DATA, true, courseData)
+                course.sections.forEach(section=> {
+                    const lessons: Lesson[]= []
+                    section.lessions.forEach(lesson => {
+                        lessons.push(lesson)
+                    })
+                    section.lessions=lessons;
+                    sections.push(section)
+                })
+                const courseData : CourseDetailResponseData = {
+                    id: course.id,
+                    slug: course.slug,
+                    title: course.title,
+                    categories: categories,
+                    summary: course.summary,
+                    author: course.user,
+                    ratings: 5,
+                    thumbnail: course.thumbnail,
+                    description: course.description,
+                    sections: sections,
+                    created_at: course.created_at,
+                    updated_at: course.updated_at,
+                }
+                    return new ResponseSuccess(200,MESSAGE_SUCCESS_GET_DATA, true, courseData)
+            }                     
         }
         return new ResponseError(404,MESSAGE_ERROR_GET_DATA,false)
     } catch (error) {
