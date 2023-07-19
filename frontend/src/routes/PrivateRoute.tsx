@@ -1,13 +1,10 @@
-import React from "react"
-import { Navigate, Outlet } from "react-router-dom"
+import Cookies from "js-cookie";
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
 
-type PrivateRouteType = {
-    isLogin:boolean
-}
+const PrivateRoute: React.FC = () => {
+    const accessToken = Cookies.get("accessToken");
+    return accessToken ? <Outlet /> : <Navigate to={"/"} />;
+};
 
-const PrivateRoute:React.FC<PrivateRouteType> = ({isLogin}) =>{
-    return isLogin ? <Outlet/> : <Navigate to={"/"}/>
-}
-
-
-export default PrivateRoute
+export default PrivateRoute;

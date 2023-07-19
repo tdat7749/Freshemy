@@ -9,6 +9,7 @@ import ChangePassword from "./pages/ChangePassword";
 import Footer from "./components/Footer";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import CreateCourse from "./pages/CreateCourse";
 import Register from "./pages/Register";
 import PrivateRoute from "./routes/PrivateRoute";
 import Verify from "./pages/Verify";
@@ -36,11 +37,12 @@ function App() {
                 <Header isLogin={isLogin} />
                 <Routes>
                     <Route path="/" element={<Home />}></Route>
-                    <Route element={<PrivateRoute isLogin={isLogin} />}>
+                    <Route element={<PrivateRoute />}>
                         <Route path="/change-password" element={<ChangePassword />}></Route>
                         <Route path="/my-courses" element={<MyCourses />}></Route>
                     </Route>
                     <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
+                    <Route path="/create-course" element={<CreateCourse />}></Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                     <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                     <Route path="/login" element={<Login />}></Route>
