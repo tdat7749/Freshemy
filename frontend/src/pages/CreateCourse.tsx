@@ -1,50 +1,62 @@
-import React, { FC, useEffect, useRef,useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 // import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field } from "formik";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 // import { Navigate } from "react-router-dom";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
-import { CreateCourse as CreateCourseType, Category as CategoryType } from "../types/course";
+import { NewCourse as CreateCourseType, Category as CategoryType } from "../types/course";
+import { courseActions } from "../redux/slice";
 import { createValidationSchema } from "../validations/course";
-
+import slugify from "slugify";
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
 
-    const [thumbnail,setThumbnail] = useState<File | null>(null)
+    const [thumbnail, setThumbnail] = useState<File | null>(null);
 
     // const isLogin = useAppSelector((state) => state.Slice.isLogin);
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
+    const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
     let categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
-    let categoriesCreateSelector = useAppSelector((state) => state.courseSlice.createCourse.categories);
+    let categoriesCreateSelector = useAppSelector((state) => state.courseSlice.selectCategories);
     const formikRef = useRef(null);
 
     useEffect(() => {
         dispatch(setMessageEmpty());
-    }, [dispatch]);
-    useEffect(() => {
         //@ts-ignore
-        dispatch(createCourseActions.getCategories());
+        dispatch(courseActions.getCategories());
     }, [dispatch]);
 
     // if (isLogin) return <Navigate to={"/"} />;
 
     const initialValues: CreateCourseType = {
         title: "",
-        categories: [],
-        status: "uncomplete",
+        categories: "Categories",
+        status: 0,
         summary: "",
         description: "",
+        thumbnail: null,
     };
 
     const handleOnSubmit = async (values: CreateCourseType) => {
-        values.categories = categoriesCreateSelector
-        const data = {
-            ...values,
-            thumbnail:thumbnail
-        }
+        // Trong request form thì value chỉ được là text hoặc file
+        const categoriesId: number[] = categoriesCreateSelector.map((category: CategoryType) => {
+            return category.id;
+        });
+        const slug = slugify(values.title);
+        let formData = new FormData();
+        formData.append("title", values.title);
+        formData.append("description", values.description);
+        formData.append("slug", slug); // chỗ này tìm 1 hàm convert qua slug ở trên mạng, ném hàm đó vào folder utils hay gì cũng đc
+        formData.append("status", values.status.toString());
+        formData.append("thumbnail", thumbnail as File);
+        formData.append("summary", values.summary);
+        categoriesId.forEach((item) => {
+            formData.append("categories[]", item.toString());
+        });
+
         // @ts-ignore
-        dispatch(createCourseActions.createCourse(data));
+        dispatch(courseActions.createCourses(formData));
     };
 
     const handleDeleteMessage = () => {
@@ -52,25 +64,25 @@ const CreateCourse: FC = () => {
     };
 
     const handleAddCategories = (event: React.ChangeEvent<HTMLInputElement>) => {
-        // const index = categoriesSelector.findIndex(
-        //     (category: CategoryType) => category.id === parseInt(event.target.value)
-        // );
-        // dispatch(createCourseActions.addCategories(index));
+        const index = categoriesSelector.findIndex(
+            (category: CategoryType) => category.id === parseInt(event.target.value)
+        );
+        dispatch(courseActions.addCategories(index));
     };
 
     const handleRemoveCategory = (id: number) => {
-        // const index = categoriesCreateSelector.findIndex((category: CategoryType) => category.id === id);
-        // dispatch(createCourseActions.removeCategories(index));
+        const index = categoriesCreateSelector.findIndex((category: CategoryType) => category.id === id);
+        dispatch(courseActions.removeCategories(index));
     };
 
-    const onChangeInputFile = (event:React.ChangeEvent<HTMLInputElement>) =>{
-        setThumbnail(event.currentTarget.files![0])
-    }
+    const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setThumbnail(event.currentTarget.files![0]);
+    };
 
     const handleCancel = () => {
         setThumbnail(null);
-        // dispatch(createCourseActions.reset());
-    }
+        dispatch(courseActions.reset());
+    };
 
     return (
         <>
@@ -88,13 +100,21 @@ const CreateCourse: FC = () => {
                                 className="p-4 w-[990px]"
                                 onChange={handleDeleteMessage}
                             >
-                                <h1 className="font-bold text-[32px] text-center">SIGN UP</h1>
-                                <Field
-                                    name="thumb"
-                                    type="file"
-                                    onChange={onChangeInputFile}
-                                />
-
+                                <h1 className="font-bold text-[32px] text-center">Create Course</h1>
+                                <div>
+                                    <Field
+                                        name="thumbnail"
+                                        type="file"
+                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                            onChangeInputFile(event);
+                                        }}
+                                    />
+                                    <ErrorMessage
+                                        name="thumbnail"
+                                        component="span"
+                                        className="text-[14px] text-error font-medium"
+                                    />
+                                </div>
                                 <div className="container flex flex-row h-full">
                                     <div className="container-item flex flex-col w-1/2 mr-8">
                                         <div className="title item">
@@ -123,7 +143,7 @@ const CreateCourse: FC = () => {
                                                     {categoriesCreateSelector?.map((category: CategoryType) => {
                                                         return (
                                                             <div key={category.id}>
-                                                                <div>{category.category}</div>
+                                                                <div>{category.title}</div>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleRemoveCategory(category.id)}
@@ -149,7 +169,7 @@ const CreateCourse: FC = () => {
                                                         (category: CategoryType, index: number) => {
                                                             return (
                                                                 <option key={index} value={category.id}>
-                                                                    {category.category}
+                                                                    {category.title}
                                                                 </option>
                                                             );
                                                         }
@@ -176,10 +196,10 @@ const CreateCourse: FC = () => {
                                                     formik.errors.status && formik.touched.status ? "border-error" : ""
                                                 } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                             >
-                                                <option key="uncompleted" value="status1">
+                                                <option key="0" value={0}>
                                                     Uncompleted
                                                 </option>
-                                                <option key="complete" value="status2">
+                                                <option key="1" value={1}>
                                                     Complete
                                                 </option>
                                             </Field>
@@ -239,10 +259,11 @@ const CreateCourse: FC = () => {
                                 )}
                                 <div className="py-[12px]">
                                     <button
+                                        disabled={isLoading ? true : false}
                                         type="submit"
                                         className="bg-switch hover:opacity-80 text-white h-[68px] py-[8px] font-medium text-[32px] rounded-lg w-full active:active:bg-green-700 disabled:opacity-50"
                                     >
-                                        Save
+                                        {isLoading ? "Loading..." : "Save"}
                                     </button>
                                     <button
                                         type="button"

@@ -17,7 +17,7 @@ import { User as UserType } from "../../types/user";
 import Cookies from "js-cookie";
 import { Response } from "../../types/response";
 
-type Auth = {
+type AuthSlice = {
     user: User;
     isLogin: boolean;
     error: string;
@@ -85,7 +85,7 @@ export const verifyEmail = createAsyncThunk<Response<null>, string, { rejectValu
     }
 );
 
-const initialState: Auth = {
+const initialState: AuthSlice = {
     user: {
         email: undefined,
         first_name: undefined,
@@ -221,7 +221,7 @@ export const getMe = () => async (dispatch: any) => {
                 window.location.href = "/login";
             }
         }
-    } catch (error: any) {}
+    } catch (error: any) { }
 };
 
 export const refreshToken = async () => {

@@ -53,9 +53,9 @@ export const createCourseSchema: ObjectSchema<CreateCourse> = Joi.object({
             "string.regex": MESSSAGE_ERROR_SLUG_MALFORMED,
         }),
 
-    status: Joi.bool().required().messages({
+    status: Joi.required().messages({
         "any.required": MESSAGE_ERROR_STATUS_REQUIRED,
-        "bool.base": MESSAGE_ERROR_STATUS_BOOLEAN,
+        //"bool.base": MESSAGE_ERROR_STATUS_BOOLEAN,
     }),
 
     description: Joi.string().required().messages({
@@ -72,9 +72,9 @@ export const createCourseSchema: ObjectSchema<CreateCourse> = Joi.object({
         "any.required": MESSAGE_ERROR_CATEGORIES_REQUIRED,
     }),
 
-    thumbnail: Joi.required().messages({
-        "any.required": MESSAGE_ERROR_THUMBNAIL_REQUIRED,
-    }),
+    // thumbnail: Joi.required().messages({
+    //     "any.required": MESSAGE_ERROR_THUMBNAIL_REQUIRED,
+    // }),
 });
 
 type UpdateCourse = {
