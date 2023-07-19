@@ -25,6 +25,7 @@ app.use(cookieParser());
 app.use("/api/auth", routers.authRouter);
 app.use("/api/users", routers.userRouter)
 app.use("/api/sections", routers.sectionRouter);
+app.use("/api/lessons", routers.lessonRouter)
 app.use("/api/categories", routers.categoryRouter)
 app.use("/api/courses", routers.courseRouter)
 
