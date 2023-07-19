@@ -3,8 +3,8 @@ import * as Yup from "yup";
 
 
 export const createValidationSchema = Yup.object({
-    thumbnail: Yup.mixed().required("Thumbnail is required"),
-    categories: Yup.string().required("Categories is required"),
+    // thumbnail: Yup.mixed().required("Thumbnail is required"),
+    // categories: Yup.string().required("Categories is required"),
     title: Yup.string().trim().required("Title is required"),
     status: Yup.number().required("Status is required"),
     summary: Yup.string().trim().required("Summary is required"),

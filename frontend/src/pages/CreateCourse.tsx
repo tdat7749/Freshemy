@@ -7,7 +7,7 @@ import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { NewCourse as CreateCourseType, Category as CategoryType } from "../types/course";
 import { courseActions } from "../redux/slice";
 import { createValidationSchema } from "../validations/course";
-
+import slugify from "slugify";
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
 
@@ -31,7 +31,7 @@ const CreateCourse: FC = () => {
 
     const initialValues: CreateCourseType = {
         title: "",
-        categories: [],
+        categories: "Categories",
         status: 0,
         summary: "",
         description: "",
@@ -43,12 +43,12 @@ const CreateCourse: FC = () => {
         const categoriesId: number[] = categoriesCreateSelector.map((category: CategoryType) => {
             return category.id;
         });
-        console.log(categoriesId);
-
+        const slug = slugify(values.title);
+        console.log(slug)
         let formData = new FormData();
         formData.append("title", values.title);
         formData.append("description", values.description);
-        formData.append("slug", "abc-adas-zzzaaz"); // chỗ này tìm 1 hàm convert qua slug ở trên mạng, ném hàm đó vào folder utils hay gì cũng đc
+        formData.append("slug", slug); // chỗ này tìm 1 hàm convert qua slug ở trên mạng, ném hàm đó vào folder utils hay gì cũng đc
         formData.append("status", values.status.toString());
         formData.append("thumbnail", thumbnail as File);
         formData.append("summary", values.summary);

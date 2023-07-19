@@ -5,7 +5,7 @@ export type Category = {
 
 export type NewCourse = {
     title:  string,
-    categories: Category[],
+    categories: string,
     status: number,
     summary: string,
     description: string,
