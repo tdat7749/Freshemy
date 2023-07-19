@@ -16,7 +16,8 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
                 title: {
                     contains: parsedKeyword,
                 },
-                user_id: userId, // Lọc theo user_id của Trần Văn C
+                user_id: userId, 
+                is_delete: false, // Exclude deleted courses
             },
             include: {
                 user: true,
@@ -39,7 +40,7 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
                 title: {
                     contains: parsedKeyword,
                 },
-                user_id: userId, // Lọc theo user_id của Trần Văn C
+                user_id: userId, 
             },
         });
 
@@ -82,9 +83,28 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
 
 export const deleteMyCourse = async (courseId: number): Promise<any> => {
     try {
-        await db.course.delete({
+        // Check if the course exists
+        const existingCourse = await db.course.findUnique({
             where: {
                 id: courseId,
+            },
+        });
+
+        if (!existingCourse) {
+            return {
+                success: false,
+                message: "Course not found",
+                status_code: 404,
+            };
+        }
+
+        // Set is_delete field to true to mark the course as deleted
+        await db.course.update({
+            where: {
+                id: courseId,
+            },
+            data: {
+                is_delete: true,
             },
         });
 
