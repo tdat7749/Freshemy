@@ -28,8 +28,4 @@ export const MESSAGE_ERROR_LAST_NAME_REQUIRED = "Last Name is required"
 export const MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED = "Confirm Password is required"
 export const MESSAGE_ERROR_WRONG_CONFIRM_PASSWORD_REQUIRED = "Wrong Confirm Password is required"
 
-export const MESSAGE_ERROR_TITLE_REQUIRED = "Title is required"
-export const MESSAGE_ERROR_SUMMARY_REQUIRED = "Summary is required"
-export const MESSAGE_ERROR_DESCRIPTION_REQUIRED = "Description is required"
-
 
