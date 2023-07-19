@@ -1,14 +1,12 @@
 
 import { Request, Response } from "express";
-import service from "../services/index";
-import CourseService from "../services/course.service";
 import { RequestHasLogin } from "../types/request";
-import { createCourseSchema, updateCourseSchema } from "../validations/course";
+import { createCourseSchema, updateCourseSchema, enrolledCourseSchema } from "../validations/course";
 import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
 import services from "../services";
-import { enrolledCourseSchema } from "../validations/course";
-
+import { ResponseError, ResponseSuccess } from "../commons/response";
+import { MESSAGE_ERROR_INTERNAL_SERVER } from "../utils/constant";
 
 class CourseController {
     async editCourse(req: Request, res: Response): Promise<Response> {
@@ -35,13 +33,16 @@ class CourseController {
 
             const result = await services.CourseService.searchMyCourses(parsedPageIndex, parsedKeyword, userId);
 
-            return res.status(result.status_code).json(result);
+            if (result instanceof ResponseSuccess) {
+                return res.json(result);
+            } else if (result instanceof ResponseError) {
+                return res.status(result.getStatusCode()).json(result);
+            } else {
+                // Handle unexpected response
+                return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+            }
         } catch (error: any) {
-            return res.status(500).json({
-                success: false,
-                message: error.message || "Internal Server Error",
-                status_code: 500,
-            });
+            return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
         }
     }
 
@@ -52,13 +53,16 @@ class CourseController {
 
             const result = await services.CourseService.deleteMyCourse(courseId);
 
-            return res.status(result.status_code).json(result);
+            if (result instanceof ResponseSuccess) {
+                return res.status(result.getStatusCode()).json(result);
+            } else if (result instanceof ResponseError) {
+                return res.status(result.getStatusCode()).json(result);
+            } else {
+                // Handle unexpected response
+                return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+            }
         } catch (error: any) {
-            return res.status(500).json({
-                success: false,
-                message: error.message || "Internal Server Error",
-                status_code: 500,
-            });
+            return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
         }
     }
 
@@ -75,7 +79,7 @@ class CourseController {
         return res.status(response.getStatusCode()).json(response);
     }
     async getCourseDetail(req:Request, res:Response){
-        const response = await service.CourseService.getCourseDetail(req)        
+        const response = await services.CourseService.getCourseDetail(req)        
         return res.status(response.getStatusCode()).json(response)
     }
 
@@ -88,7 +92,7 @@ class CourseController {
                 success: false,
             });
         }
-        const response = await service.CourseService.registerCourse(req)        
+        const response = await services.CourseService.registerCourse(req)        
         return res.status(response.getStatusCode()).json(response)
     }
 
@@ -103,12 +107,12 @@ class CourseController {
                 success: false,
             });
         }
-        const response = await service.CourseService.unsubcribeCourse(req)        
+        const response = await services.CourseService.unsubcribeCourse(req)        
         return res.status(response.getStatusCode()).json(response)
     }
 
     async editThumbnail(req: RequestHasLogin, res: Response) {
-        const response = await service.CourseService.editThumbnail(req);
+        const response = await services.CourseService.editThumbnail(req);
 
         return res.status(response.getStatusCode()).json(response)
     }

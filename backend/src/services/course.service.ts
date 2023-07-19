@@ -1,3 +1,4 @@
+import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response"
 import { db } from '../configs/db.config'
@@ -7,14 +8,18 @@ import {
     Section,
     Category
  } from "../types/courseDetail";
-import { RequestHasLogin } from "../types/request";
-import { 
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
+import cloudinary from "../configs/cloudinary.config";
+import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
+import { Console } from "console";
+import configs from "../configs";
+import {
     MESSAGE_SUCCESS_GET_DATA,
     MESSAGE_ERROR_GET_DATA,
     MESSAGE_SUCCESS_REGISTER_COURSE,
     MESSAGE_ERROR_BAD_REQUEST,
     MESSAGE_SUCCESS_UN_REGISTER_COURSE,
-    MESSAGE_ERROR_COURSE_CREATE_FAILED,
     MESSAGE_ERROR_LOGIN_FAILED,
     MESSAGE_ERROR_SEND_EMAIL,
     MESSAGE_ERROR_LOGIN_UNVERIFIED,
@@ -22,16 +27,13 @@ import {
     MESSAGE_ERROR_INTERNAL_SERVER,
     MESSAGE_ERROR_MISSING_REQUEST_BODY,
     MESSAGE_SUCCESS_COURSE_CREATED,
+    MESSAGE_ERROR_COURSE_CREATE_FAILED,
+    MESSAGE_SUCCESS_SEARCH_MY_COURSE,
+    MESSAGE_ERROR_COURSE_NOT_FOUND,
+    MESSAGE_SUCCESS_DELETED_COURSE,
     MESSAGE_ERROR_COURSE_SLUG_IS_USED,
     MESSAGE_SUCCESS_UPDATE_DATA,
 } from "../utils/constant"
-import configs from "../configs";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
-import cloudinary from "../configs/cloudinary.config";
-import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
-import { Console } from "console";
-
 const getCourseDetail = async (req: Request): Promise<ResponseBase>=>{
     try {
         const {slug} = req.params
@@ -381,7 +383,8 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     }
 };
 
-export const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<any> => {
+
+export const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
     try {
         const parsedPageIndex = parseInt(pageIndex.toString(), 10);
         const parsedKeyword = keyword;
@@ -427,7 +430,7 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
 
         const totalPage = Math.ceil(totalRecord / take);
 
-        const myCoursesData = courses.map((course) => {
+        const myCoursesData: CourseInfo[] = courses.map((course) => {
             const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
             const averageRating = course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0;
 
@@ -444,26 +447,20 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
             };
         });
 
-        return {
-            success: true,
-            message: "Get data successfully",
-            status_code: 200,
-            data: {
-                total_page: totalPage,
-                total_record: totalRecord,
-                courses: myCoursesData,
-            },
+        const responseData: ResponseData = {
+            total_page: totalPage,
+            total_record: totalRecord,
+            courses: myCoursesData,
         };
+
+        return new ResponseSuccess<ResponseData>(200, MESSAGE_SUCCESS_SEARCH_MY_COURSE, true, responseData);
     } catch (error: any) {
-        return {
-            success: false,
-            message: error.message || "Internal Server Error",
-            status_code: 500,
-        };
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
 
-export const deleteMyCourse = async (courseId: number): Promise<any> => {
+
+export const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
     try {
         // Check if the course exists
         const existingCourse = await db.course.findUnique({
@@ -473,11 +470,7 @@ export const deleteMyCourse = async (courseId: number): Promise<any> => {
         });
 
         if (!existingCourse) {
-            return {
-                success: false,
-                message: "Course not found",
-                status_code: 404,
-            };
+            return new ResponseError(404, MESSAGE_ERROR_COURSE_NOT_FOUND, false);
         }
 
         // Set is_delete field to true to mark the course as deleted
@@ -490,17 +483,9 @@ export const deleteMyCourse = async (courseId: number): Promise<any> => {
             },
         });
 
-        return {
-            success: true,
-            message: "Delete successfully",
-            status_code: 200,
-        };
+        return new ResponseSuccess<ResponseData>(200, MESSAGE_SUCCESS_DELETED_COURSE, true);
     } catch (error: any) {
-        return {
-            success: false,
-            message: error.message || "Internal Server Error",
-            status_code: 500,
-        };
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
 
