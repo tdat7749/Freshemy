@@ -4,7 +4,7 @@ import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
 import { RequestHasLogin } from "../types/request";
 import service from "../services/index";
-import { LessonSchema } from "../validations/lesson";
+import { LessonSchema, UpdateLessonSchema } from "../validations/lesson";
 
 class LessonController {
     async getLesson(req: Request, res: Response): Promise<Response> {
@@ -29,7 +29,7 @@ class LessonController {
     }
 
     async updateLesson(req: Request, res: Response): Promise<Response> {
-        const errorValidate: ValidationError | undefined = LessonSchema.validate(req.body).error;
+        const errorValidate: ValidationError | undefined = UpdateLessonSchema.validate(req.body).error;
 
         if (errorValidate) {
             return res.status(400).json({
