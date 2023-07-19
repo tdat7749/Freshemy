@@ -21,4 +21,4 @@ export const changePasswordValidationSchema = Yup.object({
             .max(32, MESSAGE_ERROR_PASSWORD_LONG)
             .required(MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED)
             .oneOf([Yup.ref("new_password")], MESSAGE_ERROR_PASSWORD_NEW_DIFFERENT_FROM_CONFIRM),
-    });
+});
