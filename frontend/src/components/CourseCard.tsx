@@ -1,10 +1,8 @@
 import { FC, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ThreeDotIcon from "../components/icons/ThreedotIcon";
 import EditIcon from "../components/icons/EditIcon";
 import DeleteIcon from "../components/icons/DeleteIcon";
-// import { courseAction } from "../redux/slice";
-// import { useAppDispatch } from "../hooks/hooks";
 
 type Course = {
     id: number;
@@ -13,21 +11,12 @@ type Course = {
     summary: string;
     thumbnail: string;
     author: string;
+    handleDeleteCourse: (courseId: number) => void;
+    handleEditCourse: (slug: string) => void
 };
 
 const CourseCard: FC<Course> = (props: Course) => {
     const [isDisplayDropDown, setIsDisplayDropDown] = useState<boolean>(false);
-    // const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-
-    const handleEditCourse = (slug: string) => {
-        navigate(`/my-courses/edit/${slug}`);
-    };
-
-    const handleDeleteCourse = (courseId: number) => {
-        // @ts-ignore
-        //dispatch(courseAction.deleteCourse(courseId));
-    };
 
     return (
         <div className="flex pt-4 pb-3 border-b-[1px]">
@@ -58,14 +47,14 @@ const CourseCard: FC<Course> = (props: Course) => {
                 >
                     <div
                         className="flex items-center mb-2 hover:bg-backgroundHover cursor-pointer"
-                        onClick={() => handleEditCourse(props.slug)}
+                        onClick={() => props.handleEditCourse(props.slug)}
                     >
                         <EditIcon />
                         <span className="ml-2">Edit</span>
                     </div>
                     <div
                         className="flex items-center hover:bg-backgroundHover cursor-pointer"
-                        onClick={() => handleDeleteCourse(props.id)}
+                        onClick={() => props.handleDeleteCourse(props.id)}
                     >
                         <DeleteIcon />
                         <span className="ml-2">Delete</span>

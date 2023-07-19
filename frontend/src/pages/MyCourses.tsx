@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SearchIcon from "../components/icons/SearchIcon";
 import CreateIcon from "../components/icons/CreateIcon";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CourseCard from "../components/CourseCard";
 import Pagination from "../components/Pagination";
 import Navbar from "../components/Navbar";
@@ -15,6 +15,7 @@ const MyCourses: React.FC = () => {
     const [pageIndex, setPageIndex] = useState<number>(1);
     const inputRef = React.useRef<HTMLInputElement>(null);
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
     let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
@@ -41,6 +42,19 @@ const MyCourses: React.FC = () => {
             inputRef.current.focus();
         }
         setKeyword(userInput);
+    };
+
+    const handleEditCourse = (slug: string) => {
+        navigate(`/my-courses/edit/${slug}`);
+    };
+
+    const handleDeleteCourse = (courseId: number) => {
+        //@ts-ignore
+        dispatch(courseAction.deleteCourse({ courseId })).then((response) => {
+            if (response.payload.status_code === 200) {
+                dispatch(courseAction.setDeleteCourse(courseId));
+            }
+        });
     };
 
     return (
@@ -84,6 +98,8 @@ const MyCourses: React.FC = () => {
                             title={course.title}
                             summary={course.summary}
                             author={course.author}
+                            handleDeleteCourse={handleDeleteCourse}
+                            handleEditCourse={handleEditCourse}
                         />
                     );
                 })}

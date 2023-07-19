@@ -1,4 +1,4 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { getMyCourses as getMyCoursesAPI, deleteCourse as deleteCourseAPI } from "../../apis/courses";
 import {
@@ -53,7 +53,11 @@ const initialState: CourseSlice = {
 export const courseSlice = createSlice({
     name: "course",
     initialState: initialState,
-    reducers: {},
+    reducers: {
+        setDeleteCourse: (state, action: PayloadAction<number>) => {
+            state.courses = state.courses.filter((course: CourseType) => course.id !== action.payload);
+        },
+    },
 
     extraReducers: (builder) => {
         builder.addCase(getMyCourses.pending, (state) => {
@@ -90,5 +94,7 @@ export const courseSlice = createSlice({
         });
     },
 });
+
+export const { setDeleteCourse } = courseSlice.actions;
 
 export default courseSlice.reducer;

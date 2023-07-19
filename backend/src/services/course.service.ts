@@ -11,7 +11,6 @@ import {
 } from "../utils/constant";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
-
 export const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status } = req.body;
     const user_id = req.user_id;
@@ -91,7 +90,7 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
                 title: {
                     contains: parsedKeyword,
                 },
-                user_id: userId, 
+                user_id: userId,
                 is_delete: false, // Exclude deleted courses
             },
             include: {
@@ -115,7 +114,8 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
                 title: {
                     contains: parsedKeyword,
                 },
-                user_id: userId, 
+                user_id: userId,
+                is_delete: false,
             },
         });
 

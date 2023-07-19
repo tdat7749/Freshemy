@@ -11,7 +11,7 @@ export const getMyCourses = async (values: getMyCoursesType) => {
 };
 
 export const deleteCourse = async (values: deleteCourseType) => {
-    const path = `/api/courses/${values.courseId}`;
+    const path = `courses/${values.courseId}`;
 
     const response = await apiCaller(HTTP_DELETE, path);
 
