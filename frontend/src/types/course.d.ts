@@ -43,9 +43,6 @@ export type CreateCourse = {
     description: string;
 };
 
-export type deleteCourse = {
-    courseId: number;
-};
 
 export type PagingCourse = {
     total_page: number;
@@ -54,15 +51,17 @@ export type PagingCourse = {
 };
 
 export type CourseDetail = {
-    id: number;
+    id: number | undefined;
     slug: string;
     title: string;
     categories: Category[];
     summary: string;
     author: User;
-    ratings: number;
+    ratings: number | undefined;
     description: string;
-    section: SectionRender[];
+    sections: SectionRender[];
     created_at: string;
     updated_at: string;
+    thumbnail:string
+    status:boolean
 };

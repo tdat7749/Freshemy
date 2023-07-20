@@ -9,10 +9,8 @@ courseRouter.put("/change-information", isLogin, controllers.courseController.ed
 courseRouter.post("/", isLogin, uploadFileMdw, controllers.courseController.createCourse);
 courseRouter.post("/registration", isLogin, controllers.courseController.registerCourse);
 courseRouter.delete("/unsubcribe", isLogin, controllers.courseController.unsubcribeCourse);
-courseRouter.post("/", isLogin, uploadFileMdw, controllers.courseController.createCourse);
 courseRouter.patch("/change-thumbnail", isLogin, uploadFileMdw, controllers.courseController.editThumbnail);
 
-courseRouter.put("/change-information", isLogin, controllers.courseController.editCourse);
 courseRouter.get("/search-my-courses", isLogin, controllers.courseController.searchMyCourses);
 courseRouter.get("/:slug", controllers.courseController.getCourseDetail);
 courseRouter.delete("/:id", isLogin, controllers.courseController.deleteMyCourse);
