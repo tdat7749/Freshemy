@@ -1,17 +1,18 @@
+import { User } from "./user";
+
 export type Category = {
-    id: number,
-    title: String
-}
+    id: number;
+    title: String;
+};
 
 export type NewCourse = {
-    title:  string,
-    categories: string,
-    status: number,
-    summary: string,
-    description: string,
-    thumbnail: File | null
-}
-
+    title: string;
+    categories: string;
+    status: number;
+    summary: string;
+    description: string;
+    thumbnail: File | null;
+};
 
 export type Course = {
     id: number;
@@ -46,13 +47,22 @@ export type deleteCourse = {
     courseId: number;
 };
 
-export type Category = {
-    id: number;
-    category: String;
-};
-
 export type PagingCourse = {
     total_page: number;
     total_record: number;
     courses: Course[];
+};
+
+export type CourseDetail = {
+    id: number;
+    slug: string;
+    title: string;
+    categories: Category[];
+    summary: string;
+    author: User;
+    ratings: number;
+    description: string;
+    section: SectionRender[];
+    created_at: string;
+    updated_at: string;
 };

@@ -1,13 +1,13 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { addLesson as addLessonAPI } from "../../apis/lessons";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { addLesson as addLessonAPI } from "../../apis/lesson";
 import { AddLesson as AddLessonType } from "../../types/lesson";
 import { Response } from "../../types/response";
 
 type UserSlice = {
-    error: "",
-    message: "",
-    isLoading: false,
-}
+    error: "";
+    message: "";
+    isLoading: false;
+};
 const initialState: UserSlice = {
     error: "",
     message: "",
@@ -31,5 +31,3 @@ export const lessonSlice = createSlice({
     initialState: initialState,
     reducers: {},
 });
-
-
