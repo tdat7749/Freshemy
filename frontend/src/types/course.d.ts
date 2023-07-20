@@ -64,3 +64,18 @@ export type CourseDetail = {
     thumbnail:string
     status:boolean
 };
+
+export type ChangeThumbnail = {
+    course_id:number
+    thumbnail:File
+}
+
+export type ChangeInformation = {
+    id:number,
+    title:string,
+    summary:string,
+    status:boolean,
+    description:string,
+    categories:Category[],
+    slug:string
+}

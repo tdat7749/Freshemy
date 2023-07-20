@@ -16,21 +16,22 @@ const CreateCourse: FC = () => {
     const [displayCategories, setdisplayCategorie] = useState<boolean>(false);
     const [displayStatus, setDisplayStatus] = useState<boolean>(false);
     const [status, setStatus] = useState<string>("Uncomplete");
-    // const isLogin = useAppSelector((state) => state.Slice.isLogin);
+
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
-    let categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
-    let createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
+    const categories = useAppSelector((state) => state.courseSlice.categories) ?? []
+    const createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
+
     const formikRef = useRef(null);
+    const imageRef = useRef<HTMLImageElement>(null);
+
     useEffect(() => {
         dispatch(setMessageEmpty());
         //@ts-ignore
         dispatch(courseActions.getCategories());
     }, [dispatch]);
 
-    // if (isLogin) return <Navigate to={"/"} />;
-    console.log(categoriesSelector);
     const initialValues: CreateCourseType = {
         title: "",
         categories: "Categories",
@@ -45,12 +46,12 @@ const CreateCourse: FC = () => {
         const categoriesId: number[] = createCategoriesSelector.map((category: CategoryType) => {
             return category.id;
         });
-        let statusValue = status === "Uncomplete" ? "0":"1";
+        let statusValue = status === "Uncomplete" ? "0" : "1";
         const slug = slugify(values.title);
         let formData = new FormData();
         formData.append("title", values.title);
         formData.append("description", values.description);
-        formData.append("slug", slug); // chỗ này tìm 1 hàm convert qua slug ở trên mạng, ném hàm đó vào folder utils hay gì cũng đc
+        formData.append("slug", slug);
         formData.append("status", statusValue);
         formData.append("thumbnail", thumbnail as File);
         formData.append("summary", values.summary);
@@ -67,7 +68,7 @@ const CreateCourse: FC = () => {
     };
 
     const handleAddCategories = (id: number, oldIndex: number) => {
-        const index = categoriesSelector.findIndex((category: CategoryType) => category.id === id);
+        const index = categories.findIndex((category: CategoryType) => category.id === id);
         dispatch(courseActions.addCategories(index));
     };
 
@@ -75,20 +76,30 @@ const CreateCourse: FC = () => {
         const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
         dispatch(courseActions.removeCategories(index));
     };
-    
+
     const handleDisplay = () => {
         setdisplayCategorie(!displayCategories);
     };
+
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         setThumbnail(event.currentTarget.files![0]);
+        const thumbnail = event.currentTarget.files![0];
+        if (thumbnail && thumbnail.type.includes("image/")) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                if (imageRef.current) {
+                    imageRef.current.src = e.target?.result as string;
+                }
+            };
+            reader.readAsDataURL(thumbnail);
+            return;
+        }
     };
 
     const handleCancel = () => {
         setThumbnail(null);
         dispatch(courseActions.reset());
     };
-
-    
 
     return (
         <>
@@ -109,24 +120,26 @@ const CreateCourse: FC = () => {
                             {(formik) => (
                                 <form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
                                     <div className="flex">
-                                        <div className="w-[120px] h-[120px] rounded-lg mr-3 bg-[#D9D9D9]">
-                                            <Field
-                                                name="thumbnail"
-                                                type="file"
-                                                className="opacity-0 w-full h-full cursor-pointer"
-                                                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                    onChangeInputFile(event);
-                                                }}
+                                        <div className="flex ">
+                                            <img
+                                                ref={imageRef}
+                                                alt=""
+                                                className="w-[120px] h-[120px] rounded-lg mr-3 bg-[#D9D9D9]"
                                             />
-                                            <ErrorMessage
-                                                name="thumbnail"
-                                                component="span"
-                                                className="text-[14px] text-error font-medium"
-                                            />
-                                        </div>
-                                        <div className="">
-                                            <p>Upload thumbnail</p>
-                                            <p>Size of the image is less than 4MB</p>
+                                            <div className="flex flex-col">
+                                                <div className="">
+                                                    <p>Upload thumbnail</p>
+                                                    <p>Size of the image is less than 4MB</p>
+                                                </div>
+                                                <Field
+                                                    name="thumbnail"
+                                                    type="file"
+                                                    className="w-full h-full cursor-pointer"
+                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                        onChangeInputFile(event);
+                                                    }}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="container flex flex-row h-full gap-4">
@@ -154,121 +167,120 @@ const CreateCourse: FC = () => {
                                                 <label htmlFor="category" className="text-lg mb-1 tablet:text-xl">
                                                     Categories
                                                 </label>
-                                                <div className="w-[100%] md:w-1/2 flex flex-col items-center">
-                                                    <div className="w-full px-4">
-                                                        <div className="flex flex-col items-center relative">
-                                                            <div className="w-full  svelte-1l8159u">
-                                                                <div className="my-2 p-1 flex border border-gray-200 bg-white rounded svelte-1l8159u">
-                                                                    <div className="flex flex-auto flex-wrap">
-                                                                        {createCategoriesSelector?.map(
-                                                                            (category: any, index: number) => {
-                                                                                return (
-                                                                                    <div
-                                                                                        className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700 bg-teal-100 border border-teal-300 "
-                                                                                        onClick={() => {
-                                                                                            handleRemoveCategory(
-                                                                                                category.id,
-                                                                                                index
-                                                                                            );
-                                                                                        }}
-                                                                                    >
-                                                                                        <div className="text-xs font-normal leading-none max-w-full flex-initial">
-                                                                                            {category.title}
-                                                                                        </div>
-                                                                                        <div className="flex flex-auto flex-row-reverse">
-                                                                                            <div>
-                                                                                                <svg
-                                                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                                                    width="100%"
-                                                                                                    height="100%"
-                                                                                                    fill="none"
-                                                                                                    viewBox="0 0 24 24"
-                                                                                                    stroke="currentColor"
-                                                                                                    strokeWidth={2}
-                                                                                                    strokeLinecap="round"
-                                                                                                    strokeLinejoin="round"
-                                                                                                    className="feather feather-x cursor-pointer hover:text-teal-400 rounded-full w-4 h-4 ml-2"
-                                                                                                >
-                                                                                                    <line
-                                                                                                        x1={18}
-                                                                                                        y1={6}
-                                                                                                        x2={6}
-                                                                                                        y2={18}
-                                                                                                    />
-                                                                                                    <line
-                                                                                                        x1={6}
-                                                                                                        y1={6}
-                                                                                                        x2={18}
-                                                                                                        y2={18}
-                                                                                                    />
-                                                                                                </svg>
-                                                                                            </div>
+                                                <div className="w-[100%] md:w-1/2">
+                                                    <div className="flex flex-col items-center relative">
+                                                        <div className="w-full  svelte-1l8159u">
+                                                            <div className="my-2 p-1 flex border border-gray-200 bg-white rounded svelte-1l8159u">
+                                                                <div className="flex flex-auto flex-wrap py-4">
+                                                                    {createCategoriesSelector?.map(
+                                                                        (category: any, index: number) => {
+                                                                            return (
+                                                                                <div
+                                                                                    className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700 bg-teal-100 border border-teal-300 "
+                                                                                    onClick={() => {
+                                                                                        handleRemoveCategory(
+                                                                                            category.id,
+                                                                                            index
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <div className="text-xs font-normal leading-none max-w-full flex-initial">
+                                                                                        {category.title}
+                                                                                    </div>
+                                                                                    <div className="flex flex-auto flex-row-reverse">
+                                                                                        <div>
+                                                                                            <svg
+                                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                                width="100%"
+                                                                                                height="100%"
+                                                                                                fill="none"
+                                                                                                viewBox="0 0 24 24"
+                                                                                                stroke="currentColor"
+                                                                                                strokeWidth={2}
+                                                                                                strokeLinecap="round"
+                                                                                                strokeLinejoin="round"
+                                                                                                className="feather feather-x cursor-pointer hover:text-teal-400 rounded-full w-4 h-4 ml-2"
+                                                                                            >
+                                                                                                <line
+                                                                                                    x1={18}
+                                                                                                    y1={6}
+                                                                                                    x2={6}
+                                                                                                    y2={18}
+                                                                                                />
+                                                                                                <line
+                                                                                                    x1={6}
+                                                                                                    y1={6}
+                                                                                                    x2={18}
+                                                                                                    y2={18}
+                                                                                                />
+                                                                                            </svg>
                                                                                         </div>
                                                                                     </div>
-                                                                                );
-                                                                            }
-                                                                        )}
-                                                                        <div className="flex-1">
-                                                                            <input
-                                                                                placeholder=""
-                                                                                className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-gray-800"
-                                                                            />
-                                                                        </div>
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                    <div className="flex-1">
+                                                                        <input
+                                                                            placeholder=""
+                                                                            className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-gray-800"
+                                                                        />
                                                                     </div>
-                                                                    <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
-                                                                        <button
-                                                                            type="button"
-                                                                            className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
-                                                                            onClick={handleDisplay}
+                                                                </div>
+                                                                <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
+                                                                        onClick={handleDisplay}
+                                                                    >
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="100%"
+                                                                            height="100%"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            stroke="currentColor"
+                                                                            strokeWidth={2}
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            className="feather feather-chevron-up w-4 h-4"
                                                                         >
-                                                                            <svg
-                                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                                width="100%"
-                                                                                height="100%"
-                                                                                fill="none"
-                                                                                viewBox="0 0 24 24"
-                                                                                stroke="currentColor"
-                                                                                strokeWidth={2}
-                                                                                strokeLinecap="round"
-                                                                                strokeLinejoin="round"
-                                                                                className="feather feather-chevron-up w-4 h-4"
-                                                                            >
-                                                                                <polyline points="18 15 12 9 6 15" />
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
+                                                                            <polyline points="18 15 12 9 6 15" />
+                                                                        </svg>
+                                                                    </button>
                                                                 </div>
                                                             </div>
-                                                            {displayCategories && (
-                                                                <div className="absolute shadow top-100 bg-white z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
-                                                                    <div className="flex flex-col w-full">
-                                                                        {categoriesSelector.map(
-                                                                            (category: any, index: number) => {
-                                                                                return (
-                                                                                    <div
-                                                                                        className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
-                                                                                        onClick={() =>
-                                                                                            handleAddCategories(
-                                                                                                category.id,
-                                                                                                index
-                                                                                            )
-                                                                                        }
-                                                                                    >
-                                                                                        <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
-                                                                                            <div className="w-full items-center flex">
-                                                                                                <div className="mx-2 leading-6  ">
-                                                                                                    {category.title}{" "}
-                                                                                                </div>
+                                                        </div>
+                                                        {displayCategories && (
+                                                            <div className="absolute shadow top-100 bg-white z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
+                                                                <div className="flex flex-col w-full">
+                                                                    {categories.map(
+                                                                        (category: any, index: number) => {
+                                                                            return (
+                                                                                <div
+                                                                                    key={index}
+                                                                                    className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
+                                                                                    onClick={() =>
+                                                                                        handleAddCategories(
+                                                                                            category.id,
+                                                                                            index
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                                                                                        <div className="w-full items-center flex">
+                                                                                            <div className="mx-2 leading-6  ">
+                                                                                                {category.title}{" "}
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                );
-                                                                            }
-                                                                        )}
-                                                                    </div>
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    )}
                                                                 </div>
-                                                            )}
-                                                        </div>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -276,12 +288,12 @@ const CreateCourse: FC = () => {
                                                 <label htmlFor="category" className="text-lg mb-1 tablet:text-xl">
                                                     Status
                                                 </label>
-                                                <div className="w-[100%] md:w-1/2 flex flex-col items-center">
-                                                    <div className="w-full px-4">
+                                                <div className="w-[100%] md:w-1/2">
+
                                                         <div className="flex flex-col items-center relative">
                                                             <div className="w-full  svelte-1l8159u">
                                                                 <div className="my-2 p-1 flex border border-gray-200 bg-white rounded svelte-1l8159u">
-                                                                    <div className="flex flex-auto flex-wrap">
+                                                                    <div className="flex flex-auto flex-wrap py-4">
                                                                         <div>{status}</div>
                                                                     </div>
                                                                     <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
@@ -345,7 +357,6 @@ const CreateCourse: FC = () => {
                                                                 </div>
                                                             )}
                                                         </div>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

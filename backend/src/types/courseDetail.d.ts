@@ -26,11 +26,12 @@ export type Author = {
 export type Lesson = {
     title: string
     url_video: string
-    
+    id:number
 }
 export type Section = {
     title: string,
     updated_at: Date,
+    id:number
     lessons: Lesson[],
 }
 

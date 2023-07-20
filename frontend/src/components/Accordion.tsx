@@ -8,7 +8,7 @@ import EditSectionIcon from "./icons/EditSectionIcon";
 
 type AccordionType = {
     section: Section;
-    handleDisplayAddSectionModal: (id: number) => void;
+    handleDisplayAddSectionModal?: (id: number) => void;
     isDisplayBtn: boolean;
     handleDeleteSection?: (id: number) => void;
     handleDisplayDeleteModal?: (id: number) => void;

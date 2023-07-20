@@ -56,8 +56,10 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase>=>{
                     select:{
                         title:true,
                         updated_at:true,
+                        id:true,
                         lessons:{
                             select:{
+                                id:true,
                                 title:true,
                                 url_video:true
                             }
@@ -115,6 +117,93 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase>=>{
         return new ResponseError(500,MESSAGE_ERROR_INTERNAL_SERVER,false)
     }
 }
+
+
+const getCourseDetailById = async (req: Request): Promise<ResponseBase>=>{
+    try {
+        const {id} = req.params
+        const course = await db.course.findUnique({
+            where: {
+                id: parseInt(id),
+            },
+            include:{
+                courses_categories:{
+                    include:{
+                        category:{
+                            select:{
+                                id:true,
+                                title:true
+                            }
+                        }
+                    }
+                },
+                sections:{
+                    select:{
+                        title:true,
+                        updated_at:true,
+                        id:true,
+                        lessons:{
+                            select:{
+                                id:true,
+                                title:true,
+                                url_video:true
+                            }
+                        }
+                    }
+                },
+                user:{
+                    select:{
+                        first_name:true,
+                        last_name:true,
+                        id:true,
+                    }
+                }
+            }
+        });   
+        
+        if(course) {
+            if(course.is_delete) {
+                return new ResponseError(404,MESSAGE_ERROR_GET_DATA,false) 
+            } else {
+                const categories: Category[]= []
+                const sections: Section[]=[]
+                course.courses_categories.forEach(category => {
+                    categories.push( category.category )
+                })
+                course.sections.forEach(section=> {
+                    const lessons: Lesson[]= []
+                    section.lessons.forEach(lesson => {
+                        lessons.push(lesson)
+                    })
+                    section.lessons=lessons;
+                    sections.push(section)
+                })
+                const courseData : CourseDetailResponseData = {
+                    id: course.id,
+                    slug: course.slug,
+                    title: course.title,
+                    categories: categories,
+                    summary: course.summary,
+                    author: course.user,
+                    ratings: 5,
+                    thumbnail: course.thumbnail,
+                    description: course.description,
+                    sections: sections,
+                    created_at: course.created_at,
+                    updated_at: course.updated_at,
+                    status: course.status
+                }
+                    return new ResponseSuccess(200,MESSAGE_SUCCESS_GET_DATA, true, courseData)
+            }                     
+        }
+        return new ResponseError(404,MESSAGE_ERROR_GET_DATA,false)
+    } catch (error) {
+        console.log(error)
+        return new ResponseError(500,MESSAGE_ERROR_INTERNAL_SERVER,false)
+    }
+}
+
+
 const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase>=>{
     try {
         const user_id = req.user_id
@@ -196,20 +285,43 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
             status
         } = req.body;
 
-        const isUpdateCourse = await configs.db.course.update({
-            where: {
-                id: id,
-            },
-            data: {
-                title: title,
-                slug: slug,
-                summary: summary,
-                description: description,
-                status: status,
-            },
-        });
-        if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        const isFoundCourse = await db.course.findUnique({
+            where:{
+                id:id
+            }
+        })
 
+        if(isFoundCourse){
+            if(isFoundCourse.slug === slug){
+                const isUpdateCourse = await db.course.update({
+                    where: {
+                        id: id,
+                    },
+                    data: {
+                        title: title,
+                        summary: summary,
+                        description: description,
+                        status: status,
+                    },
+                });
+                if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            }else{
+                const isUpdateCourse = await db.course.update({
+                    where: {
+                        id: id,
+                    },
+                    data: {
+                        title: title,
+                        slug: slug,
+                        summary: summary,
+                        description: description,
+                        status: status,
+                    },
+                });
+                if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            }
+        }
+        
         let newCategories = []
         for (let i = 0; i < categories.length; i++) {
             newCategories.push(categories[i])
@@ -504,5 +616,6 @@ const CourseService = {
     editThumbnail,
     searchMyCourses,
     deleteMyCourse,
+    getCourseDetailById
 };
 export default CourseService;

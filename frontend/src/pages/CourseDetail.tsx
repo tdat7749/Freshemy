@@ -4,7 +4,6 @@ import Navbar from "../components/Navbar";
 import Accordion from "../components/Accordion";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { useNavigate, useParams } from "react-router-dom";
-import { courseAction } from "../redux/slice";
 import { Section } from "../types/section";
 import { CourseDetail as CourseDetailType } from "../types/course";
 import { Link } from "react-router-dom";

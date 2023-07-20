@@ -14,32 +14,32 @@ import {
 } from "../utils/constant";
 import { db } from "../configs/db.config";
 
-type CreateCategoryDTO = {
-    title: string;
-};
+// type CreateCategoryDTO = {
+//     title: string;
+// };
 
-type UpdateCategoryDTO = {
-    title: string;
-};
-export const createCategory = async (createCategoryDTO: CreateCategoryDTO) => {
-    try {
-        const category = await db.category.create({
-            data: createCategoryDTO,
-            select: {
-                id: true,
-                title: true,
-            },
-        });
-        return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATED_CATEGORY, true, category);
-    } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
-        }
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
-    }
-};
+// type UpdateCategoryDTO = {
+//     title: string;
+// };
+// export const createCategory = async (createCategoryDTO: CreateCategoryDTO) => {
+//     try {
+//         const category = await db.category.create({
+//             data: createCategoryDTO,
+//             select: {
+//                 id: true,
+//                 title: true,
+//             },
+//         });
+//         return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATED_CATEGORY, true, category);
+//     } catch (error: any) {
+//         if (error instanceof PrismaClientKnownRequestError) {
+//             return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+//         }
+//         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+//     }
+// };
 
-export const getAllCategories = async () => {
+export const getAllCategories = async ():Promise<ResponseBase> => {
     try {
         const categories = await db.category.findMany();
         return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_ALL_CATEGORIES, true, categories);
@@ -51,92 +51,92 @@ export const getAllCategories = async () => {
     }
 };
 
-export const getCategoryById = async (categoryId: number) => {
-    try {
-        const category = await db.category.findUnique({
-            where: {
-                id: categoryId,
-            },
-        });
+// export const getCategoryById = async (categoryId: number) => {
+//     try {
+//         const category = await db.category.findUnique({
+//             where: {
+//                 id: categoryId,
+//             },
+//         });
 
-        if (category) {
-            return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_CATEGORY_BY_ID, true, category);
-        } else {
-            return new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false);
-        }
-    } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
-        }
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
-    }
-};
+//         if (category) {
+//             return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_CATEGORY_BY_ID, true, category);
+//         } else {
+//             return new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false);
+//         }
+//     } catch (error: any) {
+//         if (error instanceof PrismaClientKnownRequestError) {
+//             return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+//         }
+//         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+//     }
+// };
 
-export const editCategory = async (categoryId: number, updateCategoryDTO: UpdateCategoryDTO) => {
-    try {
-        const existingCategory = await db.category.findUnique({
-            where: {
-                id: categoryId,
-            },
-        });
+// export const editCategory = async (categoryId: number, updateCategoryDTO: UpdateCategoryDTO) => {
+//     try {
+//         const existingCategory = await db.category.findUnique({
+//             where: {
+//                 id: categoryId,
+//             },
+//         });
 
-        if (!existingCategory) {
-            return new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false);
-        }
+//         if (!existingCategory) {
+//             return new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false);
+//         }
 
-        const updatedCategory = await db.category.update({
-            where: {
-                id: categoryId,
-            },
-            data: updateCategoryDTO,
-            select: {
-                id: true,
-                title: true,
-            },
-        });
+//         const updatedCategory = await db.category.update({
+//             where: {
+//                 id: categoryId,
+//             },
+//             data: updateCategoryDTO,
+//             select: {
+//                 id: true,
+//                 title: true,
+//             },
+//         });
 
-        return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATED_CATEGORY, true, updatedCategory);
-    } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
-        }
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
-    }
-};
+//         return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATED_CATEGORY, true, updatedCategory);
+//     } catch (error: any) {
+//         if (error instanceof PrismaClientKnownRequestError) {
+//             return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+//         }
+//         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+//     }
+// };
 
-export const deleteCategory = async (categoryId: number) => {
-    try {
-        const existingCategory = await db.category.findUnique({
-            where: {
-                id: categoryId,
-            },
-        });
+// export const deleteCategory = async (categoryId: number) => {
+//     try {
+//         const existingCategory = await db.category.findUnique({
+//             where: {
+//                 id: categoryId,
+//             },
+//         });
 
-        if (!existingCategory) {
-            return new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false);
-        }
+//         if (!existingCategory) {
+//             return new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false);
+//         }
 
-        await db.category.delete({
-            where: {
-                id: categoryId,
-            },
-        });
+//         await db.category.delete({
+//             where: {
+//                 id: categoryId,
+//             },
+//         });
 
-        return new ResponseSuccess(200, MESSAGE_SUCCESS_DELETED_CATEGORY, true);
-    } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
-        }
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
-    }
-};
+//         return new ResponseSuccess(200, MESSAGE_SUCCESS_DELETED_CATEGORY, true);
+//     } catch (error: any) {
+//         if (error instanceof PrismaClientKnownRequestError) {
+//             return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+//         }
+//         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+//     }
+// };
 
 const CategoryService = {
-    createCategory,
+    // createCategory,
     getAllCategories,
-    getCategoryById,
-    editCategory,
-    deleteCategory,
+    // getCategoryById,
+    // editCategory,
+    // deleteCategory,
 };
 
 export default CategoryService;
