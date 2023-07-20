@@ -16,5 +16,8 @@ export type EditSection = {
     title: string;
 };
 
-
-
+export type SectionRender = {
+    title: string;
+    updated_at: string;
+    lessons: Lesson[];
+};
