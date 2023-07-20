@@ -8,16 +8,17 @@ import EditSectionIcon from "./icons/EditSectionIcon";
 
 type AccordionType = {
     section: Section;
-    handleDeleteSection: (id: number) => void;
-    handleDisplayDeleteModal: (id: number) => void;
-    handleDisplayEditModal: (id: number, title: string) => void;
+    isDisplayBtn: boolean;
+    handleDeleteSection?: (id: number) => void;
+    handleDisplayDeleteModal?: (id: number) => void;
+    handleDisplayEditModal?: (id: number, title: string) => void;
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
     const [show, setShow] = useState<boolean>(false);
 
     // const lessonList: Lesson[] = useAppSelector((state) => state.lessonSlice.lessontionList) ?? [];
-
+    
     return (
         <>
             <div>
@@ -41,32 +42,44 @@ const Accordion: React.FC<AccordionType> = (props) => {
                             </svg>
                             <span>{props.section.title}</span>
                         </div>
-                        <div className="flex gap-2">
-                            <div className="cursor-pointer">
-                                <AddIcon />
+
+                        {props.isDisplayBtn && (
+                            <div className="flex gap-2">
+                                <div className="cursor-pointer">
+                                    <AddIcon />
+                                </div>
+                                <div
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        if (props.handleDisplayEditModal) {
+                                            props.handleDisplayEditModal(props.section.id, props.section.title);
+                                        }
+                                    }}
+                                >
+                                    <EditSectionIcon />
+                                </div>
+                                <div
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        if (props.handleDisplayDeleteModal) {
+                                            props.handleDisplayDeleteModal(props.section.id);
+                                        }
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                </div>
                             </div>
-                            <div
-                                className="cursor-pointer"
-                                onClick={() => props.handleDisplayEditModal(props.section.id, props.section.title)}
-                            >
-                                <EditSectionIcon />
-                            </div>
-                            <div
-                                className="cursor-pointer"
-                                onClick={() => props.handleDisplayDeleteModal(props.section.id)}
-                            >
-                                <DeleteIcon />
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </h2>
             </div>
-            {/* {show &&
-                lessonList.map((lesson, index) => (
+            {show &&
+                props.section.lessons &&
+                props.section?.lessons.map((lesson, index) => (
                     <div className="p-4 border rounded-lg" key={index}>
-                        <p>{lesson}</p>
+                        <p>{lesson.title}</p>
                     </div>
-                ))} */}
+                ))}
         </>
     );
 };

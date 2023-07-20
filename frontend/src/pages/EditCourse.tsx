@@ -225,6 +225,7 @@ const EditCourse: React.FC = () => {
                         )}
                     </Formik>
                 </div>
+                
                 <div className="flex-1 p-4 flex flex-col">
                     <div className="flex gap-6">
                         <input
@@ -252,6 +253,7 @@ const EditCourse: React.FC = () => {
                                 handleDeleteSection={handleDeleteSection}
                                 handleDisplayEditModal={handleDisplayEditModal}
                                 handleDisplayDeleteModal={handleDisplayDeleteModal}
+                                isDisplayBtn = {true}
                             />
                         ))}
                     </div>
