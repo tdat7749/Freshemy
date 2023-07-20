@@ -2,7 +2,6 @@ import apiCaller from "../api-config/apiCaller";
 import {
     NewCourse as CreateCourseType,
     getMyCourses as getMyCoursesType,
-    deleteCourse as deleteCourseType,
 } from "../types/course";
 
 import { HTTP_GET, HTTP_POST, HTTP_DELETE } from "../utils/contants";
@@ -28,8 +27,8 @@ export const getMyCourses = async (values: getMyCoursesType) => {
     return response;
 };
 
-export const deleteCourse = async (values: deleteCourseType) => {
-    const path = `courses/${values.courseId}`;
+export const deleteCourse = async (courseId:number) => {
+    const path = `courses/${courseId}`;
 
     const response = await apiCaller(HTTP_DELETE, path);
 

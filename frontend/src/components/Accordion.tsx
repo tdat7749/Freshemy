@@ -23,7 +23,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
         <>
             <div>
                 <h2 id="accordion-collapse-heading-1">
-                    <div className="flex items-center justify-between w-full p-4 bg-[#E9995C] rounded-lg my-1 ">
+                    <div className="flex items-center justify-between w-full p-4 bg-primary rounded-lg my-1 ">
                         <div className="flex gap-2 items-center cursor-pointer" onClick={() => setShow(!show)}>
                             <svg
                                 className={`w-3 h-3 ${show ? "rotate-180" : ""} shrink-0`}
@@ -76,7 +76,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
             {show &&
                 props.section.lessons &&
                 props.section?.lessons.map((lesson, index) => (
-                    <div className="p-4 border rounded-lg" key={index}>
+                    <div className="py-4 pl-8 border rounded-lg" key={index}>
                         <p>{lesson.title}</p>
                     </div>
                 ))}

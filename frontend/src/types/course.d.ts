@@ -43,9 +43,6 @@ export type CreateCourse = {
     description: string;
 };
 
-export type deleteCourse = {
-    courseId: number;
-};
 
 export type PagingCourse = {
     total_page: number;
@@ -65,4 +62,6 @@ export type CourseDetail = {
     sections: SectionRender[];
     created_at: string;
     updated_at: string;
+    thumbnail:string
+    status:boolean
 };

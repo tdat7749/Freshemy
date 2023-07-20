@@ -11,6 +11,7 @@ export type CourseDetailResponseData = {
         sections: Section[]
         created_at: Date
         updated_at: Date
+        status: boolean
 }
 
 export type Category = {

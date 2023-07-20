@@ -15,7 +15,6 @@ import {
     Course as CourseType,
     GetCourseInfo,
     PagingCourse,
-    deleteCourse as deleteCourseType,
     getMyCourses as getMyCoursesType,
     CourseDetail as CourseDetailType,
 } from "../../types/course";
@@ -92,7 +91,7 @@ export const getCourseDetail = createAsyncThunk<Response<CourseDetailType>, stri
     }
 );
 
-export const deleteCourse = createAsyncThunk<Response<null>, deleteCourseType, { rejectValue: Response<null> }>(
+export const deleteCourse = createAsyncThunk<Response<null>, number, { rejectValue: Response<null> }>(
     "course/deleteCourse",
     async (body, ThunkAPI) => {
         try {
@@ -108,10 +107,6 @@ const initialState: CourseSlice = {
     selectCategories: [],
     categories: [],
     courses: [],
-    error: "",
-    message: "",
-    isLoading: false,
-    totalPage: 1,
     courseDetail:{
         id: undefined,
         slug: "",
@@ -128,7 +123,13 @@ const initialState: CourseSlice = {
         sections: [],
         created_at: "",
         updated_at: "",
-    }
+        thumbnail:"",
+        status:false
+    },
+    error: "",
+    message: "",
+    isLoading: false,
+    totalPage: 1,
 };
 
 export const courseSlice = createSlice({
