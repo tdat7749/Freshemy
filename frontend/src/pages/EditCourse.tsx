@@ -43,6 +43,7 @@ const EditCourse: React.FC = () => {
 
     const handleDisplayDeleteModal = (id: number) => {
         setIdItem(id);
+        setIsDisplayDeleteModal(!isDisplayDeleteModal)
     };
 
     const handleDisplayAddSectionModal = (id: number) => {

@@ -15,7 +15,6 @@ import {
     Course,
     Course as CourseType,
     PagingCourse,
-    DeleteCourse as DeleteCourseType,
     GetMyCourses as GetMyCoursesType,
     CourseDetail as CourseDetailType,
 } from "../../types/course";
@@ -78,7 +77,7 @@ export const getCourseDetail = createAsyncThunk<Response<CourseDetailType>, stri
     }
 );
 
-export const deleteCourse = createAsyncThunk<Response<null>, DeleteCourseType, { rejectValue: Response<null> }>(
+export const deleteCourse = createAsyncThunk<Response<null>, number, { rejectValue: Response<null> }>(
     "course/deleteCourse",
     async (body, ThunkAPI) => {
         try {
