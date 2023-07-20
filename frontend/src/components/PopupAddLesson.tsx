@@ -4,11 +4,16 @@ import { AddLesson as AddLessonType } from "../types/lesson";
 import { useAppDispatch } from "../hooks/hooks";
 // import { userActions } from "../redux/slice";
 import { useAppSelector } from "../hooks/hooks";
-import { Link } from "react-router-dom";
 import { setMessageEmpty } from "../redux/slice/user.slice";
+import { lessonActions } from "../redux/slice";
 // import { addLessonValidationSchema } from "../validations/lesson";
 
-const PopupAddLesson: React.FC = () => {
+type AddLessonModalProps = {
+    handleDelete: () => void;
+    handleCancel: () => void;
+};
+
+const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
     let message = useAppSelector((state) => state.userSlice.message) ?? "";
     let error = useAppSelector((state) => state.userSlice.error) ?? "";
     const [video, setVideo] = useState<File | null>(null);
@@ -16,7 +21,6 @@ const PopupAddLesson: React.FC = () => {
     const formikRef = useRef(null);
     const initialValue: AddLessonType = {
         title: "",
-        description: "",
         video: null,
     };
 
@@ -26,17 +30,14 @@ const PopupAddLesson: React.FC = () => {
 
     const handleAddVideo = (event: React.ChangeEvent<HTMLInputElement>) => {
         setVideo(event.currentTarget.files![0]);
-        console.log(event);
     };
 
     const handleOnSubmit = (values: AddLessonType) => {
-        console.log(values);
         let formData = new FormData();
         formData.append("title", values.title);
-        formData.append("description", values.description);
         formData.append("video", video as File);
         //@ts-ignore
-        dispatch(userActions.changePassword(formData));
+        dispatch(lessonActions.addLesson(formData));
     };
 
     const handleChange = () => {
@@ -74,26 +75,7 @@ const PopupAddLesson: React.FC = () => {
                                         className="text-[14px] text-error font-medium"
                                     />
                                 </div>
-                                <div className="ml-[20px] mr-[20px]">
-                                    <label htmlFor="description" className="text-[16px] text-text">
-                                        Description
-                                    </label>
-                                    <br />
-                                    <Field
-                                        type="text"
-                                        name="description"
-                                        component="textarea"
-                                        className={`' w-full h-[197px] rounded-[8px] px-[8px] border-[1px] border-black outline-none ' ${
-                                            formik.errors.description && formik.touched.description && "border-error"
-                                        }`}
-                                    />
-                                    <ErrorMessage
-                                        name="description"
-                                        component="span"
-                                        className="text-[14px] text-error font-medium"
-                                    />
-                                </div>
-                                <div className="ml-[20px] mr-[20px]">
+                                <div className="ml-[20px] mr-[20px] ">
                                     <label htmlFor="video" className="text-[20px] text-text">
                                         Upload video
                                     </label>{" "}
@@ -129,14 +111,13 @@ const PopupAddLesson: React.FC = () => {
                                     >
                                         Save
                                     </button>
-                                    <Link to={"/"}>
-                                        <button
-                                            type="button"
-                                            className="bg-white hover:opacity-80 text-black border-black border-[1px] w-2/5 tablet:w-[100px] h-[56px] tablet:h-[56px] py-[8px] font-medium text-[20px] rounded-[12px] ml-[10px]"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </Link>
+                                    <button
+                                        onClick={props.handleCancel}
+                                        type="button"
+                                        className="bg-white hover:opacity-80 text-black border-black border-[1px] w-2/5 tablet:w-[100px] h-[56px] tablet:h-[56px] py-[8px] font-medium text-[20px] rounded-[12px] ml-[10px]"
+                                    >
+                                        Cancel
+                                    </button>
                                 </div>
                             </form>
                         )}

@@ -11,6 +11,7 @@ type AccordionType = {
     handleDeleteSection: (id: number) => void;
     handleDisplayDeleteModal: (id: number) => void;
     handleDisplayEditModal: (id: number, title: string) => void;
+    handleDisplayAddSectionModal: (id: number) => void;
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
@@ -42,7 +43,10 @@ const Accordion: React.FC<AccordionType> = (props) => {
                             <span>{props.section.title}</span>
                         </div>
                         <div className="flex gap-2">
-                            <div className="cursor-pointer">
+                            <div
+                                className="cursor-pointer"
+                                onClick={() => props.handleDisplayAddSectionModal(props.section.id)}
+                            >
                                 <AddIcon />
                             </div>
                             <div

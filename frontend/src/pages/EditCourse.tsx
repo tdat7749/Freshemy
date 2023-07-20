@@ -8,11 +8,13 @@ import { useParams } from "react-router-dom";
 import Accordion from "../components/Accordion";
 import { AddSection as AddSectionType, Section } from "../types/section";
 import DeleteModal from "../components/DeleteModal";
+import PopupAddLesson from "../components/PopupAddLesson";
 
 const EditCourse: React.FC = () => {
     const [section, setSection] = useState<string>("");
     const [isDisplayDeleteModal, setIsDisplayDeleteModal] = useState<boolean>(false);
     const [isDisplayEditModal, setIsDisplayEditModal] = useState<boolean>(false);
+    const [isDisplayAddLessonModal, setIsDisplayAddLessonModal] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
     const [itemTitle, setItemTitle] = useState<string>("");
 
@@ -41,7 +43,10 @@ const EditCourse: React.FC = () => {
 
     const handleDisplayDeleteModal = (id: number) => {
         setIdItem(id);
-        setIsDisplayDeleteModal(!isDisplayDeleteModal);
+    };
+
+    const handleDisplayAddSectionModal = (id: number) => {
+        setIsDisplayAddLessonModal(!isDisplayAddLessonModal);
     };
 
     const handleDeleteSection = () => {
@@ -67,6 +72,10 @@ const EditCourse: React.FC = () => {
 
     const handleCancelModal = () => {
         setIsDisplayDeleteModal(!isDisplayDeleteModal);
+    };
+
+    const handleCancelModalAddLesson = () => {
+        setIsDisplayAddLessonModal(!isDisplayAddLessonModal);
     };
 
     const handleDisplayEditModal = (id: number, title: string) => {
@@ -252,6 +261,7 @@ const EditCourse: React.FC = () => {
                                 handleDeleteSection={handleDeleteSection}
                                 handleDisplayEditModal={handleDisplayEditModal}
                                 handleDisplayDeleteModal={handleDisplayDeleteModal}
+                                handleDisplayAddSectionModal={handleDisplayAddSectionModal}
                             />
                         ))}
                     </div>
@@ -290,6 +300,10 @@ const EditCourse: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            )}
+            {/* POPUP ADD LESSON */}
+            {isDisplayAddLessonModal && (
+                <PopupAddLesson handleDelete={handleDeleteSection} handleCancel={handleCancelModalAddLesson} />
             )}
         </>
     );

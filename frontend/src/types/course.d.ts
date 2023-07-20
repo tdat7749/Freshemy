@@ -25,13 +25,9 @@ export type Course = {
     slug: string;
 };
 
-export type getMyCourses = {
+export type GetMyCourses = {
     pageIndex: number;
     keyword?: string;
-};
-
-export type GetCourseInfo = {
-    courses: Course[];
 };
 
 export type CreateCourse = {
@@ -42,14 +38,10 @@ export type CreateCourse = {
     description: string;
 };
 
-export type deleteCourse = {
+export type DeleteCourse = {
     courseId: number;
 };
 
-export type Category = {
-    id: number;
-    category: String;
-};
 
 export type PagingCourse = {
     total_page: number;

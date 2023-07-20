@@ -1,21 +1,23 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { addLesson as addLessonAPI } from "../../apis/lessons";
-import { AddLesson as AddLessonType } from "../../types/lesson";
+import { AddLesson as AddLessonType, Lesson } from "../../types/lesson";
 import { Response } from "../../types/response";
 
 type UserSlice = {
-    error: "",
-    message: "",
-    isLoading: false,
-}
+    error: string;
+    message: string;
+    isLoading: boolean;
+    lessonList: Lesson[];
+};
 const initialState: UserSlice = {
     error: "",
     message: "",
     isLoading: false,
+    lessonList: [],
 };
 
 export const addLesson = createAsyncThunk<Response<null>, AddLessonType, { rejectValue: Response<null> }>(
-    "lessons",
+    "lesson/addLesson",
     async (body, ThunkAPI) => {
         try {
             const response = await addLessonAPI(body);
@@ -29,7 +31,29 @@ export const addLesson = createAsyncThunk<Response<null>, AddLessonType, { rejec
 export const lessonSlice = createSlice({
     name: "lesson",
     initialState: initialState,
-    reducers: {},
+    reducers: {
+        setAddLesson: (state, action: PayloadAction<Lesson>) => {
+            state.lessonList = state.lessonList.map((lesson: Lesson) => {
+                if (lesson.id === action.payload.id) {
+                    lesson.title = action.payload.title;
+                }
+                return lesson;
+            });
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(addLesson.pending, (state) => {
+            state.error = "";
+            state.message = "";
+            state.isLoading = true;
+        });
+        builder.addCase(addLesson.fulfilled, (state, action) => {
+            state.lessonList = [...state.lessonList, action.payload.data] as Lesson[];
+            state.isLoading = false;
+        });
+        builder.addCase(addLesson.rejected, (state, action) => {
+            state.error = action.payload?.message as string;
+            state.isLoading = false;
+        });
+    },
 });
-
-

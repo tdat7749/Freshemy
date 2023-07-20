@@ -8,10 +8,9 @@ import {
     Category,
     Course,
     Course as CourseType,
-    GetCourseInfo,
     PagingCourse,
-    deleteCourse as deleteCourseType,
-    getMyCourses as getMyCoursesType,
+    DeleteCourse as DeleteCourseType,
+    GetMyCourses as GetMyCoursesType,
 } from "../../types/course";
 
 type CourseSlice = {
@@ -48,7 +47,7 @@ export const getCategories = createAsyncThunk<Response<Category[]>, null, { reje
     }
 );
 
-export const getMyCourses = createAsyncThunk<Response<PagingCourse>, getMyCoursesType, { rejectValue: Response<null> }>(
+export const getMyCourses = createAsyncThunk<Response<PagingCourse>, GetMyCoursesType, { rejectValue: Response<null> }>(
     "course/getMyCourses",
     async (body, ThunkAPI) => {
         try {
@@ -60,20 +59,8 @@ export const getMyCourses = createAsyncThunk<Response<PagingCourse>, getMyCourse
     }
 );
 
-export const getCourseInfo = createAsyncThunk<Response<GetCourseInfo>, getMyCoursesType, { rejectValue: Response<null> }>(
-    "course/getCourseInfo",
-    async (body, ThunkAPI) => {
-        try {
-            const response = await getMyCoursesAPI(body);
-            return response.data as Response<GetCourseInfo>;
-        } catch (error: any) {
-            return ThunkAPI.rejectWithValue(error.data as Response<null>);
-        }
-    }
-);
 
-
-export const deleteCourse = createAsyncThunk<Response<null>, deleteCourseType, { rejectValue: Response<null> }>(
+export const deleteCourse = createAsyncThunk<Response<null>, DeleteCourseType, { rejectValue: Response<null> }>(
     "course/deleteCourse",
     async (body, ThunkAPI) => {
         try {
