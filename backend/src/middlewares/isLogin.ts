@@ -13,6 +13,7 @@ export const isLogin = async (req: RequestHasLogin, res: Response, next: NextFun
 
         if (!jsonWebToken) {
             res.status(401).json({ message: "Unauthorized" });
+            return;
         } else {
             const decodeJsonWebToken = jwt.verify(jsonWebToken, configs.general.JWT_SECRET_KEY) as MyJwtPayload;
             if (decodeJsonWebToken) {

@@ -13,22 +13,24 @@ const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
 
     const [thumbnail, setThumbnail] = useState<File | null>(null);
+    const [displayCategories, setdisplayCategorie] = useState<boolean>(false);
+    const [displayStatus, setDisplayStatus] = useState<boolean>(false);
+    const [status, setStatus] = useState<string>("Uncomplete");
 
-    // const isLogin = useAppSelector((state) => state.Slice.isLogin);
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
-    let categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
-    let categoriesCreateSelector = useAppSelector((state) => state.courseSlice.selectCategories);
+    const categories = useAppSelector((state) => state.courseSlice.categories) ?? []
+    const createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
+
     const formikRef = useRef(null);
+    const imageRef = useRef<HTMLImageElement>(null);
 
     useEffect(() => {
         dispatch(setMessageEmpty());
         //@ts-ignore
         dispatch(courseActions.getCategories());
     }, [dispatch]);
-
-    // if (isLogin) return <Navigate to={"/"} />;
 
     const initialValues: CreateCourseType = {
         title: "",
@@ -41,15 +43,16 @@ const CreateCourse: FC = () => {
 
     const handleOnSubmit = async (values: CreateCourseType) => {
         // Trong request form thì value chỉ được là text hoặc file
-        const categoriesId: number[] = categoriesCreateSelector.map((category: CategoryType) => {
+        const categoriesId: number[] = createCategoriesSelector.map((category: CategoryType) => {
             return category.id;
         });
+        let statusValue = status === "Uncomplete" ? "0" : "1";
         const slug = slugify(values.title);
         let formData = new FormData();
         formData.append("title", values.title);
         formData.append("description", values.description);
-        formData.append("slug", slug); // chỗ này tìm 1 hàm convert qua slug ở trên mạng, ném hàm đó vào folder utils hay gì cũng đc
-        formData.append("status", values.status.toString());
+        formData.append("slug", slug);
+        formData.append("status", statusValue);
         formData.append("thumbnail", thumbnail as File);
         formData.append("summary", values.summary);
         categoriesId.forEach((item) => {
@@ -64,20 +67,33 @@ const CreateCourse: FC = () => {
         errorMessage = "";
     };
 
-    const handleAddCategories = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const index = categoriesSelector.findIndex(
-            (category: CategoryType) => category.id === parseInt(event.target.value)
-        );
+    const handleAddCategories = (id: number, oldIndex: number) => {
+        const index = categories.findIndex((category: CategoryType) => category.id === id);
         dispatch(courseActions.addCategories(index));
     };
 
-    const handleRemoveCategory = (id: number) => {
-        const index = categoriesCreateSelector.findIndex((category: CategoryType) => category.id === id);
+    const handleRemoveCategory = (id: number, oldIndex: number) => {
+        const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
         dispatch(courseActions.removeCategories(index));
+    };
+
+    const handleDisplay = () => {
+        setdisplayCategorie(!displayCategories);
     };
 
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         setThumbnail(event.currentTarget.files![0]);
+        const thumbnail = event.currentTarget.files![0];
+        if (thumbnail && thumbnail.type.includes("image/")) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                if (imageRef.current) {
+                    imageRef.current.src = e.target?.result as string;
+                }
+            };
+            reader.readAsDataURL(thumbnail);
+            return;
+        }
     };
 
     const handleCancel = () => {
@@ -87,199 +103,330 @@ const CreateCourse: FC = () => {
 
     return (
         <>
-            <div className=" mt-[150px] h-screen flex items-center justify-center w-[990px] ">
-                <div className="m-4 rounded-xl w-[990px] tablet:w-[506px] ">
-                    <Formik
-                        initialValues={initialValues}
-                        validationSchema={createValidationSchema}
-                        onSubmit={handleOnSubmit}
-                        innerRef={formikRef}
-                    >
-                        {(formik) => (
-                            <form
-                                onSubmit={formik.handleSubmit}
-                                className="p-4 w-[990px]"
-                                onChange={handleDeleteMessage}
-                            >
-                                <h1 className="font-bold text-[32px] text-center">Create Course</h1>
-                                <div>
-                                    <Field
-                                        name="thumbnail"
-                                        type="file"
-                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                            onChangeInputFile(event);
-                                        }}
-                                    />
-                                    <ErrorMessage
-                                        name="thumbnail"
-                                        component="span"
-                                        className="text-[14px] text-error font-medium"
-                                    />
-                                </div>
-                                <div className="container flex flex-row h-full">
-                                    <div className="container-item flex flex-col w-1/2 mr-8">
-                                        <div className="title item">
-                                            <label htmlFor="title" className="text-[24px] text-text">
-                                                Title
-                                            </label>
-                                            <Field
-                                                type="text"
-                                                name="title"
-                                                className={`${
-                                                    formik.errors.title && formik.touched.title ? "border-error" : ""
-                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: "\n    .top-100 {top: 100%}\n    .bottom-100 {bottom: 100%}\n    .max-h-select {\n        max-height: 300px;\n    }\n",
+                }}
+            />
+            <div className="min-h-screen h-full container px-4 m-auto mt-[100px] ">
+                <div className="w-full flex justify-center items-center shrink-0">
+                    <div className="m-4 rounded-xl border border-black w-full max-w-[982px]">
+                        <Formik
+                            initialValues={initialValues}
+                            validationSchema={createValidationSchema}
+                            onSubmit={handleOnSubmit}
+                            innerRef={formikRef}
+                        >
+                            {(formik) => (
+                                <form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
+                                    <div className="flex">
+                                        <div className="flex ">
+                                            <img
+                                                ref={imageRef}
+                                                alt=""
+                                                className="w-[120px] h-[120px] rounded-lg mr-3 bg-[#D9D9D9]"
                                             />
-                                            <ErrorMessage
-                                                name="title"
-                                                component="span"
-                                                className="text-[14px] text-error font-medium"
-                                            />
-                                        </div>
-                                        <div className="categories item ">
-                                            <label htmlFor="category" className="text-[24px] text-text">
-                                                Categories
-                                            </label>
-                                            <div className="flex flex-row">
-                                                <div className="flex bg-white overflow-y-auto w-[90%]">
-                                                    {categoriesCreateSelector?.map((category: CategoryType) => {
-                                                        return (
-                                                            <div key={category.id}>
-                                                                <div>{category.title}</div>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleRemoveCategory(category.id)}
-                                                                >
-                                                                    X
-                                                                </button>
-                                                            </div>
-                                                        );
-                                                    })}
+                                            <div className="flex flex-col">
+                                                <div className="">
+                                                    <p>Upload thumbnail</p>
+                                                    <p>Size of the image is less than 4MB</p>
                                                 </div>
                                                 <Field
-                                                    name="categories"
-                                                    as="select"
+                                                    name="thumbnail"
+                                                    type="file"
+                                                    className="w-full h-full cursor-pointer"
+                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                        onChangeInputFile(event);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="container flex flex-row h-full gap-4">
+                                        <div className="container-item flex flex-col gap-4 w-1/2">
+                                            <div className="title item">
+                                                <label htmlFor="title" className="text-lg mb-1 tablet:text-xl">
+                                                    Title
+                                                </label>
+                                                <Field
+                                                    type="text"
+                                                    name="title"
                                                     className={`${
-                                                        formik.errors.categories && formik.touched.categories
+                                                        formik.errors.title && formik.touched.title
                                                             ? "border-error"
                                                             : ""
-                                                    } w-[10%] h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
-                                                    onChange={handleAddCategories}
-                                                    default=""
-                                                >
-                                                    {categoriesSelector?.map(
-                                                        (category: CategoryType, index: number) => {
-                                                            return (
-                                                                <option key={index} value={category.id}>
-                                                                    {category.title}
-                                                                </option>
-                                                            );
-                                                        }
-                                                    )}
-                                                </Field>
+                                                    } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                                />
+                                                <ErrorMessage
+                                                    name="title"
+                                                    component="span"
+                                                    className="text-[14px] text-error font-medium"
+                                                />
                                             </div>
-                                            <ErrorMessage
-                                                name="category"
-                                                component="span"
-                                                className="text-[14px] text-error font-medium"
-                                            />
+                                            <div className="categories item ">
+                                                <label htmlFor="category" className="text-lg mb-1 tablet:text-xl">
+                                                    Categories
+                                                </label>
+                                                <div className="w-[100%] md:w-1/2">
+                                                    <div className="flex flex-col items-center relative">
+                                                        <div className="w-full  svelte-1l8159u">
+                                                            <div className="my-2 p-1 flex border border-gray-200 bg-white rounded svelte-1l8159u">
+                                                                <div className="flex flex-auto flex-wrap py-4">
+                                                                    {createCategoriesSelector?.map(
+                                                                        (category: any, index: number) => {
+                                                                            return (
+                                                                                <div
+                                                                                    className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700 bg-teal-100 border border-teal-300 "
+                                                                                    onClick={() => {
+                                                                                        handleRemoveCategory(
+                                                                                            category.id,
+                                                                                            index
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <div className="text-xs font-normal leading-none max-w-full flex-initial">
+                                                                                        {category.title}
+                                                                                    </div>
+                                                                                    <div className="flex flex-auto flex-row-reverse">
+                                                                                        <div>
+                                                                                            <svg
+                                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                                width="100%"
+                                                                                                height="100%"
+                                                                                                fill="none"
+                                                                                                viewBox="0 0 24 24"
+                                                                                                stroke="currentColor"
+                                                                                                strokeWidth={2}
+                                                                                                strokeLinecap="round"
+                                                                                                strokeLinejoin="round"
+                                                                                                className="feather feather-x cursor-pointer hover:text-teal-400 rounded-full w-4 h-4 ml-2"
+                                                                                            >
+                                                                                                <line
+                                                                                                    x1={18}
+                                                                                                    y1={6}
+                                                                                                    x2={6}
+                                                                                                    y2={18}
+                                                                                                />
+                                                                                                <line
+                                                                                                    x1={6}
+                                                                                                    y1={6}
+                                                                                                    x2={18}
+                                                                                                    y2={18}
+                                                                                                />
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                    <div className="flex-1">
+                                                                        <input
+                                                                            placeholder=""
+                                                                            className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-gray-800"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
+                                                                        onClick={handleDisplay}
+                                                                    >
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="100%"
+                                                                            height="100%"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            stroke="currentColor"
+                                                                            strokeWidth={2}
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            className="feather feather-chevron-up w-4 h-4"
+                                                                        >
+                                                                            <polyline points="18 15 12 9 6 15" />
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {displayCategories && (
+                                                            <div className="absolute shadow top-100 bg-white z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
+                                                                <div className="flex flex-col w-full">
+                                                                    {categories.map(
+                                                                        (category: any, index: number) => {
+                                                                            return (
+                                                                                <div
+                                                                                    key={index}
+                                                                                    className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
+                                                                                    onClick={() =>
+                                                                                        handleAddCategories(
+                                                                                            category.id,
+                                                                                            index
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                                                                                        <div className="w-full items-center flex">
+                                                                                            <div className="mx-2 leading-6  ">
+                                                                                                {category.title}{" "}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="categories item ">
+                                                <label htmlFor="category" className="text-lg mb-1 tablet:text-xl">
+                                                    Status
+                                                </label>
+                                                <div className="w-[100%] md:w-1/2">
+
+                                                        <div className="flex flex-col items-center relative">
+                                                            <div className="w-full  svelte-1l8159u">
+                                                                <div className="my-2 p-1 flex border border-gray-200 bg-white rounded svelte-1l8159u">
+                                                                    <div className="flex flex-auto flex-wrap py-4">
+                                                                        <div>{status}</div>
+                                                                    </div>
+                                                                    <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
+                                                                        <button
+                                                                            type="button"
+                                                                            className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
+                                                                            onClick={() => {
+                                                                                setDisplayStatus(!displayStatus);
+                                                                            }}
+                                                                        >
+                                                                            <svg
+                                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                                width="100%"
+                                                                                height="100%"
+                                                                                fill="none"
+                                                                                viewBox="0 0 24 24"
+                                                                                stroke="currentColor"
+                                                                                strokeWidth={2}
+                                                                                strokeLinecap="round"
+                                                                                strokeLinejoin="round"
+                                                                                className="feather feather-chevron-up w-4 h-4"
+                                                                            >
+                                                                                <polyline points="18 15 12 9 6 15" />
+                                                                            </svg>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {displayStatus && (
+                                                                <div className="absolute shadow top-100 bg-white z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
+                                                                    <div className="flex flex-col w-full">
+                                                                        <div
+                                                                            className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
+                                                                            onClick={() => {
+                                                                                setStatus("Uncomplete");
+                                                                            }}
+                                                                        >
+                                                                            <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                                                                                <div className="w-full items-center flex">
+                                                                                    <div className="mx-2 leading-6  ">
+                                                                                        Uncomplete
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div
+                                                                            className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
+                                                                            onClick={() => {
+                                                                                setStatus("Completed");
+                                                                            }}
+                                                                        >
+                                                                            <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                                                                                <div className="w-full items-center flex">
+                                                                                    <div className="mx-2 leading-6  ">
+                                                                                        Completed
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="status item">
-                                            <label
-                                                htmlFor="status"
-                                                className="text-[24px] text-xl mb-1 tablet:text-2xl"
-                                            >
-                                                Status
+                                        <div className="item description w-1/2 flex-1 flex flex-col">
+                                            <label htmlFor="description" className="text-lg mb-1 tablet:text-xl">
+                                                Description
                                             </label>
                                             <Field
-                                                name="status"
-                                                as="select"
+                                                as="textarea"
+                                                name="description"
+                                                placeholder="Explain your queries"
                                                 className={`${
-                                                    formik.errors.status && formik.touched.status ? "border-error" : ""
-                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
-                                            >
-                                                <option key="0" value={0}>
-                                                    Uncompleted
-                                                </option>
-                                                <option key="1" value={1}>
-                                                    Complete
-                                                </option>
-                                            </Field>
+                                                    formik.errors.description && formik.touched.description
+                                                        ? "border-error"
+                                                        : ""
+                                                } flex-1 w-full resize-none rounded-md border border-[#e0e0e0] py-3 px-4  outline-none focus:shadow-md1`}
+                                            />
                                             <ErrorMessage
-                                                name="status"
+                                                name="description"
                                                 component="span"
                                                 className="text-[14px] text-error font-medium"
                                             />
                                         </div>
                                     </div>
-                                    <div className="item mb-5 description w-1/2 flex-1">
-                                        <label
-                                            htmlFor="description"
-                                            className="mb-3 block text-base font-medium text-[#07074D]"
-                                        >
-                                            Description
+                                    <div className="sumary mt-4">
+                                        <label htmlFor="summary" className="text-lg mb-1 tablet:text-xl">
+                                            Summary
                                         </label>
                                         <Field
-                                            as="textarea"
-                                            name="description"
-                                            placeholder="Explain your queries"
+                                            type="text"
+                                            name="summary"
                                             className={`${
-                                                formik.errors.description && formik.touched.description
-                                                    ? "border-error"
-                                                    : ""
-                                            } block h-[95%] w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:shadow-md1`}
+                                                formik.errors.summary && formik.touched.summary ? "border-error" : ""
+                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                         />
                                         <ErrorMessage
-                                            name="description"
+                                            name="summary"
                                             component="span"
                                             className="text-[14px] text-error font-medium"
                                         />
                                     </div>
-                                </div>
-                                <div className="sumary">
-                                    <label htmlFor="summary" className="text-xl mb-1 tablet:text-2xl">
-                                        Summary
-                                    </label>
-                                    <Field
-                                        type="text"
-                                        name="summary"
-                                        className={`${
-                                            formik.errors.summary && formik.touched.summary ? "border-error" : ""
-                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
-                                    />
-                                    <ErrorMessage
-                                        name="summary"
-                                        component="span"
-                                        className="text-[14px] text-error font-medium"
-                                    />
-                                </div>
-                                {errorMessage !== "" && (
-                                    <span className="text-[14px] text-error font-medium">{errorMessage}</span>
-                                )}
-                                {successMessage !== "" && (
-                                    <span className="text-[14px] text-success font-medium">{successMessage}</span>
-                                )}
-                                <div className="py-[12px]">
-                                    <button
-                                        disabled={isLoading ? true : false}
-                                        type="submit"
-                                        className="bg-switch hover:opacity-80 text-white h-[68px] py-[8px] font-medium text-[32px] rounded-lg w-full active:active:bg-green-700 disabled:opacity-50"
-                                    >
-                                        {isLoading ? "Loading..." : "Save"}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="bg-switch hover:opacity-80 text-white h-[68px] py-[8px] font-medium text-[32px] rounded-lg w-full active:active:bg-green-700 disabled:opacity-50"
-                                        onClick={() => {
-                                            formik.resetForm(initialValues);
-                                            handleCancel();
-                                        }}
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            </form>
-                        )}
-                    </Formik>
+                                    {errorMessage !== "" && (
+                                        <span className="text-[14px] text-error font-medium">{errorMessage}</span>
+                                    )}
+                                    {successMessage !== "" && (
+                                        <span className="text-[14px] text-success font-medium">{successMessage}</span>
+                                    )}
+                                    <div className="py-[12px] flex justify-end gap-2">
+                                        <button
+                                            disabled={isLoading ? true : false}
+                                            type="submit"
+                                            className="py-4 px-4 bg-switch rounded-lg text-white text-xl hover:opacity-80"
+                                        >
+                                            {isLoading ? "Loading..." : "Save"}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="py- px-4 rounded-lg text-xl border-[1px] hover:bg-slate-100"
+                                            onClick={() => {
+                                                formik.resetForm(initialValues);
+                                                handleCancel();
+                                            }}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
+                        </Formik>
+                    </div>
                 </div>
             </div>
         </>

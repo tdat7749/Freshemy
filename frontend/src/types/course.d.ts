@@ -26,13 +26,9 @@ export type Course = {
     slug: string;
 };
 
-export type getMyCourses = {
+export type GetMyCourses = {
     pageIndex: number;
     keyword?: string;
-};
-
-export type GetCourseInfo = {
-    courses: Course[];
 };
 
 export type CreateCourse = {
@@ -43,6 +39,9 @@ export type CreateCourse = {
     description: string;
 };
 
+export type DeleteCourse = {
+    courseId: number;
+};
 
 export type PagingCourse = {
     total_page: number;
@@ -65,3 +64,18 @@ export type CourseDetail = {
     thumbnail:string
     status:boolean
 };
+
+export type ChangeThumbnail = {
+    course_id:number
+    thumbnail:File
+}
+
+export type ChangeInformation = {
+    id:number,
+    title:string,
+    summary:string,
+    status:boolean,
+    description:string,
+    categories:Category[],
+    slug:string
+}

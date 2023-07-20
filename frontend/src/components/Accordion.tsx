@@ -8,6 +8,7 @@ import EditSectionIcon from "./icons/EditSectionIcon";
 
 type AccordionType = {
     section: Section;
+    handleDisplayAddSectionModal?: (id: number) => void;
     isDisplayBtn: boolean;
     handleDeleteSection?: (id: number) => void;
     handleDisplayDeleteModal?: (id: number) => void;
@@ -42,10 +43,13 @@ const Accordion: React.FC<AccordionType> = (props) => {
                             </svg>
                             <span>{props.section.title}</span>
                         </div>
-
                         {props.isDisplayBtn && (
                             <div className="flex gap-2">
-                                <div className="cursor-pointer">
+                                <div className="cursor-pointer" onClick={() => {
+                                        if (props.handleDisplayAddSectionModal) {
+                                            props.handleDisplayAddSectionModal(props.section.id);
+                                        }
+                                    }} >
                                     <AddIcon />
                                 </div>
                                 <div

@@ -83,6 +83,11 @@ class CourseController {
         return res.status(response.getStatusCode()).json(response)
     }
 
+    async getCourseDetailById(req:Request, res:Response){
+        const response = await services.CourseService.getCourseDetailById(req)        
+        return res.status(response.getStatusCode()).json(response)
+    }
+
     async registerCourse(req:Request, res:Response){
         const errorValidate: ValidationError | undefined = enrolledCourseSchema.validate(req.body).error;
         if (errorValidate) {

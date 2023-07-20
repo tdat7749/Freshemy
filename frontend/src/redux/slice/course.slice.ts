@@ -7,17 +7,24 @@ import {
     getMyCourses as getMyCoursesAPI,
     deleteCourse as deleteCourseAPI,
     getCourseDetail as getCourseDetailAPI,
+    getCourseDetailById as getCourseDetailByIdAPI,
+    changeThumbnail as changeThumbnailAPI,
+    changeInformation as changeInformationAPI
 } from "../../apis/course";
+
 import {
     NewCourse,
     Category,
     Course,
     Course as CourseType,
-    GetCourseInfo,
     PagingCourse,
-    getMyCourses as getMyCoursesType,
+    GetMyCourses as GetMyCoursesType,
     CourseDetail as CourseDetailType,
+    ChangeThumbnail as ChangeThumbnailType,
+    ChangeInformation as ChangeInformationType
 } from "../../types/course";
+
+import { AddSection as AddSectionType,Section as SectionType } from "../../types/section";
 
 type CourseSlice = {
     selectCategories: Category[];
@@ -47,14 +54,14 @@ export const getCategories = createAsyncThunk<Response<Category[]>, null, { reje
     async (body, ThunkAPI) => {
         try {
             const response = await getCategoriesAPI();
-            return response.data as Response<Category[]>;
+            return response.data.data as Response<Category[]>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
         }
     }
 );
 
-export const getMyCourses = createAsyncThunk<Response<PagingCourse>, getMyCoursesType, { rejectValue: Response<null> }>(
+export const getMyCourses = createAsyncThunk<Response<PagingCourse>, GetMyCoursesType, { rejectValue: Response<null> }>(
     "course/getMyCourses",
     async (body, ThunkAPI) => {
         try {
@@ -65,19 +72,6 @@ export const getMyCourses = createAsyncThunk<Response<PagingCourse>, getMyCourse
         }
     }
 );
-
-export const getCourseInfo = createAsyncThunk<
-    Response<GetCourseInfo>,
-    getMyCoursesType,
-    { rejectValue: Response<null> }
->("course/getCourseInfo", async (body, ThunkAPI) => {
-    try {
-        const response = await getMyCoursesAPI(body);
-        return response.data as Response<GetCourseInfo>;
-    } catch (error: any) {
-        return ThunkAPI.rejectWithValue(error.data as Response<null>);
-    }
-});
 
 export const getCourseDetail = createAsyncThunk<Response<CourseDetailType>, string, { rejectValue: Response<null> }>(
     "course/getCourseDetail",
@@ -91,11 +85,48 @@ export const getCourseDetail = createAsyncThunk<Response<CourseDetailType>, stri
     }
 );
 
+export const getCourseDetailById = createAsyncThunk<Response<CourseDetailType>, number, { rejectValue: Response<null> }>(
+    "course/getCourseDetailById",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await getCourseDetailByIdAPI(body);
+            return response.data as Response<CourseDetailType>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 export const deleteCourse = createAsyncThunk<Response<null>, number, { rejectValue: Response<null> }>(
     "course/deleteCourse",
     async (body, ThunkAPI) => {
         try {
             const response = await deleteCourseAPI(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const changeThumbnail = createAsyncThunk<Response<null>, ChangeThumbnailType, { rejectValue: Response<null> }>(
+    "course/changeThumbnail",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await changeThumbnailAPI(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+
+export const changeInformation = createAsyncThunk<Response<null>, ChangeInformationType, { rejectValue: Response<null> }>(
+    "course/changeInformation",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await changeInformationAPI(body);
             return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -164,6 +195,20 @@ export const courseSlice = createSlice({
         setDeleteCourse: (state, action: PayloadAction<number>) => {
             state.courses = state.courses.filter((course: CourseType) => course.id !== action.payload);
         },
+        addSection:(state,action:PayloadAction<AddSectionType>) =>{
+            state.courseDetail.sections = [...state.courseDetail.sections,action.payload]
+        },
+        setEditSection: (state, action: PayloadAction<SectionType>) => {
+            state.courseDetail.sections = state.courseDetail.sections.map((section: SectionType) => {
+                if (section.id === action.payload.id) {
+                    section.title = action.payload.title;
+                }
+                return section;
+            });
+        },
+        setDeleteSection: (state, action: PayloadAction<number>) => {
+            state.courseDetail.sections = state.courseDetail.sections.filter((section: SectionType) => section.id !== action.payload);
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(createCourses.pending, (state) => {
@@ -183,15 +228,12 @@ export const courseSlice = createSlice({
         builder.addCase(getCategories.pending, (state) => {
             state.error = "";
             state.message = "";
-            state.isLoading = true;
         });
         builder.addCase(getCategories.fulfilled, (state, action) => {
             state.categories = action.payload.data as Category[];
-            state.isLoading = false;
         });
         builder.addCase(getCategories.rejected, (state, action) => {
             state.error = action.payload?.message as string;
-            state.isLoading = false;
         });
 
         builder.addCase(getMyCourses.pending, (state) => {
@@ -241,9 +283,75 @@ export const courseSlice = createSlice({
             state.error = action.error as string;
             state.isLoading = false;
         });
+
+        builder.addCase(getCourseDetailById.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+
+        builder.addCase(getCourseDetailById.fulfilled, (state, action) => {
+            state.courseDetail = action.payload.data as CourseDetailType
+            state.selectCategories = action.payload.data?.categories as Category[]
+
+            const filterCategories:Category[] = []
+
+            state.categories.map((category) =>{
+                return state.selectCategories.map((item) =>{
+                    if(category.id === item.id ){
+                        
+                    }else{
+                        filterCategories.push(category)
+                    }
+                    return item
+                })
+            })
+
+            state.categories = filterCategories
+
+            state.isLoading = false;
+        });
+
+        builder.addCase(getCourseDetailById.rejected, (state, action) => {
+            state.error = action.error as string;
+            state.isLoading = false;
+        });
+
+        builder.addCase(changeThumbnail.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+
+        builder.addCase(changeThumbnail.fulfilled, (state, action) => {
+            state.message = action.payload.message
+            state.isLoading = false;
+        });
+
+        builder.addCase(changeThumbnail.rejected, (state, action) => {
+            state.error = action.error as string;
+            state.isLoading = false;
+        });
+
+
+        builder.addCase(changeInformation.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+
+        builder.addCase(changeInformation.fulfilled, (state, action) => {
+            state.message = action.payload.message
+            state.isLoading = false;
+        });
+
+        builder.addCase(changeInformation.rejected, (state, action) => {
+            state.error = action.error as string;
+            state.isLoading = false;
+        });
     },
 });
 
-export const { setError, setCategories, addCategories, removeCategories, reset, setDeleteCourse } = courseSlice.actions;
+export const { setError, setCategories, addCategories, removeCategories, reset, setDeleteCourse,addSection,setEditSection,setDeleteSection } = courseSlice.actions;
 
 export default courseSlice.reducer;

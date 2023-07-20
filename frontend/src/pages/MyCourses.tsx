@@ -6,7 +6,7 @@ import CourseCard from "../components/CourseCard";
 import Pagination from "../components/Pagination";
 import Navbar from "../components/Navbar";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { courseAction } from "../redux/slice";
+import { courseActions } from "../redux/slice";
 import { Course } from "../types/course";
 
 const MyCourses: React.FC = () => {
@@ -22,7 +22,7 @@ const MyCourses: React.FC = () => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(courseAction.getMyCourses({ pageIndex, keyword }));
+        dispatch(courseActions.getMyCourses({ pageIndex, keyword }));
     }, [dispatch, keyword, pageIndex]);
 
     // handle pagination
@@ -50,9 +50,9 @@ const MyCourses: React.FC = () => {
 
     const handleDeleteCourse = (courseId: number) => {
         //@ts-ignore
-        dispatch(courseAction.deleteCourse({ courseId })).then((response) => {
+        dispatch(courseActions.deleteCourse({ courseId })).then((response) => {
             if (response.payload.status_code === 200) {
-                dispatch(courseAction.setDeleteCourse(courseId));
+                dispatch(courseActions.setDeleteCourse(courseId));
             }
         });
     };

@@ -8,6 +8,7 @@ export const uploadVideoMdw = async (req: RequestHasLogin, res: Response, next: 
     uploadVideo(req, res, (error: any) => {
         if (error instanceof MulterError) {
             res.status(400).json({ message: error.message, success: false, status_code: 400 });
+            return;
         }
         next();
     });
@@ -17,6 +18,7 @@ export const uploadFileMdw = async (req: RequestHasLogin, res: Response, next: N
     uploadFile(req, res, (error: any) => {
         if (error instanceof MulterError) {
             res.status(400).json({ message: error.message, success: false, status_code: 400 });
+            return;
         }
         next();
     });

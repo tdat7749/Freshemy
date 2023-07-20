@@ -12,7 +12,9 @@ courseRouter.delete("/unsubcribe", isLogin, controllers.courseController.unsubcr
 courseRouter.patch("/change-thumbnail", isLogin, uploadFileMdw, controllers.courseController.editThumbnail);
 
 courseRouter.get("/search-my-courses", isLogin, controllers.courseController.searchMyCourses);
+
 courseRouter.get("/:slug", controllers.courseController.getCourseDetail);
+courseRouter.get("/detail/:id", isLogin, controllers.courseController.getCourseDetailById);
 courseRouter.delete("/:id", isLogin, controllers.courseController.deleteMyCourse);
 
 export default courseRouter;
