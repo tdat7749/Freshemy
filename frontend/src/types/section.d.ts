@@ -3,6 +3,7 @@ import { Lesson } from "./lesson";
 export type Section = {
     id: number;
     title: string;
+    lessons?: Lesson[]
 };
 
 export type AddSection = {

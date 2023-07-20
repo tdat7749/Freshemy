@@ -29,9 +29,11 @@ app.use("/api/lessons", routers.lessonRouter)
 app.use("/api/categories", routers.categoryRouter)
 app.use("/api/courses", routers.courseRouter)
 
+
 const port: number = configs.general.PORT;
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
 

@@ -15,7 +15,6 @@ import {
     Course,
     Course as CourseType,
     PagingCourse,
-    DeleteCourse as DeleteCourseType,
     GetMyCourses as GetMyCoursesType,
     CourseDetail as CourseDetailType,
 } from "../../types/course";
@@ -28,6 +27,7 @@ type CourseSlice = {
     message: string;
     isLoading: boolean;
     totalPage: number;
+    courseDetail : CourseDetailType
 };
 
 export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejectValue: Response<null> }>(
@@ -78,7 +78,7 @@ export const getCourseDetail = createAsyncThunk<Response<CourseDetailType>, stri
     }
 );
 
-export const deleteCourse = createAsyncThunk<Response<null>, DeleteCourseType, { rejectValue: Response<null> }>(
+export const deleteCourse = createAsyncThunk<Response<null>, number, { rejectValue: Response<null> }>(
     "course/deleteCourse",
     async (body, ThunkAPI) => {
         try {
@@ -94,6 +94,25 @@ const initialState: CourseSlice = {
     selectCategories: [],
     categories: [],
     courses: [],
+    courseDetail:{
+        id: undefined,
+        slug: "",
+        title: "",
+        categories: [],
+        summary: "",
+        author: {
+            id: undefined,
+            first_name:"",
+            last_name:"",
+        },
+        ratings: undefined,
+        description: "",
+        sections: [],
+        created_at: "",
+        updated_at: "",
+        thumbnail:"",
+        status:false
+    },
     error: "",
     message: "",
     isLoading: false,
@@ -190,7 +209,22 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(deleteCourse.rejected, (state, action) => {
-            state.message = action.payload?.message as string;
+            state.error = action.error as string;
+            state.isLoading = false;
+        });
+
+        builder.addCase(getCourseDetail.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+
+        builder.addCase(getCourseDetail.fulfilled, (state, action) => {
+            state.courseDetail = action.payload.data as CourseDetailType
+            state.isLoading = false;
+        });
+
+        builder.addCase(getCourseDetail.rejected, (state, action) => {
             state.error = action.error as string;
             state.isLoading = false;
         });

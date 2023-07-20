@@ -11,6 +11,7 @@ export type CourseDetailResponseData = {
         sections: Section[]
         created_at: Date
         updated_at: Date
+        status: boolean
 }
 
 export type Category = {
@@ -30,6 +31,6 @@ export type Lesson = {
 export type Section = {
     title: string,
     updated_at: Date,
-    lessions: Lesson[],
+    lessons: Lesson[],
 }
 

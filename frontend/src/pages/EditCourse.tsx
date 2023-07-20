@@ -413,6 +413,7 @@ const EditCourse: React.FC = () => {
                         )}
                     </Formik>
                 </div>
+                
                 <div className="flex-1 p-4 flex flex-col">
                     <div className="flex gap-6">
                         <input
@@ -441,6 +442,7 @@ const EditCourse: React.FC = () => {
                                 handleDisplayEditModal={handleDisplayEditModal}
                                 handleDisplayDeleteModal={handleDisplayDeleteModal}
                                 handleDisplayAddSectionModal={handleDisplayAddSectionModal}
+                                isDisplayBtn = {true}
                             />
                         ))}
                     </div>
