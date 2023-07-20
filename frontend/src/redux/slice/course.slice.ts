@@ -28,6 +28,7 @@ type CourseSlice = {
     message: string;
     isLoading: boolean;
     totalPage: number;
+    courseDetail : CourseDetailType
 };
 
 export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejectValue: Response<null> }>(
@@ -111,6 +112,23 @@ const initialState: CourseSlice = {
     message: "",
     isLoading: false,
     totalPage: 1,
+    courseDetail:{
+        id: undefined,
+        slug: "",
+        title: "",
+        categories: [],
+        summary: "",
+        author: {
+            id: undefined,
+            first_name:"",
+            last_name:"",
+        },
+        ratings: undefined,
+        description: "",
+        sections: [],
+        created_at: "",
+        updated_at: "",
+    }
 };
 
 export const courseSlice = createSlice({
@@ -203,7 +221,22 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(deleteCourse.rejected, (state, action) => {
-            state.message = action.payload?.message as string;
+            state.error = action.error as string;
+            state.isLoading = false;
+        });
+
+        builder.addCase(getCourseDetail.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+
+        builder.addCase(getCourseDetail.fulfilled, (state, action) => {
+            state.courseDetail = action.payload.data as CourseDetailType
+            state.isLoading = false;
+        });
+
+        builder.addCase(getCourseDetail.rejected, (state, action) => {
             state.error = action.error as string;
             state.isLoading = false;
         });

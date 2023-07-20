@@ -12,7 +12,6 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
 import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
-import { Console } from "console";
 import configs from "../configs";
 import {
     MESSAGE_SUCCESS_GET_DATA,
@@ -57,7 +56,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase>=>{
                     select:{
                         title:true,
                         updated_at:true,
-                        lessions:{
+                        lessons:{
                             select:{
                                 title:true,
                                 url_video:true
@@ -86,10 +85,10 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase>=>{
                 })
                 course.sections.forEach(section=> {
                     const lessons: Lesson[]= []
-                    section.lessions.forEach(lesson => {
+                    section.lessons.forEach(lesson => {
                         lessons.push(lesson)
                     })
-                    section.lessions=lessons;
+                    section.lessons=lessons;
                     sections.push(section)
                 })
                 const courseData : CourseDetailResponseData = {

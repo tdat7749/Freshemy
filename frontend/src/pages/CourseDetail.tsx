@@ -1,108 +1,43 @@
-// import React, { useEffect, useState } from "react";
-// import React, { useEffect } from "react";
+import React, { useEffect } from "react";
 
 import Navbar from "../components/Navbar";
 import Accordion from "../components/Accordion";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+import { useParams } from "react-router-dom";
+import { courseAction } from "../redux/slice";
+import { Section } from "../types/section";
+import { CourseDetail as CourseDetailType} from "../types/course";
 // import { useParams } from "react-router-dom";
 // import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 
 const CourseDetail: React.FC = () => {
-    // let { slug } = useParams();
-    // const dispatch = useAppDispatch();
-    // const [courseDetail, setCourseDetail] = useState({});
-    let courseDetailSelector = {
-        data: {
-            id: 1,
-            slug: "1-2-3",
-            thumbnail:
-                "https://th.bing.com/th/id/R.67cfaa26978bf61a369b6b62877ca1ce?rik=clnIRqpQ5iJ01w&riu=http%3a%2f%2fthuthuatphanmem.vn%2fuploads%2f2018%2f05%2f23%2fwallpaper-4k-hinh-nen-4k-ho-nuoc-menh-mong-cuc-dep_101311625.jpg&ehk=CVsexA0rlVLJq7d%2fQ%2bIfbJIeLSEYU%2biSSmRKMevXEyM%3d&risl=&pid=ImgRaw&r=0",
-            title: "1 2 3",
-            status: "Completed",
-            categories: [
-                {
-                    id: 1,
+    let { slug } = useParams();
+    const dispatch = useAppDispatch();
 
-                    title: "NodeJs",
-                },
-                {
-                    id: 2,
+    const courseDetail:CourseDetailType = useAppSelector(state => state.courseSlice.courseDetail) ?? {}
 
-                    title: "ReactJs",
-                },
-            ],
-            summary: "ahjhjhjhjhjhj",
-            author: {
-                first_name: "Vuong",
-                last_name: "Hoang",
-                id: 2,
-            },
-            ratings: 5,
-            description: "hãy học cái nì đi",
-            sections: [
-                {
-                    id: 1,
-                    title: "khoas HOJC AHJ",
-                    lessons: [
-                        {
-                            title: "B1",
-                            url_video: "https://www.youtube.com/watch?v=pTFZFxd4hOI",
-                        },
-                        {
-                            title: "B2",
-                            url_video: "https://www.youtube.com/watch?v=pTFZFxd4hOI",
-                        },
-                        {
-                            title: "B3",
-                            url_video: "https://www.youtube.com/watch?v=pTFZFxd4hOI",
-                        },
-                        {
-                            title: "B4",
-                            url_video: "https://www.youtube.com/watch?v=pTFZFxd4hOI",
-                        },
-                    ],
-                },
-                {
-                    id: 2,
-                    title: "C2",
-                    lessons: [
-                        {
-                            title: "C1",
-                            url_video: "https://www.youtube.com/watch?v=pTFZFxd4hOI",
-                        },
-                        {
-                            title: "C2",
-                            url_video: "https://www.youtube.com/watch?v=pTFZFxd4hOI",
-                        },
-                        {
-                            title: "C3",
-                            url_video: "https://www.youtube.com/watch?v=pTFZFxd4hOI",
-                        },
-                        {
-                            title: "C4",
-                            url_video: "https://www.youtube.com/watch?v=pTFZFxd4hOI",
-                        },
-                    ],
-                },
-            ],
-            created_at: "12/2/2023",
-            updated_at: "12/2/2023",
-        },
-    };
 
+
+    useEffect(() => {
+        // @ts-ignore
+        dispatch(courseAction.getCourseDetail(slug))
+    }, [dispatch, slug])
     return (
         <>
             <Navbar />
             <div className="min-h-screen h-full container px-4 m-auto">
                 <div>
                     <div className="description">
-                        <h2>Description</h2>
-                        <p>feqfegegegeg</p>
+                        <h2 className="text-[32px]">Description</h2>
+                        <span className="w-[60px] h-1 bg-black block"></span>
+                        <p>{courseDetail.description}</p>
                     </div>
 
                     <div className="table-of-content">
-                        <h2>Table of Content</h2>
-                        {courseDetailSelector.data.sections.map((section) => {
-                            return <Accordion isDisplayBtn={false} section={section} />;
+                        <h2 className="text-[32px]">Table of Content</h2>
+                        <span className="w-[60px] h-1 bg-black block mb-4"></span>
+                        {courseDetail.sections.map((section: Section, index:number) => {
+                            return <Accordion key={index} isDisplayBtn={false} section={section} />;
                         })}
                     </div>
                 </div>

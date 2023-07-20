@@ -30,6 +30,6 @@ export type Lesson = {
 export type Section = {
     title: string,
     updated_at: Date,
-    lessions: Lesson[],
+    lessons: Lesson[],
 }
 
