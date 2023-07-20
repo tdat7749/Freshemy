@@ -206,6 +206,9 @@ export const courseSlice = createSlice({
                 return section;
             });
         },
+        setDeleteSection: (state, action: PayloadAction<number>) => {
+            state.courseDetail.sections = state.courseDetail.sections.filter((section: SectionType) => section.id !== action.payload);
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(createCourses.pending, (state) => {
@@ -349,6 +352,6 @@ export const courseSlice = createSlice({
     },
 });
 
-export const { setError, setCategories, addCategories, removeCategories, reset, setDeleteCourse,addSection,setEditSection } = courseSlice.actions;
+export const { setError, setCategories, addCategories, removeCategories, reset, setDeleteCourse,addSection,setEditSection,setDeleteSection } = courseSlice.actions;
 
 export default courseSlice.reducer;

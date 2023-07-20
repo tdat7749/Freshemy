@@ -25,7 +25,7 @@ export const uploadFile = multer({
 // Upload video
 const storageVideo = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "/Freshemy-video/upload/videos");
+        cb(null, "C:\\Users\\cybozu\\Desktop\\Vuong\\test");
     },
     filename: (req, file: Express.Multer.File, cb) => {
         console.log(file.originalname);

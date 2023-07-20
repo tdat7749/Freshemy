@@ -79,6 +79,7 @@ const EditCourse: React.FC = () => {
     };
 
     const handleDisplayAddSectionModal = (id: number) => {
+        setIdItem(id)
         setIsDisplayAddLessonModal(!isDisplayAddLessonModal);
     };
 
@@ -86,7 +87,7 @@ const EditCourse: React.FC = () => {
         //@ts-ignore
         dispatch(sectionActions.deleteSection(idItem)).then((response) => {
             if (response.payload.status_code === 200) {
-                dispatch(sectionActions.setDeleteSection(idItem));
+                dispatch(courseActions.setDeleteSection(idItem));
             }
         });
         setIsDisplayDeleteModal(!isDisplayDeleteModal);
@@ -189,7 +190,7 @@ const EditCourse: React.FC = () => {
         <>
     {isLoading !== true && <>
         <Navbar />
-        <div className="h-screen container px-4 m-auto flex flex-col mt-11 laptop:flex-row laptop:gap-[76px]">
+        <div className="min-h-screen h-full container px-4 m-auto flex flex-col mt-11 laptop:flex-row laptop:gap-[76px]">
             <div className="flex-1 p-4">
                 <div className="flex">
                     <div className="flex ">
@@ -207,7 +208,10 @@ const EditCourse: React.FC = () => {
                                     onChangeInputFile(event);
                                 }}
                             />
-                            <button type="submit" onClick={handleChangeThumbnail}>Save</button>
+                            <div className="">
+                            <button type="submit" onClick={handleChangeThumbnail} className="px-4 py-1 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80">Save</button>
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -470,7 +474,7 @@ const EditCourse: React.FC = () => {
                                     />
                                 </div>
                             
-                                <div className="flex justify-end">
+                                <div className="flex justify-end mt-4">
                                 <button
                                     className="py-2 px-4 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
                                     type="submit"
@@ -567,7 +571,7 @@ const EditCourse: React.FC = () => {
         )}
         {/* POPUP ADD LESSON */}
         {isDisplayAddLessonModal && (
-            <PopupAddLesson handleDelete={handleDeleteSection} handleCancel={handleCancelModalAddLesson} />
+            <PopupAddLesson handleDelete={handleDeleteSection} handleCancel={handleCancelModalAddLesson} id={idItem}/>
         )}</>}
     </>
     );

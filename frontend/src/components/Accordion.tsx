@@ -45,7 +45,11 @@ const Accordion: React.FC<AccordionType> = (props) => {
                         </div>
                         {props.isDisplayBtn && (
                             <div className="flex gap-2">
-                                <div className="cursor-pointer">
+                                <div className="cursor-pointer" onClick={() => {
+                                        if (props.handleDisplayAddSectionModal) {
+                                            props.handleDisplayAddSectionModal(props.section.id);
+                                        }
+                                    }} >
                                     <AddIcon />
                                 </div>
                                 <div

@@ -64,6 +64,9 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase>=>{
                                 url_video:true
                             }
                         }
+                    },
+                    where:{
+                        is_delete:false
                     }
                 },
                 user:{
@@ -149,6 +152,9 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase>=>{
                                 url_video:true
                             }
                         }
+                    },
+                    where:{
+                        is_delete:false
                     }
                 },
                 user:{

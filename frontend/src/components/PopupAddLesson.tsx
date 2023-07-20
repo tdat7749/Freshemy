@@ -11,6 +11,7 @@ import { lessonActions } from "../redux/slice";
 type AddLessonModalProps = {
     handleDelete: () => void;
     handleCancel: () => void;
+    id: number
 };
 
 const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
@@ -36,6 +37,9 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         let formData = new FormData();
         formData.append("title", values.title);
         formData.append("video", video as File);
+        formData.append("section_id",props.id.toString())
+
+        console.log(formData.get("video"),formData.get("title"))
         //@ts-ignore
         dispatch(lessonActions.addLesson(formData));
     };
