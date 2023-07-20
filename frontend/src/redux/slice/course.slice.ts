@@ -1,8 +1,14 @@
 import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Response } from "../../types/response";
 
-import { createCourse as createCourseAPI, getCategories as getCategoriesAPI } from "../../apis/course";
-import { getMyCourses as getMyCoursesAPI, deleteCourse as deleteCourseAPI } from "../../apis/courses";
+import {
+    createCourse as createCourseAPI,
+    getCategories as getCategoriesAPI,
+    getMyCourses as getMyCoursesAPI,
+    deleteCourse as deleteCourseAPI,
+    getCourseDetail as getCourseDetailAPI,
+} from "../../apis/course";
+
 import {
     NewCourse,
     Category,
@@ -11,6 +17,7 @@ import {
     PagingCourse,
     DeleteCourse as DeleteCourseType,
     GetMyCourses as GetMyCoursesType,
+    CourseDetail as CourseDetailType,
 } from "../../types/course";
 
 type CourseSlice = {
@@ -59,6 +66,17 @@ export const getMyCourses = createAsyncThunk<Response<PagingCourse>, GetMyCourse
     }
 );
 
+export const getCourseDetail = createAsyncThunk<Response<CourseDetailType>, string, { rejectValue: Response<null> }>(
+    "course/getCourseDetail",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await getCourseDetailAPI(body);
+            return response.data as Response<CourseDetailType>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
 
 export const deleteCourse = createAsyncThunk<Response<null>, DeleteCourseType, { rejectValue: Response<null> }>(
     "course/deleteCourse",

@@ -1,15 +1,16 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { addLesson as addLessonAPI } from "../../apis/lessons";
+import { addLesson as addLessonAPI } from "../../apis/lesson";
 import { AddLesson as AddLessonType, Lesson } from "../../types/lesson";
 import { Response } from "../../types/response";
 
-type UserSlice = {
+type LessonSlice = {
     error: string;
     message: string;
     isLoading: boolean;
     lessonList: Lesson[];
-};
-const initialState: UserSlice = {
+}
+
+const initialState: LessonSlice = {
     error: "",
     message: "",
     isLoading: false,
