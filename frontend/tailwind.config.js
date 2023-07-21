@@ -14,7 +14,7 @@ module.exports = {
                 background: "#F8FFF8",
                 primary: "#F7F1DD",
                 error: "#FF0000",
-                switch: "#033700",
+                title: "#087930",
                 bgForm: "#F7F1DD",
                 text: "#212B27",
                 backgroundHover: "#FFCF90",
@@ -26,14 +26,14 @@ module.exports = {
     daisyui: {
         themes: [
             {
-                // mytheme: {
-                //     primary: "#555555", 
-                //     secondary: "#ff0000",
-                //     "base-100": "#fff",
-                //     "base-content": "#5c5c5c",
-                //     accent: "#FAFAFA",
-                //     neutral: "#000",
-                // },
+                mytheme: {
+                    primary: "#087930",
+                    secondary: "#ff0000",
+                    "base-100": "#fff",
+                    "base-content": "#5c5c5c",
+                    accent: "#FAFAFA",
+                    neutral: "#000",
+                },
             },
         ],
     },

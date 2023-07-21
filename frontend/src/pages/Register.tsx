@@ -24,7 +24,6 @@ const Register: FC = () => {
 
     if (isLogin) return <Navigate to={"/"} />;
 
-    
     const initialValues: RegisterType = {
         first_name: "",
         last_name: "",
@@ -45,140 +44,144 @@ const Register: FC = () => {
 
     return (
         <>
-            <div className="mt-[150px] h-screen flex items-center justify-center">
-                <div className="bg-primary m-4 rounded-xl tablet:w-[506px]">
-                    <Formik
-                        initialValues={initialValues}
-                        validationSchema={registerValidationSchema}
-                        onSubmit={handleOnSubmit}
-                        innerRef={formikRef}
-                    >
-                        {(formik) => (
-                            <form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
-                                <h1 className="font-bold text-[32px] text-center">SIGN UP</h1>
+            <div className="container mx-auto">
+                <div className="min-h-screen h-full mt-[100px] flex items-center justify-center">
+                    <div className="bg-primary m-4 rounded-xl shadow-lg">
+                        <Formik
+                            initialValues={initialValues}
+                            validationSchema={registerValidationSchema}
+                            onSubmit={handleOnSubmit}
+                            innerRef={formikRef}
+                        >
+                            {(formik) => (
+                                <form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
+                                    <h1 className="font-bold text-[32px] text-center text-title">SIGN UP</h1>
 
-                                <div className="flex gap-[30px] shrink-0">
-                                    <div className="flex-1">
-                                        <label htmlFor="first_name" className="text-[24px] text-text">
-                                            First Name
+                                    <div className="flex gap-5 shrink-0 mb-3">
+                                        <div className="flex-1 flex flex-col">
+                                            <label htmlFor="first_name" className="text-sm mb-1 tablet:text-xl">
+                                                First Name
+                                            </label>
+                                            <Field
+                                                type="text"
+                                                name="first_name"
+                                                className={`${
+                                                    formik.errors.first_name && formik.touched.first_name
+                                                        ? "border-error"
+                                                        : ""
+                                                } px-2 py-4 rounded-lg border-[1px] outline-none max-w-sm`}
+                                            />
+                                            <ErrorMessage
+                                                name="first_name"
+                                                component="span"
+                                                className="text-[14px] text-error font-medium"
+                                            />
+                                        </div>
+                                        <div className="flex-1 flex flex-col">
+                                            <label htmlFor="last_name" className="text-sm mb-1 tablet:text-xl">
+                                                Last Name
+                                            </label>
+                                            <Field
+                                                type="text"
+                                                name="last_name"
+                                                className={`${
+                                                    formik.errors.last_name && formik.touched.last_name
+                                                        ? "border-error"
+                                                        : ""
+                                                } px-2 py-4 rounded-lg border-[1px] outline-none max-w-sm`}
+                                            />
+                                            <ErrorMessage
+                                                name="last_name"
+                                                component="span"
+                                                className="text-[14px] text-error font-medium"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="email" className="text-sm block mb-1 tablet:text-xl">
+                                            Email
                                         </label>
                                         <Field
                                             type="text"
-                                            name="first_name"
+                                            name="email"
                                             className={`${
-                                                formik.errors.first_name && formik.touched.first_name
-                                                    ? "border-error"
-                                                    : ""
-                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                                formik.errors.email && formik.touched.email ? "border-error" : ""
+                                            } px-2 py-4 rounded-lg border-[1px] outline-none w-full`}
                                         />
                                         <ErrorMessage
-                                            name="first_name"
+                                            name="email"
                                             component="span"
                                             className="text-[14px] text-error font-medium"
                                         />
                                     </div>
-                                    <div className="flex-1">
-                                        <label htmlFor="last_name" className="text-[24px] text-text">
-                                            Last Name
+                                    <div className="mb-3">
+                                        <label htmlFor="password" className="text-sm block mb-1 tablet:text-xl">
+                                            Password
                                         </label>
                                         <Field
-                                            type="text"
-                                            name="last_name"
+                                            type="password"
+                                            name="password"
                                             className={`${
-                                                formik.errors.last_name && formik.touched.last_name
-                                                    ? "border-error"
-                                                    : ""
-                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                                formik.errors.password && formik.touched.password ? "border-error" : ""
+                                            } px-2 py-4 rounded-lg border-[1px] outline-none w-full`}
                                         />
                                         <ErrorMessage
-                                            name="last_name"
+                                            name="password"
                                             component="span"
                                             className="text-[14px] text-error font-medium"
                                         />
                                     </div>
-                                </div>
-                                <div className="">
-                                    <label htmlFor="email" className="text-[24px] text-xl mb-1 tablet:text-2xl">
-                                        Email
-                                    </label>
-                                    <Field
-                                        type="text"
-                                        name="email"
-                                        className={`${
-                                            formik.errors.email && formik.touched.email ? "border-error" : ""
-                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
-                                    />
-                                    <ErrorMessage
-                                        name="email"
-                                        component="span"
-                                        className="text-[14px] text-error font-medium"
-                                    />
-                                </div>
-                                <div className="">
-                                    <label htmlFor="password" className="text-xl mb-1 tablet:text-2xl">
-                                        Password
-                                    </label>
-                                    <Field
-                                        type="password"
-                                        name="password"
-                                        className={`${
-                                            formik.errors.password && formik.touched.password ? "border-error" : ""
-                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
-                                    />
-                                    <ErrorMessage
-                                        name="password"
-                                        component="span"
-                                        className="text-[14px] text-error font-medium"
-                                    />
-                                </div>
-                                <div className="">
-                                    <label htmlFor="confirm_password" className="text-xl mb-1 tablet:text-2xl">
-                                        Confirm Password
-                                    </label>
-                                    <Field
-                                        type="password"
-                                        name="confirm_password"
-                                        className={`${
-                                            formik.errors.confirm_password && formik.touched.confirm_password
-                                                ? "border-error"
-                                                : ""
-                                        } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
-                                    />
-                                    <ErrorMessage
-                                        name="confirm_password"
-                                        component="span"
-                                        className="text-[14px] text-error font-medium"
-                                    />
-                                    {errorMessage !== "" && (
-                                        <span className="text-[14px] text-error font-medium">{errorMessage}</span>
-                                    )}
-                                    {successMessage !== "" && (
-                                        <span className="text-[14px] text-success font-medium">{successMessage}</span>
-                                    )}
-                                </div>
-                                <div className="py-[12px]">
-                                    <button
-                                        disabled={(errorMessage !== "") ? true:false}
-                                        type="submit"
-                                        className="bg-switch hover:opacity-80 text-white h-[68px] py-[8px] font-medium text-[32px] rounded-lg w-full active:active:bg-green-700 disabled:opacity-50"
-                                    >
-                                        Create Account
-                                    </button>
-                                </div>
-                                <div className="text-center space-y-[8px]">
-                                    <p className="text-text font-normal text-[20px] tablet:text-[22px]">
-                                        Already have an account?
-                                        <span className="underline">
-                                            <Link to={"/login"}> Login</Link>
-                                        </span>
-                                    </p>
-                                </div>
-                            </form>
-                        )}
-                    </Formik>
-                </div>
-                <div className="hidden laptop:block">
-                    <img src={Skeleton} />
+                                    <div className="mb-3">
+                                        <label htmlFor="confirm_password" className="text-sm block mb-1 tablet:text-xl">
+                                            Confirm Password
+                                        </label>
+                                        <Field
+                                            type="password"
+                                            name="confirm_password"
+                                            className={`${
+                                                formik.errors.confirm_password && formik.touched.confirm_password
+                                                    ? "border-error"
+                                                    : ""
+                                            } px-2 py-4 rounded-lg border-[1px] outline-none w-full`}
+                                        />
+                                        <ErrorMessage
+                                            name="confirm_password"
+                                            component="span"
+                                            className="text-[14px] text-error font-medium"
+                                        />
+                                        {errorMessage !== "" && (
+                                            <span className="text-[14px] text-error font-medium">{errorMessage}</span>
+                                        )}
+                                        {successMessage !== "" && (
+                                            <span className="text-[14px] text-success font-medium">
+                                                {successMessage}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="py-[12px]">
+                                        <button
+                                            disabled={errorMessage !== "" ? true : false}
+                                            type="submit"
+                                            className="btn btn-primary w-full text-lg"
+                                        >
+                                            Create Account
+                                        </button>
+                                    </div>
+                                    <div className="text-center space-y-[8px]">
+                                        <p className="block mt-3 mb-2 text-center text-lg">
+                                            Already have an account?
+                                            <span className="font-medium hover:opacity-80">
+                                                <Link to={"/login"}> Login</Link>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </form>
+                            )}
+                        </Formik>
+                    </div>
+                    <div className="hidden laptop:block transition ease-in-out hover:scale-110 duration-200">
+                        <img src={Skeleton} alt="Freshemy"/>
+                    </div>
                 </div>
             </div>
         </>
