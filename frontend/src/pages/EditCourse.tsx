@@ -4,7 +4,7 @@ import { Formik, ErrorMessage, Field } from "formik";
 import { editCourseValidationSchema } from "../validations/course";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { sectionActions } from "../redux/slice";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Accordion from "../components/Accordion";
 import { AddSection as AddSectionType } from "../types/section";
 import DeleteModal from "../components/DeleteModal";
@@ -27,6 +27,7 @@ const EditCourse: React.FC = () => {
     const [itemTitle, setItemTitle] = useState<string>("");
     const [displayCategories, setdisplayCategorie] = useState<boolean>(false);
     const [displayStatus, setDisplayStatus] = useState<boolean>(false);
+    const [isDisplaySaveImg, setIsDisplaySaveImg] = useState<boolean>(false);
     const [status, setStatus] = useState<string>("Uncomplete");
     const [thumbnail, setThumbnail] = useState<File | null>(null);
 
@@ -39,6 +40,7 @@ const EditCourse: React.FC = () => {
 
     let errorSection = useAppSelector((state) => state.sectionSlice.error) ?? "";
     let successSection = useAppSelector((state) => state.sectionSlice.message) ?? "";
+    const navigate = useNavigate();
 
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail);
 
@@ -53,7 +55,6 @@ const EditCourse: React.FC = () => {
         id: Number(course_id),
         slug: courseDetail.slug,
     };
-
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -72,7 +73,6 @@ const EditCourse: React.FC = () => {
         // @ts-ignore
         dispatch(sectionActions.addSection(values)).then((response) => {
             if (response.payload.status_code === 200) {
-                console.log(response.payload);
                 dispatch(courseActions.addSection(values));
             }
         });
@@ -145,6 +145,7 @@ const EditCourse: React.FC = () => {
             reader.onload = function (e) {
                 if (imageRef.current) {
                     imageRef.current.src = e.target?.result as string;
+                    setIsDisplaySaveImg(!isDisplaySaveImg);
                 }
             };
             reader.readAsDataURL(thumbnail);
@@ -166,6 +167,7 @@ const EditCourse: React.FC = () => {
                         reader.onload = function (e) {
                             if (imageRef.current) {
                                 imageRef.current.src = e.target?.result as string;
+                                setIsDisplaySaveImg(!isDisplaySaveImg);
                             }
                         };
                         reader.readAsDataURL(thumbnail);
@@ -183,9 +185,13 @@ const EditCourse: React.FC = () => {
             categories: categories,
             slug: slugify(values.title),
         };
-        console.log(data);
         //@ts-ignore
-        dispatch(courseActions.changeInformation(data));
+        dispatch(courseActions.changeInformation(data)).then((response) => {
+            if (response.payload.status_code === 200) {
+                // @ts-ignore
+                dispatch(courseActions.getCourseDetailById(values.id));
+            }
+        });
     };
 
     return (
@@ -216,15 +222,17 @@ const EditCourse: React.FC = () => {
                                                 onChangeInputFile(event);
                                             }}
                                         />
-                                        <div className="">
-                                            <button
-                                                type="submit"
-                                                onClick={handleChangeThumbnail}
-                                                className="px-4 py-1 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
-                                            >
-                                                Save
-                                            </button>
-                                        </div>
+                                        {isDisplaySaveImg && (
+                                            <div className="">
+                                                <button
+                                                    type="submit"
+                                                    onClick={handleChangeThumbnail}
+                                                    className="px-4 py-1 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
+                                                >
+                                                    {isLoading ? "Loading..." : "Save"}
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -512,6 +520,7 @@ const EditCourse: React.FC = () => {
                                             <button
                                                 className="py-2 px-4 rounded-lg text-xl border-[1px] hover:bg-slate-100"
                                                 type="submit"
+                                                onClick={() => navigate("/my-courses")}
                                                 // disabled={error !== "" ? true : false}
                                             >
                                                 Cancel
@@ -520,6 +529,12 @@ const EditCourse: React.FC = () => {
                                     </form>
                                 )}
                             </Formik>
+                            {errorMessage !== "" && (
+                                <span className="text-[14px] text-error font-medium">{errorMessage}</span>
+                            )}
+                            {successMessage !== "" && (
+                                <span className="text-[14px] text-success font-medium">{successMessage}</span>
+                            )}
                         </div>
 
                         <div className="flex-1 p-4 flex flex-col">

@@ -9,6 +9,7 @@ import { courseActions } from "../redux/slice";
 import { createValidationSchema } from "../validations/course";
 import slugify from "slugify";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
@@ -25,6 +26,7 @@ const CreateCourse: FC = () => {
 
     const formikRef = useRef(null);
     const imageRef = useRef<HTMLImageElement>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(setMessageEmpty());
@@ -62,8 +64,11 @@ const CreateCourse: FC = () => {
         });
 
         // @ts-ignore
-
-        dispatch(courseActions.createCourses(formData));
+        dispatch(courseActions.createCourses(formData)).then((response) => {
+            if (response.payload.status_code === 201) {
+                navigate("/my-courses");
+            }
+        });
     };
 
     const handleDeleteMessage = () => {

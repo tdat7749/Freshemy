@@ -50,7 +50,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         message = "";
     };
     return (
-        <div className="absolute z-50 top-0 left-0 bg-black/50 flex items-center justify-center h-full w-full">
+        <div className="fixed z-50 top-0 left-0 right-0 bottom-0 bg-black/50 flex items-center justify-center">
             <div className="  max-w-[360px] tablet:max-w-[550px] max-h-[630px] tablet:max-h-[1000px] rounded-[12px] bg-background mx-auto tablet:mx-0 flex-1">
                 <div className="w-full p-[12px]">
                     <Formik initialValues={initialValue} onSubmit={handleOnSubmit} innerRef={formikRef}>
