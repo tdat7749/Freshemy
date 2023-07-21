@@ -86,11 +86,12 @@ export const sectionSlice = createSlice({
         builder.addCase(addSection.fulfilled, (state, action) => {
             state.sectionList = [...state.sectionList, action.payload.data] as Section[];
             state.isLoading = false;
+            state.message = action.payload.message
         });
 
         builder.addCase(addSection.rejected, (state, action) => {
             state.isLoading = false;
-            state.error = action.error as string;
+            state.error = action.payload?.message as string;
         });
 
         // edit section

@@ -34,10 +34,13 @@ const EditCourse: React.FC = () => {
     let categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
     let createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
-    const navigate = useNavigate();
 
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
+
+    let errorSection = useAppSelector((state) => state.sectionSlice.error) ?? "";
+    let successSection = useAppSelector((state) => state.sectionSlice.message) ?? "";
+    const navigate = useNavigate();
 
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail);
 
@@ -498,7 +501,14 @@ const EditCourse: React.FC = () => {
                                                 className="text-[14px] text-error font-medium"
                                             />
                                         </div>
-
+                                        {errorMessage !== "" && (
+                                            <span className="text-[14px] text-error font-medium">{errorMessage}</span>
+                                        )}
+                                        {successMessage !== "" && (
+                                            <span className="text-[14px] text-success font-medium">
+                                                {successMessage}
+                                            </span>
+                                        )}
                                         <div className="flex justify-end mt-4">
                                             <button
                                                 className="py-2 px-4 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
@@ -509,6 +519,7 @@ const EditCourse: React.FC = () => {
                                             </button>
                                             <button
                                                 className="py-2 px-4 rounded-lg text-xl border-[1px] hover:bg-slate-100"
+                                                type="submit"
                                                 onClick={() => navigate("/my-courses")}
                                                 // disabled={error !== "" ? true : false}
                                             >
@@ -544,6 +555,12 @@ const EditCourse: React.FC = () => {
                                     Add section
                                 </button>
                             </div>
+                            {errorSection !== "" && (
+                                <span className="text-[14px] text-error font-medium">{errorSection}</span>
+                            )}
+                            {successSection !== "" && (
+                                <span className="text-[14px] text-success font-medium">{successSection}</span>
+                            )}
                             {/* handle list lesson */}
                             <div className="mt-2">
                                 {courseDetail.sections.map((section, index) => (

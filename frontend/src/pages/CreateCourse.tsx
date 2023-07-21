@@ -8,6 +8,7 @@ import { NewCourse as CreateCourseType, Category as CategoryType } from "../type
 import { courseActions } from "../redux/slice";
 import { createValidationSchema } from "../validations/course";
 import slugify from "slugify";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const CreateCourse: FC = () => {
@@ -17,7 +18,6 @@ const CreateCourse: FC = () => {
     const [displayCategories, setdisplayCategorie] = useState<boolean>(false);
     const [displayStatus, setDisplayStatus] = useState<boolean>(false);
     const [status, setStatus] = useState<string>("Uncomplete");
-
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
@@ -32,6 +32,8 @@ const CreateCourse: FC = () => {
         dispatch(setMessageEmpty());
         //@ts-ignore
         dispatch(courseActions.getCategories());
+        dispatch(courseActions.reset());
+        setThumbnail(null);
     }, [dispatch]);
 
     const initialValues: CreateCourseType = {
@@ -100,11 +102,6 @@ const CreateCourse: FC = () => {
             reader.readAsDataURL(thumbnail);
             return;
         }
-    };
-
-    const handleCancel = () => {
-        setThumbnail(null);
-        dispatch(courseActions.reset());
     };
 
     return (
@@ -402,12 +399,7 @@ const CreateCourse: FC = () => {
                                             className="text-[14px] text-error font-medium"
                                         />
                                     </div>
-                                    {errorMessage !== "" && (
-                                        <span className="text-[14px] text-error font-medium">{errorMessage}</span>
-                                    )}
-                                    {successMessage !== "" && (
-                                        <span className="text-[14px] text-success font-medium">{successMessage}</span>
-                                    )}
+
                                     <div className="py-[12px] flex justify-end gap-2">
                                         <button
                                             disabled={isLoading ? true : false}
@@ -421,11 +413,18 @@ const CreateCourse: FC = () => {
                                             className="py- px-4 rounded-lg text-xl border-[1px] hover:bg-slate-100"
                                             onClick={() => {
                                                 formik.resetForm(initialValues);
-                                                handleCancel();
                                             }}
                                         >
-                                            Cancel
+                                            <Link to={`/my-courses`}>Cancel</Link>
                                         </button>
+                                        {errorMessage !== "" && (
+                                            <span className="text-[14px] text-error font-medium">{errorMessage}</span>
+                                        )}
+                                        {successMessage !== "" && (
+                                            <span className="text-[14px] text-success font-medium">
+                                                {successMessage}
+                                            </span>
+                                        )}
                                     </div>
                                 </form>
                             )}

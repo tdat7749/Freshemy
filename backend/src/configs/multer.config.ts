@@ -31,7 +31,6 @@ const storageVideo = multer.diskStorage({
         cb(null, "/root/");
     },
     filename: (req, file: Express.Multer.File, cb) => {
-        console.log(file.originalname);
         const extension = file.originalname.split(".").pop();
         const uniqueFileNameRandom = `${Date.now()}-${file.fieldname}.${extension}`;
         cb(null, uniqueFileNameRandom);

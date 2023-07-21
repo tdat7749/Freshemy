@@ -23,6 +23,8 @@ class LessonController {
         //         success: false,
         //     });
         // }
+        console.log(req.file)
+        console.log(req.body)
         const response = await service.LessonService.createLesson(req);
 
         return res.status(response.getStatusCode()).json(response);
