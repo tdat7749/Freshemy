@@ -281,6 +281,7 @@ export const courseSlice = createSlice({
 
         builder.addCase(getCourseDetail.rejected, (state, action) => {
             state.error = action.error as string;
+
             state.isLoading = false;
         });
 
@@ -293,22 +294,11 @@ export const courseSlice = createSlice({
         builder.addCase(getCourseDetailById.fulfilled, (state, action) => {
             state.courseDetail = action.payload.data as CourseDetailType
             state.selectCategories = action.payload.data?.categories as Category[]
-
-            const filterCategories:Category[] = []
-
-            state.categories.map((category) =>{
-                return state.selectCategories.map((item) =>{
-                    if(category.id === item.id ){
-                        
-                    }else{
-                        filterCategories.push(category)
-                    }
-                    return item
-                })
+            
+            state.selectCategories.forEach(category => {
+                const index = state.categories.findIndex(item => item === category);
+                state.categories.splice(index, 1);
             })
-
-            state.categories = filterCategories
-
             state.isLoading = false;
         });
 

@@ -1,5 +1,8 @@
 import multer from "multer";
 
+
+
+
 const storage = multer.diskStorage({
     filename: (req, file: Express.Multer.File, cb) => {
         cb(null, "/tmp/");
@@ -25,7 +28,7 @@ export const uploadFile = multer({
 // Upload video
 const storageVideo = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "C:\\Users\\cybozu\\Desktop\\Vuong\\test");
+        cb(null, "../video");
     },
     filename: (req, file: Express.Multer.File, cb) => {
         console.log(file.originalname);

@@ -11,6 +11,7 @@ import EditIcon from "../components/icons/EditIcon";
 import DeleteIcon from "../components/icons/DeleteIcon";
 import NotFound from "./NotFound";
 import DeleteModal from "../components/DeleteModal";
+import { courseActions } from "../redux/slice";
 // import { useParams } from "react-router-dom";
 // import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 
@@ -26,7 +27,7 @@ const CourseDetail: React.FC = () => {
 
     const handleDeleteCourse = () => {
         //@ts-ignore
-        dispatch(courseAction.deleteCourse(idItem)).then((response) => {
+        dispatch(courseActions.deleteCourse(idItem)).then((response) => {
             if (response.payload.status_code === 200) {
                 navigate('/my-courses')
             }
@@ -40,7 +41,7 @@ const CourseDetail: React.FC = () => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(courseAction.getCourseDetail(slug)).then((response) => {
+        dispatch(courseActions.getCourseDetail(slug)).then((response) => {
             if (response.payload.status_code === 404) {
                 setIsNotFound(true);
             }
