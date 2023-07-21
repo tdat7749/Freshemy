@@ -8,6 +8,7 @@ import { NewCourse as CreateCourseType, Category as CategoryType } from "../type
 import { courseActions } from "../redux/slice";
 import { createValidationSchema } from "../validations/course";
 import slugify from "slugify";
+import { useNavigate } from "react-router-dom";
 
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
@@ -20,11 +21,12 @@ const CreateCourse: FC = () => {
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
-    const categories = useAppSelector((state) => state.courseSlice.categories) ?? []
+    const categories = useAppSelector((state) => state.courseSlice.categories) ?? [];
     const createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
 
     const formikRef = useRef(null);
     const imageRef = useRef<HTMLImageElement>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(setMessageEmpty());
@@ -47,7 +49,7 @@ const CreateCourse: FC = () => {
             return category.id;
         });
         let statusValue = status === "Uncomplete" ? "0" : "1";
-        const slug = slugify(values.title);
+        const slug = slugify(values.title.toLowerCase());
         let formData = new FormData();
         formData.append("title", values.title);
         formData.append("description", values.description);
@@ -60,7 +62,11 @@ const CreateCourse: FC = () => {
         });
 
         // @ts-ignore
-        dispatch(courseActions.createCourses(formData));
+        dispatch(courseActions.createCourses(formData)).then((response) => {
+            if (response.payload.status_code === 201) {
+                navigate("/my-courses");
+            }
+        });
     };
 
     const handleDeleteMessage = () => {
@@ -255,30 +261,28 @@ const CreateCourse: FC = () => {
                                                         {displayCategories && (
                                                             <div className="absolute shadow top-100 bg-white z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
                                                                 <div className="flex flex-col w-full">
-                                                                    {categories.map(
-                                                                        (category: any, index: number) => {
-                                                                            return (
-                                                                                <div
-                                                                                    key={index}
-                                                                                    className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
-                                                                                    onClick={() =>
-                                                                                        handleAddCategories(
-                                                                                            category.id,
-                                                                                            index
-                                                                                        )
-                                                                                    }
-                                                                                >
-                                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
-                                                                                        <div className="w-full items-center flex">
-                                                                                            <div className="mx-2 leading-6  ">
-                                                                                                {category.title}{" "}
-                                                                                            </div>
+                                                                    {categories.map((category: any, index: number) => {
+                                                                        return (
+                                                                            <div
+                                                                                key={index}
+                                                                                className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
+                                                                                onClick={() =>
+                                                                                    handleAddCategories(
+                                                                                        category.id,
+                                                                                        index
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                                                                                    <div className="w-full items-center flex">
+                                                                                        <div className="mx-2 leading-6  ">
+                                                                                            {category.title}{" "}
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                            );
-                                                                        }
-                                                                    )}
+                                                                            </div>
+                                                                        );
+                                                                    })}
                                                                 </div>
                                                             </div>
                                                         )}
@@ -290,74 +294,73 @@ const CreateCourse: FC = () => {
                                                     Status
                                                 </label>
                                                 <div className="w-[100%] md:w-1/2">
-
-                                                        <div className="flex flex-col items-center relative">
-                                                            <div className="w-full  svelte-1l8159u">
-                                                                <div className="mt-2 p-1 flex border border-gray-200 bg-white rounded svelte-1l8159u">
-                                                                    <div className="flex flex-auto flex-wrap py-4">
-                                                                        <div>{status}</div>
-                                                                    </div>
-                                                                    <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
-                                                                        <button
-                                                                            type="button"
-                                                                            className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
-                                                                            onClick={() => {
-                                                                                setDisplayStatus(!displayStatus);
-                                                                            }}
+                                                    <div className="flex flex-col items-center relative">
+                                                        <div className="w-full  svelte-1l8159u">
+                                                            <div className="mt-2 p-1 flex border border-gray-200 bg-white rounded svelte-1l8159u">
+                                                                <div className="flex flex-auto flex-wrap py-4">
+                                                                    <div>{status}</div>
+                                                                </div>
+                                                                <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
+                                                                        onClick={() => {
+                                                                            setDisplayStatus(!displayStatus);
+                                                                        }}
+                                                                    >
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            width="100%"
+                                                                            height="100%"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            stroke="currentColor"
+                                                                            strokeWidth={2}
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            className="feather feather-chevron-up w-4 h-4"
                                                                         >
-                                                                            <svg
-                                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                                width="100%"
-                                                                                height="100%"
-                                                                                fill="none"
-                                                                                viewBox="0 0 24 24"
-                                                                                stroke="currentColor"
-                                                                                strokeWidth={2}
-                                                                                strokeLinecap="round"
-                                                                                strokeLinejoin="round"
-                                                                                className="feather feather-chevron-up w-4 h-4"
-                                                                            >
-                                                                                <polyline points="18 15 12 9 6 15" />
-                                                                            </svg>
-                                                                        </button>
+                                                                            <polyline points="18 15 12 9 6 15" />
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {displayStatus && (
+                                                            <div className="absolute shadow top-100 bg-white z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
+                                                                <div className="flex flex-col w-full">
+                                                                    <div
+                                                                        className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
+                                                                        onClick={() => {
+                                                                            setStatus("Uncomplete");
+                                                                        }}
+                                                                    >
+                                                                        <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                                                                            <div className="w-full items-center flex">
+                                                                                <div className="mx-2 leading-6  ">
+                                                                                    Uncomplete
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div
+                                                                        className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
+                                                                        onClick={() => {
+                                                                            setStatus("Completed");
+                                                                        }}
+                                                                    >
+                                                                        <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                                                                            <div className="w-full items-center flex">
+                                                                                <div className="mx-2 leading-6  ">
+                                                                                    Completed
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            {displayStatus && (
-                                                                <div className="absolute shadow top-100 bg-white z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
-                                                                    <div className="flex flex-col w-full">
-                                                                        <div
-                                                                            className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
-                                                                            onClick={() => {
-                                                                                setStatus("Uncomplete");
-                                                                            }}
-                                                                        >
-                                                                            <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
-                                                                                <div className="w-full items-center flex">
-                                                                                    <div className="mx-2 leading-6  ">
-                                                                                        Uncomplete
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div
-                                                                            className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
-                                                                            onClick={() => {
-                                                                                setStatus("Completed");
-                                                                            }}
-                                                                        >
-                                                                            <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
-                                                                                <div className="w-full items-center flex">
-                                                                                    <div className="mx-2 leading-6  ">
-                                                                                        Completed
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

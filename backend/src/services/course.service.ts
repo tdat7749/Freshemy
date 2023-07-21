@@ -1,13 +1,8 @@
 import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
-import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response"
-import { db } from '../configs/db.config'
-import { 
-    CourseDetailResponseData,
-    Lesson,
-    Section,
-    Category
- } from "../types/courseDetail";
+import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
+import { db } from "../configs/db.config";
+import { CourseDetailResponseData, Lesson, Section, Category } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
@@ -32,71 +27,71 @@ import {
     MESSAGE_SUCCESS_DELETED_COURSE,
     MESSAGE_ERROR_COURSE_SLUG_IS_USED,
     MESSAGE_SUCCESS_UPDATE_DATA,
-} from "../utils/constant"
+} from "../utils/constant";
 
-const getCourseDetail = async (req: Request): Promise<ResponseBase>=>{
+const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
-        const {slug} = req.params
+        const { slug } = req.params;
         const course = await db.course.findFirst({
             where: {
                 slug: slug,
             },
-            include:{
-                courses_categories:{
-                    include:{
-                        category:{
-                            select:{
-                                id:true,
-                                title:true
-                            }
-                        }
-                    }
-                },
-                sections:{
-                    select:{
-                        title:true,
-                        updated_at:true,
-                        id:true,
-                        lessons:{
-                            select:{
-                                id:true,
-                                title:true,
-                                url_video:true
-                            }
-                        }
+            include: {
+                courses_categories: {
+                    include: {
+                        category: {
+                            select: {
+                                id: true,
+                                title: true,
+                            },
+                        },
                     },
-                    where:{
-                        is_delete:false
-                    }
                 },
-                user:{
-                    select:{
-                        first_name:true,
-                        last_name:true,
-                        id:true,
-                    }
-                }
-            }
-        });   
-        
-        if(course) {
-            if(course.is_delete) {
-                return new ResponseError(404,MESSAGE_ERROR_GET_DATA,false) 
+                sections: {
+                    select: {
+                        title: true,
+                        updated_at: true,
+                        id: true,
+                        lessons: {
+                            select: {
+                                id: true,
+                                title: true,
+                                url_video: true,
+                            },
+                        },
+                    },
+                    where: {
+                        is_delete: false,
+                    },
+                },
+                user: {
+                    select: {
+                        first_name: true,
+                        last_name: true,
+                        id: true,
+                    },
+                },
+            },
+        });
+
+        if (course) {
+            if (course.is_delete) {
+                return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
             } else {
-                const categories: Category[]= []
-                const sections: Section[]=[]
-                course.courses_categories.forEach(category => {
-                    categories.push( category.category )
-                })
-                course.sections.forEach(section=> {
-                    const lessons: Lesson[]= []
-                    section.lessons.forEach(lesson => {
-                        lessons.push(lesson)
-                    })
-                    section.lessons=lessons;
-                    sections.push(section)
-                })
-                const courseData : CourseDetailResponseData = {
+                const categories: Category[] = [];
+                const sections: Section[] = [];
+                course.courses_categories.forEach((category) => {
+                    categories.push(category.category);
+                });
+                course.sections.forEach((section) => {
+                    const lessons: Lesson[] = [];
+                    section.lessons.forEach((lesson) => {
+                        lessons.push(lesson);
+                    });
+                    section.lessons = lessons;
+                    sections.push(section);
+                });
+                const courseData: CourseDetailResponseData = {
                     id: course.id,
                     slug: course.slug,
                     title: course.title,
@@ -109,82 +104,81 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase>=>{
                     sections: sections,
                     created_at: course.created_at,
                     updated_at: course.updated_at,
-                    status: course.status
-                }
-                    return new ResponseSuccess(200,MESSAGE_SUCCESS_GET_DATA, true, courseData)
-            }                     
+                    status: course.status,
+                };
+                return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, courseData);
+            }
         }
-        return new ResponseError(404,MESSAGE_ERROR_GET_DATA,false)
+        return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
     } catch (error) {
-        console.log(error)
-        return new ResponseError(500,MESSAGE_ERROR_INTERNAL_SERVER,false)
+        console.log(error);
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
-}
+};
 
-
-const getCourseDetailById = async (req: Request): Promise<ResponseBase>=>{
+const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
     try {
-        const {id} = req.params
+        const { id } = req.params;
         const course = await db.course.findUnique({
             where: {
                 id: parseInt(id),
             },
-            include:{
-                courses_categories:{
-                    include:{
-                        category:{
-                            select:{
-                                id:true,
-                                title:true
-                            }
-                        }
-                    }
-                },
-                sections:{
-                    select:{
-                        title:true,
-                        updated_at:true,
-                        id:true,
-                        lessons:{
-                            select:{
-                                id:true,
-                                title:true,
-                                url_video:true
-                            }
-                        }
+            include: {
+                courses_categories: {
+                    include: {
+                        category: {
+                            select: {
+                                id: true,
+                                title: true,
+                            },
+                        },
                     },
-                    where:{
-                        is_delete:false
-                    }
                 },
-                user:{
-                    select:{
-                        first_name:true,
-                        last_name:true,
-                        id:true,
-                    }
-                }
-            }
-        });   
-        
-        if(course) {
-            if(course.is_delete) {
-                return new ResponseError(404,MESSAGE_ERROR_GET_DATA,false) 
+                sections: {
+                    select: {
+                        title: true,
+                        updated_at: true,
+                        id: true,
+                        lessons: {
+                            select: {
+                                id: true,
+                                title: true,
+                                url_video: true,
+                            },
+                        },
+                    },
+                    where: {
+                        is_delete: false,
+                    },
+                },
+                user: {
+                    select: {
+                        first_name: true,
+                        last_name: true,
+                        id: true,
+                    },
+                },
+            },
+        });
+
+        if (course) {
+            if (course.is_delete) {
+                return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
             } else {
-                const categories: Category[]= []
-                const sections: Section[]=[]
-                course.courses_categories.forEach(category => {
-                    categories.push( category.category )
-                })
-                course.sections.forEach(section=> {
-                    const lessons: Lesson[]= []
-                    section.lessons.forEach(lesson => {
-                        lessons.push(lesson)
-                    })
-                    section.lessons=lessons;
-                    sections.push(section)
-                })
-                const courseData : CourseDetailResponseData = {
+                const categories: Category[] = [];
+                const sections: Section[] = [];
+                course.courses_categories.forEach((category) => {
+                    categories.push(category.category);
+                });
+                course.sections.forEach((section) => {
+                    const lessons: Lesson[] = [];
+                    section.lessons.forEach((lesson) => {
+                        lessons.push(lesson);
+                    });
+                    section.lessons = lessons;
+                    sections.push(section);
+                });
+                const courseData: CourseDetailResponseData = {
                     id: course.id,
                     slug: course.slug,
                     title: course.title,
@@ -197,140 +191,113 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase>=>{
                     sections: sections,
                     created_at: course.created_at,
                     updated_at: course.updated_at,
-                    status: course.status
-                }
-                    return new ResponseSuccess(200,MESSAGE_SUCCESS_GET_DATA, true, courseData)
-            }                     
+                    status: course.status,
+                };
+                return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, courseData);
+            }
         }
-        return new ResponseError(404,MESSAGE_ERROR_GET_DATA,false)
+        return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
     } catch (error) {
-        console.log(error)
-        return new ResponseError(500,MESSAGE_ERROR_INTERNAL_SERVER,false)
+        console.log(error);
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
-}
+};
 
-
-const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase>=>{
+const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const user_id = req.user_id
-        const { course_id } = req.body
-        if(user_id && course_id) {
+        const user_id = req.user_id;
+        const { course_id } = req.body;
+        if (user_id && course_id) {
             const checkRegisted = await db.enrolled.findFirst({
                 where: {
                     user_id: user_id,
-                    course_id: course_id
-                }
-            })
-            if(checkRegisted) {
-                return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false)
+                    course_id: course_id,
+                },
+            });
+            if (checkRegisted) {
+                return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
             } else {
                 const register = await db.enrolled.create({
                     //@ts-ignore
                     data: {
                         user_id: user_id,
                         course_id: course_id,
-                    }
-                })
-                if(register) {
-                    return new ResponseSuccess(200, MESSAGE_SUCCESS_REGISTER_COURSE, true)
+                    },
+                });
+                if (register) {
+                    return new ResponseSuccess(200, MESSAGE_SUCCESS_REGISTER_COURSE, true);
                 } else {
-                    return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false)
+                    return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
                 }
             }
-        }
-        else {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false)
+        } else {
+            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
         }
     } catch (error) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false)
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
-}
-const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase>=>{
+};
+const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const user_id = req.user_id
-        const { course_id } = req.body
-        if(user_id && course_id) {
+        const user_id = req.user_id;
+        const { course_id } = req.body;
+        if (user_id && course_id) {
             const checkRegisted = await db.enrolled.findFirst({
                 where: {
                     user_id: user_id,
-                    course_id: course_id
-                }
-            })
-            if(!checkRegisted) {
-                return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false)
+                    course_id: course_id,
+                },
+            });
+            if (!checkRegisted) {
+                return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
             } else {
                 const unsubcribe = await db.enrolled.delete({
-                    where:{
-                        id: checkRegisted.id
-                    }
-                })
-                if(unsubcribe) {
-                    return new ResponseSuccess(200, MESSAGE_SUCCESS_UN_REGISTER_COURSE, true)
+                    where: {
+                        id: checkRegisted.id,
+                    },
+                });
+                if (unsubcribe) {
+                    return new ResponseSuccess(200, MESSAGE_SUCCESS_UN_REGISTER_COURSE, true);
                 } else {
-                    return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false)
+                    return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
                 }
             }
-        }
-        else {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false)
+        } else {
+            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
         }
     } catch (error) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false)
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
-}
+};
 
-const editCourse = async (req: Request) : Promise<ResponseBase> => {
-    try{
-        const {
-            id,
-            title,
-            slug,
-            summary,
-            description,
-            categories,
-            status
-        } = req.body;
+const editCourse = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const { id, title, slug, summary, description, categories, status } = req.body;
 
         const isFoundCourse = await db.course.findUnique({
-            where:{
-                id:id
-            }
-        })
+            where: {
+                id: id,
+            },
+        });
 
-        if(isFoundCourse){
-            if(isFoundCourse.slug === slug){
-                const isUpdateCourse = await db.course.update({
-                    where: {
-                        id: id,
-                    },
-                    data: {
-                        title: title,
-                        summary: summary,
-                        description: description,
-                        status: status,
-                    },
-                });
-                if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-            }else{
-                const isUpdateCourse = await db.course.update({
-                    where: {
-                        id: id,
-                    },
-                    data: {
-                        title: title,
-                        slug: slug,
-                        summary: summary,
-                        description: description,
-                        status: status,
-                    },
-                });
-                if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-            }
+        if (isFoundCourse) {
+            const isUpdateCourse = await db.course.update({
+                where: {
+                    id: id,
+                },
+                data: {
+                    title: title,
+                    summary: summary,
+                    description: description,
+                    status: status,
+                },
+            });
+            if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         }
-        
-        let newCategories = []
+
+        let newCategories = [];
         for (let i = 0; i < categories.length; i++) {
-            newCategories.push(categories[i])
+            newCategories.push(categories[i]);
         }
         const currentCategories = await configs.db.courseCategory.findMany({
             where: {
@@ -348,30 +315,30 @@ const editCourse = async (req: Request) : Promise<ResponseBase> => {
         });
         if (!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
 
-        let extractCategories: number[] = []
+        let extractCategories: number[] = [];
         for (let i = 0; i < currentCategories.length; i++) extractCategories.push(currentCategories[i].category_id);
 
-        var resultDuplicate = newCategories.filter(value => extractCategories.includes(value));
-        var resultUnique = newCategories.filter(function(val) {
+        var resultDuplicate = newCategories.filter((value) => extractCategories.includes(value));
+        var resultUnique = newCategories.filter(function (val) {
             return extractCategories.indexOf(val) == -1;
         });
         const finalResult = resultDuplicate.concat(resultUnique);
-        
-        let data = []
+
+        let data = [];
         for (let i = 0; i < finalResult.length; i++) {
             data.push({
                 course_id: id,
-                category_id: finalResult[i]
-            })
+                category_id: finalResult[i],
+            });
         }
 
         const isUpdate = await configs.db.courseCategory.createMany({
             data: data,
         });
 
-        if(!isUpdate) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (!isUpdate) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
-    } catch (error: any){
+    } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
@@ -441,8 +408,10 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status } = req.body;
 
     // Vì formData gửi dữ liệu bằng string nên ở đây phải convert nó về
-    const categoriesConvert = categories.map((item: string) => { category_id: parseInt(item) })
-    const statusConvert = status === "0" ? false : true
+    const categoriesConvert = categories.map((item: string) => {
+        category_id: parseInt(item);
+    });
+    const statusConvert = status === "0" ? false : true;
 
     const user_id = req.user_id;
     const thumbnail = req.file as Express.Multer.File;
@@ -505,7 +474,6 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
-
 
 export const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
     try {
@@ -582,7 +550,6 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
     }
 };
 
-
 export const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
     try {
         // Check if the course exists
@@ -612,7 +579,6 @@ export const deleteMyCourse = async (courseId: number): Promise<ResponseBase> =>
     }
 };
 
-
 const CourseService = {
     getCourseDetail,
     registerCourse,
@@ -622,6 +588,6 @@ const CourseService = {
     editThumbnail,
     searchMyCourses,
     deleteMyCourse,
-    getCourseDetailById
+    getCourseDetailById,
 };
 export default CourseService;

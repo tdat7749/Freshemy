@@ -1,16 +1,13 @@
 import Joi, { ObjectSchema } from "joi";
-import {    
-    MESSAGE_ERROR_MISSING_DATA,
-    MESSAGE_ERROR_WRONG_DATA_TYPE,
-} from "../utils/constant";
+import { MESSAGE_ERROR_MISSING_DATA, MESSAGE_ERROR_WRONG_DATA_TYPE } from "../utils/constant";
 type enrolledCourse = {
-    course_id: number
-}
+    course_id: number;
+};
 export const enrolledCourseSchema: ObjectSchema<enrolledCourse> = Joi.object({
     course_id: Joi.number().required().messages({
         "number.base": MESSAGE_ERROR_WRONG_DATA_TYPE,
         "any.required": MESSAGE_ERROR_MISSING_DATA,
-    })
+    }),
 });
 import {
     MESSAGE_ERROR_CATEGORIES_REQUIRED,
@@ -34,7 +31,7 @@ type CreateCourse = {
     slug: string;
     summary: string;
     description: string;
-    thumbnail: Express.Multer.File;
+    // thumbnail: Express.Multer.File;
     categories: Array<number>;
     status: boolean;
 };
@@ -63,10 +60,10 @@ export const createCourseSchema: ObjectSchema<CreateCourse> = Joi.object({
         "string.base": MESSAGE_ERROR_DESCRIPTION_STRING,
     }),
 
-    // summary: Joi.string().required().messages({
-    //     "any.required": MESSAGE_ERROR_SUMMARY_REQUIRED,
-    //     "string.base": MESSAGE_ERROR_SUMMARY_STRING,
-    // }),
+    summary: Joi.string().required().messages({
+        "any.required": MESSAGE_ERROR_SUMMARY_REQUIRED,
+        "string.base": MESSAGE_ERROR_SUMMARY_STRING,
+    }),
 
     categories: Joi.array<number[]>().required().messages({
         "any.required": MESSAGE_ERROR_CATEGORIES_REQUIRED,
@@ -78,7 +75,7 @@ export const createCourseSchema: ObjectSchema<CreateCourse> = Joi.object({
 });
 
 type UpdateCourse = {
-    id: number
+    id: number;
     title: string;
     slug: string;
     summary: string;
@@ -98,7 +95,7 @@ export const updateCourseSchema: ObjectSchema<UpdateCourse> = Joi.object({
     }),
     slug: Joi.string()
         .required()
-        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+        // .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
         .messages({
             "any.required": MESSAGE_ERROR_COURSE_SLUG_REQUIRED,
             "string.base": MESSAGE_ERROR_SLUG_STRING,
