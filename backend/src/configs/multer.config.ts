@@ -28,10 +28,9 @@ export const uploadFile = multer({
 // Upload video
 const storageVideo = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "../video");
+        cb(null,"C:\\Users\\cybozu\\Desktop\\Vuong\\test");
     },
     filename: (req, file: Express.Multer.File, cb) => {
-        console.log(file.originalname);
         const extension = file.originalname.split(".").pop();
         const uniqueFileNameRandom = `${Date.now()}-${file.fieldname}.${extension}`;
         cb(null, uniqueFileNameRandom);

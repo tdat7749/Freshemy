@@ -50,10 +50,14 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
         const videoPath = req.file?.path as string;
         const { title, section_id } = req.body;
 
+        console.log(videoPath,section_id)
+
+        const sectionIdConvert = parseInt(section_id)
+
         const lesson = await configs.db.lesson.create({
             data: {
                 title: title,
-                section_id: +section_id,
+                section_id: sectionIdConvert,
                 url_video: `${configs.general.PUBLIC_URL}\\${videoPath}`,
             },
         });
