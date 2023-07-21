@@ -173,9 +173,10 @@ const CreateCourse: FC = () => {
                                                             <div className="my-2 p-1 flex border border-gray-200 bg-white rounded svelte-1l8159u">
                                                                 <div className="flex flex-auto flex-wrap py-4">
                                                                     {createCategoriesSelector?.map(
-                                                                        (category: any, index: number) => {
+                                                                        (category: CategoryType, index: number) => {
                                                                             return (
                                                                                 <div
+                                                                                    key={index}
                                                                                     className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700 bg-teal-100 border border-teal-300 "
                                                                                     onClick={() => {
                                                                                         handleRemoveCategory(
@@ -292,7 +293,7 @@ const CreateCourse: FC = () => {
 
                                                         <div className="flex flex-col items-center relative">
                                                             <div className="w-full  svelte-1l8159u">
-                                                                <div className="my-2 p-1 flex border border-gray-200 bg-white rounded svelte-1l8159u">
+                                                                <div className="mt-2 p-1 flex border border-gray-200 bg-white rounded svelte-1l8159u">
                                                                     <div className="flex flex-auto flex-wrap py-4">
                                                                         <div>{status}</div>
                                                                     </div>
