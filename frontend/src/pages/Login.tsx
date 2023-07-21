@@ -9,18 +9,19 @@ import Skeleton from "../assets/images/Skeleton.png";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { loginValidationSchema } from "../validations/auth";
 
-
 const Login: FC = () => {
     const dispatch = useAppDispatch();
 
-    const isLogin:boolean = useAppSelector((state) => state.authSlice.isLogin);
-    let error:string = useAppSelector((state) => state.authSlice.error) ?? "";
+    const isLogin: boolean = useAppSelector((state) => state.authSlice.isLogin);
+    const isLoading: boolean = useAppSelector((state) => state.authSlice.isLoading);
+
+    let error: string = useAppSelector((state) => state.authSlice.error) ?? "";
 
     const formikRef = useRef(null);
 
     useEffect(() => {
-        dispatch(setMessageEmpty())
-    }, [dispatch])
+        dispatch(setMessageEmpty());
+    }, [dispatch]);
 
     if (isLogin) return <Navigate to={"/"} />;
 
@@ -29,12 +30,17 @@ const Login: FC = () => {
         password: "",
     };
 
-    const handleOnSubmit = (values: LoginType) => {
+    const handleOnSubmit: (values: LoginType) => void = (values: LoginType) => {
         //@ts-ignore
-        dispatch(authActions.login(values));
+        dispatch(authActions.login(values)).then((response) => {
+            if (response.payload.status_code === 200) {
+                //@ts-ignore
+                dispatch(authActions.getMe());
+            }
+        });
     };
 
-    const handleChange = () => {
+    const handleChange: () => void = () => {
         error = "";
     };
 
@@ -60,8 +66,9 @@ const Login: FC = () => {
                                         id="email"
                                         name="email"
                                         type="text"
-                                        className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${formik.errors.email && formik.touched.email ? "border-error" : ""
-                                            }`}
+                                        className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${
+                                            formik.errors.email && formik.touched.email ? "border-error" : ""
+                                        }`}
                                     />
                                     <ErrorMessage
                                         name="email"
@@ -75,8 +82,9 @@ const Login: FC = () => {
                                         id="password"
                                         name="password"
                                         type="password"
-                                        className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${formik.errors.password && formik.touched.password ? "border-error" : ""
-                                            }`}
+                                        className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${
+                                            formik.errors.password && formik.touched.password ? "border-error" : ""
+                                        }`}
                                     />
                                     <ErrorMessage
                                         name="password"
@@ -90,6 +98,7 @@ const Login: FC = () => {
                                 <button
                                     className="w-full py-2 px-4 mr-1 bg-switch rounded-lg text-white text-[32px] hover:opacity-80"
                                     type="submit"
+                                    disabled={(error !== "" ? true : false) || isLoading}
                                 >
                                     Login
                                 </button>

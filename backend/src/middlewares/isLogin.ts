@@ -13,6 +13,7 @@ export const isLogin = async (req: RequestHasLogin, res: Response, next: NextFun
 
         if (!jsonWebToken) {
             res.status(401).json({ message: "Unauthorized" });
+            return;
         } else {
             const decodeJsonWebToken = jwt.verify(jsonWebToken, configs.general.JWT_SECRET_KEY) as MyJwtPayload;
             if (decodeJsonWebToken) {
@@ -26,8 +27,8 @@ export const isLogin = async (req: RequestHasLogin, res: Response, next: NextFun
                     req.user_id = isFoundUser.id;
                 }
             }
-            next();
         }
+        next();
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return res.status(401).json({ message: error.toString() });

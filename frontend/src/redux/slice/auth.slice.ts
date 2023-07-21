@@ -1,28 +1,91 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "../../types/user";
 import {
-    register as registerAPI, login as loginAPI,
+    register as registerAPI,
+    login as loginAPI,
     getMe as getMeAPI,
     forgotPassword as forgotPasswordAPI,
     resetPassword as resetPasswordAPI,
     refreshToken as refreshTokenAPI,
-    verifyEmail as verifyEmailAPI
+    verifyEmail as verifyEmailAPI,
 } from "../../apis/auth";
 
-import { Login as LoginType, Register as RegisterType } from "../../types/auth";
+import { Login as LoginType, Register as RegisterType, Token as TokenType } from "../../types/auth";
 import { ForgotPassword as ForgotPasswordType } from "../../types/auth";
 import { ResetPassword as ResetPasswordType } from "../../types/auth";
 import { User as UserType } from "../../types/user";
 import Cookies from "js-cookie";
+import { Response } from "../../types/response";
 
-type Auth = {
+type AuthSlice = {
     user: User;
     isLogin: boolean;
     error: string;
     message: string;
+    isLoading: boolean;
 };
 
-const initialState: Auth = {
+export const login = createAsyncThunk<Response<TokenType>, LoginType, { rejectValue: Response<null> }>(
+    "auth/login",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await loginAPI(body);
+            return response.data as Response<TokenType>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const register = createAsyncThunk<Response<null>, RegisterType, { rejectValue: Response<null> }>(
+    "auth/register",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await registerAPI(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const forgotPassword = createAsyncThunk<Response<null>, ForgotPasswordType, { rejectValue: Response<null> }>(
+    "auth/forgotPassword",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await forgotPasswordAPI(body.email);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const resetPassword = createAsyncThunk<Response<null>, ResetPasswordType, { rejectValue: Response<null> }>(
+    "auth/resetPassword",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await resetPasswordAPI(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const verifyEmail = createAsyncThunk<Response<null>, string, { rejectValue: Response<null> }>(
+    "auth/verifyEmail",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await verifyEmailAPI(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+const initialState: AuthSlice = {
     user: {
         email: undefined,
         first_name: undefined,
@@ -32,76 +95,118 @@ const initialState: Auth = {
     isLogin: false,
     error: "",
     message: "",
+    isLoading: false,
 };
 
 export const authSlice = createSlice({
     name: "auth",
     initialState: initialState,
     reducers: {
-        setUsers: (state, payload: PayloadAction<UserType>) => {
-            state.user.description = payload.payload.description;
-            state.user.email = payload.payload.email;
-            state.user.first_name = payload.payload.first_name;
-            state.user.last_name = payload.payload.last_name;
+        setUsers: (state, action: PayloadAction<UserType>) => {
+            state.user.description = action.payload.description;
+            state.user.email = action.payload.email;
+            state.user.first_name = action.payload.first_name;
+            state.user.last_name = action.payload.last_name;
 
             state.isLogin = true;
         },
-        setError: (state, payload: PayloadAction<string>) => {
-            state.error = payload.payload;
+        setError: (state, action: PayloadAction<string>) => {
+            state.error = action.payload;
         },
-        setMessage: (state, payload: PayloadAction<string>) => {
-            state.message = payload.payload;
+        setMessage: (state, action: PayloadAction<string>) => {
+            state.message = action.payload;
         },
         setLogout: (state) => {
             state.isLogin = false;
         },
         setMessageEmpty: (state) => {
-            state.error = ""
-            state.message = ""
+            state.error = "";
+            state.message = "";
         },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(login.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+        builder.addCase(login.fulfilled, (state, action) => {
+            Cookies.set("accessToken", action.payload.data?.accessToken as string);
+            Cookies.set("refreshToken", action.payload.data?.refreshToken as string);
+
+            state.isLoading = false;
+        });
+        builder.addCase(login.rejected, (state, action) => {
+            state.error = action.payload?.message as string;
+
+            state.isLoading = false;
+        });
+
+        //
+        builder.addCase(register.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+        builder.addCase(register.fulfilled, (state, action) => {
+            state.message = action.payload.message;
+            state.isLoading = false;
+        });
+        builder.addCase(register.rejected, (state, action) => {
+            state.error = action.payload?.message as string;
+            state.isLoading = false;
+        });
+
+        //
+        builder.addCase(forgotPassword.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+        builder.addCase(forgotPassword.fulfilled, (state, action) => {
+            state.message = action.payload.message;
+            state.isLoading = false;
+        });
+        builder.addCase(forgotPassword.rejected, (state, action) => {
+            state.error = action.payload?.message as string;
+            state.isLoading = false;
+        });
+
+        //
+        builder.addCase(resetPassword.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+        builder.addCase(resetPassword.fulfilled, (state, action) => {
+            state.message = action.payload.message;
+            state.isLoading = false;
+        });
+        builder.addCase(resetPassword.rejected, (state, action) => {
+            state.error = action.payload?.message as string;
+            state.isLoading = false;
+        });
+
+        //
+        builder.addCase(verifyEmail.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+        builder.addCase(verifyEmail.fulfilled, (state, action) => {
+            state.message = action.payload.message;
+            state.isLoading = false;
+        });
+        builder.addCase(verifyEmail.rejected, (state, action) => {
+            state.error = action.payload?.message as string;
+            state.isLoading = false;
+        });
     },
 });
 
-export const { setUsers, setError, setMessage, setLogout, setMessageEmpty, } = authSlice.actions;
+export const { setUsers, setError, setMessage, setLogout, setMessageEmpty } = authSlice.actions;
 
 export default authSlice.reducer;
-
-
-export const login = (values: LoginType) => async (dispatch: any) => {
-    dispatch(setMessageEmpty())
-    try {
-        const response = await loginAPI(values.email, values.password);
-        if (response) {
-            if (response.status >= 200 && response.status <= 299) {
-                Cookies.set("accessToken", response.data.data.accessToken);
-                Cookies.set("refreshToken", response.data.data.refreshToken);
-                dispatch(getMe());
-            } else {
-                dispatch(setError(response.data.message));
-            }
-        }
-    } catch (error: any) {
-        dispatch(setError(error.data.message));
-    }
-};
-
-
-
-export const register = (values: RegisterType) => async (dispatch: any) => {
-    dispatch(setMessageEmpty())
-    try {
-        const response = await registerAPI(values);
-
-        if (response.status >= 200 && response.status <= 299) {
-            dispatch(setMessage(response.data.message));
-        } else {
-            dispatch(setError(response.data.error));
-        }
-    } catch (error: any) {
-        dispatch(setError(error.data.message));
-    }
-};
-
 
 export const getMe = () => async (dispatch: any) => {
     try {
@@ -116,25 +221,9 @@ export const getMe = () => async (dispatch: any) => {
                 window.location.href = "/login";
             }
         }
-    } catch (error: any) {
-    }
+    } catch (error: any) { }
 };
 
-export const forgotPassword = (values: ForgotPasswordType) => async (dispatch: any) => {
-    dispatch(setMessageEmpty())
-    try {
-        const response = await forgotPasswordAPI(values.email);
-        if (response) {
-            if (response.status >= 200 && response.status <= 299) {
-                dispatch(setMessage(response.data.message));
-            } else {
-                dispatch(setMessage(response.data.message));
-            }
-        }
-    } catch (error: any) {
-        dispatch(setError(error.data.message));
-    }
-};
 export const refreshToken = async () => {
     try {
         const response = await refreshTokenAPI();
@@ -147,20 +236,6 @@ export const refreshToken = async () => {
                 Cookies.remove("refreshToken");
                 window.location.href = "/login";
             }
-        }
-    } catch (error: any) {
-        console.log(error);
-    }
-};
-
-export const resetPassword = async (values: ResetPasswordType, token: string) => {
-    try {
-        const response = await resetPasswordAPI(values.confirmPassword, values.password, token);
-        if (response.data.status_code === 200) {
-            window.location.href = "/login";
-        }
-        if (response.data.status_code === 400) {
-            window.location.href = "/login";
         }
     } catch (error: any) {
         console.log(error);
@@ -180,19 +255,3 @@ export const logout = () => async (dispatch: any) => {
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
 };
-
-
-export const verifyEmail = (token: string) => async (dispatch: any): Promise<void> => {
-    try {
-        const response = await verifyEmailAPI(token)
-        if (response) {
-            if (response.status === 200) {
-                dispatch(setMessage(response.data.message))
-            } else {
-                dispatch(setError(response.data.message))
-            }
-        }
-    } catch (error: any) {
-        dispatch(setError(error.data.message))
-    }
-}
