@@ -63,10 +63,10 @@ export const createCourseSchema: ObjectSchema<CreateCourse> = Joi.object({
         "string.base": MESSAGE_ERROR_DESCRIPTION_STRING,
     }),
 
-    summary: Joi.string().required().messages({
-        "any.required": MESSAGE_ERROR_SUMMARY_REQUIRED,
-        "string.base": MESSAGE_ERROR_SUMMARY_STRING,
-    }),
+    // summary: Joi.string().required().messages({
+    //     "any.required": MESSAGE_ERROR_SUMMARY_REQUIRED,
+    //     "string.base": MESSAGE_ERROR_SUMMARY_STRING,
+    // }),
 
     categories: Joi.array<number[]>().required().messages({
         "any.required": MESSAGE_ERROR_CATEGORIES_REQUIRED,
