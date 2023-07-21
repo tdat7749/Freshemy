@@ -5,6 +5,7 @@ export type Lesson = {
 };
 
 export type AddLesson = {
+    section_id:string;
     title: string;
     video: File | null;
 };

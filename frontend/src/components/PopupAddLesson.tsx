@@ -23,6 +23,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
     const initialValue: AddLessonType = {
         title: "",
         video: null,
+        section_id:""
     };
 
     useEffect(() => {
@@ -36,8 +37,8 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
     const handleOnSubmit = (values: AddLessonType) => {
         let formData = new FormData();
         formData.append("title", values.title);
-        formData.append("video", video as File);
         formData.append("section_id",props.id.toString())
+        formData.append("video", video as File);
 
         console.log(formData.get("video"),formData.get("title"))
         //@ts-ignore

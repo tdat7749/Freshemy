@@ -16,7 +16,7 @@ type SectionSlice = {
 };
 
 export const addSection = createAsyncThunk<Response<null>, Section, { rejectValue: Response<null> }>(
-    "course/addSection",
+    "section/addSection",
     async (body, ThunkAPI) => {
         try {
             const response = await addSectionAPI(body);
@@ -28,7 +28,7 @@ export const addSection = createAsyncThunk<Response<null>, Section, { rejectValu
 );
 
 export const editSection = createAsyncThunk<Response<null>, EditSectionType, { rejectValue: Response<null> }>(
-    "course/editSection",
+    "section/editSection",
     async (body, ThunkAPI) => {
         try {
             const response = await editSectionAPI(body);
@@ -40,7 +40,7 @@ export const editSection = createAsyncThunk<Response<null>, EditSectionType, { r
 );
 
 export const deleteSection = createAsyncThunk<Response<null>, number, { rejectValue: Response<null> }>(
-    "course/deleteSection",
+    "section/deleteSection",
     async (body, ThunkAPI) => {
         try {
             const response = await deleteSectionAPI(body);
@@ -86,11 +86,12 @@ export const sectionSlice = createSlice({
         builder.addCase(addSection.fulfilled, (state, action) => {
             state.sectionList = [...state.sectionList, action.payload.data] as Section[];
             state.isLoading = false;
+            state.message = action.payload.message
         });
 
         builder.addCase(addSection.rejected, (state, action) => {
             state.isLoading = false;
-            state.error = action.error as string;
+            state.error = action.payload?.message as string;
         });
 
         // edit section
