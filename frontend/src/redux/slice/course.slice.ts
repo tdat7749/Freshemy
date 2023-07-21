@@ -9,7 +9,7 @@ import {
     getCourseDetail as getCourseDetailAPI,
     getCourseDetailById as getCourseDetailByIdAPI,
     changeThumbnail as changeThumbnailAPI,
-    changeInformation as changeInformationAPI
+    changeInformation as changeInformationAPI,
 } from "../../apis/course";
 
 import {
@@ -21,10 +21,10 @@ import {
     GetMyCourses as GetMyCoursesType,
     CourseDetail as CourseDetailType,
     ChangeThumbnail as ChangeThumbnailType,
-    ChangeInformation as ChangeInformationType
+    ChangeInformation as ChangeInformationType,
 } from "../../types/course";
 
-import { AddSection as AddSectionType,Section as SectionType } from "../../types/section";
+import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";
 
 type CourseSlice = {
     selectCategories: Category[];
@@ -34,7 +34,7 @@ type CourseSlice = {
     message: string;
     isLoading: boolean;
     totalPage: number;
-    courseDetail : CourseDetailType
+    courseDetail: CourseDetailType;
 };
 
 export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejectValue: Response<null> }>(
@@ -85,17 +85,18 @@ export const getCourseDetail = createAsyncThunk<Response<CourseDetailType>, stri
     }
 );
 
-export const getCourseDetailById = createAsyncThunk<Response<CourseDetailType>, number, { rejectValue: Response<null> }>(
-    "course/getCourseDetailById",
-    async (body, ThunkAPI) => {
-        try {
-            const response = await getCourseDetailByIdAPI(body);
-            return response.data as Response<CourseDetailType>;
-        } catch (error: any) {
-            return ThunkAPI.rejectWithValue(error.data as Response<null>);
-        }
+export const getCourseDetailById = createAsyncThunk<
+    Response<CourseDetailType>,
+    number,
+    { rejectValue: Response<null> }
+>("course/getCourseDetailById", async (body, ThunkAPI) => {
+    try {
+        const response = await getCourseDetailByIdAPI(body);
+        return response.data as Response<CourseDetailType>;
+    } catch (error: any) {
+        return ThunkAPI.rejectWithValue(error.data as Response<null>);
     }
-);
+});
 
 export const deleteCourse = createAsyncThunk<Response<null>, number, { rejectValue: Response<null> }>(
     "course/deleteCourse",
@@ -121,24 +122,24 @@ export const changeThumbnail = createAsyncThunk<Response<null>, ChangeThumbnailT
     }
 );
 
-
-export const changeInformation = createAsyncThunk<Response<null>, ChangeInformationType, { rejectValue: Response<null> }>(
-    "course/changeInformation",
-    async (body, ThunkAPI) => {
-        try {
-            const response = await changeInformationAPI(body);
-            return response.data as Response<null>;
-        } catch (error: any) {
-            return ThunkAPI.rejectWithValue(error.data as Response<null>);
-        }
+export const changeInformation = createAsyncThunk<
+    Response<null>,
+    ChangeInformationType,
+    { rejectValue: Response<null> }
+>("course/changeInformation", async (body, ThunkAPI) => {
+    try {
+        const response = await changeInformationAPI(body);
+        return response.data as Response<null>;
+    } catch (error: any) {
+        return ThunkAPI.rejectWithValue(error.data as Response<null>);
     }
-);
+});
 
 const initialState: CourseSlice = {
     selectCategories: [],
     categories: [],
     courses: [],
-    courseDetail:{
+    courseDetail: {
         id: undefined,
         slug: "",
         title: "",
@@ -146,16 +147,16 @@ const initialState: CourseSlice = {
         summary: "",
         author: {
             id: undefined,
-            first_name:"",
-            last_name:"",
+            first_name: "",
+            last_name: "",
         },
         ratings: undefined,
         description: "",
         sections: [],
         created_at: "",
         updated_at: "",
-        thumbnail:"",
-        status:false
+        thumbnail: "",
+        status: false,
     },
     error: "",
     message: "",
@@ -195,8 +196,8 @@ export const courseSlice = createSlice({
         setDeleteCourse: (state, action: PayloadAction<number>) => {
             state.courses = state.courses.filter((course: CourseType) => course.id !== action.payload);
         },
-        addSection:(state,action:PayloadAction<AddSectionType>) =>{
-            state.courseDetail.sections = [...state.courseDetail.sections,action.payload]
+        addSection: (state, action: PayloadAction<AddSectionType>) => {
+            state.courseDetail.sections = [...state.courseDetail.sections, action.payload];
         },
         setEditSection: (state, action: PayloadAction<SectionType>) => {
             state.courseDetail.sections = state.courseDetail.sections.map((section: SectionType) => {
@@ -207,7 +208,9 @@ export const courseSlice = createSlice({
             });
         },
         setDeleteSection: (state, action: PayloadAction<number>) => {
-            state.courseDetail.sections = state.courseDetail.sections.filter((section: SectionType) => section.id !== action.payload);
+            state.courseDetail.sections = state.courseDetail.sections.filter(
+                (section: SectionType) => section.id !== action.payload
+            );
         },
     },
     extraReducers: (builder) => {
@@ -275,7 +278,7 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getCourseDetail.fulfilled, (state, action) => {
-            state.courseDetail = action.payload.data as CourseDetailType
+            state.courseDetail = action.payload.data as CourseDetailType;
             state.isLoading = false;
         });
 
@@ -292,13 +295,13 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getCourseDetailById.fulfilled, (state, action) => {
-            state.courseDetail = action.payload.data as CourseDetailType
-            state.selectCategories = action.payload.data?.categories as Category[]
-            
-            state.selectCategories.forEach(category => {
-                const index = state.categories.findIndex(item => item === category);
+            state.courseDetail = action.payload.data as CourseDetailType;
+            state.selectCategories = action.payload.data?.categories as Category[];
+
+            state.selectCategories.forEach((category) => {
+                const index = state.categories.findIndex((item) => item === category);
                 state.categories.splice(index, 1);
-            })
+            });
             state.isLoading = false;
         });
 
@@ -314,7 +317,7 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(changeThumbnail.fulfilled, (state, action) => {
-            state.message = action.payload.message
+            state.message = action.payload.message;
             state.isLoading = false;
         });
 
@@ -323,7 +326,6 @@ export const courseSlice = createSlice({
             state.isLoading = false;
         });
 
-
         builder.addCase(changeInformation.pending, (state) => {
             state.message = "";
             state.error = "";
@@ -331,7 +333,7 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(changeInformation.fulfilled, (state, action) => {
-            state.message = action.payload.message
+            state.message = action.payload.message;
             state.isLoading = false;
         });
 
@@ -342,6 +344,16 @@ export const courseSlice = createSlice({
     },
 });
 
-export const { setError, setCategories, addCategories, removeCategories, reset, setDeleteCourse,addSection,setEditSection,setDeleteSection } = courseSlice.actions;
+export const {
+    setError,
+    setCategories,
+    addCategories,
+    removeCategories,
+    reset,
+    setDeleteCourse,
+    addSection,
+    setEditSection,
+    setDeleteSection,
+} = courseSlice.actions;
 
 export default courseSlice.reducer;
