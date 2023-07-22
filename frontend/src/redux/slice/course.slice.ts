@@ -21,10 +21,8 @@ import {
     GetMyCourses as GetMyCoursesType,
     CourseDetail as CourseDetailType,
     ChangeThumbnail as ChangeThumbnailType,
-    ChangeInformation as ChangeInformationType,
+    CourseChangeInformation as CourseChangeInformationType,
 } from "../../types/course";
-
-import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";
 
 type CourseSlice = {
     selectCategories: Category[];
@@ -35,6 +33,7 @@ type CourseSlice = {
     isLoading: boolean;
     totalPage: number;
     courseDetail: CourseDetailType;
+    courseChangeDetail: CourseChangeInformationType;
 };
 
 export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejectValue: Response<null> }>(
@@ -86,13 +85,13 @@ export const getCourseDetail = createAsyncThunk<Response<CourseDetailType>, stri
 );
 
 export const getCourseDetailById = createAsyncThunk<
-    Response<CourseDetailType>,
+    Response<CourseChangeInformationType>,
     number,
     { rejectValue: Response<null> }
 >("course/getCourseDetailById", async (body, ThunkAPI) => {
     try {
         const response = await getCourseDetailByIdAPI(body);
-        return response.data as Response<CourseDetailType>;
+        return response.data as Response<CourseChangeInformationType>;
     } catch (error: any) {
         return ThunkAPI.rejectWithValue(error.data as Response<null>);
     }
@@ -124,7 +123,7 @@ export const changeThumbnail = createAsyncThunk<Response<null>, ChangeThumbnailT
 
 export const changeInformation = createAsyncThunk<
     Response<null>,
-    ChangeInformationType,
+    CourseChangeInformationType,
     { rejectValue: Response<null> }
 >("course/changeInformation", async (body, ThunkAPI) => {
     try {
@@ -157,6 +156,15 @@ const initialState: CourseSlice = {
         updated_at: "",
         thumbnail: "",
         status: false,
+    },
+    courseChangeDetail: {
+        id: undefined,
+        slug: "",
+        title: "",
+        categories: [],
+        summary: "",
+        status: false,
+        description: ""
     },
     error: "",
     message: "",
@@ -195,22 +203,6 @@ export const courseSlice = createSlice({
         },
         setDeleteCourse: (state, action: PayloadAction<number>) => {
             state.courses = state.courses.filter((course: CourseType) => course.id !== action.payload);
-        },
-        addSection: (state, action: PayloadAction<AddSectionType>) => {
-            state.courseDetail.sections = [...state.courseDetail.sections, action.payload];
-        },
-        setEditSection: (state, action: PayloadAction<SectionType>) => {
-            state.courseDetail.sections = state.courseDetail.sections.map((section: SectionType) => {
-                if (section.id === action.payload.id) {
-                    section.title = action.payload.title;
-                }
-                return section;
-            });
-        },
-        setDeleteSection: (state, action: PayloadAction<number>) => {
-            state.courseDetail.sections = state.courseDetail.sections.filter(
-                (section: SectionType) => section.id !== action.payload
-            );
         },
     },
     extraReducers: (builder) => {
@@ -295,7 +287,7 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getCourseDetailById.fulfilled, (state, action) => {
-            state.courseDetail = action.payload.data as CourseDetailType;
+            state.courseChangeDetail = action.payload.data as CourseChangeInformationType;
             state.selectCategories = action.payload.data?.categories as Category[];
 
             state.selectCategories.forEach((category) => {
@@ -351,9 +343,6 @@ export const {
     removeCategories,
     reset,
     setDeleteCourse,
-    addSection,
-    setEditSection,
-    setDeleteSection,
 } = courseSlice.actions;
 
 export default courseSlice.reducer;

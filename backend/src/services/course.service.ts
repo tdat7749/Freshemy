@@ -2,7 +2,7 @@ import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetailResponseData, Lesson, Section, Category } from "../types/courseDetail";
+import { CourseDetail, Lesson, Section, Category, CourseEdit } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
@@ -74,6 +74,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
             },
         });
 
+
         if (course) {
             if (course.is_delete) {
                 return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
@@ -91,7 +92,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     section.lessons = lessons;
                     sections.push(section);
                 });
-                const courseData: CourseDetailResponseData = {
+                const courseData: CourseDetail = {
                     id: course.id,
                     slug: course.slug,
                     title: course.title,
@@ -119,7 +120,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
 const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
-        const course = await db.course.findUnique({
+        const course = await db.course.findFirst({
             where: {
                 id: parseInt(id),
             },
@@ -134,31 +135,7 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
                         },
                     },
                 },
-                sections: {
-                    select: {
-                        title: true,
-                        updated_at: true,
-                        id: true,
-                        lessons: {
-                            select: {
-                                id: true,
-                                title: true,
-                                url_video: true,
-                            },
-                        },
-                    },
-                    where: {
-                        is_delete: false,
-                    },
-                },
-                user: {
-                    select: {
-                        first_name: true,
-                        last_name: true,
-                        id: true,
-                    },
-                },
-            },
+            }
         });
 
         if (course) {
@@ -166,29 +143,17 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
                 return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
             } else {
                 const categories: Category[] = [];
-                const sections: Section[] = [];
                 course.courses_categories.forEach((category) => {
                     categories.push(category.category);
                 });
-                course.sections.forEach((section) => {
-                    const lessons: Lesson[] = [];
-                    section.lessons.forEach((lesson) => {
-                        lessons.push(lesson);
-                    });
-                    section.lessons = lessons;
-                    sections.push(section);
-                });
-                const courseData: CourseDetailResponseData = {
+                const courseData: CourseEdit = {
                     id: course.id,
                     slug: course.slug,
                     title: course.title,
                     categories: categories,
                     summary: course.summary,
-                    author: course.user,
-                    ratings: 5,
                     thumbnail: course.thumbnail,
                     description: course.description,
-                    sections: sections,
                     created_at: course.created_at,
                     updated_at: course.updated_at,
                     status: course.status,
