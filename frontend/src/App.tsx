@@ -42,8 +42,8 @@ function App() {
                         <Route path="/change-password" element={<ChangePassword />}></Route>
                         <Route path="/my-courses" element={<MyCourses />}></Route>
                     </Route>
-                    <Route path="/create-course" element={<CreateCourse />}></Route>
-                    <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
+                        <Route path="/create-course" element={<CreateCourse />}></Route>
+                        <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
                     <Route path="/course-detail/:slug" element={<CourseDetail />}></Route>
                     <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                     <Route path="/reset-password/:token" element={<ResetPassword />}></Route>

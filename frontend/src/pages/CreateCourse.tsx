@@ -19,6 +19,7 @@ const CreateCourse: FC = () => {
     const [displayCategories, setdisplayCategorie] = useState<boolean>(false);
     const [displayStatus, setDisplayStatus] = useState<boolean>(false);
     const [status, setStatus] = useState<string>("Uncomplete");
+    const [errorCategories, setErrorCategories] = useState<number>();
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
@@ -48,55 +49,62 @@ const CreateCourse: FC = () => {
 
     const handleOnSubmit = async (values: CreateCourseType) => {
         // Trong request form thì value chỉ được là text hoặc file
-        const categoriesId: number[] = createCategoriesSelector.map((category: CategoryType) => {
-            return category.id;
-        });
-        let statusValue = status === "Uncomplete" ? "0" : "1";
-        const slug = slugify(values.title.toLowerCase());
-        let formData = new FormData();
-        formData.append("title", values.title);
-        formData.append("description", values.description);
-        formData.append("slug", slug);
-        formData.append("status", statusValue);
-        formData.append("thumbnail", thumbnail as File);
-        formData.append("summary", values.summary);
-        categoriesId.forEach((item) => {
-            formData.append("categories[]", item.toString());
-        });
+        if (!errorCategories) {
+            const categoriesId: number[] = createCategoriesSelector.map((category: CategoryType) => {
+                return category.id;
+            });
+            let statusValue = status === "Uncomplete" ? "0" : "1";
+            const slug = slugify(values.title.toLowerCase());
+            let formData = new FormData();
+            formData.append("title", values.title);
+            formData.append("description", values.description);
+            formData.append("slug", slug);
+            formData.append("status", statusValue);
+            formData.append("thumbnail", thumbnail as File);
+            formData.append("summary", values.summary);
+            categoriesId.forEach((item) => {
+                formData.append("categories[]", item.toString());
+            });
 
-        // @ts-ignore
-        dispatch(courseActions.createCourses(formData)).then((response) => {
-            if (response.payload.status_code === 201) {
-                navigate("/my-courses");
-            }
-        });
+            // @ts-ignore
+            dispatch(courseActions.createCourses(formData)).then((response) => {
+                if (response.payload.status_code === 201) {
+                    navigate("/my-courses");
+                }
+            });
+        }
     };
 
     const handleDeleteMessage = () => {
         errorMessage = "";
     };
 
-    const handleAddCategories = (id: number, oldIndex: number, formik: any) => {
-        if (formik.values.categories < 4) {
+    const handleAddCategories = (id: number, oldIndex: number) => {
+        if (createCategoriesSelector.length <= 3) {
+            setErrorCategories(0);
             const index = categories.findIndex((category: CategoryType) => category.id === id);
             dispatch(courseActions.addCategories(index));
-            formik.setFieldValue("categories", formik.values.categories + 1);
         } else {
-            formik.setFieldError("categories", "Categories must be under 4");
+            setErrorCategories(1);
         }
     };
 
-    const handleRemoveCategory = (id: number, oldIndex: number, formik: any) => {
-        const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
-        dispatch(courseActions.removeCategories(index));
-        if (formik.values.categories <= 1) {
-            formik.setFieldValue("categories", 0);
-        } else {
-            formik.setFieldValue("categories", formik.values.categories - 1);
+    const handleRemoveCategory = (id: number, oldIndex: number) => {
+        console.log(createCategoriesSelector.length)
+        if (createCategoriesSelector.length > 0) {
+            setErrorCategories(0);
+            const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
+            dispatch(courseActions.removeCategories(index));
+        }
+        if(createCategoriesSelector.length - 1 <= 0) {
+            setErrorCategories(2);
         }
     };
 
     const handleDisplay = () => {
+        if (createCategoriesSelector.length == 4) {
+            setErrorCategories(0);
+        }
         setdisplayCategorie(!displayCategories);
     };
 
@@ -208,8 +216,7 @@ const CreateCourse: FC = () => {
                                                                                 onClick={() => {
                                                                                     handleRemoveCategory(
                                                                                         category.id,
-                                                                                        index,
-                                                                                        formik
+                                                                                        index
                                                                                     );
                                                                                 }}
                                                                             >
@@ -281,11 +288,20 @@ const CreateCourse: FC = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <ErrorMessage
-                                                        name="categories"
-                                                        component="span"
-                                                        className="text-[14px] text-error font-medium z-0"
-                                                    />
+                                                    {errorCategories == 1 ? (
+                                                        <span className="text-[14px] text-error font-medium">
+                                                            Categories Must be under 4
+                                                        </span>
+                                                    ) : (
+                                                        ""
+                                                    )}
+                                                    {errorCategories == 2 ? (
+                                                        <span className="text-[14px] text-error font-medium">
+                                                            Categories is required
+                                                        </span>
+                                                    ) : (
+                                                        ""
+                                                    )}
                                                     {displayCategories && (
                                                         <div className="absolute shadow top-[100%] bg-white z-40 w-full left-0 rounded max-h-60 overflow-y-auto mt-1">
                                                             <div className="flex flex-col w-full overflow-y-auto">
@@ -298,8 +314,7 @@ const CreateCourse: FC = () => {
                                                                                 onClick={() => {
                                                                                     handleAddCategories(
                                                                                         category.id,
-                                                                                        index,
-                                                                                        formik
+                                                                                        index
                                                                                     );
                                                                                 }}
                                                                             >

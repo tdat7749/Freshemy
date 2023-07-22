@@ -121,6 +121,7 @@ const EditCourse: React.FC = () => {
     };
     const handleAddCategories = (id: number, oldIndex: number) => {
         if (createCategoriesSelector.length <= 3) {
+            setErrorCategories(0);
             const index = categoriesSelector.findIndex((category: CategoryType) => category.id === id);
             dispatch(courseActions.addCategories(index));
         } else {
@@ -129,12 +130,13 @@ const EditCourse: React.FC = () => {
     };
 
     const handleRemoveCategory = (id: number, oldIndex: number) => {
-        if (createCategoriesSelector.length > 1) {
+        console.log(createCategoriesSelector.length)
+        if (createCategoriesSelector.length > 0) {
             setErrorCategories(0);
             const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
             dispatch(courseActions.removeCategories(index));
         }
-        else {
+        if(createCategoriesSelector.length - 1 <= 0) {
             setErrorCategories(2);
         }
     };
@@ -142,6 +144,9 @@ const EditCourse: React.FC = () => {
     const imageRef = useRef<HTMLImageElement>(null);
 
     const handleDisplay = () => {
+        if(createCategoriesSelector.length == 4) {
+            setErrorCategories(0);
+        }
         setdisplayCategorie(!displayCategories);
     };
 
