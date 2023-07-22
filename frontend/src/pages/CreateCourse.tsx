@@ -111,7 +111,7 @@ const CreateCourse: FC = () => {
             <div className="min-h-screen h-full px-4 tablet:px-[60px]">
                 <h1 className="text-center text-[32px] py-4 font-bold text-title">CREATE COURSE</h1>
                 <div className="w-full flex justify-center items-center shrink-0">
-                    <div className="m-4 rounded-xl border border-black w-full max-w-[982px] bg-background">
+                    <div className="m-4 rounded-xl border border-black w-full max-w-[982px] bg-background border-dashed shadow-lg">
                         <Formik
                             initialValues={initialValues}
                             validationSchema={createValidationSchema}
@@ -125,7 +125,7 @@ const CreateCourse: FC = () => {
                                             <img
                                                 ref={imageRef}
                                                 alt="Thumbnail"
-                                                className="w-32 h-32 rounded-lg mr-3 outline-none border border-dashed border-black tablet:w-60 tablet:h-60"
+                                                className="w-60 h-60 rounded-lg mr-3 outline-none border border-dashed border-black tablet:w-80 tablet:h-80 laptop:w-96 laptop:h-96"
                                             />
                                             <div className="flex flex-col gap-3">
                                                 <div className="">
@@ -177,7 +177,7 @@ const CreateCourse: FC = () => {
                                                                         return (
                                                                             <div
                                                                                 key={index}
-                                                                                className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700 bg-teal-100 border border-teal-300 "
+                                                                                className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700"
                                                                                 onClick={() => {
                                                                                     handleRemoveCategory(
                                                                                         category.id,
@@ -223,7 +223,7 @@ const CreateCourse: FC = () => {
                                                                 )}
                                                                 <div className="flex-1">
                                                                     <input
-                                                                        name="status"
+                                                                        name="categories"
                                                                         className="bg-transparent px-2 appearance-none outline-none h-full w-full text-gray-800"
                                                                     />
                                                                 </div>
@@ -324,7 +324,7 @@ const CreateCourse: FC = () => {
                                                                         setStatus("Uncomplete");
                                                                     }}
                                                                 >
-                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:bg-bgHo">
+                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:bg-backgroundHover">
                                                                         <div className="w-full items-center flex">
                                                                             <div className="mx-2 leading-6 ">
                                                                                 Uncomplete
@@ -364,7 +364,7 @@ const CreateCourse: FC = () => {
                                                     formik.errors.description && formik.touched.description
                                                         ? "border-error"
                                                         : ""
-                                                } flex-1 w-full resize-none rounded-md border border-[#e0e0e0] py-3 px-4  outline-none focus:shadow-md1`}
+                                                } flex-1 w-full resize-none rounded-md border border-[#e0e0e0] py-3 px-4  outline-none focus:shadow-md`}
                                             />
                                             <ErrorMessage
                                                 name="description"
