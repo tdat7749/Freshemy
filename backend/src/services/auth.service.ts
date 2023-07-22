@@ -10,8 +10,7 @@ import configs from "../configs";
 import { db } from "../configs/db.config";
 import { SendMail } from "../types/sendmail";
 import {
-    MESSAGE_ERROR_EMAIL_NOT_EXIST,
-    MESSAGE_SUCCESS_REQUEST,
+    MESSAGE_SUCCESS_RESET_PASSWORD,
     MESSAGE_SUCCESS_VERIFCATION_FORGOT_PASSWORD,
     MESSSAGE_ERROR_VALIDATION_FAIL,
     MESSAGE_ERROR_LOGIN_FAILED,
@@ -20,6 +19,7 @@ import {
     MESSAGE_ERROR_SEND_EMAIL,
     MESSAGE_ERROR_LOGIN_UNVERIFIED,
     MESSAGE_ERROR_UNAUTHORIZED,
+    MESSAGE_ERROR_EMAIL_INCORRECT,
 } from "../utils/constant";
 
 const register = async (req: Request): Promise<ResponseBase> => {
@@ -297,7 +297,7 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
         });
 
         if (isFoundUser === null) {
-            return new ResponseError(404, MESSAGE_ERROR_EMAIL_NOT_EXIST, false);
+            return new ResponseError(404, MESSAGE_ERROR_EMAIL_INCORRECT, false);
         }
 
         const payload = {
@@ -376,7 +376,7 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
                 token: null
             },
         });
-        if (updateUser) return new ResponseSuccess(200, MESSAGE_SUCCESS_REQUEST, true);
+        if (updateUser) return new ResponseSuccess(200, MESSAGE_SUCCESS_RESET_PASSWORD, true);
         return new ResponseError(400, MESSSAGE_ERROR_VALIDATION_FAIL, false);
     } catch (error: any) {
         if (error instanceof TokenExpiredError) {
