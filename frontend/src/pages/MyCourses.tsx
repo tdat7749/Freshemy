@@ -60,8 +60,8 @@ const MyCourses: React.FC = () => {
     return (
         <>
             <Navbar />
-            <div className="min-h-screen h-full px-4 tablet:px-[60px] ">
-                <h1 className="text-center text-[32px] mt-11 mb-5 font-bold text-title">MY COURSE</h1>
+            <div className="min-h-screen h-full px-4 tablet:px-[60px]">
+                <h1 className="text-center text-[32px] py-4 font-bold text-title">MY COURSE</h1>
                 <div className="w-full flex flex-col gap-4 justify-between shrink-0 tablet:flex-row">
                     <div className="flex-1">
                         <div className="relative">
