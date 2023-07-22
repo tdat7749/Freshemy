@@ -15,8 +15,6 @@ module.exports = {
                 primary: "#F7F1DD",
                 error: "#FF0000",
                 title: "#087930",
-                bgForm: "#F7F1DD",
-                text: "#212B27",
                 backgroundHover: "#FFCF90",
                 success: "#28a745",
             },

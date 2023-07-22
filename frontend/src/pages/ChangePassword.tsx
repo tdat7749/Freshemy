@@ -39,7 +39,7 @@ const ChangePassword: React.FC = () => {
         <div className="flex items-center justify-center h-screen mt-[100px] ">
             <div className="  max-w-[360px] tablet:max-w-[505px] max-h-[630px] tablet:max-h-[700px] rounded-[12px] bg-bgForm mx-auto tablet:mx-0 flex-1">
                 <div className="w-full p-[12px]">
-                    <h1 className="text-[32px] tablet:text-[40px] font-semibold text-center text-text my-[10px]">
+                    <h1 className="text-[32px] tablet:text-[40px] font-semibold text-center my-[10px]">
                         CHANGE PASSWORD
                     </h1>
 
@@ -56,7 +56,7 @@ const ChangePassword: React.FC = () => {
                                 onChange={handleChange}
                             >
                                 <div className="ml-[20px] mr-[20px]">
-                                    <label htmlFor="current_password" className="text-[24px] text-text">
+                                    <label htmlFor="current_password" className="text-[24px]">
                                         Current Password
                                     </label>{" "}
                                     <br />
@@ -77,7 +77,7 @@ const ChangePassword: React.FC = () => {
                                     />
                                 </div>
                                 <div className="ml-[20px] mr-[20px]">
-                                    <label htmlFor="new_password" className="text-[24px] text-text">
+                                    <label htmlFor="new_password" className="text-[24px]">
                                         New Password
                                     </label>
                                     <br />
@@ -95,7 +95,7 @@ const ChangePassword: React.FC = () => {
                                     />
                                 </div>
                                 <div className="ml-[20px] mr-[20px]">
-                                    <label htmlFor="confirm_password" className="text-[24px] text-text">
+                                    <label htmlFor="confirm_password" className="text-[24px] ">
                                         Confirm Password
                                     </label>{" "}
                                     <br />

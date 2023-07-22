@@ -60,16 +60,16 @@ const MyCourses: React.FC = () => {
     return (
         <>
             <Navbar />
-            <div className="min-h-screen h-full container px-4 m-auto">
-                <h1 className="text-center text-[32px] mt-11 mb-5">MY COURSE</h1>
-                <div className="w-full flex justify-between items-center shrink-0">
+            <div className="min-h-screen h-full px-4 tablet:px-[60px] ">
+                <h1 className="text-center text-[32px] mt-11 mb-5 font-bold text-title">MY COURSE</h1>
+                <div className="w-full flex flex-col gap-4 justify-between shrink-0 tablet:flex-row">
                     <div className="flex-1">
                         <div className="relative">
                             <input
                                 ref={inputRef}
                                 type="text"
                                 placeholder="Search for anything"
-                                className="rounded-full py-4 px-10 w-[70%] border-[1px] border-black"
+                                className="rounded-full py-4 px-10 w-full tablet:w-[70%] border-[1px] border-black"
                                 value={userInput}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserInput(e.target.value)}
                                 onKeyDown={(e) => {
@@ -81,11 +81,9 @@ const MyCourses: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex-3 flex py-4 px-4 bg-switch rounded-lg text-white hover:opacity-80">
+                    <div className="flex-3 flex btn btn-primary text-lg">
                         <CreateIcon />
-                        <Link to={"/create-course"} className="ml-2">
-                            Create New
-                        </Link>
+                        <Link to={"/create-course"}>Create New</Link>
                     </div>
                 </div>
                 {courseList.map((course) => {

@@ -47,7 +47,7 @@ const Login: FC = () => {
     return (
         <>
             <div className="container mx-auto">
-                <div className="min-h-screen h-full  flex items-center justify-center">
+                <div className="min-h-screen h-full  flex items-center justify-center mt-[100px]">
                     <div className="bg-primary m-4 rounded-xl shadow-lg">
                         <Formik
                             initialValues={initialValue}

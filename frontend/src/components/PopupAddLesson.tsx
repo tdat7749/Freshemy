@@ -62,7 +62,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                                 className="w-full space-y-[5px] tablet:space-y-[20px]"
                             >
                                 <div className="ml-[20px] mr-[20px]">
-                                    <label htmlFor="title" className="text-[16px] text-text">
+                                    <label htmlFor="title" className="text-[16px]">
                                         Title
                                     </label>{" "}
                                     <br />
@@ -81,7 +81,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                                     />
                                 </div>
                                 <div className="ml-[20px] mr-[20px] ">
-                                    <label htmlFor="video" className="text-[20px] text-text">
+                                    <label htmlFor="video" className="text-[20px]">
                                         Upload video
                                     </label>{" "}
                                     <br />

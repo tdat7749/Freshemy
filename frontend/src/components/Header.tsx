@@ -22,28 +22,39 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
             )}
 
             <header className="w-full h-[100px] max-w-full bg-background shadow-sm fixed top-0 left-0 z-[10]">
-                <div className="w-full h-full flex items-center py-[10px] px-4 tablet:px-[60px]">
-                    <Link to={"/"} className="w-[60px] h-[60px] shrink-0">
-                        <img src={Logo} alt="Logo"/>
-                    </Link>
-                    <div className="hidden relative ml-[120px] tablet:block tablet:w-[1000px]">
-                        <input
-                            type="text"
-                            placeholder="Search for anything"
-                            className="rounded-full py-4 px-10 w-[70%] border-[1px] border-black"
-                        />
-                        <SearchIcon />
+                <div className="w-full h-full flex items-center py-[10px] px-4 tablet:px-[60px] overflow-hidden">
+                    <div className="flex-1 flex gap-4 laptop:gap-[120px] items-center">
+                        <Link to={"/"} className="w-[60px] h-[60px] shrink-0">
+                            <img src={Logo} alt="Logo" />
+                        </Link>
+                        <div className="hidden relative tablet:block flex-1">
+                            <input
+                                type="text"
+                                placeholder="Search for anything"
+                                className="rounded-full py-4 px-10 w-[70%] max-w-[700px] border-[1px] border-black"
+                            />
+                            <SearchIcon />
+                        </div>
                     </div>
                     {isLogin ? (
                         <>
                             <div className="ml-auto flex shrink-0 items-center">
-                                <Link to={"/all-courses"} className="hidden tablet:block min-w-fit mr-5 font-medium hover:opacity-80 cursor-pointer">
+                                <Link
+                                    to={"/all-courses"}
+                                    className="hidden tablet:block min-w-fit mr-5 font-medium hover:opacity-80 cursor-pointer"
+                                >
                                     All Courses
                                 </Link>
-                                <Link to={"/my-enrolled-courses"} className="hidden tablet:block min-w-fit mr-5 font-medium hover:opacity-80 cursor-pointer">
+                                <Link
+                                    to={"/my-enrolled-courses"}
+                                    className="hidden tablet:block min-w-fit mr-5 font-medium hover:opacity-80 cursor-pointer"
+                                >
                                     Enroll Course
                                 </Link>
-                                <Link to={"/my-courses"} className="hidden tablet:block min-w-fit mr-5 font-medium hover:opacity-80 cursor-pointer">
+                                <Link
+                                    to={"/my-courses"}
+                                    className="hidden tablet:block min-w-fit mr-5 font-medium hover:opacity-80 cursor-pointer"
+                                >
                                     My Courses
                                 </Link>
                                 <div
@@ -53,21 +64,25 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                         setDisplay(!display);
                                     }}
                                 >
-                                    <img src={DefaultAvatar} alt="A" className="w-10 h-10 rounded-ful" />
+                                    <img
+                                        src={DefaultAvatar}
+                                        alt="A"
+                                        className="w-full h-full object-cover rounded-full"
+                                    />
                                     {display ? <UserDropDown /> : <></>}
                                 </div>
                             </div>
                         </>
                     ) : (
-                        <div className="ml-auto flex items-center">
-                            <span className="hidden tablet:block min-w-fit mr-4 font-medium hover:opacity-80 cursor-pointer">All Courses</span>
+                        <div className="flex-2 flex justify-end items-center gap-3">
+                            <span className="hidden tablet:block min-w-fit font-medium hover:opacity-80 cursor-pointer">
+                                All Courses
+                            </span>
                             <Link to="/login">
-                                <button className="btn btn-primary text-lg">
-                                    Login
-                                </button>
+                                <button className="btn btn-primary text-lg">Login</button>
                             </Link>
                             <Link to="/register">
-                                <button className="btn btn-outline ml-3 text-lg">Signup</button>
+                                <button className="btn btn-outline text-lg">Signup</button>
                             </Link>
                         </div>
                     )}
