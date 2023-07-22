@@ -8,6 +8,7 @@ import { Navigate } from "react-router-dom";
 import Skeleton from "../assets/images/Skeleton.png";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { loginValidationSchema } from "../validations/auth";
+import Spin from "../components/Spin";
 
 const Login: FC = () => {
     const dispatch = useAppDispatch();
@@ -46,6 +47,7 @@ const Login: FC = () => {
 
     return (
         <>
+            {isLoading && <Spin />}
             <div className="container mx-auto">
                 <div className="min-h-screen h-full  flex items-center justify-center mt-[100px]">
                     <div className="bg-primary m-4 rounded-xl shadow-lg">
