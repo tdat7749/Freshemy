@@ -39,7 +39,7 @@ const CreateCourse: FC = () => {
 
     const initialValues: CreateCourseType = {
         title: "",
-        categories: "Categories",
+        categories: 0,
         status: 0,
         summary: "",
         description: "",
@@ -76,14 +76,23 @@ const CreateCourse: FC = () => {
         errorMessage = "";
     };
 
-    const handleAddCategories = (id: number, oldIndex: number) => {
+    const handleAddCategories = (id: number, oldIndex: number, formik: any) => {
         const index = categories.findIndex((category: CategoryType) => category.id === id);
         dispatch(courseActions.addCategories(index));
+        formik.setFieldValue(
+            "categories",
+            formik.values.categories + 1
+        );
     };
 
-    const handleRemoveCategory = (id: number, oldIndex: number) => {
+    const handleRemoveCategory = (id: number, oldIndex: number, formik: any) => {
         const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
         dispatch(courseActions.removeCategories(index));
+        if (formik.values.categories <= 1) {
+            formik.setFieldValue("categories", 0);
+        } else {
+            formik.setFieldValue("categories", formik.values.categories - 1);
+        }
     };
 
     const handleDisplay = () => {
@@ -135,10 +144,21 @@ const CreateCourse: FC = () => {
                                                 <Field
                                                     name="thumbnail"
                                                     type="file"
+                                                    value={null}
+                                                    accept=".png, .jpg"
                                                     className="file-input file-input-bordered file-input-primary w-full max-w-xs"
                                                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                        formik.setFieldValue(
+                                                            "thumbnail",
+                                                            event.currentTarget.files![0]
+                                                        );
                                                         onChangeInputFile(event);
                                                     }}
+                                                />
+                                                <ErrorMessage
+                                                    name="thumbnail"
+                                                    component="span"
+                                                    className="text-[14px] text-error font-medium"
                                                 />
                                             </div>
                                         </div>
@@ -146,7 +166,10 @@ const CreateCourse: FC = () => {
                                     <div className="flex flex-row gap-4 my-3">
                                         <div className="flex-1 flex flex-col gap-3">
                                             <div className="flex flex-col">
-                                                <label htmlFor="title" className="text-sm mb-1 font-medium tablet:text-xl">
+                                                <label
+                                                    htmlFor="title"
+                                                    className="text-sm mb-1 font-medium tablet:text-xl"
+                                                >
                                                     Title
                                                 </label>
                                                 <Field
@@ -165,13 +188,16 @@ const CreateCourse: FC = () => {
                                                 />
                                             </div>
                                             <div className="flex flex-col">
-                                                <label htmlFor="category" className="text-sm mb-1 tablet:text-xl font-medium">
+                                                <label
+                                                    htmlFor="category"
+                                                    className="text-sm mb-1 tablet:text-xl font-medium"
+                                                >
                                                     Categories
                                                 </label>
                                                 <div className="flex flex-col items-center relative max-w-lg">
                                                     <div className="w-full">
                                                         <div className="flex border border-gray-200 bg-white rounded">
-                                                            <div className="flex flex-auto flex-wrap py-4 px-2 ">
+                                                            <div className="flex flex-auto flex-wrap py-4 px-2 h-full w-full">
                                                                 {createCategoriesSelector?.map(
                                                                     (category: CategoryType, index: number) => {
                                                                         return (
@@ -181,7 +207,8 @@ const CreateCourse: FC = () => {
                                                                                 onClick={() => {
                                                                                     handleRemoveCategory(
                                                                                         category.id,
-                                                                                        index
+                                                                                        index,
+                                                                                        formik
                                                                                     );
                                                                                 }}
                                                                             >
@@ -223,7 +250,8 @@ const CreateCourse: FC = () => {
                                                                 )}
                                                                 <div className="flex-1">
                                                                     <input
-                                                                        name="status"
+                                                                        readOnly
+                                                                        name="categories"
                                                                         className="bg-transparent px-2 appearance-none outline-none h-full w-full text-gray-800"
                                                                     />
                                                                 </div>
@@ -252,35 +280,51 @@ const CreateCourse: FC = () => {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <ErrorMessage
+                                                        name="categories"
+                                                        component="span"
+                                                        className="text-[14px] text-error font-medium z-0"
+                                                    />
                                                     {displayCategories && (
                                                         <div className="absolute shadow top-[100%] bg-white z-40 w-full left-0 rounded max-h-60 overflow-y-auto mt-1">
-                                                            <div className="flex flex-col w-full">
-                                                                {categories.map((category: any, index: number) => {
-                                                                    return (
-                                                                        <div
-                                                                            key={index}
-                                                                            className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
-                                                                            onClick={() =>
-                                                                                handleAddCategories(category.id, index)
-                                                                            }
-                                                                        >
-                                                                            <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-bgHovbg-backgroundHover">
-                                                                                <div className="w-full items-center flex">
-                                                                                    <div className="mx-2 leading-6  ">
-                                                                                        {category.title}{" "}
+                                                            <div className="flex flex-col w-full overflow-y-auto">
+                                                                {categories.map(
+                                                                    (category: CategoryType, index: number) => {
+                                                                        return (
+                                                                            <div
+                                                                                key={index}
+                                                                                className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
+                                                                                onClick={() => {
+                                                                                    if (formik.values.categories <= 4) {
+                                                                                        handleAddCategories(
+                                                                                            category.id,
+                                                                                            index,
+                                                                                            formik
+                                                                                        );
+                                                                                    }
+                                                                                }}
+                                                                            >
+                                                                                <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-bgHovbg-backgroundHover">
+                                                                                    <div className="w-full items-center flex">
+                                                                                        <div className="mx-2 leading-6  ">
+                                                                                            {category.title}{" "}
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
-                                                                    );
-                                                                })}
+                                                                        );
+                                                                    }
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
                                                 </div>
                                             </div>
                                             <div className="flex flex-col">
-                                                <label htmlFor="status" className="text-sm mb-1 tablet:text-xl font-medium">
+                                                <label
+                                                    htmlFor="status"
+                                                    className="text-sm mb-1 tablet:text-xl font-medium"
+                                                >
                                                     Status
                                                 </label>
                                                 <div className="flex flex-col items-center relative max-w-lg">
@@ -353,7 +397,10 @@ const CreateCourse: FC = () => {
                                             </div>
                                         </div>
                                         <div className="flex-1 flex flex-col">
-                                            <label htmlFor="description" className="text-sm mb-1 font-medium tablet:text-xl">
+                                            <label
+                                                htmlFor="description"
+                                                className="text-sm mb-1 font-medium tablet:text-xl"
+                                            >
                                                 Description
                                             </label>
                                             <Field

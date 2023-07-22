@@ -217,6 +217,7 @@ const EditCourse: React.FC = () => {
                                         <input
                                             name="thumbnail"
                                             type="file"
+                                            accept=".jpg, .png"
                                             className="w-full h-full cursor-pointer"
                                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                                 onChangeInputFile(event);
