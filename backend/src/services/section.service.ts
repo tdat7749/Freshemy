@@ -13,23 +13,30 @@ import {
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 
-const getSection = async (req: Request): Promise<ResponseBase> => {
+const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
     try {
-        const { id } = req.params;
-        const section_id = +id;
-        const isFoundSection = await configs.db.section.findFirst({
+        const { course_id } = req.params;
+        console.log(course_id)
+        const isFoundSection = await configs.db.section.findMany({
             where: {
-                id: section_id,
+                course_id: parseInt(course_id),
                 is_delete: false,
             },
+            include: {
+                lessons: {
+                    select: {
+                        title: true,
+                        id: true,
+                        url_video: true,
+                        updated_at: true,
+                    }
+                }
+            }
         });
-        const data = {
-            id: isFoundSection?.id,
-            title: isFoundSection?.title,
-        };
-        if (isFoundSection) return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, data);
+        if (isFoundSection) return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, isFoundSection);
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
     } catch (error: any) {
+        console.log(error)
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
@@ -54,18 +61,7 @@ const createSection = async (req: Request): Promise<ResponseBase> => {
                 course_id: course_id,
             },
         });
-        const next = await configs.db.section.findMany({
-            take: 1,
-            orderBy: {
-                id: "desc",
-            },
-        });
-        const data = {
-            id: next[0].id,
-            title: next[0].title,
-            course_id: next[0].course_id,
-        };
-        if (section) return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true, data);
+        if (section) return new ResponseSuccess(201, MESSAGE_SUCCESS_CREATE_DATA, true);
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -144,7 +140,7 @@ const deleteSection = async (req: Request): Promise<ResponseBase> => {
     }
 };
 const SectionService = {
-    getSection,
+    getAllSectionByCourseId,
     createSection,
     updateSection,
     deleteSection,

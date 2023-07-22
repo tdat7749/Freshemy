@@ -1,17 +1,30 @@
-export type CourseDetailResponseData = {
-        id: number
-        slug: string
-        title: string
-        categories: Category[]
-        summary: string
-        author: Author
-        ratings: number
-        thumbnail: string
-        description: string
-        sections: Section[]
-        created_at: Date
-        updated_at: Date
-        status: boolean
+export type CourseDetail = {
+    id: number
+    slug: string
+    title: string
+    categories: Category[]
+    summary: string
+    author: Author
+    ratings: number
+    thumbnail: string
+    description: string
+    sections: Section[]
+    created_at: Date
+    updated_at: Date
+    status: boolean
+}
+
+export type CourseEdit = {
+    id: number
+    slug: string
+    title: string
+    categories: Category[]
+    summary: string
+    thumbnail: string
+    description: string
+    created_at: Date
+    updated_at: Date
+    status: boolean
 }
 
 export type Category = {
@@ -26,12 +39,12 @@ export type Author = {
 export type Lesson = {
     title: string
     url_video: string
-    id:number
+    id: number
 }
 export type Section = {
     title: string,
     updated_at: Date,
-    id:number
+    id: number
     lessons: Lesson[],
 }
 

@@ -3,19 +3,20 @@ import {
     addSection as addSectionAPI,
     deleteSection as deleteSectionAPI,
     editSection as editSectionAPI,
+    getSectionByCourseId as getSectionByCourseIdAPI
 } from "../../apis/section";
-import { EditSection as EditSectionType, Section } from "../../types/section";
+import { EditSection as EditSectionType, Section as SectionType } from "../../types/section";
 import { Response } from "../../types/response";
 
 type SectionSlice = {
     error: string;
     message: string;
     title: string;
-    sectionList: Section[];
+    sectionList: SectionType[];
     isLoading: boolean;
 };
 
-export const addSection = createAsyncThunk<Response<null>, Section, { rejectValue: Response<null> }>(
+export const addSection = createAsyncThunk<Response<null>, SectionType, { rejectValue: Response<null> }>(
     "section/addSection",
     async (body, ThunkAPI) => {
         try {
@@ -51,6 +52,19 @@ export const deleteSection = createAsyncThunk<Response<null>, number, { rejectVa
     }
 );
 
+
+export const getSectionByCourseId = createAsyncThunk<Response<SectionType[]>, number, { rejectValue: Response<null> }>(
+    "section/getSectionByCourseId",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await getSectionByCourseIdAPI(body);
+            return response.data as Response<SectionType[]>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 const initialState: SectionSlice = {
     error: "",
     message: "",
@@ -64,16 +78,16 @@ export const sectionSlice = createSlice({
     initialState: initialState,
     reducers: {
         setDeleteSection: (state, action: PayloadAction<number>) => {
-            state.sectionList = state.sectionList.filter((section: Section) => section.id !== action.payload);
+            state.sectionList = state.sectionList.filter((section: SectionType) => section.id !== action.payload);
         },
-        setEditSection: (state, action: PayloadAction<Section>) => {
-            state.sectionList = state.sectionList.map((section: Section) => {
+        setEditSection: (state, action: PayloadAction<SectionType>) => {
+            state.sectionList = state.sectionList.map((section: SectionType) => {
                 if (section.id === action.payload.id) {
                     section.title = action.payload.title;
                 }
                 return section;
             });
-        },
+        }
     },
     extraReducers: (builder) => {
         // add section
@@ -84,9 +98,8 @@ export const sectionSlice = createSlice({
         });
 
         builder.addCase(addSection.fulfilled, (state, action) => {
-            state.sectionList = [...state.sectionList, action.payload.data] as Section[];
-            state.isLoading = false;
             state.message = action.payload.message
+            state.isLoading = false;
         });
 
         builder.addCase(addSection.rejected, (state, action) => {
@@ -122,6 +135,24 @@ export const sectionSlice = createSlice({
         });
 
         builder.addCase(deleteSection.rejected, (state, action) => {
+            state.isLoading = false;
+            state.error = action.error as string;
+        });
+
+
+        // delete section
+        builder.addCase(getSectionByCourseId.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+
+        builder.addCase(getSectionByCourseId.fulfilled, (state, action) => {
+            state.sectionList = action.payload.data as SectionType[]
+            state.isLoading = false;
+        });
+
+        builder.addCase(getSectionByCourseId.rejected, (state, action) => {
             state.isLoading = false;
             state.error = action.error as string;
         });

@@ -3,7 +3,7 @@ import {
     ChangeThumbnail as ChangeThumbnailType,
     NewCourse as CreateCourseType,
     GetMyCourses as GetMyCoursesType,
-    ChangeInformation as ChangeInformationType
+    CourseChangeInformation as CourseChangeInformationType
 } from "../types/course";
 
 import { HTTP_GET, HTTP_POST, HTTP_DELETE, HTTP_PATCH, HTTP_PUT } from "../utils/contants";
@@ -29,7 +29,7 @@ export const getMyCourses = async (values: GetMyCoursesType) => {
     return response;
 };
 
-export const deleteCourse = async (courseId:number) => {
+export const deleteCourse = async (courseId: number) => {
     const path = `courses/${courseId}`;
 
     const response = await apiCaller(HTTP_DELETE, path);
@@ -56,15 +56,15 @@ export const getCourseDetailById = async (id: number) => {
 export const changeThumbnail = async (values: ChangeThumbnailType) => {
     const path = `courses/change-thumbnail`;
 
-    const response = await apiCaller(HTTP_PATCH, path,values);
+    const response = await apiCaller(HTTP_PATCH, path, values);
 
     return response;
 };
 
-export const changeInformation = async (values: ChangeInformationType) => {
+export const changeInformation = async (values: CourseChangeInformationType) => {
     const path = `courses/change-information`;
 
-    const response = await apiCaller(HTTP_PUT, path,values);
+    const response = await apiCaller(HTTP_PUT, path, values);
 
     return response;
 };
