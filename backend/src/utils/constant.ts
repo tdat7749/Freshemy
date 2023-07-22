@@ -1,10 +1,7 @@
 export const MESSAGE_ERROR_PASSWORD_WRONG = "Wrong password";
-export const MESSAGE_ERROR_EMAIL_NOT_EXIST = "Email does not exist";
 export const MESSSAGE_ERROR_VALIDATION_FAIL = "Validation fail";
 export const MESSAGE_SUCCESS_VERIFCATION_FORGOT_PASSWORD = "Sent a verification code to your email";
 export const MESSAGE_ERROR_EMAIL_REQUIRED = "Email is required";
-export const MESSAGE_SUCCESS_REQUEST = "Request successfully";
-export const MESSAGE_ERROR_UNAUTHORIZED = "You don't have authorize";
 export const MESSAGE_ERROR_EMAIL_INVALID = "Invalid email";
 export const MESSAGE_ERROR_PASSWORD_REQUIRED = "Password is required";
 export const MESSAGE_ERROR_PASSWORD_WEAK = "Weak password";
@@ -42,6 +39,11 @@ export const MESSAGE_SUCCESS_REGISTER_COURSE = "Subcribe successfully"
 export const MESSAGE_SUCCESS_UN_REGISTER_COURSE = "Unsubcribe successfully"
 export const MESSAGE_ERROR_MISSING_DATA = "Course id is required"
 export const MESSAGE_ERROR_WRONG_DATA_TYPE = "Course id must be a number"
+
+// Reset password
+export const MESSAGE_ERROR_UNAUTHORIZED = "You don't have authorize";
+export const MESSAGE_SUCCESS_RESET_PASSWORD = "Reset successfully, please login your account";
+
 //data failed
 export const MESSAGE_ERROR_GET_DATA = "Cannot find requested resources"
 

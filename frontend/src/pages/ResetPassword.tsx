@@ -1,11 +1,11 @@
 import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { useAppDispatch } from "../hooks/hooks";
-import * as Yup from "yup";
 import { authActions } from "../redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
 import { ResetPassword as ResetPasswordType } from "../types/auth";
-
+import { resetPasswordValidationSchema } from "../validations/auth"
+import toast from 'react-hot-toast';
 const ResetPassword: React.FC<{}> = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -21,13 +21,6 @@ const ResetPassword: React.FC<{}> = () => {
         token: "",
     };
 
-    const resetPasswordValidationSchema = Yup.object({
-        password: Yup.string().required("Password is required").min(8, "Weak password").max(32, "Password is too long"),
-        confirmPassword: Yup.string()
-            .required("Confirm password is required")
-            .oneOf([Yup.ref("password")], "Confirm password must match"),
-    });
-
     const handleSubmit = (values: ResetPasswordType) => {
         const data = {
             ...values,
@@ -37,7 +30,10 @@ const ResetPassword: React.FC<{}> = () => {
         dispatch(authActions.resetPassword(data)).then((response) => {
             if (response.payload.status_code === 200) {
                 //@ts-ignore
+                toast.success(response.payload.message)
                 navigate("/login");
+            } else {
+                toast.error(response.payload.message)
             }
         });
     };
