@@ -111,7 +111,7 @@ const CreateCourse: FC = () => {
             <div className="min-h-screen h-full px-4 tablet:px-[60px]">
                 <h1 className="text-center text-[32px] py-4 font-bold text-title">CREATE COURSE</h1>
                 <div className="w-full flex justify-center items-center shrink-0">
-                    <div className="m-4 rounded-xl border border-black w-full max-w-[982px] bg-background">
+                    <div className="m-4 rounded-xl border border-black w-full max-w-[982px] bg-background border-dashed shadow-lg">
                         <Formik
                             initialValues={initialValues}
                             validationSchema={createValidationSchema}
