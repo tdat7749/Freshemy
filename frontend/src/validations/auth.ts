@@ -19,6 +19,14 @@ export const loginValidationSchema = Yup.object({
 export const forgotPasswordValidationSchema = Yup.object({
     email: Yup.string().email(MESSAGE_ERROR_EMAIL_INVALID).required(MESSAGE_ERROR_EMAIL_REQUIRED),
 });
+
+export const resetPasswordValidationSchema = Yup.object({
+    password: Yup.string().required("Password is required").min(8, "Weak password").max(32, "Password is too long"),
+    confirmPassword: Yup.string()
+        .required("Confirm password is required")
+        .oneOf([Yup.ref("password")], "Confirm password must match"),
+});
+
 export const registerValidationSchema = Yup.object({
     first_name: Yup.string().required(MESSAGE_ERROR_FIRST_NAME_REQUIRED).trim(),
     last_name: Yup.string().required(MESSAGE_ERROR_LAST_NAME_REQUIRED).trim(),

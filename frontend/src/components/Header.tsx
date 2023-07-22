@@ -4,7 +4,7 @@ import UserDropDown from "./UserDropDown";
 import SearchIcon from "./icons/SearchIcon";
 import DefaultAvatar from "../assets/images/default-avatar.png";
 import { Link } from "react-router-dom";
-
+import { Toaster } from "react-hot-toast"
 interface HeaderProps {
     isLogin: boolean;
 }
@@ -22,6 +22,7 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
             )}
 
             <header className="w-full h-[100px] max-w-full bg-background shadow-sm fixed top-0 left-0 z-[10]">
+                <Toaster/>
                 <div className="w-full h-full flex items-center py-[10px] px-4 tablet:px-[60px] overflow-hidden">
                     <div className="flex-1 flex gap-4 laptop:gap-[120px] items-center">
                         <Link to={"/"} className="w-[60px] h-[60px] shrink-0">

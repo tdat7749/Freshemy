@@ -6,14 +6,13 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { sectionActions } from "../redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
 import Accordion from "../components/Accordion";
-import { AddSection as AddSectionType } from "../types/section";
+import { AddSection as AddSectionType, Section as SectionType } from "../types/section";
 import DeleteModal from "../components/DeleteModal";
 import PopupAddLesson from "../components/PopupAddLesson";
 import { courseActions } from "../redux/slice";
 import {
     Category as CategoryType,
-    CourseDetail as CourseDetailType,
-    ChangeInformation as ChangeInformationType,
+    CourseChangeInformation as CourseChangeInformationType,
 } from "../types/course";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import slugify from "slugify";
@@ -35,25 +34,21 @@ const EditCourse: React.FC = () => {
     let createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
 
-    let errorMessage = useAppSelector((state) => state.courseSlice.error);
-    let successMessage = useAppSelector((state) => state.courseSlice.message);
-
-    let errorSection = useAppSelector((state) => state.sectionSlice.error) ?? "";
-    let successSection = useAppSelector((state) => state.sectionSlice.message) ?? "";
     const navigate = useNavigate();
 
-    const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail);
+    const courseChangeDetail: CourseChangeInformationType = useAppSelector((state) => state.courseSlice.courseChangeDetail);
+    const sectionOfCourse: SectionType[] = useAppSelector(state => state.sectionSlice.sectionList)
 
     const { course_id } = useParams();
 
-    const initialValue: ChangeInformationType = {
-        title: courseDetail.title,
-        summary: courseDetail.summary,
-        categories: courseDetail.categories,
-        status: courseDetail.status,
-        description: courseDetail.description,
+    const initialValue: CourseChangeInformationType = {
+        title: courseChangeDetail.title,
+        summary: courseChangeDetail.summary,
+        categories: courseChangeDetail.categories,
+        status: courseChangeDetail.status,
+        description: courseChangeDetail.description,
         id: Number(course_id),
-        slug: courseDetail.slug,
+        slug: courseChangeDetail.slug,
     };
     const dispatch = useAppDispatch();
 
@@ -63,6 +58,8 @@ const EditCourse: React.FC = () => {
         dispatch(courseActions.getCategories());
         //@ts-ignore
         dispatch(courseActions.getCourseDetailById(course_id));
+        //@ts-ignore
+        dispatch(sectionActions.getSectionByCourseId(course_id))
     }, [dispatch, course_id]);
 
     const handleAddSection = () => {
@@ -72,8 +69,9 @@ const EditCourse: React.FC = () => {
         };
         // @ts-ignore
         dispatch(sectionActions.addSection(values)).then((response) => {
-            if (response.payload.status_code === 200) {
-                dispatch(courseActions.addSection(values));
+            if (response.payload.status_code === 201) {
+                // @ts-ignore
+                dispatch(sectionActions.getSectionByCourseId(course_id));
             }
         });
     };
@@ -92,7 +90,7 @@ const EditCourse: React.FC = () => {
         //@ts-ignore
         dispatch(sectionActions.deleteSection(idItem)).then((response) => {
             if (response.payload.status_code === 200) {
-                dispatch(courseActions.setDeleteSection(idItem));
+                dispatch(sectionActions.setDeleteSection(idItem));
             }
         });
         setIsDisplayDeleteModal(!isDisplayDeleteModal);
@@ -102,7 +100,7 @@ const EditCourse: React.FC = () => {
         // @ts-ignore
         dispatch(sectionActions.editSection({ id, title })).then((response) => {
             if (response.payload.status_code === 200) {
-                dispatch(courseActions.setEditSection({ id, title }));
+                dispatch(sectionActions.setEditSection({ id, title }));
             }
         });
         setIsDisplayEditModal(!isDisplayEditModal);
@@ -178,7 +176,7 @@ const EditCourse: React.FC = () => {
         }
     };
 
-    const changeInformation = (values: ChangeInformationType) => {
+    const changeInformation = (values: CourseChangeInformationType) => {
         const categories = createCategoriesSelector.map((item: CategoryType) => item.id);
         const data = {
             ...values,
@@ -205,7 +203,7 @@ const EditCourse: React.FC = () => {
                                 <div className="flex ">
                                     <img
                                         ref={imageRef}
-                                        src={`${courseDetail.thumbnail}`}
+                                        src={`${courseChangeDetail.thumbnail}`}
                                         alt=""
                                         className="w-[120px] h-[120px] rounded-lg mr-3 bg-[#D9D9D9]"
                                     />
@@ -253,11 +251,10 @@ const EditCourse: React.FC = () => {
                                                     id="title"
                                                     name="title"
                                                     type="text"
-                                                    className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${
-                                                        formik.errors.title && formik.touched.title
-                                                            ? "border-error"
-                                                            : ""
-                                                    }`}
+                                                    className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${formik.errors.title && formik.touched.title
+                                                        ? "border-error"
+                                                        : ""
+                                                        }`}
                                                 />
                                                 <ErrorMessage
                                                     name="title"
@@ -273,11 +270,10 @@ const EditCourse: React.FC = () => {
                                                     id="summary"
                                                     name="summary"
                                                     type="text"
-                                                    className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${
-                                                        formik.errors.summary && formik.touched.summary
-                                                            ? "border-error"
-                                                            : ""
-                                                    }`}
+                                                    className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${formik.errors.summary && formik.touched.summary
+                                                        ? "border-error"
+                                                        : ""
+                                                        }`}
                                                 />
                                                 <ErrorMessage
                                                     name="summary"
@@ -490,11 +486,10 @@ const EditCourse: React.FC = () => {
                                                 as="textarea"
                                                 name="description"
                                                 type="text"
-                                                className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${
-                                                    formik.errors.description && formik.touched.description
-                                                        ? "border-error"
-                                                        : ""
-                                                }`}
+                                                className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${formik.errors.description && formik.touched.description
+                                                    ? "border-error"
+                                                    : ""
+                                                    }`}
                                             />
                                             <ErrorMessage
                                                 name="description"
@@ -502,19 +497,11 @@ const EditCourse: React.FC = () => {
                                                 className="text-[14px] text-error font-medium"
                                             />
                                         </div>
-                                        {errorMessage !== "" && (
-                                            <span className="text-[14px] text-error font-medium">{errorMessage}</span>
-                                        )}
-                                        {successMessage !== "" && (
-                                            <span className="text-[14px] text-success font-medium">
-                                                {successMessage}
-                                            </span>
-                                        )}
                                         <div className="flex justify-end mt-4">
                                             <button
                                                 className="py-2 px-4 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
                                                 type="submit"
-                                                // disabled={error !== "" ? true : false}
+                                            // disabled={error !== "" ? true : false}
                                             >
                                                 Save
                                             </button>
@@ -522,7 +509,7 @@ const EditCourse: React.FC = () => {
                                                 className="py-2 px-4 rounded-lg text-xl border-[1px] hover:bg-slate-100"
                                                 type="submit"
                                                 onClick={() => navigate("/my-courses")}
-                                                // disabled={error !== "" ? true : false}
+                                            // disabled={error !== "" ? true : false}
                                             >
                                                 Cancel
                                             </button>
@@ -530,12 +517,6 @@ const EditCourse: React.FC = () => {
                                     </form>
                                 )}
                             </Formik>
-                            {errorMessage !== "" && (
-                                <span className="text-[14px] text-error font-medium">{errorMessage}</span>
-                            )}
-                            {successMessage !== "" && (
-                                <span className="text-[14px] text-success font-medium">{successMessage}</span>
-                            )}
                         </div>
 
                         <div className="flex-1 p-4 flex flex-col">
@@ -556,25 +537,22 @@ const EditCourse: React.FC = () => {
                                     Add section
                                 </button>
                             </div>
-                            {errorSection !== "" && (
-                                <span className="text-[14px] text-error font-medium">{errorSection}</span>
-                            )}
-                            {successSection !== "" && (
-                                <span className="text-[14px] text-success font-medium">{successSection}</span>
-                            )}
                             {/* handle list lesson */}
                             <div className="mt-2">
-                                {courseDetail.sections.map((section, index) => (
-                                    <Accordion
-                                        key={index}
-                                        section={section}
-                                        handleDeleteSection={handleDeleteSection}
-                                        handleDisplayEditModal={handleDisplayEditModal}
-                                        handleDisplayDeleteModal={handleDisplayDeleteModal}
-                                        handleDisplayAddSectionModal={handleDisplayAddSectionModal}
-                                        isDisplayBtn={true}
-                                    />
-                                ))}
+                                {sectionOfCourse.length <= 0 ? <h1 className="text-center text-2xl text-error">There are no sections yet!</h1>
+                                    :
+                                    sectionOfCourse.map((section, index) => (
+                                        <Accordion
+                                            key={index}
+                                            section={section}
+                                            handleDeleteSection={handleDeleteSection}
+                                            handleDisplayEditModal={handleDisplayEditModal}
+                                            handleDisplayDeleteModal={handleDisplayDeleteModal}
+                                            handleDisplayAddSectionModal={handleDisplayAddSectionModal}
+                                            isDisplayBtn={true}
+                                        />
+                                    ))
+                                }
                             </div>
                         </div>
                     </div>

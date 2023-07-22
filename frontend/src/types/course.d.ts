@@ -61,21 +61,22 @@ export type CourseDetail = {
     sections: SectionRender[];
     created_at: string;
     updated_at: string;
-    thumbnail:string
-    status:boolean
+    thumbnail: string
+    status: boolean
 };
 
 export type ChangeThumbnail = {
-    course_id:number
-    thumbnail:File
+    course_id: number
+    thumbnail: File
 }
 
-export type ChangeInformation = {
-    id:number,
-    title:string,
-    summary:string,
-    status:boolean,
-    description:string,
-    categories:Category[],
-    slug:string
+export type CourseChangeInformation = {
+    id: number | undefined,
+    title: string,
+    summary: string,
+    status: boolean,
+    description: string,
+    categories: Category[],
+    slug: string,
+    thumbnail?: File
 }

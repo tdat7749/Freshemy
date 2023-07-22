@@ -50,7 +50,7 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
         const videoPath = req.file?.path as string;
         const { title, section_id } = req.body;
 
-        console.log(videoPath,section_id)
+        console.log(videoPath, section_id)
 
         const sectionIdConvert = parseInt(section_id)
 

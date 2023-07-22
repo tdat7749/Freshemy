@@ -7,10 +7,10 @@ import { ForgotPassword as ForgotPasswordType } from "../types/auth";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { forgotPasswordValidationSchema } from "../validations/auth";
 import { Navigate } from "react-router-dom";
-
+import toast from 'react-hot-toast';
 const ForgotPassword: React.FC = () => {
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
-    let error = useAppSelector((state) => state.authSlice.error) ?? "";
+    
     let message = useAppSelector((state) => state.authSlice.message) ?? "";
 
     const dispatch = useAppDispatch();
@@ -27,12 +27,14 @@ const ForgotPassword: React.FC = () => {
 
     const handleSubmit = (values: ForgotPasswordType) => {
         //@ts-ignore
-        dispatch(authActions.forgotPassword(values));
-    };
-
-    const handleChange = () => {
-        error = "";
-        message = "";
+        dispatch(authActions.forgotPassword(values)).then((response) => {
+            if (response.payload.status_code === 200) {
+                //@ts-ignore
+                toast.success(response.payload.message)
+            } else {
+                toast.error(response.payload.message)
+            }
+        })
     };
 
     return (
@@ -46,7 +48,7 @@ const ForgotPassword: React.FC = () => {
                             validationSchema={forgotPasswordValidationSchema}
                         >
                             {(formik) => (
-                                <Form className="p-4" onSubmit={formik.handleSubmit} onChange={handleChange}>
+                                <Form className="p-4" onSubmit={formik.handleSubmit}>
                                     <h1 className="font-bold text-[32px] text-center text-title">FORGOT PASSWORD</h1>
                                     {message !== "" ? (
                                         <div className="my-4 px-4 py-3 bg-[#8BC34A] rounded text-center">
@@ -75,12 +77,6 @@ const ForgotPassword: React.FC = () => {
                                             component="span"
                                             className="text-[14px] text-error font-medium"
                                         />
-                                        {message !== "" && (
-                                            <span className="text-[14px] text-success font-medium">{message}</span>
-                                        )}
-                                        {error !== "" && (
-                                            <span className="text-[14px] text-error font-medium">{error}</span>
-                                        )}
                                     </form>
                                     <button
                                         className="btn btn-primary w-full text-lg"

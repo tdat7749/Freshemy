@@ -21,7 +21,7 @@ const CourseDetail: React.FC = () => {
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
 
@@ -29,14 +29,14 @@ const CourseDetail: React.FC = () => {
         //@ts-ignore
         dispatch(courseActions.deleteCourse(idItem)).then((response) => {
             if (response.payload.status_code === 200) {
-                navigate('/my-courses')
+                navigate("/my-courses");
             }
         });
-        setIsOpenDeleteModal(!isOpenDeleteModal)
+        setIsOpenDeleteModal(!isOpenDeleteModal);
     };
 
     const handleCancelModal = () => {
-        setIsOpenDeleteModal(!isOpenDeleteModal)
+        setIsOpenDeleteModal(!isOpenDeleteModal);
     };
 
     useEffect(() => {
@@ -54,74 +54,75 @@ const CourseDetail: React.FC = () => {
         <>
             {isOpenDeleteModal && <DeleteModal handleDelete={handleDeleteCourse} handleCancel={handleCancelModal} />}
             <Navbar />
-            <div className="h-screen container mt-16 mx-auto flex justify-center">
-                <div className="mt-4 container mx-auto p-4">
-                    <div className="flex flex-col laptop:flex-row gap-4 h-[400px]">
-                        <div className="flex-4 w-[600px] max-w-full bg-gray-600 rounded-lg">
-                            <img
-                                src={courseDetail.thumbnail}
-                                alt={courseDetail.title}
-                                className="w-full h-full rounded-lg"
-                            />
-                        </div>
-                        <div className="flex-1 flex flex-col">
-                            <div className="flex-1">
-                                <h2 className="text-[40px]">{courseDetail.title}</h2>
-                                <p className="text-2xl tablet:text-2xl mb-3 italic text-[#666666]">
-                                    {courseDetail.summary}
-                                </p>
+            <div className="container mx-auto">
+                <div className="min-h-screen h-full px-4 tablet:px-[60px]">
+                    <div className="mt-4 container mx-auto p-4">
+                        <div className="flex flex-col gap-4 laptop:flex-row bg-primary rounded-lg">
+                            <div className="flex-1 max-w-full bg-gray-600 rounded-lg">
+                                <img
+                                    src={courseDetail.thumbnail}
+                                    alt={courseDetail.title}
+                                    className="h-[300px] rounded-lg tablet:h-[400px]"
+                                />
+                            </div>
+                            <div className="flex-1 flex flex-col gap-4 px-2 pb-2">
+                                <div className="flex-1">
+                                    <h2 className="text-2xl tablet:text-[32px] font-bold text-title mb-3">{courseDetail.title}</h2>
+                                    <p className="text-xl tablet:text-3xl font-medium italic mb-3">
+                                        {courseDetail.summary}
+                                    </p>
 
-                                <div className="text-2xl tablet:text-2xl mb-3">
-                                    <span>Author: </span>
-                                    <Link to={"/profile/:userID"} className="text-blue-600">
-                                        {courseDetail.author?.first_name}
-                                        <span> </span>
-                                        {courseDetail.author?.last_name}
-                                    </Link>
+                                    <div className=" mb-3">
+                                        <span className="text-xl tablet:text-3xl font-medium">Author: </span>
+                                        <Link to={"/profile/:userID"} className="text-blue-600">
+                                            {courseDetail.author?.first_name}
+                                            <span> {courseDetail.author?.last_name} </span>
+                                            
+                                        </Link>
+                                    </div>
+                                    <div className="flex items-center text-xl tablet:text-3xl font-medium mb-3">
+                                        <span className="mr-2">Ratings:</span>
+                                        <p className="italic">{courseDetail.ratings}</p>
+                                    </div>
+                                    <div className="flex items-center text-xl tablet:text-3xl font-medium">
+                                        <span className="mr-2">Status:</span>
+                                        <p className="font-normal">{courseDetail.status === false ? "Uncomplete" : " Completed"}</p>
+                                    </div>
                                 </div>
-                                <div className="flex items-center text-2xl tablet:text-2xl mb-3">
-                                    <span className="mr-2">Ratings:</span>
-                                    <p className="italic">{courseDetail.ratings}</p>
-                                </div>
-                                <div className="flex items-center text-2xl tablet:text-2xl mb-3">
-                                    <span className="mr-2">Status:</span>
-                                    <p>{courseDetail.status === false ? "Uncomplete" : " Completed"}</p>
+                                <div className="flex gap-2">
+                                    <button className="btn btn-primary text-lg">
+                                        <EditIcon color="#ffffff" />
+                                        <Link to={`/my-courses/edit/${courseDetail.id}`}>
+                                            <span>Edit</span>
+                                        </Link>
+                                    </button>
+                                    <button
+                                        className="btn btn-error text-lg"
+                                        onClick={() => {
+                                            setIsOpenDeleteModal(!isOpenDeleteModal);
+                                            setIdItem(courseDetail.id as number);
+                                        }}
+                                    >
+                                        <DeleteIcon color="#000000" />
+                                        <span>Delete</span>
+                                    </button>
                                 </div>
                             </div>
-                            <div className="flex mt-[42px] gap-2">
-                                <button className="flex-3 flex py-4 px-4 bg-switch rounded-lg text-white hover:opacity-80">
-                                    <EditIcon color="#ffffff" />
-                                    <Link to={`/my-courses/edit/${courseDetail.id}`}>
-                                    <span className="ml-2">Edit</span>
-                                    
-                                    </Link>
-                                </button>
-                                <button
-                                    className="flex-3 flex py-4 px-4 bg-error rounded-lg text-white hover:opacity-80"
-                                    onClick={() => {
-                                        setIsOpenDeleteModal(!isOpenDeleteModal);
-                                        setIdItem(courseDetail.id as number);
-                                    }}
-                                >
-                                    <DeleteIcon color="#ffffff" />
-                                    <span className="ml-2">Delete</span>
-                                </button>
+                        </div>
+                        <div>
+                            <div className="description my-4">
+                                <h2 className="text-xl tablet:text-3xl font-bold mb-3">Description</h2>
+                                <span className="w-[60px] h-1 bg-black block"></span>
+                                <p className="mt-2 text-[20px]">{courseDetail.description}</p>
                             </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div className="description my-4">
-                            <h2 className="text-[32px]">Description</h2>
-                            <span className="w-[60px] h-1 bg-black block"></span>
-                            <p className="mt-2 text-[20px]">{courseDetail.description}</p>
-                        </div>
 
-                        <div className="table-of-content my-4">
-                            <h2 className="text-[32px]">Table of Content</h2>
-                            <span className="w-[60px] h-1 bg-black block mb-4"></span>
-                            {courseDetail.sections.map((section: Section, index: number) => {
-                                return <Accordion key={index} isDisplayBtn={false} section={section} />;
-                            })}
+                            <div className="table-of-content my-4">
+                                <h2 className="text-xl tablet:text-3xl font-bold mb-3">Table of Content</h2>
+                                <span className="w-[60px] h-1 bg-black block mb-4"></span>
+                                {courseDetail.sections.map((section: Section, index: number) => {
+                                    return <Accordion key={index} isDisplayBtn={false} section={section} />;
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>
