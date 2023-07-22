@@ -95,7 +95,6 @@ export const updateCourseSchema: ObjectSchema<UpdateCourse> = Joi.object({
     }),
     slug: Joi.string()
         .required()
-        // .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
         .messages({
             "any.required": MESSAGE_ERROR_COURSE_SLUG_REQUIRED,
             "string.base": MESSAGE_ERROR_SLUG_STRING,
