@@ -10,10 +10,7 @@ import { AddSection as AddSectionType, Section as SectionType } from "../types/s
 import DeleteModal from "../components/DeleteModal";
 import PopupAddLesson from "../components/PopupAddLesson";
 import { courseActions } from "../redux/slice";
-import {
-    Category as CategoryType,
-    CourseChangeInformation as CourseChangeInformationType,
-} from "../types/course";
+import { Category as CategoryType, CourseChangeInformation as CourseChangeInformationType } from "../types/course";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import slugify from "slugify";
 
@@ -36,8 +33,10 @@ const EditCourse: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const courseChangeDetail: CourseChangeInformationType = useAppSelector((state) => state.courseSlice.courseChangeDetail);
-    const sectionOfCourse: SectionType[] = useAppSelector(state => state.sectionSlice.sectionList)
+    const courseChangeDetail: CourseChangeInformationType = useAppSelector(
+        (state) => state.courseSlice.courseChangeDetail
+    );
+    const sectionOfCourse: SectionType[] = useAppSelector((state) => state.sectionSlice.sectionList);
 
     const { course_id } = useParams();
 
@@ -59,7 +58,7 @@ const EditCourse: React.FC = () => {
         //@ts-ignore
         dispatch(courseActions.getCourseDetailById(course_id));
         //@ts-ignore
-        dispatch(sectionActions.getSectionByCourseId(course_id))
+        dispatch(sectionActions.getSectionByCourseId(course_id));
     }, [dispatch, course_id]);
 
     const handleAddSection = () => {
@@ -197,41 +196,41 @@ const EditCourse: React.FC = () => {
             {isLoading !== true && (
                 <>
                     <Navbar />
-                    <div className="min-h-screen h-full container px-4 m-auto flex flex-col mt-11 laptop:flex-row laptop:gap-[76px]">
-                        <div className="flex-1 p-4">
-                            <div className="flex">
-                                <div className="flex ">
+                    <div className="min-h-screen h-full px-4 tablet:px-[60px]">
+                        <div className="flex-1 p-4 laptop:flex laptop:gap-4">
+                            <div className="flex flex-col justify-center items-center gap-4 laptop:items-start laptop:justify-start">
+                                <div className="">
                                     <img
                                         ref={imageRef}
                                         src={`${courseChangeDetail.thumbnail}`}
-                                        alt=""
-                                        className="w-[120px] h-[120px] rounded-lg mr-3 bg-[#D9D9D9]"
+                                        alt={courseChangeDetail.title}
+                                        className="w-60 h-60 rounded-lg outline-none border border-dashed border-black tablet:w-80 tablet:h-80 laptop:h-96 laptop:w-96"
                                     />
-                                    <div className="flex flex-col">
-                                        <div className="">
-                                            <p>Upload thumbnail</p>
-                                            <p>Size of the image is less than 4MB</p>
-                                        </div>
-                                        <input
-                                            name="thumbnail"
-                                            type="file"
-                                            className="w-full h-full cursor-pointer"
-                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                onChangeInputFile(event);
-                                            }}
-                                        />
-                                        {isDisplaySaveImg && (
-                                            <div className="">
-                                                <button
-                                                    type="submit"
-                                                    onClick={handleChangeThumbnail}
-                                                    className="px-4 py-1 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
-                                                >
-                                                    {isLoading ? "Loading..." : "Save"}
-                                                </button>
-                                            </div>
-                                        )}
+                                </div>
+                                <div className="flex flex-col gap-3">
+                                    <div className="text-center tablet:text-start">
+                                        <p className="text-lg font-medium">Upload thumbnail</p>
+                                        <p className="italic">Size of the image is less than 4MB</p>
                                     </div>
+                                    <input
+                                        name="thumbnail"
+                                        type="file"
+                                        className="file-input file-input-bordered file-input-primary w-full max-w-xs"
+                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                            onChangeInputFile(event);
+                                        }}
+                                    />
+                                    {isDisplaySaveImg && (
+                                        <div className="">
+                                            <button
+                                                type="submit"
+                                                onClick={handleChangeThumbnail}
+                                                className="px-4 py-1 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
+                                            >
+                                                {isLoading ? "Loading..." : "Save"}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <Formik
@@ -240,20 +239,21 @@ const EditCourse: React.FC = () => {
                                 onSubmit={changeInformation}
                             >
                                 {(formik) => (
-                                    <form onSubmit={formik.handleSubmit} className="flex flex-col mb-3">
-                                        <div className="flex gap-[30px] shrink-0 mb-4">
-                                            <div className="flex-1 flex flex-col">
-                                                <label htmlFor="title" className="text-lg mb-1 tablet:text-xl">
+                                    <form onSubmit={formik.handleSubmit} className="mt-4 laptop:mt-0 flex-1 flex flex-col border border-dashed border-black rounded-lg p-4 bg-background shadow-lg">
+                                        <div className="flex flex-col gap-2 shrink-0 mb-2 tablet:flex-row tablet:gap-0">
+                                            <div className="flex-1 flex flex-col tablet:mr-8">
+                                                <label htmlFor="title" className="text-sm mb-1 font-medium tablet:text-xl">
                                                     Title
                                                 </label>
                                                 <Field
                                                     id="title"
                                                     name="title"
                                                     type="text"
-                                                    className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${formik.errors.title && formik.touched.title
-                                                        ? "border-error"
-                                                        : ""
-                                                        }`}
+                                                    className={`px-2 py-4 rounded-lg border-[1px] outline-none w-full  ${
+                                                        formik.errors.title && formik.touched.title
+                                                            ? "border-error"
+                                                            : ""
+                                                    }`}
                                                 />
                                                 <ErrorMessage
                                                     name="title"
@@ -262,17 +262,18 @@ const EditCourse: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="flex-1 flex flex-col">
-                                                <label htmlFor="summary" className="text-lg mb-1 tablet:text-xl">
+                                                <label htmlFor="summary" className="text-sm mb-1 font-medium tablet:text-xl">
                                                     Summary
                                                 </label>
                                                 <Field
                                                     id="summary"
                                                     name="summary"
                                                     type="text"
-                                                    className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${formik.errors.summary && formik.touched.summary
-                                                        ? "border-error"
-                                                        : ""
-                                                        }`}
+                                                    className={`px-2 py-4 rounded-lg border-[1px] outline-none w-full ${
+                                                        formik.errors.summary && formik.touched.summary
+                                                            ? "border-error"
+                                                            : ""
+                                                    }`}
                                                 />
                                                 <ErrorMessage
                                                     name="summary"
@@ -284,20 +285,20 @@ const EditCourse: React.FC = () => {
                                 )} */}
                                             </div>
                                         </div>
-                                        <div className="flex gap-[30px] shrink-0 mb-4">
-                                            <div className="categories item flex-1">
-                                                <label htmlFor="category" className="text-lg mb-1 tablet:text-xl">
+                                        <div className="flex flex-col gap-2 shrink-0 mb-2 tablet:flex-row tablet:gap-8">
+                                            <div className="categories flex flex-col flex-1">
+                                                <label htmlFor="category" className="text-sm mb-1 font-medium tablet:text-xl">
                                                     Categories
                                                 </label>
-                                                <div className="flex flex-col">
-                                                    <div className="w-full  svelte-1l8159u">
-                                                        <div className="my-2 p-4 flex border border-gray-200 bg-white rounded svelte-1l8159u">
-                                                            <div className="flex flex-auto flex-wrap">
+                                                <div className="flex flex-col items-center relative w-full">
+                                                    <div className="w-full">
+                                                        <div className="flex border border-gray-200 bg-white rounded">
+                                                            <div className="flex flex-auto flex-wrap py-4 px-2">
                                                                 {createCategoriesSelector?.map(
                                                                     (category: any, index: number) => {
                                                                         return (
                                                                             <div
-                                                                                className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700 bg-teal-100 border border-teal-300 "
+                                                                                className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700"
                                                                                 onClick={() => {
                                                                                     handleRemoveCategory(
                                                                                         category.id,
@@ -344,11 +345,11 @@ const EditCourse: React.FC = () => {
                                                                 <div className="flex-1">
                                                                     <input
                                                                         disabled
-                                                                        className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-gray-800"
+                                                                        className="bg-transparent px-2 appearance-none outline-none h-full w-full text-gray-800"
                                                                     />
                                                                 </div>
                                                             </div>
-                                                            <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
+                                                            <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200">
                                                                 <button
                                                                     type="button"
                                                                     className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
@@ -373,13 +374,13 @@ const EditCourse: React.FC = () => {
                                                         </div>
                                                     </div>
                                                     {displayCategories && (
-                                                        <div className="shadow top-100 bg-white z-[99] w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
-                                                            <div className="flex flex-col w-full overflow-y-scroll">
+                                                        <div className="absolute shadow top-[100%] bg-white z-40 w-full left-0 rounded max-h-60 overflow-y-auto mt-1">
+                                                            <div className="flex flex-col w-full">
                                                                 {categoriesSelector.map(
                                                                     (category: any, index: number) => {
                                                                         return (
                                                                             <div
-                                                                                className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
+                                                                                className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
                                                                                 onClick={() =>
                                                                                     handleAddCategories(
                                                                                         category.id,
@@ -387,7 +388,7 @@ const EditCourse: React.FC = () => {
                                                                                     )
                                                                                 }
                                                                             >
-                                                                                <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                                                                                <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-bgHovbg-backgroundHover">
                                                                                     <div className="w-full items-center flex">
                                                                                         <div className="mx-2 leading-6  ">
                                                                                             {category.title}{" "}
@@ -403,17 +404,17 @@ const EditCourse: React.FC = () => {
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="categories item flex-1">
-                                                <label htmlFor="category" className="text-lg mb-1 tablet:text-xl">
+                                            <div className="status flex-1 flex flex-col">
+                                                <label htmlFor="status" className="text-sm mb-1 font-medium tablet:text-xl">
                                                     Status
                                                 </label>
-                                                <div className="flex flex-col">
-                                                    <div className="w-full  svelte-1l8159u">
-                                                        <div className="my-2 p-4 flex border border-gray-200 bg-white rounded svelte-1l8159u">
-                                                            <div className="flex flex-auto flex-wrap">
+                                                <div className="flex flex-col items-center relative w-full">
+                                                    <div className="w-full ">
+                                                        <div className="flex border border-gray-200 rounded">
+                                                            <div className="flex flex-auto flex-wrap py-4 px-2">
                                                                 <div>{status}</div>
                                                             </div>
-                                                            <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200 svelte-1l8159u">
+                                                            <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200">
                                                                 <button
                                                                     type="button"
                                                                     className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
@@ -440,15 +441,15 @@ const EditCourse: React.FC = () => {
                                                         </div>
                                                     </div>
                                                     {displayStatus && (
-                                                        <div className="shadow top-100 bg-white z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
+                                                        <div className="absolute shadow top-[100%]  mt-1 bg-white z-40 w-full lef-0 rounded max-h-select overflow-y-auto">
                                                             <div className="flex flex-col w-full">
                                                                 <div
-                                                                    className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
+                                                                    className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
                                                                     onClick={() => {
                                                                         setStatus("Uncomplete");
                                                                     }}
                                                                 >
-                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:bg-backgroundHover">
                                                                         <div className="w-full items-center flex">
                                                                             <div className="mx-2 leading-6  ">
                                                                                 Uncomplete
@@ -457,12 +458,12 @@ const EditCourse: React.FC = () => {
                                                                     </div>
                                                                 </div>
                                                                 <div
-                                                                    className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100"
+                                                                    className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
                                                                     onClick={() => {
                                                                         setStatus("Completed");
                                                                     }}
                                                                 >
-                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative">
                                                                         <div className="w-full items-center flex">
                                                                             <div className="mx-2 leading-6  ">
                                                                                 Completed
@@ -476,8 +477,8 @@ const EditCourse: React.FC = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex flex-col">
-                                            <label htmlFor="description" className="text-lg mb-1 tablet:text-xl">
+                                        <div className="flex-1 flex flex-col">
+                                            <label htmlFor="description" className="text-sm mb-1 font-medium tablet:text-xl">
                                                 Description
                                             </label>
                                             <Field
@@ -485,10 +486,11 @@ const EditCourse: React.FC = () => {
                                                 as="textarea"
                                                 name="description"
                                                 type="text"
-                                                className={`px-2 py-[21px] rounded-lg border-[1px] outline-none ${formik.errors.description && formik.touched.description
-                                                    ? "border-error"
-                                                    : ""
-                                                    }`}
+                                                className={`flex-1 w-full resize-none rounded-md border border-[#e0e0e0] py-3 px-4  outline-none ${
+                                                    formik.errors.description && formik.touched.description
+                                                        ? "border-error"
+                                                        : ""
+                                                }`}
                                             />
                                             <ErrorMessage
                                                 name="description"
@@ -498,17 +500,17 @@ const EditCourse: React.FC = () => {
                                         </div>
                                         <div className="flex justify-end mt-4">
                                             <button
-                                                className="py-2 px-4 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
+                                                className="btn btn-primary text-lg"
                                                 type="submit"
-                                            // disabled={error !== "" ? true : false}
+                                                // disabled={error !== "" ? true : false}
                                             >
                                                 Save
                                             </button>
                                             <button
-                                                className="py-2 px-4 rounded-lg text-xl border-[1px] hover:bg-slate-100"
+                                                className="btn text-lg ml-2"
                                                 type="submit"
                                                 onClick={() => navigate("/my-courses")}
-                                            // disabled={error !== "" ? true : false}
+                                                // disabled={error !== "" ? true : false}
                                             >
                                                 Cancel
                                             </button>
@@ -518,28 +520,26 @@ const EditCourse: React.FC = () => {
                             </Formik>
                         </div>
 
-                        <div className="flex-1 p-4 flex flex-col">
-                            <div className="flex gap-6">
+                        <div className="flex-1 p-4 flex flex-col border border-dashed border-black rounded-lg m-4">
+                            <div className="flex flex-col gap-4 tablet:flex-row tablet:justify-between">
                                 <input
                                     type="text"
-                                    className="px-2 py-[14px] rounded-lg border-[1px] outline-none flex-1"
+                                    className="px-2 py-2 rounded-lg border-[1px] outline-none flex-1 max-w-2xl"
                                     placeholder="Name's section"
                                     value={section}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         setSection(e.target.value);
                                     }}
                                 />
-                                <button
-                                    className="py-[14px] px-4 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80 flex-3"
-                                    onClick={handleAddSection}
-                                >
+                                <button className="btn btn-primary text-lg flex-2" onClick={handleAddSection}>
                                     Add section
                                 </button>
                             </div>
                             {/* handle list lesson */}
                             <div className="mt-2">
-                                {sectionOfCourse.length <= 0 ? <h1 className="text-center text-2xl text-error">There are no sections yet!</h1>
-                                    :
+                                {sectionOfCourse.length <= 0 ? (
+                                    <h1 className="text-center text-2xl text-error">There are no sections yet!</h1>
+                                ) : (
                                     sectionOfCourse.map((section, index) => (
                                         <Accordion
                                             key={index}
@@ -551,7 +551,7 @@ const EditCourse: React.FC = () => {
                                             isDisplayBtn={true}
                                         />
                                     ))
-                                }
+                                )}
                             </div>
                         </div>
                     </div>
@@ -562,7 +562,7 @@ const EditCourse: React.FC = () => {
                     {/* POPUP EDIT */}
                     {isDisplayEditModal && (
                         <div className="absolute z-50 w-full h-full top-0 bg-black/50 flex justify-center items-center ">
-                            <div className="bg-[#F8FFF8] p-4 w-[400px] flex flex-col items-center justify-center rounded-lg">
+                            <div className="bg-[#F8FFF8] p-4 w-[400px] flex flex-col items-center justify-center rounded-lg ">
                                 <form className="flex flex-col gap-1 w-full">
                                     <div className="">Title</div>
                                     <input
