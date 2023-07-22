@@ -1,14 +1,12 @@
 import { Request, Response } from "express";
-import { loginSchema, registrationSchema } from "../validations/auth";
 import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
-import { RequestHasLogin } from "../types/request";
 import service from "../services/index";
 import { SectionSchema, UpdateSectionSchema } from "../validations/section";
 
 class SectionController {
-    async getSection(req: Request, res: Response): Promise<Response> {
-        const response = await service.SectionService.getSection(req);
+    async getAllSectionByCourseId(req: Request, res: Response): Promise<Response> {
+        const response = await service.SectionService.getAllSectionByCourseId(req);
 
         return res.status(response.getStatusCode()).json(response);
     }

@@ -61,10 +61,10 @@ model Enrolled {
   created_at DateTime @default(now())
 
   user_id Int
-  user    User @relation(fields: [user_id], references: [id])
+  user    User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   course_id Int
-  course    Course @relation(fields: [course_id], references: [id])
+  course    Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
 }
 
 model Rating {
@@ -74,10 +74,10 @@ model Rating {
   created_at DateTime @default(now())
 
   user_id Int
-  user    User @relation(fields: [user_id], references: [id])
+  user    User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   course_id Int
-  course    Course @relation(fields: [course_id], references: [id])
+  course    Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
 }
 
 model Section {
@@ -88,7 +88,7 @@ model Section {
   updated_at DateTime @updatedAt
 
   course_id Int
-  course    Course @relation(fields: [course_id], references: [id])
+  course    Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
 
   lessons Lesson[]
 }
@@ -102,7 +102,7 @@ model Lesson {
   updated_at DateTime @updatedAt
 
   section_id Int
-  section    Section @relation(fields: [section_id], references: [id])
+  section    Section @relation(fields: [section_id], references: [id], onDelete: Cascade)
 }
 
 model Category {
@@ -117,10 +117,10 @@ model CourseCategory {
   created_at DateTime @default(now())
 
   course_id Int
-  course    Course @relation(fields: [course_id], references: [id])
+  course    Course @relation(fields: [course_id], references: [id], onDelete: Cascade)
 
   category_id Int
-  category    Category @relation(fields: [category_id], references: [id])
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
 
   @@map(name: "courses_categories")
 }

@@ -18,8 +18,6 @@ type AccordionType = {
 const Accordion: React.FC<AccordionType> = (props) => {
     const [show, setShow] = useState<boolean>(false);
 
-    // const lessonList: Lesson[] = useAppSelector((state) => state.lessonSlice.lessontionList) ?? [];
-
     return (
         <>
             <div>
@@ -46,10 +44,10 @@ const Accordion: React.FC<AccordionType> = (props) => {
                         {props.isDisplayBtn && (
                             <div className="flex gap-2">
                                 <div className="cursor-pointer" onClick={() => {
-                                        if (props.handleDisplayAddSectionModal) {
-                                            props.handleDisplayAddSectionModal(props.section.id);
-                                        }
-                                    }} >
+                                    if (props.handleDisplayAddSectionModal) {
+                                        props.handleDisplayAddSectionModal(props.section.id);
+                                    }
+                                }} >
                                     <AddIcon />
                                 </div>
                                 <div
