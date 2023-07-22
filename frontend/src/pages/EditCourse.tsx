@@ -191,6 +191,7 @@ const EditCourse: React.FC = () => {
         });
     };
 
+
     return (
         <>
             {isLoading !== true && (
@@ -239,10 +240,16 @@ const EditCourse: React.FC = () => {
                                 onSubmit={changeInformation}
                             >
                                 {(formik) => (
-                                    <form onSubmit={formik.handleSubmit} className="mt-4 laptop:mt-0 flex-1 flex flex-col border border-dashed border-black rounded-lg p-4 bg-background shadow-lg">
+                                    <form
+                                        onSubmit={formik.handleSubmit}
+                                        className="mt-4 laptop:mt-0 flex-1 flex flex-col border border-dashed border-black rounded-lg p-4 bg-background shadow-lg"
+                                    >
                                         <div className="flex flex-col gap-2 shrink-0 mb-2 tablet:flex-row tablet:gap-0">
                                             <div className="flex-1 flex flex-col tablet:mr-8">
-                                                <label htmlFor="title" className="text-sm mb-1 font-medium tablet:text-xl">
+                                                <label
+                                                    htmlFor="title"
+                                                    className="text-sm mb-1 font-medium tablet:text-xl"
+                                                >
                                                     Title
                                                 </label>
                                                 <Field
@@ -262,7 +269,10 @@ const EditCourse: React.FC = () => {
                                                 />
                                             </div>
                                             <div className="flex-1 flex flex-col">
-                                                <label htmlFor="summary" className="text-sm mb-1 font-medium tablet:text-xl">
+                                                <label
+                                                    htmlFor="summary"
+                                                    className="text-sm mb-1 font-medium tablet:text-xl"
+                                                >
                                                     Summary
                                                 </label>
                                                 <Field
@@ -287,7 +297,10 @@ const EditCourse: React.FC = () => {
                                         </div>
                                         <div className="flex flex-col gap-2 shrink-0 mb-2 tablet:flex-row tablet:gap-8">
                                             <div className="categories flex flex-col flex-1">
-                                                <label htmlFor="category" className="text-sm mb-1 font-medium tablet:text-xl">
+                                                <label
+                                                    htmlFor="category"
+                                                    className="text-sm mb-1 font-medium tablet:text-xl"
+                                                >
                                                     Categories
                                                 </label>
                                                 <div className="flex flex-col items-center relative w-full">
@@ -405,7 +418,10 @@ const EditCourse: React.FC = () => {
                                                 </div>
                                             </div>
                                             <div className="status flex-1 flex flex-col">
-                                                <label htmlFor="status" className="text-sm mb-1 font-medium tablet:text-xl">
+                                                <label
+                                                    htmlFor="status"
+                                                    className="text-sm mb-1 font-medium tablet:text-xl"
+                                                >
                                                     Status
                                                 </label>
                                                 <div className="flex flex-col items-center relative w-full">
@@ -478,7 +494,10 @@ const EditCourse: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="flex-1 flex flex-col">
-                                            <label htmlFor="description" className="text-sm mb-1 font-medium tablet:text-xl">
+                                            <label
+                                                htmlFor="description"
+                                                className="text-sm mb-1 font-medium tablet:text-xl"
+                                            >
                                                 Description
                                             </label>
                                             <Field
@@ -561,26 +580,28 @@ const EditCourse: React.FC = () => {
                     )}
                     {/* POPUP EDIT */}
                     {isDisplayEditModal && (
-                        <div className="absolute z-50 w-full h-full top-0 bg-black/50 flex justify-center items-center ">
+                        <div className="fixed z-50 w-full h-full top-0 bottom-0 bg-black/50 flex justify-center items-center shadow-lg">
                             <div className="bg-[#F8FFF8] p-4 w-[400px] flex flex-col items-center justify-center rounded-lg ">
+                                <h1 className="text-3xl mb-1 font-bold text-center text-title">EDIT SECTION</h1>
+
                                 <form className="flex flex-col gap-1 w-full">
-                                    <div className="">Title</div>
+                                    <div className="text-sm mb-1 tablet:text-xl font-medium">Section title</div>
                                     <input
                                         type="text"
                                         value={itemTitle}
-                                        className="px-2 py-[14px] rounded-lg border-[1px] outline-none flex-1"
+                                        className="px-2 py-4 rounded-lg border-[1px] outline-none max-w-lg"
                                         onChange={(e) => setItemTitle(e.target.value)}
                                     />
                                 </form>
                                 <div className="mt-2 flex justify-end w-full">
                                     <button
-                                        className="py-2 px-4 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
+                                        className="btn btn-primary text-lg"
                                         onClick={() => handleEditSection(idItem, itemTitle)}
                                     >
                                         Save
                                     </button>
                                     <button
-                                        className="py-2 px-4 mr-1 bg-white rounded-lg text-xl hover:opacity-80 border-[1px] border-black"
+                                        className="btn text-lg ml-2"
                                         onClick={() => setIsDisplayEditModal(!isDisplayEditModal)}
                                     >
                                         Cancel
