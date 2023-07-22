@@ -1,4 +1,4 @@
-import multer from "multer";
+import multer, { MulterError } from "multer";
 
 
 
@@ -21,6 +21,8 @@ export const uploadFile = multer({
             cb(null, true);
         } else if (file.mimetype === "image/jpg") {
             cb(null, true);
+        } else {
+            return cb(new Error("Invalid file type: Only .png, .jpeg or .jpg is allowed"))
         }
     },
 }).single("thumbnail");
@@ -50,7 +52,7 @@ export const uploadVideo = multer({
         } else if (file.mimetype === "video/mov") {
             cb(null, true);
         } else {
-            cb(null, false);
+            cb(new Error("Invalid file type: Only .mp4, .gif or .mov is allowed"));
         }
     },
 }).single("video");
