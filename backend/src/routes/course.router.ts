@@ -1,13 +1,9 @@
 import { Router } from "express";
 import controllers from "../controllers/index";
-import { uploadFileMdw, uploadVideoMdw } from "../middlewares/multer";
+import { uploadFileMdw } from "../middlewares/multer";
 import { isLogin } from "../middlewares/isLogin";
 
 const courseRouter: Router = Router();
-
-courseRouter.post("/test", uploadVideoMdw, (req, res) => {
-    return res.json({ message: req.file })
-})
 
 courseRouter.put("/change-information", isLogin, controllers.courseController.editCourse);
 courseRouter.post("/", isLogin, uploadFileMdw, controllers.courseController.createCourse);

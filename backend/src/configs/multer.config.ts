@@ -1,7 +1,4 @@
-import multer, { MulterError } from "multer";
-
-
-
+import multer from "multer";
 
 const storage = multer.diskStorage({
     filename: (req, file: Express.Multer.File, cb) => {
