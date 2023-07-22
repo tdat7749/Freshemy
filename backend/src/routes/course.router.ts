@@ -5,15 +5,15 @@ import { isLogin } from "../middlewares/isLogin";
 
 const courseRouter: Router = Router();
 
-courseRouter.post("/test", uploadVideoMdw, (req, res) => {
-    return res.json({ message: req.file })
-})
+
+courseRouter.get("/:course_id/section", isLogin, controllers.sectionController.getAllSectionByCourseId)
 
 courseRouter.put("/change-information", isLogin, controllers.courseController.editCourse);
 courseRouter.post("/", isLogin, uploadFileMdw, controllers.courseController.createCourse);
 courseRouter.post("/registration", isLogin, controllers.courseController.registerCourse);
 courseRouter.delete("/unsubcribe", isLogin, controllers.courseController.unsubcribeCourse);
 courseRouter.patch("/change-thumbnail", isLogin, uploadFileMdw, controllers.courseController.editThumbnail);
+
 
 courseRouter.get("/search-my-courses", isLogin, controllers.courseController.searchMyCourses);
 

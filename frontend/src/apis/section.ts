@@ -1,6 +1,6 @@
 import { EditSection as EditSectionType, Section } from "../types/section";
 import apiCaller from "../api-config/apiCaller";
-import { HTTP_DELETE, HTTP_POST, HTTP_PUT } from "../utils/contants";
+import { HTTP_DELETE, HTTP_POST, HTTP_PUT, HTTP_GET } from "../utils/contants";
 
 export const addSection = async (values: Section) => {
     const path = "/sections";
@@ -19,3 +19,10 @@ export const deleteSection = async (id: number) => {
     const response = await apiCaller(HTTP_DELETE, path);
     return response;
 };
+
+export const getSectionByCourseId = async (values: number) => {
+    const path = `/courses/${values}/section`
+    const response = await apiCaller(HTTP_GET, path)
+
+    return response
+}
