@@ -11,7 +11,7 @@ import { lessonActions } from "../redux/slice";
 type AddLessonModalProps = {
     handleDelete: () => void;
     handleCancel: () => void;
-    id: number
+    id: number;
 };
 
 const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
@@ -23,7 +23,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
     const initialValue: AddLessonType = {
         title: "",
         video: null,
-        section_id:""
+        section_id: "",
     };
 
     useEffect(() => {
@@ -37,10 +37,10 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
     const handleOnSubmit = (values: AddLessonType) => {
         let formData = new FormData();
         formData.append("title", values.title);
-        formData.append("section_id",props.id.toString())
+        formData.append("section_id", props.id.toString());
         formData.append("video", video as File);
 
-        console.log(formData.get("video"),formData.get("title"))
+        console.log(formData.get("video"), formData.get("title"));
         //@ts-ignore
         dispatch(lessonActions.addLesson(formData));
     };
@@ -53,23 +53,24 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         <div className="fixed z-50 top-0 left-0 right-0 bottom-0 bg-black/50 flex items-center justify-center">
             <div className="  max-w-[360px] tablet:max-w-[550px] max-h-[630px] tablet:max-h-[1000px] rounded-[12px] bg-background mx-auto tablet:mx-0 flex-1">
                 <div className="w-full p-[12px]">
+                    <h1 className="text-3xl mb-1 font-bold text-center text-title">ADD NEW LESSON</h1>
                     <Formik initialValues={initialValue} onSubmit={handleOnSubmit} innerRef={formikRef}>
                         {(formik) => (
                             <form
                                 onSubmit={formik.handleSubmit}
                                 // validationSchema={addLessonValidationSchema}
                                 onChange={handleChange}
-                                className="w-full space-y-[5px] tablet:space-y-[20px]"
+                                className="text-sm mb-1 tablet:text-xl font-medium"
                             >
-                                <div className="ml-[20px] mr-[20px]">
-                                    <label htmlFor="title" className="text-[16px]">
+                                <div className="px-5 py-3">
+                                    <label htmlFor="title" className="text-sm mb-1 tablet:text-xl font-medium">
                                         Title
                                     </label>{" "}
                                     <br />
                                     <Field
                                         type="text"
                                         name="title"
-                                        className={`' w-full h-[40px] rounded-[8px] px-[8px] border-[1px] border-black  outline-none ' ${
+                                        className={`w-full px-2 py-2 rounded-lg border-[1px] outline-none ${
                                             formik.errors.title && formik.touched.title && "border-error"
                                         } `}
                                     />
@@ -80,17 +81,17 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                                         className="text-[14px] text-error font-medium"
                                     />
                                 </div>
-                                <div className="ml-[20px] mr-[20px] ">
-                                    <label htmlFor="video" className="text-[20px]">
+                                <div className="px-5 py-3 ">
+                                    <label htmlFor="video" className="text-sm mb-1 tablet:text-xl font-medium">
                                         Upload video
                                     </label>{" "}
                                     <br />
                                     <input
                                         id="video"
                                         ref={formikRef}
-                                        type="File"
+                                        type="file"
                                         name="video"
-                                        className={`' w-full h-[48px] rounded-[8px] px-[8px] border-[1px] border-black bg-white outline-none mt-[15px]' ${
+                                        className={`file-input file-input-bordered file-input-primary w-full ${
                                             formik.errors.video && formik.touched.video && "border-error"
                                         }`}
                                         onChange={handleAddVideo}
@@ -106,21 +107,16 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                                         {message}
                                     </span>
                                 )}
-                                <div className="py-[12px]  mt-[30px] tablte:mt-[60px]">
+                                <div className="flex justify-end px-4">
                                     <button
                                         type="submit"
                                         name="save_button"
-                                        className=" bg-switch hover:opacity-80 text-white border-black border-[1px]  w-2/5 tablet:w-[79px] h-[56px] tablet:h-[56px] 
-                                        py-[8px] font-medium text-[20px] rounded-[12px] ml-[40px] tablet:ml-[315px] disabled:opacity-50 "
+                                        className="btn btn-primary text-lg"
                                         disabled={error !== "" ? true : false}
                                     >
                                         Save
                                     </button>
-                                    <button
-                                        onClick={props.handleCancel}
-                                        type="button"
-                                        className="bg-white hover:opacity-80 text-black border-black border-[1px] w-2/5 tablet:w-[100px] h-[56px] tablet:h-[56px] py-[8px] font-medium text-[20px] rounded-[12px] ml-[10px]"
-                                    >
+                                    <button onClick={props.handleCancel} type="button" className="btn text-lg ml-2">
                                         Cancel
                                     </button>
                                 </div>

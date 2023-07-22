@@ -78,7 +78,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
             {show &&
                 props.section.lessons &&
                 props.section?.lessons.map((lesson, index) => (
-                    <div className="py-4 pl-8 border rounded-lg" key={index}>
+                    <div className="py-4 pl-8 border rounded-lg my-2" key={index}>
                         <p>{lesson.title}</p>
                     </div>
                 ))}

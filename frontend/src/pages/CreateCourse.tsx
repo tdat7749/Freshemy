@@ -77,12 +77,13 @@ const CreateCourse: FC = () => {
     };
 
     const handleAddCategories = (id: number, oldIndex: number, formik: any) => {
-        const index = categories.findIndex((category: CategoryType) => category.id === id);
-        dispatch(courseActions.addCategories(index));
-        formik.setFieldValue(
-            "categories",
-            formik.values.categories + 1
-        );
+        if (formik.values.categories < 4) {
+            const index = categories.findIndex((category: CategoryType) => category.id === id);
+            dispatch(courseActions.addCategories(index));
+            formik.setFieldValue("categories", formik.values.categories + 1);
+        } else {
+            formik.setFieldError("categories", "Categories must be under 4");
+        }
     };
 
     const handleRemoveCategory = (id: number, oldIndex: number, formik: any) => {
@@ -295,13 +296,11 @@ const CreateCourse: FC = () => {
                                                                                 key={index}
                                                                                 className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
                                                                                 onClick={() => {
-                                                                                    if (formik.values.categories <= 4) {
-                                                                                        handleAddCategories(
-                                                                                            category.id,
-                                                                                            index,
-                                                                                            formik
-                                                                                        );
-                                                                                    }
+                                                                                    handleAddCategories(
+                                                                                        category.id,
+                                                                                        index,
+                                                                                        formik
+                                                                                    );
                                                                                 }}
                                                                             >
                                                                                 <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-bgHovbg-backgroundHover">
