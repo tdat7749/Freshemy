@@ -19,6 +19,7 @@ const CreateCourse: FC = () => {
     const [displayCategories, setdisplayCategorie] = useState<boolean>(false);
     const [displayStatus, setDisplayStatus] = useState<boolean>(false);
     const [status, setStatus] = useState<string>("Uncomplete");
+    const [errorCategories, setErrorCategories] = useState<number>();
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
@@ -39,7 +40,7 @@ const CreateCourse: FC = () => {
 
     const initialValues: CreateCourseType = {
         title: "",
-        categories: "Categories",
+        categories: 0,
         status: 0,
         summary: "",
         description: "",
@@ -48,28 +49,30 @@ const CreateCourse: FC = () => {
 
     const handleOnSubmit = async (values: CreateCourseType) => {
         // Trong request form thì value chỉ được là text hoặc file
-        const categoriesId: number[] = createCategoriesSelector.map((category: CategoryType) => {
-            return category.id;
-        });
-        let statusValue = status === "Uncomplete" ? "0" : "1";
-        const slug = slugify(values.title.toLowerCase());
-        let formData = new FormData();
-        formData.append("title", values.title);
-        formData.append("description", values.description);
-        formData.append("slug", slug);
-        formData.append("status", statusValue);
-        formData.append("thumbnail", thumbnail as File);
-        formData.append("summary", values.summary);
-        categoriesId.forEach((item) => {
-            formData.append("categories[]", item.toString());
-        });
+        if (!errorCategories) {
+            const categoriesId: number[] = createCategoriesSelector.map((category: CategoryType) => {
+                return category.id;
+            });
+            let statusValue = status === "Uncomplete" ? "0" : "1";
+            const slug = slugify(values.title.toLowerCase());
+            let formData = new FormData();
+            formData.append("title", values.title);
+            formData.append("description", values.description);
+            formData.append("slug", slug);
+            formData.append("status", statusValue);
+            formData.append("thumbnail", thumbnail as File);
+            formData.append("summary", values.summary);
+            categoriesId.forEach((item) => {
+                formData.append("categories[]", item.toString());
+            });
 
-        // @ts-ignore
-        dispatch(courseActions.createCourses(formData)).then((response) => {
-            if (response.payload.status_code === 201) {
-                navigate("/my-courses");
-            }
-        });
+            // @ts-ignore
+            dispatch(courseActions.createCourses(formData)).then((response) => {
+                if (response.payload.status_code === 201) {
+                    navigate("/my-courses");
+                }
+            });
+        }
     };
 
     const handleDeleteMessage = () => {
@@ -77,16 +80,31 @@ const CreateCourse: FC = () => {
     };
 
     const handleAddCategories = (id: number, oldIndex: number) => {
-        const index = categories.findIndex((category: CategoryType) => category.id === id);
-        dispatch(courseActions.addCategories(index));
+        if (createCategoriesSelector.length <= 3) {
+            setErrorCategories(0);
+            const index = categories.findIndex((category: CategoryType) => category.id === id);
+            dispatch(courseActions.addCategories(index));
+        } else {
+            setErrorCategories(1);
+        }
     };
 
     const handleRemoveCategory = (id: number, oldIndex: number) => {
-        const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
-        dispatch(courseActions.removeCategories(index));
+        console.log(createCategoriesSelector.length)
+        if (createCategoriesSelector.length > 0) {
+            setErrorCategories(0);
+            const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
+            dispatch(courseActions.removeCategories(index));
+        }
+        if(createCategoriesSelector.length - 1 <= 0) {
+            setErrorCategories(2);
+        }
     };
 
     const handleDisplay = () => {
+        if (createCategoriesSelector.length == 4) {
+            setErrorCategories(0);
+        }
         setdisplayCategorie(!displayCategories);
     };
 
@@ -111,7 +129,7 @@ const CreateCourse: FC = () => {
             <div className="min-h-screen h-full px-4 tablet:px-[60px]">
                 <h1 className="text-center text-[32px] py-4 font-bold text-title">CREATE COURSE</h1>
                 <div className="w-full flex justify-center items-center shrink-0">
-                    <div className="m-4 rounded-xl border border-black w-full max-w-[982px] bg-background border-dashed shadow-lg">
+                    <div className="m-4 rounded-xl border border-black w-full max-w-[982px] bg-background">
                         <Formik
                             initialValues={initialValues}
                             validationSchema={createValidationSchema}
@@ -125,7 +143,7 @@ const CreateCourse: FC = () => {
                                             <img
                                                 ref={imageRef}
                                                 alt="Thumbnail"
-                                                className="w-60 h-60 rounded-lg mr-3 outline-none border border-dashed border-black tablet:w-80 tablet:h-80 laptop:w-96 laptop:h-96"
+                                                className="w-32 h-32 rounded-lg mr-3 outline-none border border-dashed border-black tablet:w-60 tablet:h-60"
                                             />
                                             <div className="flex flex-col gap-3">
                                                 <div className="">
@@ -135,10 +153,21 @@ const CreateCourse: FC = () => {
                                                 <Field
                                                     name="thumbnail"
                                                     type="file"
+                                                    value={null}
+                                                    accept=".png, .jpg"
                                                     className="file-input file-input-bordered file-input-primary w-full max-w-xs"
                                                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                        formik.setFieldValue(
+                                                            "thumbnail",
+                                                            event.currentTarget.files![0]
+                                                        );
                                                         onChangeInputFile(event);
                                                     }}
+                                                />
+                                                <ErrorMessage
+                                                    name="thumbnail"
+                                                    component="span"
+                                                    className="text-[14px] text-error font-medium"
                                                 />
                                             </div>
                                         </div>
@@ -146,7 +175,10 @@ const CreateCourse: FC = () => {
                                     <div className="flex flex-row gap-4 my-3">
                                         <div className="flex-1 flex flex-col gap-3">
                                             <div className="flex flex-col">
-                                                <label htmlFor="title" className="text-sm mb-1 font-medium tablet:text-xl">
+                                                <label
+                                                    htmlFor="title"
+                                                    className="text-sm mb-1 font-medium tablet:text-xl"
+                                                >
                                                     Title
                                                 </label>
                                                 <Field
@@ -165,19 +197,22 @@ const CreateCourse: FC = () => {
                                                 />
                                             </div>
                                             <div className="flex flex-col">
-                                                <label htmlFor="category" className="text-sm mb-1 tablet:text-xl font-medium">
+                                                <label
+                                                    htmlFor="category"
+                                                    className="text-sm mb-1 tablet:text-xl font-medium"
+                                                >
                                                     Categories
                                                 </label>
                                                 <div className="flex flex-col items-center relative max-w-lg">
                                                     <div className="w-full">
                                                         <div className="flex border border-gray-200 bg-white rounded">
-                                                            <div className="flex flex-auto flex-wrap py-4 px-2 ">
+                                                            <div className="flex flex-auto flex-wrap py-4 px-2 h-full w-full">
                                                                 {createCategoriesSelector?.map(
                                                                     (category: CategoryType, index: number) => {
                                                                         return (
                                                                             <div
                                                                                 key={index}
-                                                                                className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700"
+                                                                                className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700 bg-teal-100 border border-teal-300 "
                                                                                 onClick={() => {
                                                                                     handleRemoveCategory(
                                                                                         category.id,
@@ -223,6 +258,7 @@ const CreateCourse: FC = () => {
                                                                 )}
                                                                 <div className="flex-1">
                                                                     <input
+                                                                        readOnly
                                                                         name="categories"
                                                                         className="bg-transparent px-2 appearance-none outline-none h-full w-full text-gray-800"
                                                                     />
@@ -252,35 +288,57 @@ const CreateCourse: FC = () => {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    {errorCategories == 1 ? (
+                                                        <span className="text-[14px] text-error font-medium">
+                                                            Categories Must be under 4
+                                                        </span>
+                                                    ) : (
+                                                        ""
+                                                    )}
+                                                    {errorCategories == 2 ? (
+                                                        <span className="text-[14px] text-error font-medium">
+                                                            Categories is required
+                                                        </span>
+                                                    ) : (
+                                                        ""
+                                                    )}
                                                     {displayCategories && (
                                                         <div className="absolute shadow top-[100%] bg-white z-40 w-full left-0 rounded max-h-60 overflow-y-auto mt-1">
-                                                            <div className="flex flex-col w-full">
-                                                                {categories.map((category: any, index: number) => {
-                                                                    return (
-                                                                        <div
-                                                                            key={index}
-                                                                            className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
-                                                                            onClick={() =>
-                                                                                handleAddCategories(category.id, index)
-                                                                            }
-                                                                        >
-                                                                            <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-bgHovbg-backgroundHover">
-                                                                                <div className="w-full items-center flex">
-                                                                                    <div className="mx-2 leading-6  ">
-                                                                                        {category.title}{" "}
+                                                            <div className="flex flex-col w-full overflow-y-auto">
+                                                                {categories.map(
+                                                                    (category: CategoryType, index: number) => {
+                                                                        return (
+                                                                            <div
+                                                                                key={index}
+                                                                                className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
+                                                                                onClick={() => {
+                                                                                    handleAddCategories(
+                                                                                        category.id,
+                                                                                        index
+                                                                                    );
+                                                                                }}
+                                                                            >
+                                                                                <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-bgHovbg-backgroundHover">
+                                                                                    <div className="w-full items-center flex">
+                                                                                        <div className="mx-2 leading-6  ">
+                                                                                            {category.title}{" "}
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                        </div>
-                                                                    );
-                                                                })}
+                                                                        );
+                                                                    }
+                                                                )}
                                                             </div>
                                                         </div>
                                                     )}
                                                 </div>
                                             </div>
                                             <div className="flex flex-col">
-                                                <label htmlFor="status" className="text-sm mb-1 tablet:text-xl font-medium">
+                                                <label
+                                                    htmlFor="status"
+                                                    className="text-sm mb-1 tablet:text-xl font-medium"
+                                                >
                                                     Status
                                                 </label>
                                                 <div className="flex flex-col items-center relative max-w-lg">
@@ -324,7 +382,7 @@ const CreateCourse: FC = () => {
                                                                         setStatus("Uncomplete");
                                                                     }}
                                                                 >
-                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:bg-backgroundHover">
+                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:bg-bgHo">
                                                                         <div className="w-full items-center flex">
                                                                             <div className="mx-2 leading-6 ">
                                                                                 Uncomplete
@@ -353,7 +411,10 @@ const CreateCourse: FC = () => {
                                             </div>
                                         </div>
                                         <div className="flex-1 flex flex-col">
-                                            <label htmlFor="description" className="text-sm mb-1 font-medium tablet:text-xl">
+                                            <label
+                                                htmlFor="description"
+                                                className="text-sm mb-1 font-medium tablet:text-xl"
+                                            >
                                                 Description
                                             </label>
                                             <Field
@@ -364,7 +425,7 @@ const CreateCourse: FC = () => {
                                                     formik.errors.description && formik.touched.description
                                                         ? "border-error"
                                                         : ""
-                                                } flex-1 w-full resize-none rounded-md border border-[#e0e0e0] py-3 px-4  outline-none focus:shadow-md`}
+                                                } flex-1 w-full resize-none rounded-md border border-[#e0e0e0] py-3 px-4  outline-none focus:shadow-md1`}
                                             />
                                             <ErrorMessage
                                                 name="description"
