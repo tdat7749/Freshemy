@@ -22,7 +22,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
         <>
             <div>
                 <h2 id="accordion-collapse-heading-1">
-                    <div className="flex items-center justify-between w-full p-4 bg-primary rounded-lg my-1 ">
+                    <div className={` "flex items-center justify-between w-full p-4 border-black border-[1px]  bg-primary rounded-lg my-1 ${show?" shadow-xl":""}" `}>
                         <div className="flex gap-2 items-center cursor-pointer" onClick={() => setShow(!show)}>
                             <svg
                                 className={`w-3 h-3 ${show ? "rotate-180" : ""} shrink-0`}
