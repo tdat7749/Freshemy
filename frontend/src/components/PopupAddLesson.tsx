@@ -59,8 +59,6 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         formData.append("video", video as File);
         //@ts-ignore
         dispatch(lessonActions.addLesson(formData)).then((response)=>{
-            console.log(response.payload)
-            console.log(response.payload.status_code)
             if(response.payload.status_code!==200){
                 toast.error(response.payload.message)
             }
@@ -74,9 +72,6 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         
     };
 
-    const handleChange = () => {
-        
-    };
     return (
         <div className="fixed z-50 top-0 left-0 right-0 bottom-0 bg-black/50 flex items-center justify-center">
             <Toaster />
@@ -87,7 +82,6 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                         {(formik) => (
                             <form
                                 onSubmit={formik.handleSubmit}
-                                onChange={handleChange}
                                 className="text-sm mb-1 tablet:text-xl font-medium"
                             >
                                 <div className="px-5 py-3">
@@ -119,9 +113,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                                         ref={formikRef}
                                         type="file"
                                         name="video"
-                                        className={`file-input file-input-bordered file-input-primary w-full ${
-                                            formik.errors.video && formik.touched.video && "border-error"
-                                        }`}
+                                        className={` file-input file-input-bordered file-input-primary w-full ${error !==""?"border-red border-[1px]":"" } `}
                                         onChange={handleChangeVideo}
                                     />
                                     {error !== "" && (
