@@ -7,6 +7,9 @@ import { useAppSelector } from "../hooks/hooks";
 import { Link } from "react-router-dom";
 import { setMessageEmpty } from "../redux/slice/user.slice";
 import { changePasswordValidationSchema } from "../validations/user";
+
+import toast from "react-hot-toast";
+
 const ChangePassword: React.FC = () => {
     let message = useAppSelector((state) => state.userSlice.message) ?? "";
     let error = useAppSelector((state) => state.userSlice.error) ?? "";
@@ -27,7 +30,13 @@ const ChangePassword: React.FC = () => {
 
     const handleOnSubmit = (values: ChangePasswordType) => {
         //@ts-ignore
-        dispatch(userActions.changePassword(values));
+        dispatch(userActions.changePassword(values)).then((response) => {
+            if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
+            } else {
+                toast.error(response.payload.message);
+            }
+        });
     };
 
     const handleChange = () => {

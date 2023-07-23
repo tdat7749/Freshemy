@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
+import toast from "react-hot-toast";
+
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
 
@@ -67,7 +69,10 @@ const CreateCourse: FC = () => {
         // @ts-ignore
         dispatch(courseActions.createCourses(formData)).then((response) => {
             if (response.payload.status_code === 201) {
+                toast.success(response.payload.message);
                 navigate("/my-courses");
+            } else {
+                toast.error(response.payload.message);
             }
         });
     };
@@ -146,7 +151,10 @@ const CreateCourse: FC = () => {
                                     <div className="flex flex-row gap-4 my-3">
                                         <div className="flex-1 flex flex-col gap-3">
                                             <div className="flex flex-col">
-                                                <label htmlFor="title" className="text-sm mb-1 font-medium tablet:text-xl">
+                                                <label
+                                                    htmlFor="title"
+                                                    className="text-sm mb-1 font-medium tablet:text-xl"
+                                                >
                                                     Title
                                                 </label>
                                                 <Field
@@ -165,7 +173,10 @@ const CreateCourse: FC = () => {
                                                 />
                                             </div>
                                             <div className="flex flex-col">
-                                                <label htmlFor="category" className="text-sm mb-1 tablet:text-xl font-medium">
+                                                <label
+                                                    htmlFor="category"
+                                                    className="text-sm mb-1 tablet:text-xl font-medium"
+                                                >
                                                     Categories
                                                 </label>
                                                 <div className="flex flex-col items-center relative max-w-lg">
@@ -280,7 +291,10 @@ const CreateCourse: FC = () => {
                                                 </div>
                                             </div>
                                             <div className="flex flex-col">
-                                                <label htmlFor="status" className="text-sm mb-1 tablet:text-xl font-medium">
+                                                <label
+                                                    htmlFor="status"
+                                                    className="text-sm mb-1 tablet:text-xl font-medium"
+                                                >
                                                     Status
                                                 </label>
                                                 <div className="flex flex-col items-center relative max-w-lg">
@@ -353,7 +367,10 @@ const CreateCourse: FC = () => {
                                             </div>
                                         </div>
                                         <div className="flex-1 flex flex-col">
-                                            <label htmlFor="description" className="text-sm mb-1 font-medium tablet:text-xl">
+                                            <label
+                                                htmlFor="description"
+                                                className="text-sm mb-1 font-medium tablet:text-xl"
+                                            >
                                                 Description
                                             </label>
                                             <Field

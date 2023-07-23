@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ResetPassword as ResetPasswordType } from "../types/auth";
 import { resetPasswordValidationSchema } from "../validations/auth"
 import toast from 'react-hot-toast';
+
 const ResetPassword: React.FC<{}> = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();

@@ -9,6 +9,8 @@ import Skeleton from "../assets/images/Skeleton.png";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { registerValidationSchema } from "../validations/auth";
 
+import toast from "react-hot-toast";
+
 const Register: FC = () => {
     const dispatch = useAppDispatch();
 
@@ -34,7 +36,13 @@ const Register: FC = () => {
 
     const handleOnSubmit = async (values: RegisterType) => {
         //@ts-ignore
-        dispatch(authActions.register(values));
+        dispatch(authActions.register(values)).then((response) => {
+            if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
+            } else {
+                toast.error(response.payload.message);
+            }
+        });
     };
 
     const handleDeleteMessage = () => {
@@ -180,7 +188,7 @@ const Register: FC = () => {
                         </Formik>
                     </div>
                     <div className="hidden laptop:block transition ease-in-out hover:scale-110 duration-200">
-                        <img src={Skeleton} alt="Freshemy"/>
+                        <img src={Skeleton} alt="Freshemy" />
                     </div>
                 </div>
             </div>

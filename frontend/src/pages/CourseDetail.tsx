@@ -15,6 +15,8 @@ import { courseActions } from "../redux/slice";
 // import { useParams } from "react-router-dom";
 // import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 
+import toast from "react-hot-toast";
+
 const CourseDetail: React.FC = () => {
     let { slug } = useParams();
     const dispatch = useAppDispatch();
@@ -29,7 +31,10 @@ const CourseDetail: React.FC = () => {
         //@ts-ignore
         dispatch(courseActions.deleteCourse(idItem)).then((response) => {
             if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
                 navigate("/my-courses");
+            } else {
+                toast.error(response.payload.message);
             }
         });
         setIsOpenDeleteModal(!isOpenDeleteModal);
@@ -43,7 +48,10 @@ const CourseDetail: React.FC = () => {
         // @ts-ignore
         dispatch(courseActions.getCourseDetail(slug)).then((response) => {
             if (response.payload.status_code === 404) {
+                toast.success(response.payload.message);
                 setIsNotFound(true);
+            } else {
+                toast.error(response.payload.message);
             }
         });
     }, [dispatch, slug, isNotFound]);
@@ -67,7 +75,9 @@ const CourseDetail: React.FC = () => {
                             </div>
                             <div className="flex-1 flex flex-col gap-4 px-2 pb-2">
                                 <div className="flex-1">
-                                    <h2 className="text-2xl tablet:text-[32px] font-bold text-title mb-3">{courseDetail.title}</h2>
+                                    <h2 className="text-2xl tablet:text-[32px] font-bold text-title mb-3">
+                                        {courseDetail.title}
+                                    </h2>
                                     <p className="text-xl tablet:text-3xl font-medium italic mb-3">
                                         {courseDetail.summary}
                                     </p>
@@ -77,7 +87,6 @@ const CourseDetail: React.FC = () => {
                                         <Link to={"/profile/:userID"} className="text-blue-600">
                                             {courseDetail.author?.first_name}
                                             <span> {courseDetail.author?.last_name} </span>
-                                            
                                         </Link>
                                     </div>
                                     <div className="flex items-center text-xl tablet:text-3xl font-medium mb-3">
@@ -86,7 +95,9 @@ const CourseDetail: React.FC = () => {
                                     </div>
                                     <div className="flex items-center text-xl tablet:text-3xl font-medium">
                                         <span className="mr-2">Status:</span>
-                                        <p className="font-normal">{courseDetail.status === false ? "Uncomplete" : " Completed"}</p>
+                                        <p className="font-normal">
+                                            {courseDetail.status === false ? "Uncomplete" : " Completed"}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
