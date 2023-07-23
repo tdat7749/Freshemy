@@ -96,13 +96,13 @@ const CreateCourse: FC = () => {
             const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
             dispatch(courseActions.removeCategories(index));
         }
-        if(createCategoriesSelector.length - 1 <= 0) {
+        if (createCategoriesSelector.length - 1 <= 0) {
             setErrorCategories(2);
         }
     };
 
     const handleDisplay = () => {
-        if (createCategoriesSelector.length == 4) {
+        if (createCategoriesSelector.length === 4) {
             setErrorCategories(0);
         }
         setdisplayCategorie(!displayCategories);
@@ -184,11 +184,10 @@ const CreateCourse: FC = () => {
                                                 <Field
                                                     type="text"
                                                     name="title"
-                                                    className={`${
-                                                        formik.errors.title && formik.touched.title
+                                                    className={`${formik.errors.title && formik.touched.title
                                                             ? "border-error"
                                                             : ""
-                                                    } px-2 py-4 rounded-lg border-[1px] outline-none max-w-lg`}
+                                                        } px-2 py-4 rounded-lg border-[1px] outline-none max-w-lg`}
                                                 />
                                                 <ErrorMessage
                                                     name="title"
@@ -288,14 +287,14 @@ const CreateCourse: FC = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    {errorCategories == 1 ? (
+                                                    {errorCategories === 1 ? (
                                                         <span className="text-[14px] text-error font-medium">
                                                             Categories Must be under 4
                                                         </span>
                                                     ) : (
                                                         ""
                                                     )}
-                                                    {errorCategories == 2 ? (
+                                                    {errorCategories === 2 ? (
                                                         <span className="text-[14px] text-error font-medium">
                                                             Categories is required
                                                         </span>
@@ -421,11 +420,10 @@ const CreateCourse: FC = () => {
                                                 as="textarea"
                                                 name="description"
                                                 placeholder="Description about your course..."
-                                                className={`${
-                                                    formik.errors.description && formik.touched.description
+                                                className={`${formik.errors.description && formik.touched.description
                                                         ? "border-error"
                                                         : ""
-                                                } flex-1 w-full resize-none rounded-md border border-[#e0e0e0] py-3 px-4  outline-none focus:shadow-md1`}
+                                                    } flex-1 w-full resize-none rounded-md border border-[#e0e0e0] py-3 px-4  outline-none focus:shadow-md1`}
                                             />
                                             <ErrorMessage
                                                 name="description"
@@ -441,9 +439,8 @@ const CreateCourse: FC = () => {
                                         <Field
                                             type="text"
                                             name="summary"
-                                            className={`${
-                                                formik.errors.summary && formik.touched.summary ? "border-error" : ""
-                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                            className={`${formik.errors.summary && formik.touched.summary ? "border-error" : ""
+                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                         />
                                         <ErrorMessage
                                             name="summary"

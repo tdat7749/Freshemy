@@ -12,6 +12,8 @@ import {
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import { RequestHasLogin } from "../types/request";
+import services from ".";
+import { resolutions } from "../commons";
 
 const getLesson = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -47,18 +49,17 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
 
 const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const videoPath = req.file?.path as string;
         const { title, section_id } = req.body;
 
-        console.log(videoPath, section_id)
-
         const sectionIdConvert = parseInt(section_id)
+
+        const videoPath = services.FileStorageService.createFileM3U8AndTS(req.file as Express.Multer.File, resolutions, "E:\\Test1", title)
 
         const lesson = await configs.db.lesson.create({
             data: {
                 title: title,
                 section_id: sectionIdConvert,
-                url_video: `${configs.general.PUBLIC_URL}\\${videoPath}`,
+                url_video: videoPath,
             },
         });
         if (lesson) return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true);
