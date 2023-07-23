@@ -22,6 +22,7 @@ export const changePassword = createAsyncThunk<Response<null>, ChangePasswordTyp
             const response = await changePasswordAPI(body);
             return response.data as Response<null>;
         } catch (error: any) {
+            console.log("error", error);
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
         }
     }
