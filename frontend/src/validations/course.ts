@@ -13,8 +13,8 @@ export const editCourseValidationSchema = Yup.object({
 
 
 export const createValidationSchema = Yup.object({
-    // thumbnail: Yup.mixed().required("Thumbnail is required"),
-    // categories: Yup.string().required("Categories is required"),
+    thumbnail: Yup.mixed().nullable().required().test("FILE_SIZE", "Image is too big", (value: any) => !value || (value && value.size <= 1024 * 1024 * 4)),
+    categories: Yup.number().min(1, 'Categories is required').max(4, 'Categories allow 4'),
     title: Yup.string().trim().required(MESSAGE_ERROR_TITLE_REQUIRED),
     summary: Yup.string().trim().required(MESSAGE_ERROR_SUMMARY_REQUIRED),
     description: Yup.string().trim().required(MESSAGE_ERROR_DESCRIPTION_REQUIRED),
