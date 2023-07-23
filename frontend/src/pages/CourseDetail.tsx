@@ -47,11 +47,13 @@ const CourseDetail: React.FC = () => {
     useEffect(() => {
         // @ts-ignore
         dispatch(courseActions.getCourseDetail(slug)).then((response) => {
-            if (response.payload.status_code === 404) {
+            if (response.payload.status_code === 200) {
                 toast.success(response.payload.message);
-                setIsNotFound(true);
-            } else {
+            }
+
+            if (response.payload.status_code === 404) {
                 toast.error(response.payload.message);
+                setIsNotFound(true);
             }
         });
     }, [dispatch, slug, isNotFound]);
@@ -84,26 +86,79 @@ const CourseDetail: React.FC = () => {
 
                                     <div className=" mb-3">
                                         <span className="text-xl tablet:text-2xl font-medium">Author: </span>
-                                        <Link to={"/profile/:userID"} className="text-xl tablet:text-2xl underline font-medium text-blue-600">
+                                        <Link
+                                            to={"/profile/:userID"}
+                                            className="text-xl tablet:text-2xl underline font-medium text-blue-600"
+                                        >
                                             {courseDetail.author?.first_name}
                                             <span> {courseDetail.author?.last_name} </span>
                                         </Link>
                                     </div>
                                     <div className="flex items-center text-xl tablet:text-3xl font-medium mb-3">
-                                        
                                         <span className="text-xl tablet:text-2xl mr-2">Ratings:</span>
                                         <div className="rating rating-lg rating-half">
                                             <input type="radio" name="rating-10" className="rating-hidden" />
-                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-1" />
-                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-2" />
-                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-1"  />
-                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-2" />
-                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-1" />
-                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-2" />
-                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-1" />
-                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-2" />
-                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-1" />
-                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-2" checked/>
+                                            <input
+                                                type="radio"
+                                                name="rating-10"
+                                                disabled
+                                                className="bg-yellow-300 mask-star-2 mask-half-1"
+                                            />
+                                            <input
+                                                type="radio"
+                                                name="rating-10"
+                                                disabled
+                                                className="bg-yellow-300 mask-star-2 mask-half-2"
+                                            />
+                                            <input
+                                                type="radio"
+                                                name="rating-10"
+                                                disabled
+                                                className="bg-yellow-300 mask-star-2 mask-half-1"
+                                            />
+                                            <input
+                                                type="radio"
+                                                name="rating-10"
+                                                disabled
+                                                className="bg-yellow-300 mask-star-2 mask-half-2"
+                                            />
+                                            <input
+                                                type="radio"
+                                                name="rating-10"
+                                                disabled
+                                                className="bg-yellow-300 mask-star-2 mask-half-1"
+                                            />
+                                            <input
+                                                type="radio"
+                                                name="rating-10"
+                                                disabled
+                                                className="bg-yellow-300 mask-star-2 mask-half-2"
+                                            />
+                                            <input
+                                                type="radio"
+                                                name="rating-10"
+                                                disabled
+                                                className="bg-yellow-300 mask-star-2 mask-half-1"
+                                            />
+                                            <input
+                                                type="radio"
+                                                name="rating-10"
+                                                disabled
+                                                className="bg-yellow-300 mask-star-2 mask-half-2"
+                                            />
+                                            <input
+                                                type="radio"
+                                                name="rating-10"
+                                                disabled
+                                                className="bg-yellow-300 mask-star-2 mask-half-1"
+                                            />
+                                            <input
+                                                type="radio"
+                                                name="rating-10"
+                                                disabled
+                                                className="bg-yellow-300 mask-star-2 mask-half-2"
+                                                checked
+                                            />
                                         </div>
                                         <p className="italic text-xl tablet:text-2xl ml-2 ">{courseDetail.ratings}</p>
                                     </div>
@@ -132,7 +187,7 @@ const CourseDetail: React.FC = () => {
                                         <span>Delete</span>
                                     </button>
                                 </div>
-                            </div>            
+                            </div>
                         </div>
                         <div>
                             <div className="description my-4">
