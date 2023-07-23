@@ -34,6 +34,8 @@ const ChangePassword: React.FC = () => {
             else{
                 toast.success(response.payload.message)
             } 
+        }).catch((error: any)=>{
+            toast.error(error)
         });
     };
 
