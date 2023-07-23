@@ -176,7 +176,7 @@ const initialState: CourseSlice = {
         categories: [],
         summary: "",
         status: false,
-        description: ""
+        description: "",
     },
     error: "",
     message: "",
@@ -303,8 +303,10 @@ export const courseSlice = createSlice({
             state.selectCategories = action.payload.data?.categories as Category[];
 
             state.selectCategories.forEach((category) => {
-                const index = state.categories.findIndex((item) => item === category);
-                state.categories.splice(index, 1);
+                const index = state.categories.findIndex((item) => item.title === category.title);
+                if (index >= 0) {
+                    state.categories.splice(index, 1);
+                }
             });
             state.isLoading = false;
         });
@@ -348,13 +350,6 @@ export const courseSlice = createSlice({
     },
 });
 
-export const {
-    setError,
-    setCategories,
-    addCategories,
-    removeCategories,
-    reset,
-    setDeleteCourse,
-} = courseSlice.actions;
+export const { setError, setCategories, addCategories, removeCategories, reset, setDeleteCourse } = courseSlice.actions;
 
 export default courseSlice.reducer;

@@ -65,15 +65,15 @@ const CourseDetail: React.FC = () => {
             <div className="container mx-auto">
                 <div className="min-h-screen h-full px-4 tablet:px-[60px]">
                     <div className="mt-4 container mx-auto p-4">
-                        <div className="flex flex-col gap-4 laptop:flex-row bg-primary rounded-lg">
-                            <div className="flex-1 max-w-full bg-gray-600 rounded-lg">
+                        <div className="flex flex-col gap-4 laptop:flex-row border-black border-[1px] shadow-xl bg-primary rounded-lg">
+                            <div className=" flex-1 object-left max-w-[600px] max-h-[400px] bg-gray-600 rounded-lg">
                                 <img
                                     src={courseDetail.thumbnail}
                                     alt={courseDetail.title}
-                                    className="h-[300px] rounded-lg tablet:h-[400px]"
+                                    className="h-[300px] m-auto rounded-lg  align-self: center tablet:h-[400px]"
                                 />
                             </div>
-                            <div className="flex-1 flex flex-col gap-4 px-2 pb-2">
+                            <div className=" flex-1 object-right flex flex-col gap-4 px-2 pb-2 ">
                                 <div className="flex-1">
                                     <h2 className="text-2xl tablet:text-[32px] font-bold text-title mb-3">
                                         {courseDetail.title}
@@ -83,15 +83,29 @@ const CourseDetail: React.FC = () => {
                                     </p>
 
                                     <div className=" mb-3">
-                                        <span className="text-xl tablet:text-3xl font-medium">Author: </span>
-                                        <Link to={"/profile/:userID"} className="text-blue-600">
+                                        <span className="text-xl tablet:text-2xl font-medium">Author: </span>
+                                        <Link to={"/profile/:userID"} className="text-xl tablet:text-2xl underline font-medium text-blue-600">
                                             {courseDetail.author?.first_name}
                                             <span> {courseDetail.author?.last_name} </span>
                                         </Link>
                                     </div>
                                     <div className="flex items-center text-xl tablet:text-3xl font-medium mb-3">
-                                        <span className="mr-2">Ratings:</span>
-                                        <p className="italic">{courseDetail.ratings}</p>
+                                        
+                                        <span className="text-xl tablet:text-2xl mr-2">Ratings:</span>
+                                        <div className="rating rating-lg rating-half">
+                                            <input type="radio" name="rating-10" className="rating-hidden" />
+                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-1" />
+                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-2" />
+                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-1"  />
+                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-2" />
+                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-1" />
+                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-2" />
+                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-1" />
+                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-2" />
+                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-1" />
+                                            <input type="radio" name="rating-10" disabled className="bg-yellow-300 mask-star-2 mask-half-2" checked/>
+                                        </div>
+                                        <p className="italic text-xl tablet:text-2xl ml-2 ">{courseDetail.ratings}</p>
                                     </div>
                                     <div className="flex items-center text-xl tablet:text-3xl font-medium">
                                         <span className="mr-2">Status:</span>
@@ -118,7 +132,7 @@ const CourseDetail: React.FC = () => {
                                         <span>Delete</span>
                                     </button>
                                 </div>
-                            </div>
+                            </div>            
                         </div>
                         <div>
                             <div className="description my-4">

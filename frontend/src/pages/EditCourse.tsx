@@ -28,7 +28,8 @@ const EditCourse: React.FC = () => {
     const [isDisplaySaveImg, setIsDisplaySaveImg] = useState<boolean>(false);
     const [status, setStatus] = useState<string>("Uncomplete");
     const [thumbnail, setThumbnail] = useState<File | null>(null);
-
+    const [errorImage, setErrorImage] = useState<boolean>(false);
+    const [errorCategories, setErrorCategories] = useState<number>();
     let categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
     let createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
@@ -130,34 +131,54 @@ const EditCourse: React.FC = () => {
         setIsDisplayEditModal(!isDisplayEditModal);
     };
     const handleAddCategories = (id: number, oldIndex: number) => {
-        const index = categoriesSelector.findIndex((category: CategoryType) => category.id === id);
-        dispatch(courseActions.addCategories(index));
+        if (createCategoriesSelector.length <= 3) {
+            setErrorCategories(0);
+            const index = categoriesSelector.findIndex((category: CategoryType) => category.id === id);
+            dispatch(courseActions.addCategories(index));
+        } else {
+            setErrorCategories(1);
+        }
     };
 
     const handleRemoveCategory = (id: number, oldIndex: number) => {
-        const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
-        dispatch(courseActions.removeCategories(index));
+        console.log(createCategoriesSelector.length)
+        if (createCategoriesSelector.length > 0) {
+            setErrorCategories(0);
+            const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
+            dispatch(courseActions.removeCategories(index));
+        }
+        if(createCategoriesSelector.length - 1 <= 0) {
+            setErrorCategories(2);
+        }
     };
 
     const imageRef = useRef<HTMLImageElement>(null);
 
     const handleDisplay = () => {
+        if(createCategoriesSelector.length == 4) {
+            setErrorCategories(0);
+        }
         setdisplayCategorie(!displayCategories);
     };
 
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setThumbnail(event.currentTarget.files![0]);
-        const thumbnail = event.currentTarget.files![0];
-        if (thumbnail && thumbnail.type.includes("image/")) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                if (imageRef.current) {
-                    imageRef.current.src = e.target?.result as string;
-                    setIsDisplaySaveImg(!isDisplaySaveImg);
-                }
-            };
-            reader.readAsDataURL(thumbnail);
-            return;
+        if (event.currentTarget.files![0].size > 1024 * 1024 * 4) {
+            setErrorImage(true);
+        } else {
+            setErrorImage(false);
+            setThumbnail(event.currentTarget.files![0]);
+            const thumbnail = event.currentTarget.files![0];
+            if (thumbnail && thumbnail.type.includes("image/")) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    if (imageRef.current) {
+                        imageRef.current.src = e.target?.result as string;
+                        setIsDisplaySaveImg(!isDisplaySaveImg);
+                    }
+                };
+                reader.readAsDataURL(thumbnail);
+                return;
+            }
         }
     };
 
@@ -224,11 +245,14 @@ const EditCourse: React.FC = () => {
                                 <div className="flex flex-col gap-3">
                                     <div className="text-center tablet:text-start">
                                         <p className="text-lg font-medium">Upload thumbnail</p>
-                                        <p className="italic">Size of the image is less than 4MB</p>
+                                        <p className={`${errorImage ? "text-red-500" : ""}  italic`}>
+                                            Size of the image is less than 4MB
+                                        </p>
                                     </div>
                                     <input
                                         name="thumbnail"
                                         type="file"
+                                        accept=".png, .jpg, .mp4"
                                         className="file-input file-input-bordered file-input-primary w-full max-w-xs"
                                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                             onChangeInputFile(event);
@@ -399,6 +423,8 @@ const EditCourse: React.FC = () => {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    {errorCategories == 1 ?  <span className="text-[14px] text-error font-medium">Categories Must be under 4</span> : ""}
+                                                    {errorCategories == 2 ?  <span className="text-[14px] text-error font-medium">Categories is required</span> : ""}
                                                     {displayCategories && (
                                                         <div className="absolute shadow top-[100%] bg-white z-40 w-full left-0 rounded max-h-60 overflow-y-auto mt-1">
                                                             <div className="flex flex-col w-full">
