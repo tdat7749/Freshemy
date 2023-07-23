@@ -2,6 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { refreshToken } from "../apis/auth";
 
+
 const axiosPublic = axios.create({
     baseURL: "http://localhost:3001/api",
 });

@@ -9,6 +9,8 @@ import Skeleton from "../assets/images/Skeleton.png";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { loginValidationSchema } from "../validations/auth";
 
+import toast from "react-hot-toast";
+
 const Login: FC = () => {
     const dispatch = useAppDispatch();
 
@@ -31,11 +33,14 @@ const Login: FC = () => {
     };
 
     const handleOnSubmit: (values: LoginType) => void = (values: LoginType) => {
-        //@ts-ignore
+        // @ts-ignore
         dispatch(authActions.login(values)).then((response) => {
             if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
                 //@ts-ignore
                 dispatch(authActions.getMe());
+            } else {
+                toast.error(response.payload.message);
             }
         });
     };

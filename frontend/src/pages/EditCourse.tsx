@@ -14,6 +14,8 @@ import { Category as CategoryType, CourseChangeInformation as CourseChangeInform
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import slugify from "slugify";
 
+import toast from "react-hot-toast";
+
 const EditCourse: React.FC = () => {
     const [section, setSection] = useState<string>("");
     const [isDisplayDeleteModal, setIsDisplayDeleteModal] = useState<boolean>(false);
@@ -70,8 +72,11 @@ const EditCourse: React.FC = () => {
         // @ts-ignore
         dispatch(sectionActions.addSection(values)).then((response) => {
             if (response.payload.status_code === 201) {
+                toast.success(response.payload.message);
                 // @ts-ignore
                 dispatch(sectionActions.getSectionByCourseId(course_id));
+            } else {
+                toast.error(response.payload.message);
             }
         });
     };
@@ -90,7 +95,10 @@ const EditCourse: React.FC = () => {
         //@ts-ignore
         dispatch(sectionActions.deleteSection(idItem)).then((response) => {
             if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
                 dispatch(sectionActions.setDeleteSection(idItem));
+            } else {
+                toast.error(response.payload.message);
             }
         });
         setIsDisplayDeleteModal(!isDisplayDeleteModal);
@@ -100,7 +108,10 @@ const EditCourse: React.FC = () => {
         // @ts-ignore
         dispatch(sectionActions.editSection({ id, title })).then((response) => {
             if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
                 dispatch(sectionActions.setEditSection({ id, title }));
+            } else {
+                toast.error(response.payload.message);
             }
         });
         setIsDisplayEditModal(!isDisplayEditModal);
@@ -197,22 +208,22 @@ const EditCourse: React.FC = () => {
     };
 
     const changeInformation = (values: CourseChangeInformationType) => {
-        if (!errorImage && !errorCategories) {
-            handleChangeThumbnail();
-            const categories = createCategoriesSelector.map((item: CategoryType) => item.id);
-            const data = {
-                ...values,
-                categories: categories,
-                slug: slugify(values.title),
-            };
-            //@ts-ignore
-            dispatch(courseActions.changeInformation(data)).then((response) => {
-                if (response.payload.status_code === 200) {
-                    // @ts-ignore
-                    dispatch(courseActions.getCourseDetailById(values.id));
-                }
-            });
-        }
+        const categories = createCategoriesSelector.map((item: CategoryType) => item.id);
+        const data = {
+            ...values,
+            categories: categories,
+            slug: slugify(values.title),
+        };
+        //@ts-ignore
+        dispatch(courseActions.changeInformation(data)).then((response) => {
+            if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
+                // @ts-ignore
+                dispatch(courseActions.getCourseDetailById(values.id));
+            } else {
+                toast.error(response.payload.message);
+            }
+        });
     };
 
     return (

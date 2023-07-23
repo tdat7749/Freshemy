@@ -9,6 +9,8 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { courseActions } from "../redux/slice";
 import { Course } from "../types/course";
 
+import toast from "react-hot-toast";
+
 const MyCourses: React.FC = () => {
     const [userInput, setUserInput] = useState<string>("");
     const [keyword, setKeyword] = useState<string>("");
@@ -52,7 +54,10 @@ const MyCourses: React.FC = () => {
         //@ts-ignore
         dispatch(courseActions.deleteCourse({ courseId })).then((response) => {
             if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
                 dispatch(courseActions.setDeleteCourse(courseId));
+            } else {
+                toast.error(response.payload.message);
             }
         });
     };
