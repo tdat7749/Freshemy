@@ -22,10 +22,8 @@ type categoriesOptions = {
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
     const [thumbnail, setThumbnail] = useState<File | null>(null);
-    let errorMessage = useAppSelector((state) => state.courseSlice.error);
-    let successMessage = useAppSelector((state) => state.courseSlice.message);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
-    const categories = useAppSelector((state) => state.courseSlice.categories) ?? [];
+    const categories: CategoryType[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
     const formikRef = useRef(null);
     const imageRef = useRef<HTMLImageElement>(null);
     const navigate = useNavigate();
@@ -76,6 +74,7 @@ const CreateCourse: FC = () => {
         formData.append("slug", slug);
         formData.append("thumbnail", thumbnail as File);
         formData.append("summary", values.summary);
+        formData.append("status", values.status.toString());
         values.categories.forEach((item: any) => {
             formData.append("categories[]", item.toString());
         });
@@ -88,10 +87,6 @@ const CreateCourse: FC = () => {
                 toast.error(response.payload.message);
             }
         });
-    };
-
-    const handleDeleteMessage = () => {
-        errorMessage = "";
     };
 
     const handleChangeCategories = (event: any, formik: any) => {
@@ -131,7 +126,7 @@ const CreateCourse: FC = () => {
                             innerRef={formikRef}
                         >
                             {(formik) => (
-                                <form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
+                                <form onSubmit={formik.handleSubmit} className="p-4">
                                     <div className="flex">
                                         <div className="flex rounded-lg items-start">
                                             <img
@@ -302,14 +297,6 @@ const CreateCourse: FC = () => {
                                         >
                                             <Link to={`/my-courses`}>Cancel</Link>
                                         </button>
-                                        {errorMessage !== "" && (
-                                            <span className="text-[14px] text-error font-medium">{errorMessage}</span>
-                                        )}
-                                        {successMessage !== "" && (
-                                            <span className="text-[14px] text-success font-medium">
-                                                {successMessage}
-                                            </span>
-                                        )}
                                     </div>
                                 </form>
                             )}
