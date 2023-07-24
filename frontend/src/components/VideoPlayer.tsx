@@ -1,30 +1,40 @@
 import Hls from 'hls.js';
 import Plyr from 'plyr';
 import 'plyr/dist/plyr.css';
+import 'plyr/dist/plyr.min.mjs'
 import React, { useEffect, useRef } from 'react'
-import 'video.js/dist/video-js.css';
 
 type VideoJSType = {
-    sourse:string
+    sourse: string
 }
 
-export const VideoJS:React.FC<VideoJSType> = (props) =>{
+export const VideoJS: React.FC<VideoJSType> = (props) => {
 
     const videoRef = useRef<HTMLVideoElement>(null)
 
-    useEffect(() =>{
+    const updateQuanlity = (newQuanlity: any) => {
+        if (Hls.isSupported()) {
+            window.hls.levels.forEach((level: any, levelIndex: any) => {
+                if (level.height === newQuanlity) {
+                    window.hls.currentLevel = levelIndex
+                }
+            })
+        }
+    }
+
+    useEffect(() => {
         const videoElement = videoRef.current
 
-        if(videoElement){
-            if(Hls.isSupported()){
-                console.log("hls support")
+        if (videoElement) {
+            if (Hls.isSupported()) {
                 const hls = new Hls()
-                hls.loadSource(`/Bi-ngan-djozz/main.m3u8`)
-                hls.on(Hls.Events.MANIFEST_PARSED,(event,data) =>{
+                hls.loadSource(`https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`)
+                hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+                    window.hls = hls
                     const availableQuanlities = hls.levels.map(l => l.height)
-                    const defaultOptions:Plyr.Options = {
-                        controls:[
-                            'play-large', // The large play button in the center
+                    console.log(availableQuanlities)
+                    const defaultOptions: Plyr.Options = {
+                        controls: [
                             'restart', // Restart playback
                             'rewind', // Rewind by the seek time (default 10 seconds)
                             'play', // Play/pause playback
@@ -41,35 +51,27 @@ export const VideoJS:React.FC<VideoJSType> = (props) =>{
                             'download', // Show a download button with a link to either the current source or a custom URL you specify in your options
                             'fullscreen', // Toggle fullscreen
                         ],
-                        quality:{
-                            default: availableQuanlities[0],
+                        quality: {
+                            default: availableQuanlities[availableQuanlities.length - 1],
                             options: availableQuanlities,
                             forced: true,
                             onChange: (event) => updateQuanlity(event)
                         }
                     }
+                    new Plyr(videoElement, defaultOptions)
+                })
 
-                    new Plyr(videoElement,defaultOptions)
-                })
                 hls.attachMedia(videoElement)
-            }
-            const updateQuanlity = (newQuanlity:any) => {
-                window.hls.levels.forEach((level:any,levelIndex:any) =>{
-                    console.log(level,levelIndex,newQuanlity)
-                    if(level.height === newQuanlity){
-                        window.hls.currentLevel = levelIndex
-                    }
-                })
             }
         }
 
-    })
+    }, [])
 
     return (
-        <div >
-            <video className='w-full h-[600px]' ref={videoRef} controls></video>
+        <div className='min-w-[900px]'>
+            <video className='w-full h-[480px]' ref={videoRef} controls={true}></video>
         </div>
     )
-} 
+}
 
 export default VideoJS
