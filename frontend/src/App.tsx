@@ -18,6 +18,8 @@ import MyCourses from "./pages/MyCourses";
 import Cookies from "js-cookie";
 import EditCourse from "./pages/EditCourse";
 import CourseDetail from "./pages/CourseDetail";
+import MyProfile from "./pages/MyProfile";
+import AuthorProfile from "./pages/AuthorProfile";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -43,6 +45,8 @@ function App() {
                             <Route path="/change-password" element={<ChangePassword />}></Route>
                             <Route path="/my-courses" element={<MyCourses />}></Route>
                         </Route>
+                        <Route path="/my-profile" element={<MyProfile />}></Route>
+                        <Route path="/profile/:id" element={<AuthorProfile />}></Route>
                         <Route path="/create-course" element={<CreateCourse />}></Route>
                         <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
                         <Route path="/course-detail/:slug" element={<CourseDetail />}></Route>
