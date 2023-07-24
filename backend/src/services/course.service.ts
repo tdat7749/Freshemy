@@ -244,7 +244,6 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
                 id: id,
             },
         });
-
         if (isFoundCourse) {
             const isUpdateCourse = await db.course.update({
                 where: {
