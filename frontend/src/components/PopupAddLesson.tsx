@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Formik, Field, ErrorMessage } from "formik";
 import { AddLesson as AddLessonType } from "../types/lesson";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { setMessageEmpty } from "../redux/slice/user.slice";
 import { lessonActions } from "../redux/slice";
 import { addLessonValidationSchema } from "../validations/lesson";
 import toast, { Toaster } from "react-hot-toast";
@@ -15,7 +14,7 @@ type AddLessonModalProps = {
 };
 
 const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
-    const isLoading = useAppSelector((state) => state.lessonSlice.isLoading);
+    const isLoading = useAppSelector((state) => state.isLoading) ?? false;
     const [error, setError] = useState("");
     const [video, setVideo] = useState<File | null>(null);
     const dispatch = useAppDispatch();
@@ -25,10 +24,6 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         video: null,
         section_id: "",
     };
-
-    useEffect(() => {
-        dispatch(setMessageEmpty());
-    }, [dispatch]);
 
     const handleChangeVideo = (event: React.ChangeEvent<HTMLInputElement>) => {
         setError("");
@@ -125,7 +120,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                                         type="submit"
                                         name="save_button"
                                         className="btn btn-primary text-lg"
-                                        disabled={error !== "" ? true : false}
+                                        disabled={error !== "" || isLoading ? true : false}
                                     >
                                         {isLoading ? "Loading..." : "Save"}
                                     </button>
