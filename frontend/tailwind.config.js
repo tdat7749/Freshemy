@@ -18,6 +18,9 @@ module.exports = {
                 backgroundHover: "#FFCF90",
                 success: "#28a745",
             },
+            backgroundImage: {
+                "hero-pattern": "url('/src/assets/images/Banner.png')",
+            },
         },
     },
     plugins: [require("daisyui")],

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import Home from "./pages/HomePage";
 import Login from "./pages/Login";
 import { authActions } from "./redux/slice";
 import { useAppDispatch, useAppSelector } from "./hooks/hooks";
