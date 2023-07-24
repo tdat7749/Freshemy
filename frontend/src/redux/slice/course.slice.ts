@@ -14,7 +14,6 @@ import { Response } from "../../types/response";
 } from "../../apis/course";
  */
 
-
 import {
     NewCourse,
     Category,
@@ -59,7 +58,7 @@ export const getCategories = createAsyncThunk<Response<Category[]>, null, { reje
         try {
             // const response = await getCategoriesAPI();
             const response = await CourseApis.getCategories();
-            return response.data.data as Response<Category[]>;
+            return response.data as Response<Category[]>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
         }

@@ -15,6 +15,12 @@ import { setMessageEmpty } from "../redux/slice/auth.slice";
 import slugify from "slugify";
 
 import toast from "react-hot-toast";
+import CustomeSelect from "./CreateCourse/Select";
+
+type categoriesOptions = {
+    value: number;
+    label: string;
+};
 
 const EditCourse: React.FC = () => {
     const [section, setSection] = useState<string>("");
@@ -23,17 +29,13 @@ const EditCourse: React.FC = () => {
     const [isDisplayAddLessonModal, setIsDisplayAddLessonModal] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
     const [itemTitle, setItemTitle] = useState<string>("");
-    const [displayCategories, setdisplayCategorie] = useState<boolean>(false);
-    const [displayStatus, setDisplayStatus] = useState<boolean>(false);
     const [isDisplaySaveImg, setIsDisplaySaveImg] = useState<boolean>(false);
-    const [status, setStatus] = useState<string>("Uncomplete");
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [errorImage, setErrorImage] = useState<boolean>(false);
-    const [errorCategories, setErrorCategories] = useState<number>();
     let categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
     let createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
-
+    const [categoriesOptions, setcategoriesOptions] = useState<categoriesOptions[]>(categoriesSelector);
     const navigate = useNavigate();
 
     const courseChangeDetail: CourseChangeInformationType = useAppSelector(
@@ -43,17 +45,35 @@ const EditCourse: React.FC = () => {
 
     const { course_id } = useParams();
 
+    const cateOldTemp: any = [];
+    createCategoriesSelector.forEach((category: CategoryType) => {
+        const temp: categoriesOptions = {
+            value: category.id,
+            label: category.title,
+        };
+        cateOldTemp.push(temp);
+    });
+
     const initialValue: CourseChangeInformationType = {
         title: courseChangeDetail.title,
         summary: courseChangeDetail.summary,
-        categories: courseChangeDetail.categories,
+        categories: cateOldTemp,
         status: courseChangeDetail.status,
         description: courseChangeDetail.description,
         id: Number(course_id),
         slug: courseChangeDetail.slug,
     };
     const dispatch = useAppDispatch();
-
+    const statusOptions = [
+        {
+            value: 0,
+            label: "Completed",
+        },
+        {
+            value: 1,
+            label: "Uncomplete",
+        },
+    ];
     useEffect(() => {
         dispatch(setMessageEmpty());
         //@ts-ignore
@@ -64,6 +84,25 @@ const EditCourse: React.FC = () => {
         dispatch(sectionActions.getSectionByCourseId(course_id));
     }, [dispatch, course_id]);
 
+    useEffect(() => {
+        let createTemp = [...createCategoriesSelector];
+        let cateTemp = [...categoriesSelector];
+        const cateOptionsTemp: any = [];
+        createTemp.forEach((category: any) => {
+            const index = cateTemp.findIndex((item: any) => item.id === category.id);
+            if (index >= 0) {
+                cateTemp.splice(index, 1);
+            }
+        });
+        cateTemp.forEach((category: CategoryType) => {
+            const temp: categoriesOptions = {
+                value: category.id,
+                label: category.title,
+            };
+            cateOptionsTemp.push(temp);
+        });
+        setcategoriesOptions(cateOptionsTemp);
+    }, [createCategoriesSelector]);
     const handleAddSection = () => {
         const values: AddSectionType = {
             course_id: Number(course_id),
@@ -130,36 +169,11 @@ const EditCourse: React.FC = () => {
         setItemTitle(title);
         setIsDisplayEditModal(!isDisplayEditModal);
     };
-    const handleAddCategories = (id: number, oldIndex: number) => {
-        if (createCategoriesSelector.length <= 3) {
-            setErrorCategories(0);
-            const index = categoriesSelector.findIndex((category: CategoryType) => category.id === id);
-            dispatch(courseActions.addCategories(index));
-        } else {
-            setErrorCategories(1);
-        }
-    };
-
-    const handleRemoveCategory = (id: number, oldIndex: number) => {
-        console.log(createCategoriesSelector.length)
-        if (createCategoriesSelector.length > 0) {
-            setErrorCategories(0);
-            const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
-            dispatch(courseActions.removeCategories(index));
-        }
-        if(createCategoriesSelector.length - 1 <= 0) {
-            setErrorCategories(2);
-        }
+    const handleChangeCategories = (event: any, formik: any) => {
+        formik.setFieldValue("categories", event);
     };
 
     const imageRef = useRef<HTMLImageElement>(null);
-
-    const handleDisplay = () => {
-        if(createCategoriesSelector.length === 4) {
-            setErrorCategories(0);
-        }
-        setdisplayCategorie(!displayCategories);
-    };
 
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.currentTarget.files![0].size > 1024 * 1024 * 4) {
@@ -181,49 +195,52 @@ const EditCourse: React.FC = () => {
             }
         }
     };
-
+    const handleChangeStatus = (event: any, formik: any) => {
+        formik.setFieldValue("status", event);
+    };
     const handleChangeThumbnail = () => {
-        if (thumbnail) {
-            const formData = new FormData();
-            formData.append("thumbnail", thumbnail as File);
-            formData.append("course_id", course_id as string);
+        const formData = new FormData();
+        formData.append("thumbnail", thumbnail as File);
+        formData.append("course_id", course_id as string);
 
-            //@ts-ignore
-            dispatch(courseActions.changeThumbnail(formData)).then((response) => {
-                if (response.payload.status_code === 200) {
-                    if (thumbnail) {
-                        var reader = new FileReader();
-                        reader.onload = function (e) {
-                            if (imageRef.current) {
-                                imageRef.current.src = e.target?.result as string;
-                                setIsDisplaySaveImg(!isDisplaySaveImg);
-                            }
-                        };
-                        reader.readAsDataURL(thumbnail);
-                        return;
-                    }
+        //@ts-ignore
+        dispatch(courseActions.changeThumbnail(formData)).then((response) => {
+            if (response.payload.status_code === 200) {
+                if (thumbnail) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        if (imageRef.current) {
+                            imageRef.current.src = e.target?.result as string;
+                            setIsDisplaySaveImg(!isDisplaySaveImg);
+                        }
+                    };
+                    reader.readAsDataURL(thumbnail);
+                    return;
                 }
-            });
-        }
+            }
+        });
     };
 
     const changeInformation = (values: CourseChangeInformationType) => {
-        const categories = createCategoriesSelector.map((item: CategoryType) => item.id);
-        const data = {
-            ...values,
-            categories: categories,
-            slug: slugify(values.title),
-        };
-        //@ts-ignore
-        dispatch(courseActions.changeInformation(data)).then((response) => {
-            if (response.payload.status_code === 200) {
-                toast.success(response.payload.message);
-                // @ts-ignore
-                dispatch(courseActions.getCourseDetailById(values.id));
-            } else {
-                toast.error(response.payload.message);
-            }
-        });
+        if (thumbnail && !errorImage) {
+            const categories = createCategoriesSelector.map((item: CategoryType) => item.id);
+            const data = {
+                ...values,
+                categories: categories,
+                slug: slugify(values.title),
+            };
+            handleChangeThumbnail();
+            //@ts-ignore
+            dispatch(courseActions.changeInformation(data)).then((response) => {
+                if (response.payload.status_code === 200) {
+                    toast.success(response.payload.message);
+                    // @ts-ignore
+                    dispatch(courseActions.getCourseDetailById(values.id));
+                } else {
+                    toast.error(response.payload.message);
+                }
+            });
+        }
     };
 
     return (
@@ -252,23 +269,12 @@ const EditCourse: React.FC = () => {
                                     <input
                                         name="thumbnail"
                                         type="file"
-                                        accept=".png, .jpg, .mp4"
+                                        accept=".png, .jpg,"
                                         className="file-input file-input-bordered file-input-primary w-full max-w-xs"
                                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                             onChangeInputFile(event);
                                         }}
                                     />
-                                    {isDisplaySaveImg && (
-                                        <div className="">
-                                            <button
-                                                type="submit"
-                                                onClick={handleChangeThumbnail}
-                                                className="px-4 py-1 mr-1 bg-switch rounded-lg text-white text-xl hover:opacity-80"
-                                            >
-                                                {isLoading ? "Loading..." : "Save"}
-                                            </button>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                             <Formik
@@ -333,203 +339,56 @@ const EditCourse: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-2 shrink-0 mb-2 tablet:flex-row tablet:gap-8">
-                                            <div className="categories flex flex-col flex-1">
+                                            <div>
                                                 <label
-                                                    htmlFor="category"
+                                                    htmlFor="title"
                                                     className="text-sm mb-1 font-medium tablet:text-xl"
                                                 >
                                                     Categories
                                                 </label>
-                                                <div className="flex flex-col items-center relative w-full">
-                                                    <div className="w-full">
-                                                        <div className="flex border border-gray-200 bg-white rounded">
-                                                            <div className="flex flex-auto flex-wrap py-4 px-2">
-                                                                {createCategoriesSelector?.map(
-                                                                    (category: any, index: number) => {
-                                                                        return (
-                                                                            <div
-                                                                                className="flex justify-center items-center m-1 font-medium py-1 px-2 rounded-full text-teal-700"
-                                                                                onClick={() => {
-                                                                                    handleRemoveCategory(
-                                                                                        category.id,
-                                                                                        index
-                                                                                    );
-                                                                                }}
-                                                                            >
-                                                                                <div className="text-xs font-normal leading-none max-w-full flex-initial">
-                                                                                    {category.title}
-                                                                                </div>
-                                                                                <div className="flex flex-auto flex-row-reverse">
-                                                                                    <div>
-                                                                                        <svg
-                                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                                            width="100%"
-                                                                                            height="100%"
-                                                                                            fill="none"
-                                                                                            viewBox="0 0 24 24"
-                                                                                            stroke="currentColor"
-                                                                                            strokeWidth={2}
-                                                                                            strokeLinecap="round"
-                                                                                            strokeLinejoin="round"
-                                                                                            className="feather feather-x cursor-pointer hover:text-teal-400 rounded-full w-4 h-4 ml-2"
-                                                                                        >
-                                                                                            <line
-                                                                                                x1={18}
-                                                                                                y1={6}
-                                                                                                x2={6}
-                                                                                                y2={18}
-                                                                                            />
-                                                                                            <line
-                                                                                                x1={6}
-                                                                                                y1={6}
-                                                                                                x2={18}
-                                                                                                y2={18}
-                                                                                            />
-                                                                                        </svg>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        );
-                                                                    }
-                                                                )}
-                                                                <div className="flex-1">
-                                                                    <input
-                                                                        disabled
-                                                                        className="bg-transparent px-2 appearance-none outline-none h-full w-full text-gray-800"
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200">
-                                                                <button
-                                                                    type="button"
-                                                                    className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
-                                                                    onClick={handleDisplay}
-                                                                >
-                                                                    <svg
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        width="100%"
-                                                                        height="100%"
-                                                                        fill="none"
-                                                                        viewBox="0 0 24 24"
-                                                                        stroke="currentColor"
-                                                                        strokeWidth={2}
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                        className="feather feather-chevron-up w-4 h-4"
-                                                                    >
-                                                                        <polyline points="18 15 12 9 6 15" />
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    {errorCategories === 1 ?  <span className="text-[14px] text-error font-medium">Categories Must be under 4</span> : ""}
-                                                    {errorCategories === 2 ?  <span className="text-[14px] text-error font-medium">Categories is required</span> : ""}
-                                                    {displayCategories && (
-                                                        <div className="absolute shadow top-[100%] bg-white z-40 w-full left-0 rounded max-h-60 overflow-y-auto mt-1">
-                                                            <div className="flex flex-col w-full">
-                                                                {categoriesSelector.map(
-                                                                    (category: any, index: number) => {
-                                                                        return (
-                                                                            <div
-                                                                                className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
-                                                                                onClick={() =>
-                                                                                    handleAddCategories(
-                                                                                        category.id,
-                                                                                        index
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-bgHovbg-backgroundHover">
-                                                                                    <div className="w-full items-center flex">
-                                                                                        <div className="mx-2 leading-6  ">
-                                                                                            {category.title}{" "}
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        );
-                                                                    }
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    )}
+                                                <div
+                                                    className={`${
+                                                        formik.errors.categories && formik.touched.categories
+                                                            ? "border-error"
+                                                            : ""
+                                                    } border-[1px] outline-none max-w-lg`}
+                                                >
+                                                    <Field
+                                                        name="categories"
+                                                        component={CustomeSelect}
+                                                        handleOnchange={(e: any) => handleChangeCategories(e, formik)}
+                                                        options={categoriesOptions}
+                                                        isMulti={true}
+                                                        defautlValues={cateOldTemp}
+                                                    />
                                                 </div>
+                                                <ErrorMessage
+                                                    name="categories"
+                                                    component="span"
+                                                    className="text-[14px] text-error font-medium"
+                                                />
                                             </div>
-                                            <div className="status flex-1 flex flex-col">
+                                            <div>
                                                 <label
                                                     htmlFor="status"
                                                     className="text-sm mb-1 font-medium tablet:text-xl"
                                                 >
                                                     Status
                                                 </label>
-                                                <div className="flex flex-col items-center relative w-full">
-                                                    <div className="w-full ">
-                                                        <div className="flex border border-gray-200 rounded">
-                                                            <div className="flex flex-auto flex-wrap py-4 px-2">
-                                                                <div>{status}</div>
-                                                            </div>
-                                                            <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200">
-                                                                <button
-                                                                    type="button"
-                                                                    className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none"
-                                                                    onClick={() => {
-                                                                        setDisplayStatus(!displayStatus);
-                                                                    }}
-                                                                >
-                                                                    <svg
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        width="100%"
-                                                                        height="100%"
-                                                                        fill="none"
-                                                                        viewBox="0 0 24 24"
-                                                                        stroke="currentColor"
-                                                                        strokeWidth={2}
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                        className="feather feather-chevron-up w-4 h-4"
-                                                                    >
-                                                                        <polyline points="18 15 12 9 6 15" />
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    {displayStatus && (
-                                                        <div className="absolute shadow top-[100%]  mt-1 bg-white z-40 w-full lef-0 rounded max-h-select overflow-y-auto">
-                                                            <div className="flex flex-col w-full">
-                                                                <div
-                                                                    className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
-                                                                    onClick={() => {
-                                                                        setStatus("Uncomplete");
-                                                                    }}
-                                                                >
-                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:bg-backgroundHover">
-                                                                        <div className="w-full items-center flex">
-                                                                            <div className="mx-2 leading-6  ">
-                                                                                Uncomplete
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div
-                                                                    className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-backgroundHover"
-                                                                    onClick={() => {
-                                                                        setStatus("Completed");
-                                                                    }}
-                                                                >
-                                                                    <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative">
-                                                                        <div className="w-full items-center flex">
-                                                                            <div className="mx-2 leading-6  ">
-                                                                                Completed
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                                <Field
+                                                    className="custom-select"
+                                                    name="status"
+                                                    component={CustomeSelect}
+                                                    handleOnchange={(e: any) => handleChangeStatus(e, formik)}
+                                                    options={statusOptions}
+                                                    isMulti={false}
+                                                    placeholder={`${courseChangeDetail.status}`}
+                                                />
+                                                <ErrorMessage
+                                                    name="status"
+                                                    component="span"
+                                                    className="text-[14px] text-error font-medium"
+                                                />
                                             </div>
                                         </div>
                                         <div className="flex-1 flex flex-col">
