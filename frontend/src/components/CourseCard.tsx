@@ -20,7 +20,7 @@ const CourseCard: FC<Course> = (props: Course) => {
 
     return (
         <div className="py-4 border-b-[1px]">
-            <div className="flex flex-col gap-2 tablet:flex-row rounded-2xl hover:bg-backgroundHover transition ease-in-out hover:scale-95 hover:shadow-lg duration-200">
+            <div className="flex flex-col gap-2 tablet:flex-row rounded-2xl hover:bg-backgroundHover/10 transition ease-in-out hover:shadow-lg duration-200">
                 <div className="h-48 bg-gray-400 rounded-lg tablet:w-64 laptop:w-80">
                     <Link to={`/course-detail/${props.slug}`}>
                         <img src={props.thumbnail} alt={props.title} className="w-full h-full rounded-lg" />
@@ -45,7 +45,7 @@ const CourseCard: FC<Course> = (props: Course) => {
                     >
                         <ThreeDotIcon />
                         <div
-                            className={`shadow-lg p-2 rounded-lg absolute top-full right-0 ${
+                            className={`shadow-lg p-2 rounded-lg absolute top-10 right-0 bg-white ${
                                 isDisplayDropDown ? "block" : "hidden"
                             }`}
                         >
