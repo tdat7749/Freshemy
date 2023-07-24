@@ -18,6 +18,7 @@ import MyCourses from "./pages/MyCourses";
 import Cookies from "js-cookie";
 import EditCourse from "./pages/EditCourse";
 import CourseDetail from "./pages/CourseDetail";
+import AllCourses from "./pages/AllCourses";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -44,6 +45,7 @@ function App() {
                             <Route path="/my-courses" element={<MyCourses />}></Route>
                         </Route>
                         <Route path="/create-course" element={<CreateCourse />}></Route>
+                        <Route path="/all-courses" element={<AllCourses />}></Route>
                         <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
                         <Route path="/course-detail/:slug" element={<CourseDetail />}></Route>
                         <Route path="/forgot-password" element={<ForgotPassword />}></Route>
