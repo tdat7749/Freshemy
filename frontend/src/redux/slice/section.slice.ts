@@ -1,12 +1,17 @@
 import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {
+
+/**
+ * import {
     addSection as addSectionAPI,
     deleteSection as deleteSectionAPI,
     editSection as editSectionAPI,
     getSectionByCourseId as getSectionByCourseIdAPI
 } from "../../apis/section";
+ */
+
 import { EditSection as EditSectionType, Section as SectionType } from "../../types/section";
 import { Response } from "../../types/response";
+import SectionApis from "../../apis/section";
 
 type SectionSlice = {
     error: string;
@@ -20,7 +25,8 @@ export const addSection = createAsyncThunk<Response<null>, SectionType, { reject
     "section/addSection",
     async (body, ThunkAPI) => {
         try {
-            const response = await addSectionAPI(body);
+            // const response = await addSectionAPI(body);
+            const response = await SectionApis.addSection(body);
             return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -32,7 +38,8 @@ export const editSection = createAsyncThunk<Response<null>, EditSectionType, { r
     "section/editSection",
     async (body, ThunkAPI) => {
         try {
-            const response = await editSectionAPI(body);
+            // const response = await editSectionAPI(body);
+            const response = await SectionApis.editSection(body);
             return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -44,7 +51,8 @@ export const deleteSection = createAsyncThunk<Response<null>, number, { rejectVa
     "section/deleteSection",
     async (body, ThunkAPI) => {
         try {
-            const response = await deleteSectionAPI(body);
+            // const response = await deleteSectionAPI(body);
+            const response = await SectionApis.deleteSection(body);
             return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -57,7 +65,8 @@ export const getSectionByCourseId = createAsyncThunk<Response<SectionType[]>, nu
     "section/getSectionByCourseId",
     async (body, ThunkAPI) => {
         try {
-            const response = await getSectionByCourseIdAPI(body);
+            // const response = await getSectionByCourseIdAPI(body);
+            const response = await SectionApis.getSectionByCourseId(body);
             return response.data as Response<SectionType[]>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
