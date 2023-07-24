@@ -155,7 +155,7 @@ const EditCourse: React.FC = () => {
     const imageRef = useRef<HTMLImageElement>(null);
 
     const handleDisplay = () => {
-        if(createCategoriesSelector.length == 4) {
+        if(createCategoriesSelector.length === 4) {
             setErrorCategories(0);
         }
         setdisplayCategorie(!displayCategories);
@@ -423,8 +423,8 @@ const EditCourse: React.FC = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    {errorCategories == 1 ?  <span className="text-[14px] text-error font-medium">Categories Must be under 4</span> : ""}
-                                                    {errorCategories == 2 ?  <span className="text-[14px] text-error font-medium">Categories is required</span> : ""}
+                                                    {errorCategories === 1 ?  <span className="text-[14px] text-error font-medium">Categories Must be under 4</span> : ""}
+                                                    {errorCategories === 2 ?  <span className="text-[14px] text-error font-medium">Categories is required</span> : ""}
                                                     {displayCategories && (
                                                         <div className="absolute shadow top-[100%] bg-white z-40 w-full left-0 rounded max-h-60 overflow-y-auto mt-1">
                                                             <div className="flex flex-col w-full">

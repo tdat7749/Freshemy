@@ -1,16 +1,16 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-// import { Link } from "react-router-dom";
+
 import { Formik, ErrorMessage, Field } from "formik";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-// import { Navigate } from "react-router-dom";
-import { setMessageEmpty } from "../redux/slice/auth.slice";
-import { NewCourse as CreateCourseType, Category as CategoryType } from "../types/course";
-import { courseActions } from "../redux/slice";
-import { createValidationSchema } from "../validations/course";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+
+import { setMessageEmpty } from "../../redux/slice/auth.slice";
+import { NewCourse as CreateCourseType, Category as CategoryType } from "../../types/course";
+import { courseActions } from "../../redux/slice";
+import { createValidationSchema } from "../../validations/course";
 import slugify from "slugify";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 
 import toast from "react-hot-toast";
 
@@ -21,7 +21,7 @@ const CreateCourse: FC = () => {
     const [displayCategories, setdisplayCategorie] = useState<boolean>(false);
     const [displayStatus, setDisplayStatus] = useState<boolean>(false);
     const [status, setStatus] = useState<string>("Uncomplete");
-    const [errorCategories, setErrorCategories] = useState<number>();
+    const [errorCategories, setErrorCategories] = useState<number>(0);
     let errorMessage = useAppSelector((state) => state.courseSlice.error);
     let successMessage = useAppSelector((state) => state.courseSlice.message);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
@@ -48,9 +48,11 @@ const CreateCourse: FC = () => {
         description: "",
         thumbnail: null,
     };
+    
 
     const handleOnSubmit = async (values: CreateCourseType) => {
         // Trong request form thì value chỉ được là text hoặc file
+
         if (!errorCategories) {
             const categoriesId: number[] = createCategoriesSelector.map((category: CategoryType) => {
                 return category.id;
@@ -85,6 +87,7 @@ const CreateCourse: FC = () => {
     };
 
     const handleAddCategories = (id: number, oldIndex: number) => {
+        console.log("add" + errorCategories)
         if (createCategoriesSelector.length <= 3) {
             setErrorCategories(0);
             const index = categories.findIndex((category: CategoryType) => category.id === id);
@@ -95,7 +98,7 @@ const CreateCourse: FC = () => {
     };
 
     const handleRemoveCategory = (id: number, oldIndex: number) => {
-        console.log(createCategoriesSelector.length);
+        console.log(errorCategories);
         if (createCategoriesSelector.length > 0) {
             setErrorCategories(0);
             const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);
@@ -107,7 +110,7 @@ const CreateCourse: FC = () => {
     };
 
     const handleDisplay = () => {
-        if (createCategoriesSelector.length == 4) {
+        if (createCategoriesSelector.length === 4) {
             setErrorCategories(0);
         }
         setdisplayCategorie(!displayCategories);
@@ -293,14 +296,14 @@ const CreateCourse: FC = () => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    {errorCategories == 1 ? (
+                                                    {errorCategories === 1 ? (
                                                         <span className="text-[14px] text-error font-medium">
                                                             Categories Must be under 4
                                                         </span>
                                                     ) : (
                                                         ""
                                                     )}
-                                                    {errorCategories == 2 ? (
+                                                    {errorCategories === 2 ? (
                                                         <span className="text-[14px] text-error font-medium">
                                                             Categories is required
                                                         </span>

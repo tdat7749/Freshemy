@@ -9,7 +9,7 @@ import ChangePassword from "./pages/ChangePassword";
 import Footer from "./components/Footer";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import CreateCourse from "./pages/CreateCourse";
+import CreateCourse from "./pages/CreateCourse/CreateCourse";
 import Register from "./pages/Register";
 import PrivateRoute from "./routes/PrivateRoute";
 import Verify from "./pages/Verify";
