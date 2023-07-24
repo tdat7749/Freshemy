@@ -14,6 +14,7 @@ import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonw
 import { RequestHasLogin } from "../types/request";
 import services from ".";
 import { resolutions } from "../commons";
+import slugify from "slugify";
 
 const getLesson = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -51,9 +52,15 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { title, section_id } = req.body;
 
-        const sectionIdConvert = parseInt(section_id)
+        const sectionIdConvert = parseInt(section_id);
+        const slugTitle = slugify(title);
 
-        const videoPath = services.FileStorageService.createFileM3U8AndTS(req.file as Express.Multer.File, resolutions, "E:\\Test1", title)
+        const videoPath = await services.FileStorageService.createFileM3U8AndTS(
+            req.file as Express.Multer.File,
+            resolutions,
+            "C:\\video",
+            slugTitle,
+        );
 
         const lesson = await configs.db.lesson.create({
             data: {

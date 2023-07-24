@@ -38,9 +38,9 @@ const CreateCourse: FC = () => {
         setThumbnail(null);
     }, [dispatch]);
 
-    const initialValues: CreateCourseType = {
+    const initialValues: any = {
         title: "",
-        categories: 0,
+        // categories: 0,
         status: 0,
         summary: "",
         description: "",

@@ -55,6 +55,7 @@
     "nodemailer": "^6.9.3",
     "prisma": "^4.16.2",
     "redis": "^4.6.7",
+    "slugify": "^1.6.6",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.6"

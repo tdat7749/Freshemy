@@ -18,6 +18,7 @@ import MyCourses from "./pages/MyCourses";
 import Cookies from "js-cookie";
 import EditCourse from "./pages/EditCourse";
 import CourseDetail from "./pages/CourseDetail";
+import WatchVideo from "./pages/WatchVideo";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -50,6 +51,7 @@ function App() {
                     <Route path="/login" element={<Login />}></Route>
                     <Route path="/register" element={<Register />}></Route>
                     <Route path="/verify-email/:token" element={<Verify />}></Route>
+                    <Route path="/course-detail/:slug/watch" element={<WatchVideo />}></Route>
                     <Route path="/*" element={<NotFound />}></Route>
                 </Routes>
                 <Footer />
