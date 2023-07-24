@@ -13,7 +13,7 @@ import CreateCourse from "./pages/CreateCourse";
 import Register from "./pages/Register";
 import PrivateRoute from "./routes/PrivateRoute";
 import Verify from "./pages/Verify";
-import NotFound from "./pages/NotFound";
+// import NotFound from "./pages/NotFound";
 import MyCourses from "./pages/MyCourses";
 import Cookies from "js-cookie";
 import EditCourse from "./pages/EditCourse";
@@ -53,7 +53,7 @@ function App() {
                     <Route path="/register" element={<Register />}></Route>
                     <Route path="/verify-email/:token" element={<Verify />}></Route>
                     <Route path="/course-detail/:slug/watch" element={<WatchVideo />}></Route>
-                    <Route path="/*" element={<NotFound />}></Route>
+                    {/* <Route path="/*" element={<NotFound />}></Route> */}
                 </Routes>
                 <Footer />
                 </div>
