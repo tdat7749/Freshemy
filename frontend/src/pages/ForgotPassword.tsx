@@ -29,7 +29,6 @@ const ForgotPassword: React.FC = () => {
         //@ts-ignore
         dispatch(authActions.forgotPassword(values)).then((response) => {
             if (response.payload.status_code === 200) {
-                //@ts-ignore
                 toast.success(response.payload.message)
             } else {
                 toast.error(response.payload.message)

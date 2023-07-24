@@ -35,7 +35,6 @@ const ResetPassword: React.FC<{}> = () => {
         //@ts-ignore
         dispatch(authActions.resetPassword(data)).then((response) => {
             if (response.payload.status_code === 200) {
-                //@ts-ignore
                 toast.success(response.payload.message);
                 navigate("/login");
             } else {
