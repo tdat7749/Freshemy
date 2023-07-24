@@ -52,10 +52,10 @@ const MyCourses: React.FC = () => {
 
     const handleDeleteCourse = (courseId: number) => {
         //@ts-ignore
-        dispatch(courseActions.deleteCourse({ courseId })).then((response) => {
+        dispatch(courseActions.deleteCourse(courseId)).then((response) => {
             if (response.payload.status_code === 200) {
-                toast.success(response.payload.message);
                 dispatch(courseActions.setDeleteCourse(courseId));
+                toast.success(response.payload.message);
             } else {
                 toast.error(response.payload.message);
             }
