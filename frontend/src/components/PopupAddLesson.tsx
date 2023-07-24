@@ -1,15 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Formik, Field, ErrorMessage } from "formik";
 import { AddLesson as AddLessonType } from "../types/lesson";
-import { useAppDispatch } from "../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { setMessageEmpty } from "../redux/slice/user.slice";
 import { lessonActions } from "../redux/slice";
 import { addLessonValidationSchema } from "../validations/lesson";
 import toast, { Toaster } from "react-hot-toast";
-import { 
-    MESSAGE_ERROR_VIDEO_FILE_TYPE,
-    MESSAGE_ERROR_VIDEO_FILE_SIZE,
- } from "../utils/contants";
+import { MESSAGE_ERROR_VIDEO_FILE_TYPE, MESSAGE_ERROR_VIDEO_FILE_SIZE } from "../utils/contants";
 
 type AddLessonModalProps = {
     handleDelete: () => void;
@@ -18,7 +15,8 @@ type AddLessonModalProps = {
 };
 
 const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
-    const [error, setError] = useState('')
+    const isLoading = useAppSelector((state) => state.lessonSlice.isLoading);
+    const [error, setError] = useState("");
     const [video, setVideo] = useState<File | null>(null);
     const dispatch = useAppDispatch();
     const formikRef = useRef(null);
@@ -34,22 +32,19 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
 
     const handleChangeVideo = (event: React.ChangeEvent<HTMLInputElement>) => {
         setError("");
-        const video_file: File = event.currentTarget.files![0]
-        if(video_file) {
-            if(video_file.size > 1024 * 1024 * 100)
-            {
-                setError(MESSAGE_ERROR_VIDEO_FILE_SIZE)
+        const video_file: File = event.currentTarget.files![0];
+        if (video_file) {
+            if (video_file.size > 1024 * 1024 * 100) {
+                setError(MESSAGE_ERROR_VIDEO_FILE_SIZE);
             } else {
-                const videoExtension = video_file?.name.split('.').pop()
-                if(videoExtension === "mp4" || videoExtension === "mkv" || videoExtension === "mov"){
+                const videoExtension = video_file?.name.split(".").pop();
+                if (videoExtension === "mp4" || videoExtension === "mkv" || videoExtension === "mov") {
                     setVideo(video_file);
                 } else {
-                    setError(MESSAGE_ERROR_VIDEO_FILE_TYPE)
+                    setError(MESSAGE_ERROR_VIDEO_FILE_TYPE);
                 }
             }
         }
-        
-        
     };
 
     const handleOnSubmit = (values: AddLessonType) => {
@@ -58,18 +53,18 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         formData.append("section_id", props.id.toString());
         formData.append("video", video as File);
         //@ts-ignore
-        dispatch(lessonActions.addLesson(formData)).then((response)=>{
-            if(response.payload.status_code!==200){
-                toast.error(response.payload.message)
-            }
-            else{
-                toast.success(response.payload.message)
-                props.handleCancel()
-            } 
-        }).catch((error: any)=>{
-            toast.error(error)
-        });
-        
+        dispatch(lessonActions.addLesson(formData))
+            .then((response) => {
+                if (response.payload.status_code !== 200) {
+                    toast.error(response.payload.message);
+                } else {
+                    toast.success(response.payload.message);
+                    props.handleCancel();
+                }
+            })
+            .catch((error: any) => {
+                toast.error(error);
+            });
     };
 
     return (
@@ -78,12 +73,14 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
             <div className="  max-w-[360px] tablet:max-w-[550px] max-h-[630px] tablet:max-h-[1000px] rounded-[12px] bg-background mx-auto tablet:mx-0 flex-1">
                 <div className="w-full p-[12px]">
                     <h1 className="text-3xl mb-1 font-bold text-center text-title">ADD NEW LESSON</h1>
-                    <Formik validationSchema={addLessonValidationSchema} initialValues={initialValue} onSubmit={handleOnSubmit} innerRef={formikRef}>
+                    <Formik
+                        validationSchema={addLessonValidationSchema}
+                        initialValues={initialValue}
+                        onSubmit={handleOnSubmit}
+                        innerRef={formikRef}
+                    >
                         {(formik) => (
-                            <form
-                                onSubmit={formik.handleSubmit}
-                                className="text-sm mb-1 tablet:text-xl font-medium"
-                            >
+                            <form onSubmit={formik.handleSubmit} className="text-sm mb-1 tablet:text-xl font-medium">
                                 <div className="px-5 py-3">
                                     <label htmlFor="title" className="text-sm mb-1 tablet:text-xl font-medium">
                                         Title
@@ -113,16 +110,16 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                                         ref={formikRef}
                                         type="file"
                                         name="video"
-                                        className={` file-input file-input-bordered file-input-primary w-full ${error !==""?"border-red border-[1px]":"" } `}
+                                        className={` file-input file-input-bordered file-input-primary w-full ${
+                                            error !== "" ? "border-red border-[1px]" : ""
+                                        } `}
                                         onChange={handleChangeVideo}
                                     />
                                     {error !== "" && (
-                                    <span className=" m-auto text-[15px] text-error font-medium ">
-                                        {error}
-                                    </span>
-                                )}
+                                        <span className=" m-auto text-[15px] text-error font-medium ">{error}</span>
+                                    )}
                                 </div>
-                                
+
                                 <div className="flex justify-end px-4">
                                     <button
                                         type="submit"
@@ -130,7 +127,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                                         className="btn btn-primary text-lg"
                                         disabled={error !== "" ? true : false}
                                     >
-                                        Save
+                                        {isLoading ? "Loading..." : "Save"}
                                     </button>
                                     <button onClick={props.handleCancel} type="button" className="btn text-lg ml-2">
                                         Cancel
