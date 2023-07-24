@@ -3,10 +3,8 @@ import React from "react";
 const Home: React.FC = () => {
     return (
         <>
-            <div className="container mx-auto min-h-screen mt-[100px]">
-              <div className="container px-4 tablet:px-9">
-                Homepage
-              </div>
+            <div className="container mx-auto">
+                <div className="container px-4 tablet:px-9 mt-[100px]">Homepage</div>
             </div>
         </>
     );

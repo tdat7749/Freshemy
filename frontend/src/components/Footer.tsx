@@ -4,7 +4,7 @@ import Logo from "../assets/images/logo.png";
 const Footer: React.FC = () => {
     return (
         <>
-            <footer className="footer footer-center p-10 bg-background text-base-content rounded ">
+            <footer className="mt-auto footer footer-center p-10 bg-background text-base-content rounded ">
                 <div className="grid grid-flow-col gap-4">
                     <span className="link text-lg no-underline hover:opacity-80">About us</span>
                     <span className="link text-lg no-underline hover:opacity-80">Contact</span>

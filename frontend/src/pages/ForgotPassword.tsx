@@ -40,7 +40,7 @@ const ForgotPassword: React.FC = () => {
     return (
         <>
             <div className="container mx-auto">
-                <div className="min-h-screen h-full  flex items-center justify-center mt-[100px]">
+                <div className="flex items-center justify-center mt-[100px] py-10">
                     <div className="bg-primary m-4 rounded-xl shadow-lg">
                         <Formik
                             initialValues={initialValues}

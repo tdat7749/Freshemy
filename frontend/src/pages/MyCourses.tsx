@@ -65,53 +65,55 @@ const MyCourses: React.FC = () => {
     return (
         <>
             <Navbar />
-            <div className="min-h-screen h-full px-4 tablet:px-[60px]">
-                <h1 className="text-center text-[32px] py-4 font-bold text-title">MY COURSE</h1>
-                <div className="w-full flex flex-col gap-4 justify-between shrink-0 tablet:flex-row">
-                    <div className="flex-1">
-                        <div className="relative">
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                placeholder="Search for anything"
-                                className="rounded-full py-4 px-10 w-full tablet:w-[70%] border-[1px] border-black"
-                                value={userInput}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserInput(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") handleKeyWordSearch();
-                                }}
-                            />
-                            <div className="cursor-pointer" onClick={handleKeyWordSearch}>
-                                <SearchIcon />
+            <div className="container mx-auto">
+                <div className="px-4 tablet:px-[60px]">
+                    <h1 className="text-center text-[32px] py-4 font-bold text-title">MY COURSE</h1>
+                    <div className="w-full flex flex-col gap-4 justify-between shrink-0 tablet:flex-row">
+                        <div className="flex-1">
+                            <div className="relative">
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    placeholder="Search for anything"
+                                    className="rounded-full py-4 px-10 w-full tablet:w-[70%] border-[1px] border-black"
+                                    value={userInput}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") handleKeyWordSearch();
+                                    }}
+                                />
+                                <div className="cursor-pointer" onClick={handleKeyWordSearch}>
+                                    <SearchIcon />
+                                </div>
                             </div>
                         </div>
+                        <div className="flex-3 flex btn btn-primary text-lg">
+                            <CreateIcon />
+                            <Link to={"/create-course"}>Create New</Link>
+                        </div>
                     </div>
-                    <div className="flex-3 flex btn btn-primary text-lg">
-                        <CreateIcon />
-                        <Link to={"/create-course"}>Create New</Link>
-                    </div>
-                </div>
-                {courseList.map((course) => {
-                    return (
-                        <CourseCard
-                            key={course.id}
-                            id={course.id}
-                            thumbnail={course.thumbnail}
-                            slug={course.slug}
-                            title={course.title}
-                            summary={course.summary}
-                            author={course.author}
-                            handleDeleteCourse={handleDeleteCourse}
-                            handleEditCourse={handleEditCourse}
+                    {courseList.map((course) => {
+                        return (
+                            <CourseCard
+                                key={course.id}
+                                id={course.id}
+                                thumbnail={course.thumbnail}
+                                slug={course.slug}
+                                title={course.title}
+                                summary={course.summary}
+                                author={course.author}
+                                handleDeleteCourse={handleDeleteCourse}
+                                handleEditCourse={handleEditCourse}
+                            />
+                        );
+                    })}
+                    <div className="flex justify-end my-4">
+                        <Pagination
+                            handleChangePageIndex={handleChangePageIndex}
+                            totalPage={totalPage}
+                            currentPage={pageIndex}
                         />
-                    );
-                })}
-                <div className="flex justify-end my-4">
-                    <Pagination
-                        handleChangePageIndex={handleChangePageIndex}
-                        totalPage={totalPage}
-                        currentPage={pageIndex}
-                    />
+                    </div>
                 </div>
             </div>
         </>
