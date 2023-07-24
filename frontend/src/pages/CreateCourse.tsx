@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
+import toast from "react-hot-toast";
+
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
 
@@ -69,7 +71,10 @@ const CreateCourse: FC = () => {
             // @ts-ignore
             dispatch(courseActions.createCourses(formData)).then((response) => {
                 if (response.payload.status_code === 201) {
+                    toast.success(response.payload.message);
                     navigate("/my-courses");
+                } else {
+                    toast.error(response.payload.message);
                 }
             });
         }
@@ -90,7 +95,7 @@ const CreateCourse: FC = () => {
     };
 
     const handleRemoveCategory = (id: number, oldIndex: number) => {
-        console.log(createCategoriesSelector.length)
+        console.log(createCategoriesSelector.length);
         if (createCategoriesSelector.length > 0) {
             setErrorCategories(0);
             const index = createCategoriesSelector.findIndex((category: CategoryType) => category.id === id);

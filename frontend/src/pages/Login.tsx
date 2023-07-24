@@ -8,7 +8,7 @@ import { Navigate } from "react-router-dom";
 import Skeleton from "../assets/images/Skeleton.png";
 import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { loginValidationSchema } from "../validations/auth";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const Login: FC = () => {
     const dispatch = useAppDispatch();
@@ -31,9 +31,10 @@ const Login: FC = () => {
     };
 
     const handleOnSubmit: (values: LoginType) => void = (values: LoginType) => {
-        //@ts-ignore
+        // @ts-ignore
         dispatch(authActions.login(values)).then((response) => {
             if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
                 //@ts-ignore
                 dispatch(authActions.getMe());
             } else {
@@ -45,7 +46,7 @@ const Login: FC = () => {
     return (
         <>
             <div className="container mx-auto">
-                <div className="min-h-screen h-full  flex items-center justify-center mt-[100px]">
+                <div className="flex items-center justify-center mt-[100px] py-10">
                     <div className="bg-primary m-4 rounded-xl shadow-lg">
                         <Formik
                             initialValues={initialValue}

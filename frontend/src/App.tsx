@@ -36,13 +36,14 @@ function App() {
     return (
         <>
             <BrowserRouter>
-                <Header isLogin={isLogin} />
-                <Routes>
-                    <Route path="/" element={<Home />}></Route>
-                    <Route element={<PrivateRoute />}>
-                        <Route path="/change-password" element={<ChangePassword />}></Route>
-                        <Route path="/my-courses" element={<MyCourses />}></Route>
-                    </Route>
+                <div className="flex flex-col min-h-screen">
+                    <Header isLogin={isLogin} />
+                    <Routes>
+                        <Route path="/" element={<Home />}></Route>
+                        <Route element={<PrivateRoute />}>
+                            <Route path="/change-password" element={<ChangePassword />}></Route>
+                            <Route path="/my-courses" element={<MyCourses />}></Route>
+                        </Route>
                         <Route path="/create-course" element={<CreateCourse />}></Route>
                         <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
                     <Route path="/course-detail/:slug" element={<CourseDetail />}></Route>
@@ -55,6 +56,7 @@ function App() {
                     <Route path="/*" element={<NotFound />}></Route>
                 </Routes>
                 <Footer />
+                </div>
             </BrowserRouter>
         </>
     );

@@ -28,4 +28,6 @@ export const MESSAGE_ERROR_LAST_NAME_REQUIRED = "Last Name is required"
 export const MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED = "Confirm Password is required"
 export const MESSAGE_ERROR_WRONG_CONFIRM_PASSWORD_REQUIRED = "Wrong Confirm Password is required"
 
+export const MESSAGE_ERROR_VIDEO_FILE_TYPE = "Invalid file type, .mp4 .mkv .mov file only"
+export const MESSAGE_ERROR_VIDEO_FILE_SIZE = "Video too large, video size lower than 100MB only"
 

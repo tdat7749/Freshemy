@@ -23,12 +23,12 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
 
             <header className="w-full h-[100px] max-w-full bg-background shadow-sm fixed top-0 left-0 z-[10]">
                 <Toaster/>
-                <div className="w-full h-full flex items-center py-[10px] px-4 tablet:px-[60px] overflow-hidden">
+                <div className="w-full h-full flex items-center py-[10px] px-4 tablet:px-[60px]">
                     <div className="flex-1 flex gap-4 laptop:gap-[120px] items-center">
                         <Link to={"/"} className="w-[60px] h-[60px] shrink-0">
                             <img src={Logo} alt="Logo" />
                         </Link>
-                        <div className="hidden relative tablet:block flex-1">
+                        <div className="hidden relative laptop:block flex-1">
                             <input
                                 type="text"
                                 placeholder="Search for anything"
