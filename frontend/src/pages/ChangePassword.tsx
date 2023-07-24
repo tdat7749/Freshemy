@@ -7,7 +7,7 @@ import { useAppSelector } from "../hooks/hooks";
 import { Link } from "react-router-dom";
 import { setMessageEmpty } from "../redux/slice/user.slice";
 import { changePasswordValidationSchema } from "../validations/user";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 const ChangePassword: React.FC = () => {
     let error = useAppSelector((state) => state.userSlice.error) ?? "";
 
@@ -27,16 +27,17 @@ const ChangePassword: React.FC = () => {
 
     const handleOnSubmit = (values: ChangePasswordType) => {
         //@ts-ignore
-        dispatch(userActions.changePassword(values)).then((response)=>{
-            if(response.payload.status_code!==200){
-                toast.error(response.payload.message)
-            }
-            else{
-                toast.success(response.payload.message)
-            } 
-        }).catch((error: any)=>{
-            toast.error(error)
-        });
+        dispatch(userActions.changePassword(values))
+            .then((response: any) => {
+                if (response.payload.status_code !== 200) {
+                    toast.error(response.payload.message);
+                } else {
+                    toast.success(response.payload.message);
+                }
+            })
+            .catch((error: any) => {
+                toast.error(error);
+            });
     };
 
     const handleChange = () => {
@@ -44,13 +45,10 @@ const ChangePassword: React.FC = () => {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen mt-[100px] ">
-            <div className=" drop-shadow-xl bg-primary border-black border-[1px] max-w-[360px] tablet:max-w-[505px] max-h-[630px] tablet:max-h-[700px] rounded-[12px] bg-bgForm mx-auto tablet:mx-0 flex-1">
-                <div className="w-full p-[12px]">
-                    <h1 className="text-[32px] tablet:text-[40px] font-semibold text-center my-[10px]">
-                        CHANGE PASSWORD
-                    </h1>
-
+        <div className="container mx-auto">
+            <div className="min-h-screen h-full  flex items-center justify-center mt-[100px]">
+                <div className="bg-primary m-4 rounded-xl shadow-lg p-4">
+                    <h1 className="font-bold text-[32px] text-center text-title">CHANGE PASSWORD</h1>
                     <Formik
                         initialValues={initialValue}
                         validationSchema={changePasswordValidationSchema}
@@ -60,40 +58,38 @@ const ChangePassword: React.FC = () => {
                         {(formik) => (
                             <form
                                 onSubmit={formik.handleSubmit}
-                                className="w-full space-y-[5px] tablet:space-y-[20px]"
                                 onChange={handleChange}
                             >
-                                <div className="ml-[20px] mr-[20px]">
-                                    <label htmlFor="current_password" className=" label-text text-[24px]">
+                                <div className="flex flex-col mb-3">
+                                    <label htmlFor="current_password" className="text-sm mb-1 tablet:text-xl">
                                         Current Password
-                                    </label>{" "}
-                                    <br />
+                                    </label>
                                     <Field
                                         type="password"
                                         name="current_password"
-                                        className={`' input input-bordered w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none ' ${
+                                        className={`px-2 py-4 rounded-lg border-[1px] outline-none max-w-sm ${
                                             formik.errors.current_password &&
                                             formik.touched.current_password &&
-                                            "border-error input-error"
+                                            "border-error"
                                         } `}
                                     />
-                                    <br />
                                     <ErrorMessage
                                         name="current_password"
                                         component="span"
                                         className="text-[14px] text-error font-medium"
                                     />
                                 </div>
-                                <div className="ml-[20px] mr-[20px]">
-                                    <label htmlFor="new_password" className=" label-text text-[24px]">
+                                <div className="flex flex-col mb-3">
+                                    <label htmlFor="new_password" className="text-sm mb-1 tablet:text-xl">
                                         New Password
                                     </label>
-                                    <br />
                                     <Field
                                         type="password"
                                         name="new_password"
-                                        className={`' input input-bordered w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none ' ${
-                                            formik.errors.new_password && formik.touched.new_password && "border-error input-error"
+                                        className={`px-2 py-4 rounded-lg border-[1px] outline-none max-w-sm ${
+                                            formik.errors.new_password &&
+                                            formik.touched.new_password &&
+                                            "border-error"
                                         }`}
                                     />
                                     <ErrorMessage
@@ -102,18 +98,17 @@ const ChangePassword: React.FC = () => {
                                         className="text-[14px] text-error font-medium"
                                     />
                                 </div>
-                                <div className="ml-[20px] mr-[20px]">
-                                    <label htmlFor="confirm_password" className=" label-text text-[24px] ">
+                                <div className="flex flex-col mb-3">
+                                    <label htmlFor="confirm_password" className="text-sm mb-1 tablet:text-xl">
                                         Confirm Password
-                                    </label>{" "}
-                                    <br />
+                                    </label>
                                     <Field
                                         type="password"
                                         name="confirm_password"
-                                        className={`' input input-bordered w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none ' ${
+                                        className={`px-2 py-4 rounded-lg border-[1px] outline-none max-w-sm ${
                                             formik.errors.confirm_password &&
                                             formik.touched.confirm_password &&
-                                            "border-error input-error"
+                                            "border-error"
                                         }`}
                                     />
                                     <ErrorMessage
@@ -122,12 +117,11 @@ const ChangePassword: React.FC = () => {
                                         className="text-[14px] text-error font-medium"
                                     />
                                 </div>
-                                <div className="py-[12px]  mt-[30px] tablte:mt-[60px]">
+                                <div className="flex justify-end mb-3">
                                     <button
                                         type="submit"
                                         name="save_button"
-                                        className=" btn btn-primary border-black border-[1px]  w-2/5 tablet:w-[100px] h-[70px] tablet:h-[68px]
-                                         text-[24px] ml-[40px] tablet:ml-[250px] disabled:opacity-50 "
+                                        className="btn btn-primary text-lg"
                                         disabled={error !== "" ? true : false}
                                     >
                                         Save
@@ -135,7 +129,7 @@ const ChangePassword: React.FC = () => {
                                     <Link to={"/"}>
                                         <button
                                             type="submit"
-                                            className="btn bg-white border-black border-[1px] hover:opacity-80  w-2/5 tablet:w-[100px] h-[70px] tablet:h-[68px] text-[24px] ml-[10px]"
+                                            className="btn text-lg ml-2"
                                         >
                                             Cancel
                                         </button>
