@@ -54,7 +54,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         formData.append("video", video as File);
         //@ts-ignore
         dispatch(lessonActions.addLesson(formData))
-            .then((response) => {
+            .then((response: any) => {
                 if (response.payload.status_code !== 200) {
                     toast.error(response.payload.message);
                 } else {
