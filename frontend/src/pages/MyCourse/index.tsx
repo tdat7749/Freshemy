@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import SearchIcon from "../components/icons/SearchIcon";
-import CreateIcon from "../components/icons/CreateIcon";
+import SearchIcon from "../../components/icons/SearchIcon";
+import CreateIcon from "../../components/icons/CreateIcon";
 import { Link, useNavigate } from "react-router-dom";
-import CourseCard from "../components/CourseCard";
-import Pagination from "../components/Pagination";
-import Navbar from "../components/Navbar";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { courseActions } from "../redux/slice";
-import { Course } from "../types/course";
+import CourseCard from "../../components/CourseCard";
+import Pagination from "../../components/Pagination";
+import Navbar from "../../components/Navbar";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { courseActions } from "../../redux/slice";
+import { Course } from "../../types/course";
 
 import toast from "react-hot-toast";
+import Spin from "../../components/Spin";
 
 const MyCourses: React.FC = () => {
     const [userInput, setUserInput] = useState<string>("");
@@ -21,6 +22,8 @@ const MyCourses: React.FC = () => {
 
     let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
     let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
+
+    const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
 
     useEffect(() => {
         // @ts-ignore
@@ -64,6 +67,7 @@ const MyCourses: React.FC = () => {
 
     return (
         <>
+            {isLoading && <Spin />}
             <Navbar />
             <div className="container mx-auto">
                 <div className="px-4 tablet:px-[60px]">
