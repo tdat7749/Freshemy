@@ -203,14 +203,6 @@ export const courseSlice = createSlice({
             state.error = "";
             state.message = "";
         },
-        addCategories: (state, payload: PayloadAction<number>) => {
-            const category = state.categories.splice(payload.payload, 1)[0];
-            state.selectCategories.push(category);
-        },
-        removeCategories: (state, payload: PayloadAction<number>) => {
-            const category: Category = state.selectCategories.splice(payload.payload, 1)[0];
-            state.categories.push(category);
-        },
         setCategories: (state, payload: PayloadAction<Category[]>) => {
             state.categories = payload.payload;
         },
@@ -372,6 +364,6 @@ export const courseSlice = createSlice({
     },
 });
 
-export const { setError, setCategories, addCategories, removeCategories, reset, setDeleteCourse } = courseSlice.actions;
+export const { setError, setCategories, reset, setDeleteCourse } = courseSlice.actions;
 
 export default courseSlice.reducer;

@@ -6,7 +6,6 @@ export const HTTP_DELETE = "DELETE";
 
 // export const MESSAGE_SUCCESS_VERIFCATION_FORGOT_PASSWORD = "Sent a verification code to your email";
 
-
 // export const MESSAGE_ERROR_VIDEO_FILE_TYPE = "Invalid file type, .mp4 .mkv .mov file only";
 // export const MESSAGE_ERROR_VIDEO_FILE_SIZE = "Video too large, video size lower than 100MB only";
 // export const MESSAGE_ERROR_TITLE_TOO_LONG = "Title is too long, under 100 characters only";
@@ -48,12 +47,12 @@ export const errorMessages = {
     categoriesIsRequired: "Category is required",
     categoriesMaxAllowed: "Categories Max Allowied are 4",
 
+    fileIsNotSupport: "File is not support",
     thumbnailIsRequired: "Thumbnail is required",
     thumbnailTooBig: "Thumbnail too big",
 
     videoFileType: "Invalid file type, .mp4 .mkv .mov file only",
     videoFileSize: "Video too large, video size lower than 100MB only",
-    
 };
 
 export const successMessages = {
