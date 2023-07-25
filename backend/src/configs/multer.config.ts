@@ -45,12 +45,12 @@ export const uploadVideo = multer({
     fileFilter: (req, file, cb) => {
         if (file.mimetype === "video/mp4") {
             cb(null, true);
-        } else if (file.mimetype === "video/gif") {
+        } else if (file.mimetype === "video/x-matroska") {
             cb(null, true);
         } else if (file.mimetype === "video/mov") {
             cb(null, true);
         } else {
-            cb(new Error("Invalid file type: Only .mp4, .gif or .mov is allowed"));
+            cb(new Error("Invalid file type: Only .mp4, .mkv or .mov is allowed"));
         }
     },
 }).single("video");
