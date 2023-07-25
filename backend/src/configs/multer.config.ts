@@ -1,4 +1,5 @@
 import multer from "multer";
+import configs from ".";
 
 const storage = multer.diskStorage({
     filename: (req, file: Express.Multer.File, cb) => {
@@ -19,7 +20,7 @@ export const uploadFile = multer({
         } else if (file.mimetype === "image/jpg") {
             cb(null, true);
         } else {
-            return cb(new Error("Invalid file type: Only .png, .jpeg or .jpg is allowed"))
+            return cb(new Error("Invalid file type: Only .png, .jpeg or .jpg is allowed"));
         }
     },
 }).single("thumbnail");
@@ -27,7 +28,7 @@ export const uploadFile = multer({
 // Upload video
 const storageVideo = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "/root/");
+        cb(null, configs.general.UPLOAD_PATH);
     },
     filename: (req, file: Express.Multer.File, cb) => {
         const extension = file.originalname.split(".").pop();

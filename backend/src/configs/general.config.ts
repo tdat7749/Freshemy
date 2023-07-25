@@ -19,4 +19,5 @@ export const general = {
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
     PUBLIC_URL: process.env.PUBLIC_URL,
+    UPLOAD_PATH: process.env.UPLOAD_PATH as string,
 };

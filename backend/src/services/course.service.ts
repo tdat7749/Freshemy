@@ -74,7 +74,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
             },
         });
 
-
         if (course) {
             if (course.is_delete) {
                 return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
@@ -135,7 +134,7 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
                         },
                     },
                 },
-            }
+            },
         });
 
         if (course) {
@@ -371,10 +370,10 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status } = req.body;
 
+    console.log(title, slug, description, summary, categories, status);
+
     // Vì formData gửi dữ liệu bằng string nên ở đây phải convert nó về
-    const categoriesConvert = categories.map((item: string) => {
-        category_id: parseInt(item);
-    });
+
     const statusConvert = status === "0" ? false : true;
 
     const user_id = req.user_id;
@@ -402,8 +401,8 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         });
 
         if (uploadFileResult) {
-            const listCategoryId = categories.map((item: number) => ({
-                category_id: item,
+            const listCategoryId = categories.map((item: string) => ({
+                category_id: parseInt(item),
             }));
 
             if (user_id) {
@@ -417,7 +416,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                         user_id: user_id,
                         status: statusConvert,
                         courses_categories: {
-                            create: categoriesConvert,
+                            create: listCategoryId,
                         },
                     },
                 });
