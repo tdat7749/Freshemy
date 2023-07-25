@@ -56,7 +56,7 @@ export interface Section {
     course_id: number;
     course: Course;
 
-    lessions: Lesson[];
+    lessons: Lesson[];
 }
 
 export interface CourseCategory {

@@ -1,28 +1,29 @@
-import {
-    MESSAGE_ERROR_DESCRIPTION_REQUIRED,
-    MESSAGE_ERROR_SUMMARY_REQUIRED,
-    MESSAGE_ERROR_TITLE_REQUIRED,
-} from "../utils/contants";
+import i18n from "../utils/i18next";
 import * as Yup from "yup";
 const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/gif", "image/png"];
 export const editCourseValidationSchema = Yup.object({
-    categories: Yup.array().min(1, "Categories is required").max(4, "Categories allow 4"),
-    title: Yup.string().trim().required(MESSAGE_ERROR_TITLE_REQUIRED),
-    summary: Yup.string().trim().required(MESSAGE_ERROR_SUMMARY_REQUIRED),
-    description: Yup.string().trim().required(MESSAGE_ERROR_DESCRIPTION_REQUIRED),
+    categories: Yup.array()
+        .min(1, i18n.t("errorMessages.categoriesIsRequired"))
+        .max(4, i18n.t("errorMessages.categoriesMaxAllowed")),
+    title: Yup.string().trim().required(i18n.t("errorMessages.titleIsRequired")),
+    summary: Yup.string().trim().required(i18n.t("errorMessages.summaryIsRequired")),
+    description: Yup.string().trim().required(i18n.t("errorMessages.descriptionIsRequired")),
 });
 
 export const createValidationSchema = Yup.object({
     thumbnail: Yup.mixed()
-        .required("A file is required")
-        .test("fileFormat", "Unsupported Format", (value: any) => {
+        .nullable()
+        .required(i18n.t("errorMessages.thumbnailIsRequired"))
+        .test("fileFormat", i18n.t("errorMessages.fileIsNotSupport"), (value: any) => {
             return value && SUPPORTED_FORMATS.includes(value.type);
         })
-        .test("fileSize", "File too large", (value: any) => {
+        .test("fileSize", i18n.t("errorMessages.thumbnailTooBig"), (value: any) => {
             return value && value.size <= 1024 * 1024 * 4;
         }),
-    categories: Yup.array().min(1, "Categories is required").max(4, "Categories allow 4"),
-    title: Yup.string().trim().required(MESSAGE_ERROR_TITLE_REQUIRED),
-    summary: Yup.string().trim().required(MESSAGE_ERROR_SUMMARY_REQUIRED),
-    description: Yup.string().trim().required(MESSAGE_ERROR_DESCRIPTION_REQUIRED),
+    categories: Yup.array()
+        .min(1, i18n.t("errorMessages.categoriesIsRequired"))
+        .max(4, i18n.t("errorMessages.categoriesMaxAllowed")),
+    title: Yup.string().trim().required(i18n.t("errorMessages.titleIsRequired")),
+    summary: Yup.string().trim().required(i18n.t("errorMessages.summaryIsRequired")),
+    description: Yup.string().trim().required(i18n.t("errorMessages.descriptionIsRequired")),
 });
