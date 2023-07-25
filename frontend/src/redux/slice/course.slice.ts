@@ -176,6 +176,7 @@ const initialState: CourseSlice = {
         summary: "",
         status: false,
         description: "",
+        thumbnail: "",
     },
     error: "",
     message: "",

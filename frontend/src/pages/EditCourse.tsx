@@ -81,6 +81,7 @@ const EditCourse: React.FC = () => {
         description: courseChangeDetail.description,
         id: Number(course_id),
         slug: courseChangeDetail.slug,
+        thumbnail: courseChangeDetail.thumbnail,
     };
     const courseStatus: string = courseChangeDetail.status ? "Completed" : "Uncomplete";
     const dispatch = useAppDispatch();
@@ -107,7 +108,6 @@ const EditCourse: React.FC = () => {
     useEffect(() => {
         let createTemp = [...createCategoriesSelector];
         let cateTemp = [...categoriesSelector];
-        console.log(cateTemp);
         const cateOptionsTemp: any = [];
         createTemp.forEach((category: any) => {
             const index = cateTemp.findIndex((item: any) => item.id === category.id);
@@ -122,10 +122,9 @@ const EditCourse: React.FC = () => {
             };
             cateOptionsTemp.push(temp);
         });
-        console.log(createCategoriesSelector);
-        console.log(cateTemp);
         setcategoriesOptions(cateOptionsTemp);
     }, [createCategoriesSelector]);
+
     const handleAddSection = () => {
         const values: AddSectionType = {
             course_id: Number(course_id),
@@ -216,22 +215,28 @@ const EditCourse: React.FC = () => {
     const imageRef = useRef<HTMLImageElement>(null);
 
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.currentTarget.files![0].size > 1024 * 1024 * 4) {
-            setErrorImage(true);
+        if (event.currentTarget.files![0]) {
+            if (event.currentTarget.files![0].size > 1024 * 1024 * 4) {
+                setErrorImage(true);
+            } else {
+                setErrorImage(false);
+                setThumbnail(event.currentTarget.files![0]);
+                const thumbnail = event.currentTarget.files![0];
+                if (thumbnail && thumbnail.type.includes("image/")) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        if (imageRef.current) {
+                            imageRef.current.src = e.target?.result as string;
+                            setIsDisplaySaveImg(!isDisplaySaveImg);
+                        }
+                    };
+                    reader.readAsDataURL(thumbnail);
+                    return;
+                }
+            }
         } else {
-            setErrorImage(false);
-            setThumbnail(event.currentTarget.files![0]);
-            const thumbnail = event.currentTarget.files![0];
-            if (thumbnail && thumbnail.type.includes("image/")) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    if (imageRef.current) {
-                        imageRef.current.src = e.target?.result as string;
-                        setIsDisplaySaveImg(!isDisplaySaveImg);
-                    }
-                };
-                reader.readAsDataURL(thumbnail);
-                return;
+            if (imageRef.current) {
+                imageRef.current.src = courseChangeDetail.thumbnail;
             }
         }
     };
@@ -261,15 +266,26 @@ const EditCourse: React.FC = () => {
         });
     };
 
-    const changeInformation = (values: CourseChangeInformationType) => {
+    const handleSave = (values: CourseChangeInformationType) => {
+        const categories = values.categories.map((item: any) => item.value);
+        const data = {
+            ...values,
+            categories: categories,
+            slug: slugify(values.title),
+        };
         if (thumbnail && !errorImage) {
-            const categories = values.categories.map((item: any) => item.value);
-            const data = {
-                ...values,
-                categories: categories,
-                slug: slugify(values.title),
-            };
             handleChangeThumbnail();
+            //@ts-ignore
+            dispatch(courseActions.changeInformation(data)).then((response) => {
+                if (response.payload.status_code === 200) {
+                    toast.success(response.payload.message);
+                    // @ts-ignore
+                    dispatch(courseActions.getCourseDetailById(values.id));
+                } else {
+                    toast.error(response.payload.message);
+                }
+            });
+        } else {
             //@ts-ignore
             dispatch(courseActions.changeInformation(data)).then((response) => {
                 if (response.payload.status_code === 200) {
@@ -320,7 +336,7 @@ const EditCourse: React.FC = () => {
                             <Formik
                                 initialValues={initialValue}
                                 validationSchema={editCourseValidationSchema}
-                                onSubmit={changeInformation}
+                                onSubmit={handleSave}
                             >
                                 {(formik) => (
                                     <form
