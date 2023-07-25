@@ -1,9 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import CardVideo from "./CardVideo";
 import Category from "./CategoryCard";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { courseActions } from "../../redux/slice";
+import { Course as CourseType } from "../../types/course";
 
 const Home: React.FC = () => {
+    const dispatch = useAppDispatch();
+
+    const top10Course: CourseType[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
+
+    useEffect(() => {
+        // @ts-ignore
+        dispatch(courseActions.getTop10Courses());
+    }, [dispatch]);
+
     return (
         <>
             <Navbar />
@@ -19,16 +31,17 @@ const Home: React.FC = () => {
                     <span className="w-[60px] h-1 bg-black block"></span>
                     <div className="w-full flex overflow-x-scroll">
                         <div className="mt-3 flex shrink-0 gap-3 py-2">
-                            <CardVideo
-                                thumbnail="https://noithatbinhminh.com.vn/wp-content/uploads/2022/08/anh-dep-40.jpg"
-                                title="Khóa học MYSQL dành cho newbie 11111111111111111111111"
-                                author="Dương Song"
-                                rating={5}
-                                categories={[
-                                    { id: 1, title: "Nodejs" },
-                                    { id: 2, title: "Reactjs" },
-                                ]}
-                            />
+                            {top10Course.map((course: CourseType) => {
+                                return (
+                                    <CardVideo
+                                        thumbnail={course.thumbnail}
+                                        title={course.title}
+                                        author={course.author}
+                                        rating={course.rate}
+                                        categories={course.categories}
+                                    />
+                                );
+                            })}
                         </div>
                     </div>
                 </div>

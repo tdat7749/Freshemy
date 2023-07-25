@@ -50,20 +50,11 @@ export type Section = {
 
 export type Top10Courses = {
     id: number;
+    thumbnail: string;
     title: string;
     slug: string;
-    status: boolean;
-    description: string;
-    thumbnail: string;
-    summary: string;
-    is_delete: boolean;
+    categories: Category[];
+    author: string;
     created_at: Date;
     updated_at: Date;
-    user_id: number;
-    courses_categories: Category[]
-    user: {
-        id: number;
-        first_name: string;
-        last_name: string;
-    };
 };

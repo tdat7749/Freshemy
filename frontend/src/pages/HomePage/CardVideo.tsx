@@ -25,11 +25,12 @@ const CardVideo: React.FC<CardVideoProps> = (props) => {
                     <div className="font-medium mt-1">{props.author}</div>
                     <div className="font-medium mt-1">{props.rating}</div>
                     <div className="categori flex flex-wrap gap-1">
-                        {props.categories.map((category) => (
-                            <div key={category.id} className="mt-1 badge badge-outline">
-                                {category.title}
-                            </div>
-                        ))}
+                        {props.categories &&
+                            props.categories.map((category: Category) => (
+                                <div key={category.id} className="mt-1 badge badge-outline">
+                                    {category.title}
+                                </div>
+                            ))}
                     </div>
                 </div>
             </div>

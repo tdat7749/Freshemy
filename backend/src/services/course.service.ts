@@ -561,7 +561,7 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
             take: 10,
         });
 
-        const result: Top10Courses[] = [];
+        const courseList = [];
 
         for (const course of courses) {
             const courseItem = await db.course.findFirst({
@@ -589,9 +589,24 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
                     },
                 },
             });
-            if (courseItem !== null) result.push(courseItem);
+            if (courseItem !== null) courseList.push(courseItem);
         }
 
+        const result: Top10Courses[] = [];
+
+        courseList.map((course) => {
+            const data: Top10Courses = {
+                id: course.id,
+                thumbnail: course.thumbnail,
+                title: course.title,
+                slug: course.slug,
+                categories: course.courses_categories.map((cate) => cate.category),
+                author: course.user.last_name + " " + course.user.first_name,
+                created_at: course.created_at,
+                updated_at: course.updated_at,
+            };
+            result.push(data);
+        });
         return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, result);
     } catch (error) {
         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);

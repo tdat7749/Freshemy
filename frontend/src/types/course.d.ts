@@ -21,7 +21,7 @@ export type Course = {
     rate: number;
     thumbnail: string;
     author: string;
-    category: string[];
+    categories: Category[];
     number_section: number;
     slug: string;
 };
