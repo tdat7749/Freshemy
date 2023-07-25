@@ -1,8 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-
 import { Formik, ErrorMessage, Field } from "formik";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-
 import { setMessageEmpty } from "../../redux/slice/auth.slice";
 import { NewCourse as CreateCourseType, Category as CategoryType } from "../../types/course";
 import { courseActions } from "../../redux/slice";
@@ -30,11 +28,11 @@ const CreateCourse: FC = () => {
     const categoriesOptions: categoriesOptions[] = [];
     const statusOptions = [
         {
-            value: 0,
+            value: 1,
             label: "Completed",
         },
         {
-            value: 1,
+            value: 0,
             label: "Uncomplete",
         },
     ];
@@ -66,7 +64,6 @@ const CreateCourse: FC = () => {
     };
 
     const handleOnSubmit = async (values: CreateCourseType) => {
-        // Trong request form thì value chỉ được là text hoặc file
         const slug = slugify(values.title.toLowerCase());
         let formData = new FormData();
         formData.append("title", values.title);
@@ -75,7 +72,7 @@ const CreateCourse: FC = () => {
         formData.append("thumbnail", thumbnail as File);
         formData.append("summary", values.summary);
         formData.append("status", values.status.toString());
-        values.categories.forEach((item: any) => {
+        values.categories.forEach((item: number) => {
             formData.append("categories[]", item.toString());
         });
         // @ts-ignore
@@ -90,11 +87,11 @@ const CreateCourse: FC = () => {
     };
 
     const handleChangeCategories = (event: any, formik: any) => {
-        formik.setFieldValue("categories", event);
+        formik.setFieldValue("categories", event.value);
     };
 
     const handleChangeStatus = (event: any, formik: any) => {
-        formik.setFieldValue("status", event);
+        formik.setFieldValue("status", event.value);
     };
 
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,6 +106,10 @@ const CreateCourse: FC = () => {
             };
             reader.readAsDataURL(thumbnail);
             return;
+        } else {
+            if (imageRef.current) {
+                imageRef.current.src = "";
+            }
         }
     };
 
@@ -197,7 +198,7 @@ const CreateCourse: FC = () => {
                                                         formik.errors.categories && formik.touched.categories
                                                             ? "border-error"
                                                             : ""
-                                                    } border-[1px] outline-none max-w-lg`}
+                                                    } border-[1px]`}
                                                 >
                                                     <Field
                                                         name="categories"

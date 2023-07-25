@@ -22,6 +22,25 @@ type categoriesOptions = {
     label: string;
 };
 
+const customStyles = {
+    control: (styles: any) => ({
+        ...styles,
+        position: "static",
+        transform: "none",
+        borderRadius: "0.25rem",
+        boxShadow: "",
+    }),
+    option: (styles: any) => ({
+        ...styles,
+    }),
+    menu: (styles: any) => ({
+        ...styles,
+        backgroundColor: "white",
+        borderRadius: "0.25rem",
+        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1)",
+    }),
+};
+
 const EditCourse: React.FC = () => {
     const [section, setSection] = useState<string>("");
     const [isDisplayDeleteModal, setIsDisplayDeleteModal] = useState<boolean>(false);
@@ -32,8 +51,8 @@ const EditCourse: React.FC = () => {
     const [isDisplaySaveImg, setIsDisplaySaveImg] = useState<boolean>(false);
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [errorImage, setErrorImage] = useState<boolean>(false);
-    let categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
-    let createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
+    const categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
+    const createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
     const [categoriesOptions, setcategoriesOptions] = useState<categoriesOptions[]>(categoriesSelector);
     const navigate = useNavigate();
@@ -62,7 +81,9 @@ const EditCourse: React.FC = () => {
         description: courseChangeDetail.description,
         id: Number(course_id),
         slug: courseChangeDetail.slug,
+        thumbnail: courseChangeDetail.thumbnail,
     };
+    const courseStatus: string = courseChangeDetail.status ? "Completed" : "Uncomplete";
     const dispatch = useAppDispatch();
     const statusOptions = [
         {
@@ -103,6 +124,7 @@ const EditCourse: React.FC = () => {
         });
         setcategoriesOptions(cateOptionsTemp);
     }, [createCategoriesSelector]);
+
     const handleAddSection = () => {
         const values: AddSectionType = {
             course_id: Number(course_id),
@@ -170,28 +192,51 @@ const EditCourse: React.FC = () => {
         setIsDisplayEditModal(!isDisplayEditModal);
     };
     const handleChangeCategories = (event: any, formik: any) => {
+        let createTemp = JSON.parse(JSON.stringify(event));
+        let cateTemp = JSON.parse(JSON.stringify(categoriesSelector));
+        const cateOptionsTemp: any = [];
+        createTemp.forEach((category: any) => {
+            const index = cateTemp.findIndex((item: any) => item.id === category.value);
+            if (index >= 0) {
+                cateTemp.splice(index, 1);
+            }
+        });
+        cateTemp.forEach((category: CategoryType) => {
+            const temp: categoriesOptions = {
+                value: category.id,
+                label: category.title,
+            };
+            cateOptionsTemp.push(temp);
+        });
+        setcategoriesOptions(cateOptionsTemp);
         formik.setFieldValue("categories", event);
     };
 
     const imageRef = useRef<HTMLImageElement>(null);
 
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.currentTarget.files![0].size > 1024 * 1024 * 4) {
-            setErrorImage(true);
+        if (event.currentTarget.files![0]) {
+            if (event.currentTarget.files![0].size > 1024 * 1024 * 4) {
+                setErrorImage(true);
+            } else {
+                setErrorImage(false);
+                setThumbnail(event.currentTarget.files![0]);
+                const thumbnail = event.currentTarget.files![0];
+                if (thumbnail && thumbnail.type.includes("image/")) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        if (imageRef.current) {
+                            imageRef.current.src = e.target?.result as string;
+                            setIsDisplaySaveImg(!isDisplaySaveImg);
+                        }
+                    };
+                    reader.readAsDataURL(thumbnail);
+                    return;
+                }
+            }
         } else {
-            setErrorImage(false);
-            setThumbnail(event.currentTarget.files![0]);
-            const thumbnail = event.currentTarget.files![0];
-            if (thumbnail && thumbnail.type.includes("image/")) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    if (imageRef.current) {
-                        imageRef.current.src = e.target?.result as string;
-                        setIsDisplaySaveImg(!isDisplaySaveImg);
-                    }
-                };
-                reader.readAsDataURL(thumbnail);
-                return;
+            if (imageRef.current) {
+                imageRef.current.src = courseChangeDetail.thumbnail;
             }
         }
     };
@@ -221,15 +266,26 @@ const EditCourse: React.FC = () => {
         });
     };
 
-    const changeInformation = (values: CourseChangeInformationType) => {
+    const handleSave = (values: CourseChangeInformationType) => {
+        const categories = values.categories.map((item: any) => item.value);
+        const data = {
+            ...values,
+            categories: categories,
+            slug: slugify(values.title),
+        };
         if (thumbnail && !errorImage) {
-            const categories = createCategoriesSelector.map((item: CategoryType) => item.id);
-            const data = {
-                ...values,
-                categories: categories,
-                slug: slugify(values.title),
-            };
             handleChangeThumbnail();
+            //@ts-ignore
+            dispatch(courseActions.changeInformation(data)).then((response) => {
+                if (response.payload.status_code === 200) {
+                    toast.success(response.payload.message);
+                    // @ts-ignore
+                    dispatch(courseActions.getCourseDetailById(values.id));
+                } else {
+                    toast.error(response.payload.message);
+                }
+            });
+        } else {
             //@ts-ignore
             dispatch(courseActions.changeInformation(data)).then((response) => {
                 if (response.payload.status_code === 200) {
@@ -280,7 +336,7 @@ const EditCourse: React.FC = () => {
                             <Formik
                                 initialValues={initialValue}
                                 validationSchema={editCourseValidationSchema}
-                                onSubmit={changeInformation}
+                                onSubmit={handleSave}
                             >
                                 {(formik) => (
                                     <form
@@ -338,58 +394,52 @@ const EditCourse: React.FC = () => {
                                 )} */}
                                             </div>
                                         </div>
-                                        <div className="flex flex-col gap-2 shrink-0 mb-2 tablet:flex-row tablet:gap-8">
-                                            <div>
-                                                <label
-                                                    htmlFor="title"
-                                                    className="text-sm mb-1 font-medium tablet:text-xl"
-                                                >
-                                                    Categories
-                                                </label>
-                                                <div
-                                                    className={`${
-                                                        formik.errors.categories && formik.touched.categories
-                                                            ? "border-error"
-                                                            : ""
-                                                    } border-[1px] outline-none max-w-lg`}
-                                                >
-                                                    <Field
-                                                        name="categories"
-                                                        component={CustomeSelect}
-                                                        handleOnchange={(e: any) => handleChangeCategories(e, formik)}
-                                                        options={categoriesOptions}
-                                                        isMulti={true}
-                                                        defautlValues={cateOldTemp}
-                                                    />
-                                                </div>
-                                                <ErrorMessage
-                                                    name="categories"
-                                                    component="span"
-                                                    className="text-[14px] text-error font-medium"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label
-                                                    htmlFor="status"
-                                                    className="text-sm mb-1 font-medium tablet:text-xl"
-                                                >
-                                                    Status
-                                                </label>
+                                        <div>
+                                            <label htmlFor="title" className="text-sm mb-1 font-medium tablet:text-xl">
+                                                Categories
+                                            </label>
+                                            <div
+                                                className={`${
+                                                    formik.errors.categories && formik.touched.categories
+                                                        ? "border-error"
+                                                        : ""
+                                                } border-[1px]`}
+                                            >
                                                 <Field
-                                                    className="custom-select"
-                                                    name="status"
+                                                    name="categories"
                                                     component={CustomeSelect}
-                                                    handleOnchange={(e: any) => handleChangeStatus(e, formik)}
-                                                    options={statusOptions}
-                                                    isMulti={false}
-                                                    placeholder={`${courseChangeDetail.status}`}
-                                                />
-                                                <ErrorMessage
-                                                    name="status"
-                                                    component="span"
-                                                    className="text-[14px] text-error font-medium"
+                                                    handleOnchange={(e: any) => handleChangeCategories(e, formik)}
+                                                    options={categoriesOptions}
+                                                    isMulti={true}
+                                                    defautlValues={cateOldTemp}
+                                                    styles={customStyles}
                                                 />
                                             </div>
+                                            <ErrorMessage
+                                                name="categories"
+                                                component="span"
+                                                className="text-[14px] text-error font-medium"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="status" className="text-sm mb-1 font-medium tablet:text-xl">
+                                                Status
+                                            </label>
+                                            <Field
+                                                className="w-full"
+                                                name="status"
+                                                component={CustomeSelect}
+                                                handleOnchange={(e: any) => handleChangeStatus(e, formik)}
+                                                options={statusOptions}
+                                                isMulti={false}
+                                                placeholder={`${courseStatus}`}
+                                                styles={customStyles}
+                                            />
+                                            <ErrorMessage
+                                                name="status"
+                                                component="span"
+                                                className="text-[14px] text-error font-medium"
+                                            />
                                         </div>
                                         <div className="flex-1 flex flex-col">
                                             <label

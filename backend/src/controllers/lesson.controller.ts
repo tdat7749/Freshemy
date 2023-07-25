@@ -14,17 +14,15 @@ class LessonController {
     }
 
     async createLesson(req: RequestHasLogin, res: Response): Promise<Response> {
-        // const errorValidate: ValidationError | undefined = LessonSchema.validate(req.body).error;
+        const errorValidate: ValidationError | undefined = LessonSchema.validate(req.body).error;
 
-        // if (errorValidate) {
-        //     return res.status(400).json({
-        //         status_code: 400,
-        //         message: convertJoiErrorToString(errorValidate),
-        //         success: false,
-        //     });
-        // }
-        console.log(req.file)
-        console.log(req.body)
+        if (errorValidate) {
+            return res.status(400).json({
+                status_code: 400,
+                message: convertJoiErrorToString(errorValidate),
+                success: false,
+            });
+        }
         const response = await service.LessonService.createLesson(req);
 
         return res.status(response.getStatusCode()).json(response);

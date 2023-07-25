@@ -180,6 +180,7 @@ const initialState: CourseSlice = {
         summary: "",
         status: false,
         description: "",
+        thumbnail: "",
     },
 
     error: "",
@@ -306,12 +307,12 @@ export const courseSlice = createSlice({
             state.courseChangeDetail = action.payload.data as CourseChangeInformationType;
             state.selectCategories = action.payload.data?.categories as Category[];
 
-            state.selectCategories.forEach((category) => {
-                const index = state.categories.findIndex((item) => item.title === category.title);
-                if (index >= 0) {
-                    state.categories.splice(index, 1);
-                }
-            });
+            // state.selectCategories.forEach((category) => {
+            //     const index = state.categories.findIndex((item) => item.title === category.title);
+            //     if (index >= 0) {
+            //         state.categories.splice(index, 1);
+            //     }
+            // });
             state.isLoading = false;
         });
 

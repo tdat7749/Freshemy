@@ -13,6 +13,8 @@ type AccordionType = {
     handleDeleteSection?: (id: number) => void;
     handleDisplayDeleteModal?: (id: number) => void;
     handleDisplayEditModal?: (id: number, title: string) => void;
+    handleChangeSourceVideo?: (source:string) => void
+    source?:string
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
@@ -85,7 +87,11 @@ const Accordion: React.FC<AccordionType> = (props) => {
             {show &&
                 props.section.lessons &&
                 props.section?.lessons.map((lesson, index) => (
-                    <div className="py-4 pl-8 border rounded-lg my-2" key={index}>
+                    <div className={`py-4 pl-8 border rounded-lg my-2 hover:cursor-pointer ${lesson.url_video === props.source ? "bg-backgroundHover" : ""}`} onClick={() => {
+                        if(props.handleChangeSourceVideo){
+                            props.handleChangeSourceVideo(lesson.url_video)
+                        }
+                    }} key={index}>
                         <p>{lesson.title}</p>
                     </div>
                 ))}

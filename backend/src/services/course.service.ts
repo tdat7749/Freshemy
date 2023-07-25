@@ -111,7 +111,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
         }
         return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
     } catch (error) {
-        console.log(error);
         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
@@ -169,7 +168,6 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
         }
         return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
     } catch (error) {
-        console.log(error);
         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
@@ -189,7 +187,6 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
             } else {
                 const register = await db.enrolled.create({
-                    //@ts-ignore
                     data: {
                         user_id: user_id,
                         course_id: course_id,
@@ -335,7 +332,6 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
 
-        console.log(isFoundCourse);
         if (!isFoundCourse) {
             return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         }
@@ -378,9 +374,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status } = req.body;
 
     // Vì formData gửi dữ liệu bằng string nên ở đây phải convert nó về
-    const categoriesConvert = categories.map((item: string) => {
-        category_id: parseInt(item);
-    });
+
     const statusConvert = status === "0" ? false : true;
 
     const user_id = req.user_id;
@@ -408,8 +402,8 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         });
 
         if (uploadFileResult) {
-            const listCategoryId = categories.map((item: number) => ({
-                category_id: item,
+            const listCategoryId = categories.map((item: string) => ({
+                category_id: parseInt(item),
             }));
 
             if (user_id) {
@@ -423,7 +417,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                         user_id: user_id,
                         status: statusConvert,
                         courses_categories: {
-                            create: categoriesConvert,
+                            create: listCategoryId,
                         },
                     },
                 });
