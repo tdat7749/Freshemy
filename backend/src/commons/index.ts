@@ -15,3 +15,5 @@ export const sendMail = (mailOptions: SendMail) => {
     });
     return true;
 }
+
+export const resolutions = ["640x360", "1280x720"]
