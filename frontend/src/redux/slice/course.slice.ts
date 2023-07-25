@@ -56,7 +56,6 @@ export const getCategories = createAsyncThunk<Response<Category[]>, null, { reje
     "course/getCategories",
     async (body, ThunkAPI) => {
         try {
-            // const response = await getCategoriesAPI();
             const response = await CourseApis.getCategories();
             return response.data.data as Response<Category[]>;
         } catch (error: any) {
