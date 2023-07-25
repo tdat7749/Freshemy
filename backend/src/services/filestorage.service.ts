@@ -3,6 +3,7 @@ import ffmpegPath from "@ffmpeg-installer/ffmpeg";
 import ffprobePath from "@ffprobe-installer/ffprobe";
 import ffmpeg from "fluent-ffmpeg";
 import path from "path";
+import configs from "../configs";
 
 ffmpeg.setFfmpegPath(ffmpegPath.path);
 ffmpeg.setFfprobePath(ffprobePath.path);
@@ -24,32 +25,33 @@ const createMainM3U8 = async (
     inputVideo: Express.Multer.File,
     resolutions: string[],
     outputFolderPath: string,
-    titleLesson: string,
+    uuid: string,
 ): Promise<string> => {
-    const ouputForMainM3U8 = `${outputFolderPath}\\${titleLesson}\\main.m3u8`;
+    const ouputForMainM3U8 = `${outputFolderPath}\\${uuid}\\main.m3u8`;
 
     const bandwidth = await bandwidthCalculation(inputVideo);
 
     const streamInfoArray = resolutions.map((resolution) => {
-        return `#EXT-X-STREAM-INF:BANDWIDTH=${bandwidth},RESOLUTION=${resolution}\n${titleLesson}/video_${resolution}/video_${resolution}.m3u8`;
+        return `#EXT-X-STREAM-INF:BANDWIDTH=${bandwidth},RESOLUTION=${resolution}\n video_${resolution}/video_${resolution}.m3u8`;
     });
-
-    console.log(streamInfoArray);
 
     const mainM3U8Content = "#EXTM3U\n#EXT-X-VERSION:3\n" + streamInfoArray.join("\n");
 
     fs.writeFileSync(ouputForMainM3U8, mainM3U8Content);
-    return ouputForMainM3U8;
+
+    const publicUrlM3U8 = configs.general.PUBLIC_URL_FOLDER_VIDEOS + "/" + `${uuid}` + "/" + "main.m3u8";
+
+    return publicUrlM3U8;
 };
 
 const createFileM3U8AndTS = async (
     inputVideo: Express.Multer.File,
     resolutions: string[],
     outputFolderPath: string,
-    titleLesson: string,
+    uuid: string,
 ): Promise<string> => {
     resolutions.map((resolution) => {
-        const videoPath = path.join(outputFolderPath, titleLesson, `video_${resolution}`);
+        const videoPath = path.join(outputFolderPath, uuid, `video_${resolution}`);
 
         if (!fs.existsSync(videoPath)) {
             fs.mkdirSync(videoPath, { recursive: true });
@@ -67,7 +69,7 @@ const createFileM3U8AndTS = async (
             .run();
     });
 
-    return createMainM3U8(inputVideo, resolutions, outputFolderPath, titleLesson);
+    return createMainM3U8(inputVideo, resolutions, outputFolderPath, uuid);
 };
 
 const FileStorageService = {

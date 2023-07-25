@@ -28,7 +28,7 @@ export const VideoJS: React.FC<VideoJSType> = (props) => {
         if (videoElement) {
             if (Hls.isSupported()) {
                 const hls = new Hls()
-                hls.loadSource(`https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`)
+                hls.loadSource(props.sourse)
                 hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
                     window.hls = hls
                     const availableQuanlities = hls.levels.map(l => l.height)
@@ -65,10 +65,10 @@ export const VideoJS: React.FC<VideoJSType> = (props) => {
             }
         }
 
-    }, [])
+    }, [props.sourse])
 
     return (
-        <div className='min-w-[900px]'>
+        <div className='max-w-[900px] flex-1 shrink-0'>
             <video className='w-full h-[480px]' ref={videoRef} controls={true}></video>
         </div>
     )

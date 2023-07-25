@@ -110,5 +110,5 @@
   "watchOptions": {
     "watchFile": "fixedpollinginterval",
   },
-  "exclude": ["videos"]
+  "exclude": ["./public/videos"]
 }

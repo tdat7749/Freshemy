@@ -1,8 +1,9 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application } from "express";
 import cookieParser from "cookie-parser";
 import routers from "./src/routes";
 import configs from "./src/configs";
 import cors from "cors";
+import path from "path";
 
 const app: Application = express();
 
@@ -18,6 +19,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+app.use("/public/videos", express.static("./public/videos"));
 
 app.use("/api/auth", routers.authRouter);
 app.use("/api/users", routers.userRouter);

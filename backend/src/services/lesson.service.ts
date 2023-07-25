@@ -14,7 +14,9 @@ import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonw
 import { RequestHasLogin } from "../types/request";
 import services from ".";
 import { resolutions } from "../commons";
-import slugify from "slugify";
+import fs from "fs";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
 
 const getLesson = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -53,13 +55,13 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
         const { title, section_id } = req.body;
 
         const sectionIdConvert = parseInt(section_id);
-        const slugTitle = slugify(title);
+        const uuid = uuidv4();
 
         const videoPath = await services.FileStorageService.createFileM3U8AndTS(
             req.file as Express.Multer.File,
             resolutions,
-            "C:\\video",
-            slugTitle,
+            configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS,
+            uuid,
         );
 
         const lesson = await configs.db.lesson.create({
@@ -69,7 +71,12 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 url_video: videoPath,
             },
         });
-        if (lesson) return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true);
+        if (lesson) {
+            return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true);
+        } else {
+            fs.unlinkSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, uuid));
+            fs.unlinkSync(req.file?.path as string);
+        }
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -93,17 +100,47 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
         const { title } = req.body;
         const lesson_id = +id;
         if (req.file) {
-            const videoPath = req.file?.path as string;
+            console.log(req.file, id, title, lesson_id);
+            const isFoundLesson = await configs.db.lesson.findUnique({
+                where: {
+                    id: lesson_id,
+                },
+            });
+
+            if (!isFoundLesson) {
+                return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            }
+
+            const urlVideoSplit = isFoundLesson.url_video.split(`${configs.general.PUBLIC_URL_FOLDER_VIDEOS}`);
+            const nameFolder = urlVideoSplit[1].split("/")[1];
+            if (!nameFolder) {
+                return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            }
+            fs.unlinkSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder));
+
+            const videoPath = await services.FileStorageService.createFileM3U8AndTS(
+                req.file as Express.Multer.File,
+                resolutions,
+                configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS,
+                nameFolder,
+            );
+
             const lesson = await configs.db.lesson.update({
                 where: {
                     id: lesson_id,
                 },
                 data: {
                     title: title,
-                    url_video: `${configs.general.PUBLIC_URL}/${videoPath}`,
+                    url_video: videoPath,
                 },
             });
-            if (lesson) return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
+
+            if (lesson) {
+                return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true);
+            } else {
+                fs.unlinkSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder));
+                fs.unlinkSync(req.file?.path as string);
+            }
         } else {
             const lesson = await configs.db.lesson.update({
                 where: {
@@ -117,6 +154,8 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
         }
         return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
     } catch (error: any) {
+        fs.unlinkSync(req.file?.path as string);
+        console.log(error);
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
