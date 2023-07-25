@@ -78,5 +78,5 @@ export type CourseChangeInformation = {
     description: string;
     categories: Category[];
     slug: string;
-    thumbnail: string;
+    thumbnail?: string;
 };

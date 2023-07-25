@@ -72,8 +72,9 @@ const CreateCourse: FC = () => {
         formData.append("thumbnail", thumbnail as File);
         formData.append("summary", values.summary);
         formData.append("status", values.status.toString());
-        values.categories.forEach((item: number) => {
-            formData.append("categories[]", item.toString());
+        formData.append("upload_preset", "Freshemy");
+        values.categories.forEach((item: any) => {
+            formData.append("categories[]", item.value.toString());
         });
         // @ts-ignore
         dispatch(courseActions.createCourses(formData)).then((response) => {
@@ -87,7 +88,7 @@ const CreateCourse: FC = () => {
     };
 
     const handleChangeCategories = (event: any, formik: any) => {
-        formik.setFieldValue("categories", event.value);
+        formik.setFieldValue("categories", event);
     };
 
     const handleChangeStatus = (event: any, formik: any) => {

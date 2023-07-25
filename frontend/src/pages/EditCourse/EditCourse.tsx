@@ -81,7 +81,6 @@ const EditCourse: React.FC = () => {
         description: courseChangeDetail.description,
         id: Number(course_id),
         slug: courseChangeDetail.slug,
-        thumbnail: courseChangeDetail.thumbnail,
     };
     const courseStatus: string = courseChangeDetail.status ? "Completed" : "Uncomplete";
     const dispatch = useAppDispatch();
@@ -236,7 +235,7 @@ const EditCourse: React.FC = () => {
             }
         } else {
             if (imageRef.current) {
-                imageRef.current.src = courseChangeDetail.thumbnail;
+                imageRef.current.src = courseChangeDetail.thumbnail as string;
             }
         }
     };
