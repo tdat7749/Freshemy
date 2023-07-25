@@ -1,13 +1,13 @@
 import React, { FC, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field, Form } from "formik";
-import { Register as RegisterType } from "../types/auth";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { authActions } from "../redux/slice/index";
+import { Register as RegisterType } from "../../types/auth";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { authActions } from "../../redux/slice/index";
 import { Navigate } from "react-router-dom";
-import Skeleton from "../assets/images/Skeleton.png";
-import { setMessageEmpty } from "../redux/slice/auth.slice";
-import { registerValidationSchema } from "../validations/auth";
+import Skeleton from "../../assets/images/Skeleton.png";
+import { setMessageEmpty } from "../../redux/slice/auth.slice";
+import { registerValidationSchema } from "../../validations/auth";
 
 import toast from "react-hot-toast";
 

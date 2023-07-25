@@ -1,16 +1,16 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 // import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field } from "formik";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 // import { Navigate } from "react-router-dom";
-import { setMessageEmpty } from "../redux/slice/auth.slice";
-import { NewCourse as CreateCourseType, Category as CategoryType } from "../types/course";
-import { courseActions } from "../redux/slice";
-import { createValidationSchema } from "../validations/course";
+import { setMessageEmpty } from "../../redux/slice/auth.slice";
+import { NewCourse as CreateCourseType, Category as CategoryType } from "../../types/course";
+import { courseActions } from "../../redux/slice";
+import { createValidationSchema } from "../../validations/course";
 import slugify from "slugify";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 
 import toast from "react-hot-toast";
 
@@ -189,10 +189,11 @@ const CreateCourse: FC = () => {
                                                 <Field
                                                     type="text"
                                                     name="title"
-                                                    className={`${formik.errors.title && formik.touched.title
+                                                    className={`${
+                                                        formik.errors.title && formik.touched.title
                                                             ? "border-error"
                                                             : ""
-                                                        } px-2 py-4 rounded-lg border-[1px] outline-none max-w-lg`}
+                                                    } px-2 py-4 rounded-lg border-[1px] outline-none max-w-lg`}
                                                 />
                                                 <ErrorMessage
                                                     name="title"
@@ -425,10 +426,11 @@ const CreateCourse: FC = () => {
                                                 as="textarea"
                                                 name="description"
                                                 placeholder="Description about your course..."
-                                                className={`${formik.errors.description && formik.touched.description
+                                                className={`${
+                                                    formik.errors.description && formik.touched.description
                                                         ? "border-error"
                                                         : ""
-                                                    } flex-1 w-full resize-none rounded-md border border-[#e0e0e0] py-3 px-4  outline-none focus:shadow-md1`}
+                                                } flex-1 w-full resize-none rounded-md border border-[#e0e0e0] py-3 px-4  outline-none focus:shadow-md1`}
                                             />
                                             <ErrorMessage
                                                 name="description"
@@ -444,8 +446,9 @@ const CreateCourse: FC = () => {
                                         <Field
                                             type="text"
                                             name="summary"
-                                            className={`${formik.errors.summary && formik.touched.summary ? "border-error" : ""
-                                                } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
+                                            className={`${
+                                                formik.errors.summary && formik.touched.summary ? "border-error" : ""
+                                            } w-full h-[68px] rounded-[8px] px-[8px] border-[1px] outline-none`}
                                         />
                                         <ErrorMessage
                                             name="summary"
@@ -460,6 +463,7 @@ const CreateCourse: FC = () => {
                                             type="submit"
                                             className="btn btn-primary text-lg"
                                         >
+                                            {isLoading && <span className="loading loading-spinner"></span>}
                                             {isLoading ? "Loading..." : "Save"}
                                         </button>
                                         <button

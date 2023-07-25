@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { courseActions } from "../../redux/slice";
@@ -6,34 +6,29 @@ import { Course as CourseType } from "../../types/course";
 import CardVideo from "./CardVideo";
 import CategoryCard from "./CategoryCard";
 import { Category as CategoryType } from "../../types/course";
-import NotFound from "../NotFound";
 import CategoryIcon from "../../components/icons/CategoryIcon";
-// import {Response} from "../../types/response"
+import Spin from "../../components/Spin";
 
 const Home: React.FC = () => {
     const thumbnail: React.FC[] = CategoryIcon;
-    console.log(thumbnail);
 
     const categories: CategoryType[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
     const top10Course: CourseType[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
-    const [isNotFound, setIsNotFound] = useState<boolean>(false);
+    const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        //@ts-ignore
+        dispatch(courseActions.getCategories());
         // @ts-ignore
         dispatch(courseActions.getTop10Courses());
-        //@ts-ignore
-        dispatch(courseActions.getCategories()).then((response) => {
-            if (response.payload.status_code !== 200) {
-                setIsNotFound(true);
-            }
-        });
     }, [dispatch]);
 
-    if (isNotFound) return <NotFound />;
     return (
         <>
             <Navbar />
+            {isLoading && <Spin />}
             <div className="h-[200px] tablet:h-[400px] flex items-center bg-hero-pattern bg-cover">
                 <div className="px-24">
                     <h1 className="text-title text-2xl tablet:text-[40px] font-bold min-w-fit">LEARN NEW SKILLS</h1>
