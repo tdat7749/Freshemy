@@ -142,14 +142,14 @@ const CreateCourse: FC = () => {
                                                 <Field
                                                     name="thumbnail"
                                                     type="file"
-                                                    value={null}
-                                                    accept=".png, .jpg"
+                                                    value={undefined}
                                                     className="file-input file-input-bordered file-input-primary w-full max-w-xs"
                                                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                                         formik.setFieldValue(
                                                             "thumbnail",
                                                             event.currentTarget.files![0]
                                                         );
+                                                        formik.setFieldError("thumbnail", undefined);
                                                         onChangeInputFile(event);
                                                     }}
                                                 />
