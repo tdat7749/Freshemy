@@ -8,11 +8,10 @@ type SelectProps = {
     handleOnchange: () => void;
     options: any;
     isMulti: boolean;
+    styles: any;
 };
 
 const CustomeSelect: FC<SelectProps> = (props) => {
-    // debugger;
-
     const animatedComponents = makeAnimated();
     return (
         <Select
@@ -23,6 +22,7 @@ const CustomeSelect: FC<SelectProps> = (props) => {
             isMulti={props.isMulti}
             onChange={props.handleOnchange}
             options={props.options}
+            styles={props.styles}
         />
     );
 };
