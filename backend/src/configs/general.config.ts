@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import dotenv from "dotenv";
+import path from "path";
 dotenv.config();
 
 export const general = {
@@ -19,4 +20,7 @@ export const general = {
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
     PUBLIC_URL: process.env.PUBLIC_URL,
+    PUBLIC_FOLDER_VIDEOS: process.env.PUBLIC_FOLDER_VIDEOS,
+    PATH_TO_PUBLIC_FOLDER_VIDEOS: path.join(process.cwd(), "public/videos"),
+    PUBLIC_URL_FOLDER_VIDEOS: (process.env.PUBLIC_URL as string) + process.env.PUBLIC_URL_FOLDER_VIDEOS,
 };
