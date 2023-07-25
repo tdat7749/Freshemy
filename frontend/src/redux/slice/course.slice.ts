@@ -14,7 +14,6 @@ import { Response } from "../../types/response";
 } from "../../apis/course";
  */
 
-
 import {
     NewCourse,
     Category,
