@@ -54,6 +54,7 @@ const Home: React.FC = () => {
                                         author={course.author}
                                         rating={course.rate}
                                         categories={course.categories}
+                                        slug={course.slug}
                                     />
                                 );
                             })}

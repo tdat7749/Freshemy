@@ -1,5 +1,6 @@
 import React from "react";
 import { Category } from "../../types/course";
+import { useNavigate } from "react-router";
 
 interface CardVideoProps {
     thumbnail: string;
@@ -7,11 +8,13 @@ interface CardVideoProps {
     author: string;
     rating: number;
     categories: Category[];
+    slug?: string;
 }
 
 const CardVideo: React.FC<CardVideoProps> = (props) => {
+    const navigate = useNavigate()
     return (
-        <div className="rounded-lg bg-primary shadow-lg flex flex-col hover:scale-95 cursor-pointer max-w-[200px]">
+        <div className="rounded-lg bg-primary shadow-lg flex flex-col hover:scale-95 cursor-pointer max-w-[200px]" onClick={() => navigate(`/course-detail/${props.slug}`)}>
             <img
                 src={props.thumbnail}
                 alt={props.title}
