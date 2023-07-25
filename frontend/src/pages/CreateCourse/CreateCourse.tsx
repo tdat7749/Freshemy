@@ -197,7 +197,7 @@ const CreateCourse: FC = () => {
                                                         formik.errors.categories && formik.touched.categories
                                                             ? "border-error"
                                                             : ""
-                                                    } border-[1px] outline-none max-w-lg`}
+                                                    } border-[1px]`}
                                                 >
                                                     <Field
                                                         name="categories"
