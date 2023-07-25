@@ -111,7 +111,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
         }
         return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
     } catch (error) {
-        console.log(error);
         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
@@ -162,7 +161,6 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
         }
         return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
     } catch (error) {
-        console.log(error);
         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
@@ -328,7 +326,6 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
 
-        console.log(isFoundCourse);
         if (!isFoundCourse) {
             return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         }
@@ -369,8 +366,6 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status } = req.body;
-
-    console.log(title, slug, description, summary, categories, status);
 
     // Vì formData gửi dữ liệu bằng string nên ở đây phải convert nó về
 
