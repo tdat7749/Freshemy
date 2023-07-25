@@ -1,4 +1,5 @@
 import multer from "multer";
+import configs from ".";
 
 const storage = multer.diskStorage({
     filename: (req, file: Express.Multer.File, cb) => {
@@ -27,7 +28,7 @@ export const uploadFile = multer({
 // Upload video
 const storageVideo = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "C:\\Freshemy-video\\upload\\videos");
+        cb(null, configs.general.UPLOAD_PATH);
     },
     filename: (req, file: Express.Multer.File, cb) => {
         const extension = file.originalname.split(".").pop();
