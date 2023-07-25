@@ -1,4 +1,3 @@
-
 import { Request, Response } from "express";
 import { RequestHasLogin } from "../types/request";
 import { createCourseSchema, updateCourseSchema, enrolledCourseSchema } from "../validations/course";
@@ -10,7 +9,7 @@ import { MESSAGE_ERROR_INTERNAL_SERVER } from "../utils/constant";
 
 class CourseController {
     async editCourse(req: Request, res: Response): Promise<Response> {
-        console.log(req.body)
+        console.log(req.body);
         const errorValidate: ValidationError | undefined = updateCourseSchema.validate(req.body).error;
 
         if (errorValidate) {
@@ -24,7 +23,7 @@ class CourseController {
         const response = await services.CourseService.editCourse(req);
         return res.status(response.getStatusCode()).json(response);
     }
-    
+
     async searchMyCourses(req: RequestHasLogin, res: Response): Promise<Response> {
         try {
             const { pageIndex, keyword } = req.query;
@@ -79,17 +78,18 @@ class CourseController {
         const response = await services.CourseService.createCourse(req);
         return res.status(response.getStatusCode()).json(response);
     }
-    async getCourseDetail(req:Request, res:Response){
-        const response = await services.CourseService.getCourseDetail(req)        
-        return res.status(response.getStatusCode()).json(response)
+
+    async getCourseDetail(req: Request, res: Response) {
+        const response = await services.CourseService.getCourseDetail(req);
+        return res.status(response.getStatusCode()).json(response);
     }
 
-    async getCourseDetailById(req:Request, res:Response){
-        const response = await services.CourseService.getCourseDetailById(req)        
-        return res.status(response.getStatusCode()).json(response)
+    async getCourseDetailById(req: Request, res: Response) {
+        const response = await services.CourseService.getCourseDetailById(req);
+        return res.status(response.getStatusCode()).json(response);
     }
 
-    async registerCourse(req:Request, res:Response){
+    async registerCourse(req: Request, res: Response) {
         const errorValidate: ValidationError | undefined = enrolledCourseSchema.validate(req.body).error;
         if (errorValidate) {
             return res.status(400).json({
@@ -98,12 +98,11 @@ class CourseController {
                 success: false,
             });
         }
-        const response = await services.CourseService.registerCourse(req)        
-        return res.status(response.getStatusCode()).json(response)
+        const response = await services.CourseService.registerCourse(req);
+        return res.status(response.getStatusCode()).json(response);
     }
 
-    
-    async unsubcribeCourse(req:Request, res:Response){
+    async unsubcribeCourse(req: Request, res: Response) {
         const errorValidate: ValidationError | undefined = enrolledCourseSchema.validate(req.body).error;
 
         if (errorValidate) {
@@ -113,14 +112,19 @@ class CourseController {
                 success: false,
             });
         }
-        const response = await services.CourseService.unsubcribeCourse(req)        
-        return res.status(response.getStatusCode()).json(response)
+        const response = await services.CourseService.unsubcribeCourse(req);
+        return res.status(response.getStatusCode()).json(response);
     }
 
     async editThumbnail(req: RequestHasLogin, res: Response) {
         const response = await services.CourseService.editThumbnail(req);
 
-        return res.status(response.getStatusCode()).json(response)
+        return res.status(response.getStatusCode()).json(response);
+    }
+
+    async getTop10Courses(req: Request, res: Response) {
+        const response = await services.CourseService.getTop10Courses(req);
+        return res.status(response.getStatusCode()).json(response);
     }
 }
 export default CourseController;

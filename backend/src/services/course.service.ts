@@ -1,8 +1,8 @@
-import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
+import { Course, CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetail, Lesson, Section, Category, CourseEdit } from "../types/courseDetail";
+import { CourseDetail, Lesson, Section, Category, CourseEdit, Top10Courses } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
@@ -74,7 +74,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
             },
         });
 
-
         if (course) {
             if (course.is_delete) {
                 return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
@@ -135,7 +134,14 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
                         },
                     },
                 },
-            }
+                user: {
+                    select: {
+                        id: true,
+                        first_name: true,
+                        last_name: true,
+                    },
+                },
+            },
         });
 
         if (course) {
@@ -439,7 +445,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     }
 };
 
-export const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
+const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
     try {
         const parsedPageIndex = parseInt(pageIndex.toString(), 10);
         const parsedKeyword = keyword;
@@ -514,7 +520,7 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
     }
 };
 
-export const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
+const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
     try {
         // Check if the course exists
         const existingCourse = await db.course.findUnique({
@@ -543,6 +549,55 @@ export const deleteMyCourse = async (courseId: number): Promise<ResponseBase> =>
     }
 };
 
+const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const courses = await db.enrolled.groupBy({
+            by: ["course_id"],
+            orderBy: {
+                _count: {
+                    user_id: "desc",
+                },
+            },
+            take: 10,
+        });
+
+        const result: Top10Courses[] = [];
+
+        for (const course of courses) {
+            const courseItem = await db.course.findFirst({
+                where: {
+                    id: course.course_id,
+                    is_delete: false,
+                },
+                include: {
+                    courses_categories: {
+                        include: {
+                            category: {
+                                select: {
+                                    id: true,
+                                    title: true,
+                                },
+                            },
+                        },
+                    },
+                    user: {
+                        select: {
+                            id: true,
+                            first_name: true,
+                            last_name: true,
+                        },
+                    },
+                },
+            });
+            if (courseItem !== null) result.push(courseItem);
+        }
+
+        return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, result);
+    } catch (error) {
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+    }
+};
+
 const CourseService = {
     getCourseDetail,
     registerCourse,
@@ -553,5 +608,6 @@ const CourseService = {
     searchMyCourses,
     deleteMyCourse,
     getCourseDetailById,
+    getTop10Courses,
 };
 export default CourseService;
