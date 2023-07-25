@@ -1,5 +1,6 @@
 import React from "react";
 import { Category } from "../../types/course";
+import { useNavigate } from "react-router";
 
 interface CardVideoProps {
     thumbnail: string;
@@ -7,11 +8,13 @@ interface CardVideoProps {
     author: string;
     rating: number;
     categories: Category[];
+    slug?: string;
 }
 
 const CardVideo: React.FC<CardVideoProps> = (props) => {
+    const navigate = useNavigate()
     return (
-        <div className="rounded-lg bg-primary shadow-lg flex flex-col hover:scale-95 cursor-pointer max-w-[200px]">
+        <div className="rounded-lg bg-primary shadow-lg flex flex-col hover:scale-95 cursor-pointer max-w-[200px]" onClick={() => navigate(`/course-detail/${props.slug}`)}>
             <img
                 src={props.thumbnail}
                 alt={props.title}
@@ -25,11 +28,12 @@ const CardVideo: React.FC<CardVideoProps> = (props) => {
                     <div className="font-medium mt-1">{props.author}</div>
                     <div className="font-medium mt-1">{props.rating}</div>
                     <div className="categori flex flex-wrap gap-1">
-                        {props.categories.map((category) => (
-                            <div key={category.id} className="mt-1 badge badge-outline">
-                                {category.title}
-                            </div>
-                        ))}
+                        {props.categories &&
+                            props.categories.map((category: Category) => (
+                                <div key={category.id} className="mt-1 badge badge-outline">
+                                    {category.title}
+                                </div>
+                            ))}
                     </div>
                 </div>
             </div>

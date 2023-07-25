@@ -3,7 +3,7 @@ import {
     ChangeThumbnail as ChangeThumbnailType,
     NewCourse as CreateCourseType,
     GetMyCourses as GetMyCoursesType,
-    CourseChangeInformation as CourseChangeInformationType
+    CourseChangeInformation as CourseChangeInformationType,
 } from "../types/course";
 
 import { HTTP_GET, HTTP_POST, HTTP_DELETE, HTTP_PATCH, HTTP_PUT } from "../utils/contants";
@@ -69,6 +69,14 @@ const changeInformation = async (values: CourseChangeInformationType) => {
     return response;
 };
 
+const getTop10Courses = async () => {
+    const path = `courses/top-10`;
+
+    const response = await apiCaller(HTTP_GET, path);
+
+    return response;
+};
+
 const CourseApis = {
     createCourse,
     getCategories,
@@ -77,8 +85,8 @@ const CourseApis = {
     getCourseDetail,
     getCourseDetailById,
     changeThumbnail,
-    changeInformation
+    changeInformation,
+    getTop10Courses,
 };
 
 export default CourseApis;
-

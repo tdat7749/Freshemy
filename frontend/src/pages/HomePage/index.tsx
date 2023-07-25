@@ -1,9 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { courseActions } from "../../redux/slice";
+import { Course as CourseType } from "../../types/course";
 import CardVideo from "./CardVideo";
-import Category from "./CategoryCard";
+import CategoryCard from "./CategoryCard";
+import { Category as CategoryType } from "../../types/course";
+import NotFound from "../NotFound";
+import CategoryIcon from "../../components/icons/CategoryIcon";
+// import {Response} from "../../types/response"
 
 const Home: React.FC = () => {
+    const thumbnail: React.FC[] = CategoryIcon;
+    console.log(thumbnail);
+
+    const categories: CategoryType[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
+    const top10Course: CourseType[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
+    const [isNotFound, setIsNotFound] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        // @ts-ignore
+        dispatch(courseActions.getTop10Courses());
+        //@ts-ignore
+        dispatch(courseActions.getCategories()).then((response) => {
+            if (response.payload.status_code !== 200) {
+                setIsNotFound(true);
+            }
+        });
+    }, [dispatch]);
+
+    if (isNotFound) return <NotFound />;
     return (
         <>
             <Navbar />
@@ -15,20 +42,22 @@ const Home: React.FC = () => {
             </div>
             <div className="container mx-auto">
                 <div className="my-4 px-4">
-                    <h2 className="text-xl tablet:text-3xl font-bold mb-3">Popular video</h2>
+                    <h2 className="text-xl tablet:text-3xl font-bold mb-3">Popular courses</h2>
                     <span className="w-[60px] h-1 bg-black block"></span>
                     <div className="w-full flex overflow-x-scroll">
                         <div className="mt-3 flex shrink-0 gap-3 py-2">
-                            <CardVideo
-                                thumbnail="https://noithatbinhminh.com.vn/wp-content/uploads/2022/08/anh-dep-40.jpg"
-                                title="Khóa học MYSQL dành cho newbie 11111111111111111111111"
-                                author="Dương Song"
-                                rating={5}
-                                categories={[
-                                    { id: 1, title: "Nodejs" },
-                                    { id: 2, title: "Reactjs" },
-                                ]}
-                            />
+                            {top10Course.map((course: CourseType) => {
+                                return (
+                                    <CardVideo
+                                        thumbnail={course.thumbnail}
+                                        title={course.title}
+                                        author={course.author}
+                                        rating={course.rate}
+                                        categories={course.categories}
+                                        slug={course.slug}
+                                    />
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -36,7 +65,16 @@ const Home: React.FC = () => {
                     <h2 className="text-xl tablet:text-3xl font-bold mb-3">Most category</h2>
                     <span className="w-[60px] h-1 bg-black block"></span>
                     <div className="mt-3 grid grid-cols-2 tablet:grid-cols-3 laptop:grid-cols-4 gap-3">
-                        <Category />
+                        {categories.map((category) => {
+                            return (
+                                <CategoryCard
+                                    key={category.id}
+                                    id={category.id}
+                                    title={category.title}
+                                    thumbnail={thumbnail[category.id]}
+                                />
+                            );
+                        })}
                     </div>
                 </div>
             </div>

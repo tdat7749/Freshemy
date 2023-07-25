@@ -43,7 +43,6 @@ export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejec
     "course/createCourse",
     async (body, ThunkAPI) => {
         try {
-            // const response = await createCourseAPI(body);
             const response = await CourseApis.createCourse(body);
             return response.data as Response<null>;
         } catch (error: any) {
@@ -56,7 +55,6 @@ export const getCategories = createAsyncThunk<Response<Category[]>, null, { reje
     "course/getCategories",
     async (body, ThunkAPI) => {
         try {
-            // const response = await getCategoriesAPI();
             const response = await CourseApis.getCategories();
             return response.data.data as Response<Category[]>;
         } catch (error: any) {
@@ -69,7 +67,6 @@ export const getMyCourses = createAsyncThunk<Response<PagingCourse>, GetMyCourse
     "course/getMyCourses",
     async (body, ThunkAPI) => {
         try {
-            // const response = await getMyCoursesAPI(body);
             const response = await CourseApis.getMyCourses(body);
             return response.data as Response<PagingCourse>;
         } catch (error: any) {
@@ -82,7 +79,6 @@ export const getCourseDetail = createAsyncThunk<Response<CourseDetailType>, stri
     "course/getCourseDetail",
     async (body, ThunkAPI) => {
         try {
-            // const response = await getCourseDetailAPI(body);
             const response = await CourseApis.getCourseDetail(body);
             return response.data as Response<CourseDetailType>;
         } catch (error: any) {
@@ -97,7 +93,6 @@ export const getCourseDetailById = createAsyncThunk<
     { rejectValue: Response<null> }
 >("course/getCourseDetailById", async (body, ThunkAPI) => {
     try {
-        // const response = await getCourseDetailByIdAPI(body);
         const response = await CourseApis.getCourseDetailById(body);
         return response.data as Response<CourseChangeInformationType>;
     } catch (error: any) {
@@ -109,7 +104,6 @@ export const deleteCourse = createAsyncThunk<Response<null>, number, { rejectVal
     "course/deleteCourse",
     async (body, ThunkAPI) => {
         try {
-            // const response = await deleteCourseAPI(body);
             const response = await CourseApis.deleteCourse(body);
             return response.data as Response<null>;
         } catch (error: any) {
@@ -122,7 +116,6 @@ export const changeThumbnail = createAsyncThunk<Response<null>, ChangeThumbnailT
     "course/changeThumbnail",
     async (body, ThunkAPI) => {
         try {
-            // const response = await changeThumbnailAPI(body);
             const response = await CourseApis.changeThumbnail(body);
             return response.data as Response<null>;
         } catch (error: any) {
@@ -137,13 +130,24 @@ export const changeInformation = createAsyncThunk<
     { rejectValue: Response<null> }
 >("course/changeInformation", async (body, ThunkAPI) => {
     try {
-        // const response = await changeInformationAPI(body);
         const response = await CourseApis.changeInformation(body);
         return response.data as Response<null>;
     } catch (error: any) {
         return ThunkAPI.rejectWithValue(error.data as Response<null>);
     }
 });
+
+export const getTop10Courses = createAsyncThunk<Response<CourseType[]>, string, { rejectValue: Response<null> }>(
+    "course/getTop10Courses",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.getTop10Courses();
+            return response.data as Response<CourseType[]>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
 
 const initialState: CourseSlice = {
     selectCategories: [],
@@ -178,6 +182,7 @@ const initialState: CourseSlice = {
         description: "",
         thumbnail: "",
     },
+
     error: "",
     message: "",
     isLoading: false,
@@ -336,6 +341,23 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(changeInformation.rejected, (state, action) => {
+            state.error = action.error as string;
+            state.isLoading = false;
+        });
+
+        builder.addCase(getTop10Courses.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+
+        builder.addCase(getTop10Courses.fulfilled, (state, action) => {
+            state.message = action.payload.message;
+            state.courses = action.payload.data as Course[];
+            state.isLoading = false;
+        });
+
+        builder.addCase(getTop10Courses.rejected, (state, action) => {
             state.error = action.error as string;
             state.isLoading = false;
         });
