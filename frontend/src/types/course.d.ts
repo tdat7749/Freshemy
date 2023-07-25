@@ -2,12 +2,13 @@ import { User } from "./user";
 
 export type Category = {
     id: number;
-    title: String;
+    title: string;
 };
 
 export type NewCourse = {
     title: string;
     // categories: number;
+    categories: any;
     status: number;
     summary: string;
     description: string;
