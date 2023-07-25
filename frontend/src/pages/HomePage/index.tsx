@@ -42,7 +42,7 @@ const Home: React.FC = () => {
             </div>
             <div className="container mx-auto">
                 <div className="my-4 px-4">
-                    <h2 className="text-xl tablet:text-3xl font-bold mb-3">Popular video</h2>
+                    <h2 className="text-xl tablet:text-3xl font-bold mb-3">Popular courses</h2>
                     <span className="w-[60px] h-1 bg-black block"></span>
                     <div className="w-full flex overflow-x-scroll">
                         <div className="mt-3 flex shrink-0 gap-3 py-2">
