@@ -1,23 +1,23 @@
 import React, { useEffect, useState, useRef } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { Formik, ErrorMessage, Field } from "formik";
-import { editCourseValidationSchema } from "../validations/course";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { sectionActions } from "../redux/slice";
+import { editCourseValidationSchema } from "../../validations/course";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { sectionActions } from "../../redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
-import Accordion from "../components/Accordion";
-import { AddSection as AddSectionType, Section as SectionType } from "../types/section";
-import DeleteModal from "../components/DeleteModal";
-import PopupAddLesson from "../components/PopupAddLesson";
-import { courseActions } from "../redux/slice";
-import { Category as CategoryType, CourseChangeInformation as CourseChangeInformationType } from "../types/course";
-import { setMessageEmpty } from "../redux/slice/auth.slice";
+import Accordion from "../../components/Accordion";
+import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";
+import DeleteModal from "../../components/DeleteModal";
+import PopupAddLesson from "../../components/PopupAddLesson";
+import { courseActions } from "../../redux/slice";
+import { Category as CategoryType, CourseChangeInformation as CourseChangeInformationType } from "../../types/course";
+import { setMessageEmpty } from "../../redux/slice/auth.slice";
 import slugify from "slugify";
 
 import toast from "react-hot-toast";
-import CustomeSelect from "./CreateCourse/Select";
+import CustomeSelect from "../CreateCourse/Select";
 
-type categoriesOptions = {
+type Options = {
     value: number;
     label: string;
 };
@@ -54,7 +54,7 @@ const EditCourse: React.FC = () => {
     const categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
     const createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
-    const [categoriesOptions, setcategoriesOptions] = useState<categoriesOptions[]>(categoriesSelector);
+    const [categoriesOptions, setcategoriesOptions] = useState<Options[]>(categoriesSelector);
     const navigate = useNavigate();
 
     const courseChangeDetail: CourseChangeInformationType = useAppSelector(
@@ -64,19 +64,19 @@ const EditCourse: React.FC = () => {
 
     const { course_id } = useParams();
 
-    const cateOldTemp: any = [];
+    const createCategories: any = [];
     createCategoriesSelector.forEach((category: CategoryType) => {
-        const temp: categoriesOptions = {
+        const temp: Options = {
             value: category.id,
             label: category.title,
         };
-        cateOldTemp.push(temp);
+        createCategories.push(temp);
     });
 
     const initialValue: CourseChangeInformationType = {
         title: courseChangeDetail.title,
         summary: courseChangeDetail.summary,
-        categories: cateOldTemp,
+        categories: createCategories,
         status: courseChangeDetail.status,
         description: courseChangeDetail.description,
         id: Number(course_id),
@@ -116,7 +116,7 @@ const EditCourse: React.FC = () => {
             }
         });
         cateTemp.forEach((category: CategoryType) => {
-            const temp: categoriesOptions = {
+            const temp: Options = {
                 value: category.id,
                 label: category.title,
             };
@@ -202,7 +202,7 @@ const EditCourse: React.FC = () => {
             }
         });
         cateTemp.forEach((category: CategoryType) => {
-            const temp: categoriesOptions = {
+            const temp: Options = {
                 value: category.id,
                 label: category.title,
             };
@@ -325,7 +325,7 @@ const EditCourse: React.FC = () => {
                                     <input
                                         name="thumbnail"
                                         type="file"
-                                        accept=".png, .jpg,"
+                                        accept=".png, .jpg"
                                         className="file-input file-input-bordered file-input-primary w-full max-w-xs"
                                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                             onChangeInputFile(event);
@@ -411,7 +411,7 @@ const EditCourse: React.FC = () => {
                                                     handleOnchange={(e: any) => handleChangeCategories(e, formik)}
                                                     options={categoriesOptions}
                                                     isMulti={true}
-                                                    defautlValues={cateOldTemp}
+                                                    defautlValues={createCategories}
                                                     styles={customStyles}
                                                 />
                                             </div>
