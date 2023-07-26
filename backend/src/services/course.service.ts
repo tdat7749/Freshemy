@@ -10,6 +10,58 @@ import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 import configs from "../configs";
 import { CourseCategory } from "@prisma/client";
 import i18n from "../utils/i18next";
+const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
+    const { title, slug, description, summary, categories, status, thumbnail } = req.body;
+    const user_id = req.user_id;
+
+    try {
+        const isFoundCourse = await db.course.findUnique({
+            where: {
+                slug: slug,
+            },
+        });
+
+        if (isFoundCourse) {
+            return new ResponseError(400, i18n.t("errorMessages.slugIsUsed"), false);
+        }
+
+        const listCategoryId = categories.map((item: string) => ({
+            category_id: parseInt(item),
+        }));
+
+        if (user_id) {
+            const isCreateCourse = await db.course.create({
+                data: {
+                    title: title,
+                    slug: slug,
+                    description: description,
+                    summary: summary,
+                    thumbnail: thumbnail,
+                    user_id: user_id,
+                    status: status,
+                    courses_categories: {
+                        create: listCategoryId,
+                    },
+                },
+            });
+
+            if (isCreateCourse) {
+                return new ResponseSuccess(201, i18n.t("successMessages.registerCourseSuccess"), true);
+            } else {
+                // If the course creation fails, you can also consider cleaning up any uploaded thumbnail.
+                // await cloudinary.uploader.destroy(uploadFileResult.public_id);
+                return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
+            }
+        }
+
+        return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
+    } catch (error: any) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false);
+        }
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+};
 
 const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -179,6 +231,7 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
+
 const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const user_id = req.user_id;
@@ -268,11 +321,11 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
 
         if(!isUpdateCategory) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
         return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
-    } catch (error: any) {
+        }
+    catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
-        }
-        if (error instanceof TokenExpiredError) {
+        } else if (error instanceof TokenExpiredError) {
             return new ResponseError(400, error.message, false);
         } else if (error instanceof JsonWebTokenError) {
             return new ResponseError(401, error.message, false);
@@ -299,15 +352,16 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
             return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
         }
 
-        const uploadFileResult = await new Promise<undefined | UploadApiResponse>((resolve, rejects) => {
+        const uploadFileResult = await new Promise<UploadApiResponse | undefined>((resolve, reject) => {
             cloudinary.uploader.upload(thumbnail.path, (error: UploadApiErrorResponse, result: UploadApiResponse) => {
                 if (error) {
-                    rejects(undefined);
+                    reject(undefined);
                 } else {
                     resolve(result);
                 }
             });
         });
+
         if (uploadFileResult) {
             const isUpdate = await db.course.update({
                 where: {
@@ -317,66 +371,20 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     thumbnail: uploadFileResult.url,
                 },
             });
-            if (isUpdate) return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
-            else {
+
+            if (isUpdate) {
+                return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
+            } else {
                 await cloudinary.uploader.destroy(uploadFileResult.public_id);
             }
-            return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
         }
-        return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
+
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
 
-        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
-    }
-};
-
-const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
-    const { title, slug, description, summary, categories, status, thumbnail } = req.body;
-
-    const user_id = req.user_id;
-
-    try {
-        const isFoundCourse = await db.course.findUnique({
-            where: {
-                slug: slug,
-            },
-        });
-
-        if (isFoundCourse) {
-            return new ResponseError(400, i18n.t("errorMessages.slugIsUsed"), false);
-        }
-        const listCategoryId = categories.map((item: string) => ({
-            category_id: parseInt(item),
-        }));
-
-        if (user_id) {
-            const isCreateCourse = await db.course.create({
-                data: {
-                    title: title,
-                    slug: slug,
-                    description: description,
-                    summary: summary,
-                    thumbnail: thumbnail,
-                    user_id: user_id,
-                    status: status,
-                    courses_categories: {
-                        create: listCategoryId,
-                    },
-                },
-            });
-
-            if (isCreateCourse) {
-                return new ResponseSuccess(201, i18n.t("successMessages.createCourseSuccess"), true);
-            }
-        }
-        return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
-    } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, error.toString(), false);
-        }
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };

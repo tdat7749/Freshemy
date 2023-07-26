@@ -7,11 +7,8 @@ import configs from "../configs";
 import cloudinary from "../configs/cloudinary.config";
 import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
-import {
-    MESSAGE_ERROR_IMAGE_UPLOADED,
-    MESSAGE_ERROR_INTERNAL_SERVER,
-    MESSAGE_SUCCESS_IMAGE_UPLOADED,
-} from "../utils/constant";
+import i18n from "../utils/i18next";
+
 import { RequestHasLogin } from "../types/request";
 
 ffmpeg.setFfmpegPath(ffmpegPath.path);
@@ -96,11 +93,11 @@ const uploadImageToCloudinary = async (req: RequestHasLogin): Promise<ResponseBa
             );
         });
         if (uploadResponse) {
-            return new ResponseSuccess(201, MESSAGE_SUCCESS_IMAGE_UPLOADED, true, uploadResponse);
+            return new ResponseSuccess(201, i18n.t("successMessages.imageUploadSuccess"), true, uploadResponse);
         }
-        return new ResponseError(400, MESSAGE_ERROR_IMAGE_UPLOADED, false);
+        return new ResponseError(400, i18n.t("errorMessages.imageUploadError"), false);
     } catch (error: any) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
