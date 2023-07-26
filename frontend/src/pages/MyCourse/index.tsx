@@ -26,7 +26,7 @@ const MyCourses: React.FC = () => {
     let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
     let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
 
-    const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
+    const isGetLoading = useAppSelector((state) => state.courseSlice.isGetLoading);
 
     useEffect(() => {
         // @ts-ignore
@@ -80,7 +80,7 @@ const MyCourses: React.FC = () => {
 
     return (
         <>
-            {isLoading && <Spin />}
+            {isGetLoading && <Spin />}
             <Navbar />
             <div className="container mx-auto">
                 <div className="px-4 tablet:px-[60px]">

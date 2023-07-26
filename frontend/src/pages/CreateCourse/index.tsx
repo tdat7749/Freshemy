@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { Formik, ErrorMessage, Field } from "formik";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { setMessageEmpty } from "../../redux/slice/auth.slice";
 import { NewCourse as CreateCourseType, Category as CategoryType } from "../../types/course";
 import { courseActions, fileStorageActions } from "../../redux/slice";
 import { createValidationSchema } from "../../validations/course";
@@ -48,7 +47,6 @@ const CreateCourse: FC = () => {
         });
     }, [categories, categoriesOptions]);
     useEffect(() => {
-        dispatch(setMessageEmpty());
         //@ts-ignore
         dispatch(courseActions.getCategories());
         dispatch(courseActions.reset());
@@ -101,7 +99,11 @@ const CreateCourse: FC = () => {
     };
 
     const handleChangeStatus = (event: any, formik: any) => {
-        formik.setFieldValue("status", event.value);
+        if (event.value === 0) {
+            formik.setFieldValue("status", false);
+        } else {
+            formik.setFieldValue("status", true);
+        }
     };
 
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -293,11 +295,12 @@ const CreateCourse: FC = () => {
                                         <button
                                             type="button"
                                             className="btn text-lg ml-2"
+                                            disabled={isLoading || isUpload}
                                             onClick={() => {
                                                 formik.resetForm(initialValues);
                                             }}
                                         >
-                                            <Link to={`/my-courses`}>Cancel</Link>
+                                            <Link to={`/my-courses`}></Link>
                                         </button>
                                     </div>
                                 </form>

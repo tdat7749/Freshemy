@@ -116,4 +116,5 @@ export const updateCourseSchema: ObjectSchema<UpdateCourse> = Joi.object({
     categories: Joi.array<number[]>().required().messages({
         "any.required": MESSAGE_ERROR_CATEGORIES_REQUIRED,
     }),
+    thumbnail: Joi.string(),
 });

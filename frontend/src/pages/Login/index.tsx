@@ -1,4 +1,4 @@
-import { FC, useRef, useEffect } from "react";
+import { FC, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field, Form } from "formik";
 import { Login as LoginType } from "../../types/auth";
@@ -7,7 +7,6 @@ import { authActions } from "../../redux/slice/index";
 import { Navigate } from "react-router-dom";
 import Spin from "../../components/Spin";
 import Skeleton from "../../assets/images/Skeleton.png";
-import { setMessageEmpty } from "../../redux/slice/auth.slice";
 import { loginValidationSchema } from "../../validations/auth";
 import toast from "react-hot-toast";
 
@@ -18,10 +17,6 @@ const Login: FC = () => {
     const isLoading: boolean = useAppSelector((state) => state.authSlice.isLoading);
 
     const formikRef = useRef(null);
-
-    useEffect(() => {
-        dispatch(setMessageEmpty());
-    }, [dispatch]);
 
     if (isLogin) return <Navigate to={"/"} />;
 

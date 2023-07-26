@@ -24,7 +24,7 @@ import {
     MESSAGE_ERROR_COURSE_SLUG_IS_USED,
     MESSAGE_SUCCESS_UPDATE_DATA,
 } from "../utils/constant";
-import {courses_categories} from "../types/courseCategory"
+import { courses_categories } from "../types/courseCategory";
 const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
         const { slug } = req.params;
@@ -228,36 +228,75 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
 
 const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
-        const { id, title, slug, summary, description, categories, status } = req.body;
-        const course_id = parseInt(id)
-        
-        const isFoundDuplicateSlug = await db.course.findUnique({
+        const { id, title, slug, summary, description, categories, status, thumbnail } = req.body;
+        const course_id = parseInt(id);
+
+        const isFoundDuplicateSlug = await db.course.findFirst({
             where: {
                 slug: slug,
-            },
-        })
-        if(isFoundDuplicateSlug) return new ResponseError(400, MESSAGE_ERROR_COURSE_SLUG_IS_USED, false) 
-
-        const isFoundCourse = await db.course.findUnique({
-            where: {
                 id: course_id,
             },
         });
-
-        if (isFoundCourse) {
-            const isUpdateCourse = await db.course.update({
-            where: {
-                id: course_id,
-            },
-            data: {
-                title: title,
-                summary: summary,
-                description: description,
-                status: status,
-                slug: slug
-                },
-            });
-            if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (isFoundDuplicateSlug) {
+            if (thumbnail) {
+                const isUpdateCourse = await db.course.update({
+                    where: {
+                        id: course_id,
+                    },
+                    data: {
+                        title: title,
+                        summary: summary,
+                        description: description,
+                        status: status,
+                        thumbnail: thumbnail,
+                    },
+                });
+                if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            } else {
+                const isUpdateCourse = await db.course.update({
+                    where: {
+                        id: course_id,
+                    },
+                    data: {
+                        title: title,
+                        summary: summary,
+                        description: description,
+                        status: status,
+                    },
+                });
+                if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            }
+        } else {
+            if (thumbnail) {
+                const isUpdateCourse = await db.course.update({
+                    where: {
+                        id: course_id,
+                    },
+                    data: {
+                        title: title,
+                        summary: summary,
+                        description: description,
+                        status: status,
+                        thumbnail: thumbnail,
+                        slug: slug,
+                    },
+                });
+                if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            } else {
+                const isUpdateCourse = await db.course.update({
+                    where: {
+                        id: course_id,
+                    },
+                    data: {
+                        title: title,
+                        summary: summary,
+                        description: description,
+                        status: status,
+                        slug: slug,
+                    },
+                });
+                if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            }
         }
 
         const currentCategories = await configs.db.courseCategory.findMany({
@@ -275,12 +314,12 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
             },
         });
         if (!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-        
+
         let extractCategories: number[] = [];
-        currentCategories.forEach(currentCategories => {
+        currentCategories.forEach((currentCategories) => {
             extractCategories.push(currentCategories.category_id);
         });
-        
+
         var resultDuplicate = categories.filter((value: number) => extractCategories.includes(value));
         var resultUnique = categories.filter(function (val: number) {
             return extractCategories.indexOf(val) == -1;
@@ -288,17 +327,15 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
         const finalResult = resultDuplicate.concat(resultUnique);
         let data: courses_categories[] = [];
         finalResult.forEach(async (category_id: number) => {
-            data.push(
-                {course_id,
-                category_id}
-            )
+            data.push({ course_id, category_id });
         });
 
         await db.courseCategory.createMany({
-            data
-        })
+            data,
+        });
         return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
     } catch (error: any) {
+        console.log(error);
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
