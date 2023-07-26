@@ -9,19 +9,10 @@ import { sendMail } from "../commons";
 import configs from "../configs";
 import { db } from "../configs/db.config";
 import { SendMail } from "../types/sendmail";
-import {
-    MESSAGE_SUCCESS_RESET_PASSWORD,
-    MESSAGE_SUCCESS_VERIFCATION_FORGOT_PASSWORD,
-    MESSSAGE_ERROR_VALIDATION_FAIL,
-    MESSAGE_ERROR_LOGIN_FAILED,
-    MESSAGE_SUCCESS_LOGIN,
-    MESSAGE_ERROR_INTERNAL_SERVER,
-    MESSAGE_ERROR_SEND_EMAIL,
-    MESSAGE_ERROR_LOGIN_UNVERIFIED,
-    MESSAGE_ERROR_UNAUTHORIZED,
-    MESSAGE_ERROR_EMAIL_INCORRECT,
-} from "../utils/constant";
+
 import { setResetEmail, setsignUpEmail } from "../configs/nodemailer.config";
+import i18n from "../utils/i18next";
+
 const register = async (req: Request): Promise<ResponseBase> => {
     try {
         const { email, password, first_name, last_name } = req.body;
@@ -33,7 +24,7 @@ const register = async (req: Request): Promise<ResponseBase> => {
         });
 
         if (isUserFoundByEmail) {
-            return new ResponseError(400, "Email already exists", false);
+            return new ResponseError(400, i18n.t("errorMessages.emailAlreadyExists"), false);
         }
 
         // Hash the password
@@ -60,7 +51,7 @@ const register = async (req: Request): Promise<ResponseBase> => {
                 expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
             });
             const link = `${configs.general.DOMAIN_NAME}/verify-email/${token}`;
-            const html = setsignUpEmail(link)
+            const html = setsignUpEmail(link);
             const mailOptions: SendMail = {
                 from: "Freshemy",
                 to: `${newUser.email}`,
@@ -71,20 +62,16 @@ const register = async (req: Request): Promise<ResponseBase> => {
 
             const isSendEmailSuccess = sendMail(mailOptions);
             if (isSendEmailSuccess) {
-                return new ResponseSuccess(200, "Signup successful, please check your email", true);
+                return new ResponseSuccess(200, i18n.t("successMessages.signUpSuccess"), true);
             }
-            return new ResponseError(
-                400,
-                "Email sending failed, please login to the account you just registered to be sent confirmation email again",
-                false,
-            );
+            return new ResponseError(400, i18n.t("errorMessages.errorSendEmail"), false);
         }
-        return new ResponseError(400, "Signup failed", false);
+        return new ResponseError(400, i18n.t("errorMessages.signUpFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
-        return new ResponseError(500, "Internal Server", false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -102,7 +89,7 @@ const verifyEmailWhenSignUp = async (req: Request): Promise<ResponseBase> => {
             });
 
             if (isUserFound?.is_verify === true) {
-                return new ResponseSuccess(200, "This account has been verified before", true);
+                return new ResponseSuccess(200, i18n.t("successMessages.verifiedEmailBefore"), true);
             }
             const isVerifyUser = await db.user.update({
                 where: {
@@ -114,23 +101,23 @@ const verifyEmailWhenSignUp = async (req: Request): Promise<ResponseBase> => {
             });
 
             if (isVerifyUser) {
-                return new ResponseSuccess(200, "Account verification successful", true);
+                return new ResponseSuccess(200, i18n.t("successMessages.verifiedEmail"), true);
             }
         }
-        return new ResponseError(400, "Verify email failed", true);
+        return new ResponseError(400, i18n.t("errorMessages.verifiedEmailFailed"), true);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
         if (error instanceof TokenExpiredError) {
-            return new ResponseError(400, "The verification code has expired, please login so we can resend it", false);
+            return new ResponseError(400, i18n.t("errorMessages.tokenExpired"), false);
         } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(400, "The verification code is not correct", false);
+            return new ResponseError(400, i18n.t("errorMessages.tokenVerfiedCode"), false);
         } else if (error instanceof NotBeforeError) {
-            return new ResponseError(400, "This verification code was never generated", false);
+            return new ResponseError(400, i18n.t("errorMessages.tokenGernerateCode"), false);
         }
 
-        return new ResponseError(500, "Internal Server", false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -144,7 +131,7 @@ const login = async (req: Request): Promise<ResponseBase> => {
             },
         });
 
-        if (!isFoundUser) return new ResponseError(400, MESSAGE_ERROR_LOGIN_FAILED, false);
+        if (!isFoundUser) return new ResponseError(400, i18n.t("errorMessages.loginFailed"), false);
 
         const isVerifyPassword = await bcrypt.compare(password, isFoundUser.password);
         if (isVerifyPassword) {
@@ -180,10 +167,12 @@ const login = async (req: Request): Promise<ResponseBase> => {
 
                 const isSendEmailSuccess = sendMail(mailOptions);
                 if (!isSendEmailSuccess) {
-                    return new ResponseError(400, MESSAGE_ERROR_SEND_EMAIL, false);
+                    return new ResponseError(400, i18n.t("errorMessages.errorSendEmail"), false);
                 }
-                return new ResponseError(400, MESSAGE_ERROR_LOGIN_UNVERIFIED, false);
+
+                return new ResponseError(400, i18n.t("errorMessages.loginUnverified"), false);
             }
+
             const accessToken = jwt.sign(
                 {
                     user_id: isFoundUser.id,
@@ -203,15 +192,18 @@ const login = async (req: Request): Promise<ResponseBase> => {
                     expiresIn: configs.general.TOKEN_REFRESH_EXPIRED_TIME,
                 },
             );
-            return new ResponseSuccess(200, MESSAGE_SUCCESS_LOGIN, true, { accessToken, refreshToken });
+            return new ResponseSuccess(200, i18n.t("successMessages.successLogin"), true, {
+                accessToken,
+                refreshToken,
+            });
         } else {
-            return new ResponseError(400, MESSAGE_ERROR_LOGIN_FAILED, false);
+            return new ResponseError(400, i18n.t("errorMessages.loginFailed"), false);
         }
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -221,7 +213,7 @@ const refreshToken = async (res: Request): Promise<ResponseBase> => {
         const rfToken = rfTokenRaw.split("=")[1];
 
         if (!rfToken) {
-            return new ResponseError(400, "Bad request", false);
+            return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
         }
 
         const isVerifyRefreshToken = jwt.verify(rfToken, configs.general.JWT_SECRET_KEY) as MyJwtPayload;
@@ -236,7 +228,9 @@ const refreshToken = async (res: Request): Promise<ResponseBase> => {
             },
         );
 
-        return new ResponseSuccess(200, "Request successful", true, { accessToken: newAccessToken });
+        return new ResponseSuccess(200, i18n.t("successMessages.requestSuccess"), true, {
+            accessToken: newAccessToken,
+        });
     } catch (error: any) {
         if (error instanceof TokenExpiredError) {
             return new ResponseError(400, error.message, false);
@@ -246,7 +240,7 @@ const refreshToken = async (res: Request): Promise<ResponseBase> => {
             return new ResponseError(400, error.message, false);
         }
 
-        return new ResponseError(500, "Internal Server", false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -267,12 +261,12 @@ const getMe = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 first_name: isFoundUser.first_name,
                 last_name: isFoundUser.last_name,
             };
-            return new ResponseSuccess(200, "Request successful", true, userInformation);
+            return new ResponseSuccess(200, i18n.t("successMessages.requestSuccess"), true, userInformation);
         }
 
-        return new ResponseError(401, "Unauthorized", false);
+        return new ResponseError(401, i18n.t("errorMessages.UnAuthorized"), false);
     } catch (error: any) {
-        return new ResponseError(500, "Internal Server", false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -287,7 +281,7 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
         });
 
         if (isFoundUser === null) {
-            return new ResponseError(404, MESSAGE_ERROR_EMAIL_INCORRECT, false);
+            return new ResponseError(404, i18n.t("errorMessages.inCorrectEmail"), false);
         }
 
         const payload = {
@@ -304,11 +298,11 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
                 email: email,
             },
             data: {
-                token: token
+                token: token,
             },
         });
         const link = `${configs.general.DOMAIN_NAME}/reset-password/${token}`;
-        const html = setResetEmail(link)
+        const html = setResetEmail(link);
         const mailOptions: SendMail = {
             from: "Freshemy",
             to: `${email}`,
@@ -320,9 +314,9 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
         const isSendEmailSuccess = sendMail(mailOptions);
 
         if (isSendEmailSuccess) {
-            return new ResponseSuccess(200, MESSAGE_SUCCESS_VERIFCATION_FORGOT_PASSWORD, true);
+            return new ResponseSuccess(200, i18n.t("successMessages.verificationForgotPassword"), true);
         } else {
-            return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+            return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
         }
     } catch (error: any) {
         if (error instanceof TokenExpiredError) {
@@ -333,7 +327,7 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -350,11 +344,11 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
                 id: id,
             },
             select: {
-                token: true
-            }
+                token: true,
+            },
         });
-        if(isFoundUser?.token !== token){
-            return new ResponseError(404,MESSAGE_ERROR_UNAUTHORIZED, false);
+        if (isFoundUser?.token !== token) {
+            return new ResponseError(404, i18n.t("errorMessages.UnAuthorized"), false);
         }
         const updateUser = await configs.db.user.update({
             where: {
@@ -362,11 +356,11 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
             },
             data: {
                 password: hash,
-                token: null
+                token: null,
             },
         });
-        if (updateUser) return new ResponseSuccess(200, MESSAGE_SUCCESS_RESET_PASSWORD, true);
-        return new ResponseError(400, MESSSAGE_ERROR_VALIDATION_FAIL, false);
+        if (updateUser) return new ResponseSuccess(200, i18n.t("successMessages.resetPasswordSuccess"), true);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof TokenExpiredError) {
             return new ResponseError(400, error.message, false);
@@ -376,7 +370,7 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 

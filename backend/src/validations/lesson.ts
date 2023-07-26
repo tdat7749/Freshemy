@@ -1,25 +1,25 @@
 import Joi, { ObjectSchema } from "joi";
-import {
-    MESSAGE_ERROR_SECTION_ID_REQUIRED,
-    MESSAGE_ERROR_COURSE_TITLE_REQUIRED,
-    MESSAGE_ERROR_COURSE_TITLE_STRING,
-} from "../utils/constant";
+
+import i18n from "../utils/i18next";
 
 type Lesson = {
     title: string;
-    section_id: number
+    section_id: number;
 };
 
-
 export const LessonSchema: ObjectSchema<Lesson> = Joi.object({
-    title: Joi.string().required().messages({
-        "any.required": MESSAGE_ERROR_COURSE_TITLE_REQUIRED,
-        "string.base": MESSAGE_ERROR_COURSE_TITLE_STRING,
-    }),
+    title: Joi.string()
+        .required()
+        .messages({
+            "any.required": i18n.t("errorMessages.courseTitleIsRequired"),
+            "string.base": i18n.t("errorMessages.courseTitleMustBeString"),
+        }),
 
-    section_id: Joi.number().required().messages({
-        "any.required": MESSAGE_ERROR_SECTION_ID_REQUIRED,
-    }),
+    section_id: Joi.number()
+        .required()
+        .messages({
+            "any.required": i18n.t("errorMessages.sectionIdIsRequired"),
+        }),
 });
 
 type UpdateLesson = {
@@ -27,8 +27,10 @@ type UpdateLesson = {
 };
 
 export const UpdateLessonSchema: ObjectSchema<UpdateLesson> = Joi.object({
-    title: Joi.string().required().messages({
-        "any.required": MESSAGE_ERROR_COURSE_TITLE_REQUIRED,
-        "string.base": MESSAGE_ERROR_COURSE_TITLE_STRING,
-    })
+    title: Joi.string()
+        .required()
+        .messages({
+            "any.required": i18n.t("errorMessages.courseTitleIsRequired"),
+            "string.base": i18n.t("errorMessages.courseTitleMustBeString"),
+        }),
 });

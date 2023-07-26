@@ -5,23 +5,21 @@ import { MyJwtPayload } from "../types/decodeToken";
 import { db } from "../configs/db.config";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import configs from "../configs";
-import {
-    MESSAGE_ERROR_UNAUTHORIZED,
-} from "../utils/constant"
+
+import i18n from "../utils/i18next";
+
 export const isAuthor = async (req: RequestHasLogin, res: Response, next: NextFunction) => {
     try {
-        const user_id = req.user_id
-        const course_id = req.body.course_id
+        const user_id = req.user_id;
+        const course_id = req.body.course_id;
         const isFoundCourse = await db.course.findFirst({
-            where:{
+            where: {
                 id: course_id,
-                user_id: user_id
-            }
-        
-        })
-        if(!isFoundCourse)
-        {
-            return res.status(403).json({ message: MESSAGE_ERROR_UNAUTHORIZED });
+                user_id: user_id,
+            },
+        });
+        if (!isFoundCourse) {
+            return res.status(403).json({ message: i18n.t("errorMessages.UnAuthorized") });
         }
         next();
     } catch (error: any) {
@@ -36,6 +34,6 @@ export const isAuthor = async (req: RequestHasLogin, res: Response, next: NextFu
             return res.status(401).json({ message: error.message });
         }
 
-        return res.status(500).json({ message: "Internal Server" });
+        return res.status(500).json({ message: i18n.t("errorMessages.internalServer") });
     }
 };

@@ -8,22 +8,8 @@ import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonw
 import cloudinary from "../configs/cloudinary.config";
 import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 import configs from "../configs";
-import {
-    MESSAGE_SUCCESS_GET_DATA,
-    MESSAGE_ERROR_GET_DATA,
-    MESSAGE_SUCCESS_REGISTER_COURSE,
-    MESSAGE_ERROR_BAD_REQUEST,
-    MESSAGE_SUCCESS_UN_REGISTER_COURSE,
-    MESSAGE_ERROR_INTERNAL_SERVER,
-    MESSAGE_ERROR_MISSING_REQUEST_BODY,
-    MESSAGE_SUCCESS_COURSE_CREATED,
-    MESSAGE_ERROR_COURSE_CREATE_FAILED,
-    MESSAGE_SUCCESS_SEARCH_MY_COURSE,
-    MESSAGE_ERROR_COURSE_NOT_FOUND,
-    MESSAGE_SUCCESS_DELETED_COURSE,
-    MESSAGE_ERROR_COURSE_SLUG_IS_USED,
-    MESSAGE_SUCCESS_UPDATE_DATA,
-} from "../utils/constant";
+
+import i18n from "../utils/i18next";
 
 const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -72,7 +58,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
 
         if (course) {
             if (course.is_delete) {
-                return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
+                return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
             } else {
                 const categories: Category[] = [];
                 course.courses_categories.forEach((category) => {
@@ -94,12 +80,12 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     updated_at: course.updated_at,
                     status: course.status,
                 };
-                return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, courseData);
+                return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, courseData);
             }
         }
-        return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
+        return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
     } catch (error) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -133,7 +119,7 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
 
         if (course) {
             if (course.is_delete) {
-                return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
+                return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
             } else {
                 const categories: Category[] = [];
                 course.courses_categories.forEach((category) => {
@@ -151,12 +137,12 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
                     updated_at: course.updated_at,
                     status: course.status,
                 };
-                return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, courseData);
+                return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, courseData);
             }
         }
-        return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
+        return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
     } catch (error) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -172,7 +158,7 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 },
             });
             if (checkRegisted) {
-                return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+                return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
             } else {
                 const register = await db.enrolled.create({
                     data: {
@@ -181,16 +167,16 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     },
                 });
                 if (register) {
-                    return new ResponseSuccess(200, MESSAGE_SUCCESS_REGISTER_COURSE, true);
+                    return new ResponseSuccess(200, i18n.t("successMessages.registerCourseSuccess"), true);
                 } else {
-                    return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+                    return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
                 }
             }
         } else {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+            return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
         }
     } catch (error) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
@@ -205,7 +191,7 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
                 },
             });
             if (!checkRegisted) {
-                return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+                return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
             } else {
                 const unsubcribe = await db.enrolled.delete({
                     where: {
@@ -213,16 +199,16 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
                     },
                 });
                 if (unsubcribe) {
-                    return new ResponseSuccess(200, MESSAGE_SUCCESS_UN_REGISTER_COURSE, true);
+                    return new ResponseSuccess(200, i18n.t("successMessages.unRegisterCourseSuccess"), true);
                 } else {
-                    return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+                    return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
                 }
             }
         } else {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+            return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
         }
     } catch (error) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -247,7 +233,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
                     status: status,
                 },
             });
-            if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            if (!isUpdateCourse) return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
         }
 
         let newCategories = [];
@@ -268,7 +254,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
                 course_id: id,
             },
         });
-        if (!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (!isDelete) return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
 
         let extractCategories: number[] = [];
         for (let i = 0; i < currentCategories.length; i++) extractCategories.push(currentCategories[i].category_id);
@@ -291,8 +277,8 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
             data: data,
         });
 
-        if (!isUpdate) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-        return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
+        if (!isUpdate) return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
+        return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
@@ -305,7 +291,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, "Internal Server", false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -321,7 +307,7 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
         });
 
         if (!isFoundCourse) {
-            return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
         }
 
         const uploadFileResult = await new Promise<undefined | UploadApiResponse>((resolve, rejects) => {
@@ -342,19 +328,19 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     thumbnail: uploadFileResult.url,
                 },
             });
-            if (isUpdate) return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
+            if (isUpdate) return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
             else {
                 await cloudinary.uploader.destroy(uploadFileResult.public_id);
             }
-            return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
         }
-        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -374,7 +360,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         });
 
         if (isFoundCourse) {
-            return new ResponseError(400, MESSAGE_ERROR_COURSE_SLUG_IS_USED, false);
+            return new ResponseError(400, i18n.t("errorMessages.slugIsUsed"), false);
         }
 
         const uploadFileResult = await new Promise<undefined | UploadApiResponse>((resolve, rejects) => {
@@ -409,19 +395,19 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 });
 
                 if (isCreateCourse) {
-                    return new ResponseSuccess(201, MESSAGE_SUCCESS_COURSE_CREATED, true);
+                    return new ResponseSuccess(201, i18n.t("successMessages.registerCourseSuccess"), true);
                 } else {
                     await cloudinary.uploader.destroy(uploadFileResult.public_id);
                 }
             }
-            return new ResponseError(400, MESSAGE_ERROR_COURSE_CREATE_FAILED, false);
+            return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
         }
-        return new ResponseError(400, MESSAGE_ERROR_COURSE_CREATE_FAILED, false);
+        return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -494,9 +480,14 @@ const searchMyCourses = async (pageIndex: number, keyword: string, userId: numbe
             courses: myCoursesData,
         };
 
-        return new ResponseSuccess<ResponseData>(200, MESSAGE_SUCCESS_SEARCH_MY_COURSE, true, responseData);
+        return new ResponseSuccess<ResponseData>(
+            200,
+            i18n.t("successMessages.searchMyCourseSuccess"),
+            true,
+            responseData,
+        );
     } catch (error: any) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -510,7 +501,7 @@ const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
         });
 
         if (!existingCourse) {
-            return new ResponseError(404, MESSAGE_ERROR_COURSE_NOT_FOUND, false);
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
         }
 
         // Set is_delete field to true to mark the course as deleted
@@ -523,9 +514,9 @@ const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
             },
         });
 
-        return new ResponseSuccess<ResponseData>(200, MESSAGE_SUCCESS_DELETED_COURSE, true);
+        return new ResponseSuccess<ResponseData>(200, i18n.t("successMessages.deleteDataSuccess"), true);
     } catch (error: any) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -587,9 +578,9 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
             };
             result.push(data);
         });
-        return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, result);
+        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, result);
     } catch (error) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
