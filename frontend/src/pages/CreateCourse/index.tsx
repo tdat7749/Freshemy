@@ -72,7 +72,7 @@ const CreateCourse: FC = () => {
         formData.append("thumbnail", thumbnail as File);
         formData.append("summary", values.summary);
         formData.append("status", values.status.toString());
-        formData.append("upload_preset", "Freshemy");
+        // formData.append("upload_preset", "Freshemy");
         values.categories.forEach((item: any) => {
             formData.append("categories[]", item.value.toString());
         });
