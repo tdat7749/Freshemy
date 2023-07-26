@@ -48,7 +48,7 @@ export type Section = {
     lessons: Lesson[];
 };
 
-export type Top10Courses = {
+export type OutstandingCourse = {
     id: number;
     thumbnail: string;
     title: string;
