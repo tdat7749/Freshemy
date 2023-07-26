@@ -14,10 +14,6 @@ import {
     MESSAGE_SUCCESS_REGISTER_COURSE,
     MESSAGE_ERROR_BAD_REQUEST,
     MESSAGE_SUCCESS_UN_REGISTER_COURSE,
-    MESSAGE_ERROR_LOGIN_FAILED,
-    MESSAGE_ERROR_SEND_EMAIL,
-    MESSAGE_ERROR_LOGIN_UNVERIFIED,
-    MESSAGE_SUCCESS_LOGIN,
     MESSAGE_ERROR_INTERNAL_SERVER,
     MESSAGE_ERROR_MISSING_REQUEST_BODY,
     MESSAGE_SUCCESS_COURSE_CREATED,
@@ -79,18 +75,10 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                 return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
             } else {
                 const categories: Category[] = [];
-                const sections: Section[] = [];
                 course.courses_categories.forEach((category) => {
                     categories.push(category.category);
                 });
-                course.sections.forEach((section) => {
-                    const lessons: Lesson[] = [];
-                    section.lessons.forEach((lesson) => {
-                        lessons.push(lesson);
-                    });
-                    section.lessons = lessons;
-                    sections.push(section);
-                });
+                const sections: Section[] = course.sections;
                 const courseData: CourseDetail = {
                     id: course.id,
                     slug: course.slug,
