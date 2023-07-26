@@ -1,8 +1,8 @@
-import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
+import { Course, CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetail, Lesson, Section, Category, CourseEdit } from "../types/courseDetail";
+import { CourseDetail, Lesson, Section, Category, CourseEdit, Top10Courses } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
@@ -74,7 +74,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
             },
         });
 
-
         if (course) {
             if (course.is_delete) {
                 return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
@@ -112,7 +111,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
         }
         return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
     } catch (error) {
-        console.log(error);
         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
@@ -135,7 +133,14 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
                         },
                     },
                 },
-            }
+                user: {
+                    select: {
+                        id: true,
+                        first_name: true,
+                        last_name: true,
+                    },
+                },
+            },
         });
 
         if (course) {
@@ -163,7 +168,6 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
         }
         return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
     } catch (error) {
-        console.log(error);
         return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
     }
 };
@@ -183,7 +187,6 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
             } else {
                 const register = await db.enrolled.create({
-                    //@ts-ignore
                     data: {
                         user_id: user_id,
                         course_id: course_id,
@@ -244,7 +247,6 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
                 id: id,
             },
         });
-
         if (isFoundCourse) {
             const isUpdateCourse = await db.course.update({
                 where: {
@@ -330,7 +332,6 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
 
-        console.log(isFoundCourse);
         if (!isFoundCourse) {
             return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         }
@@ -370,12 +371,10 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
 };
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
-    const { title, slug, description, summary, categories, status } = req.body;
+    const { title, slug, description, summary, categories, status, upload_preset } = req.body;
 
     // Vì formData gửi dữ liệu bằng string nên ở đây phải convert nó về
-    const categoriesConvert = categories.map((item: string) => {
-        category_id: parseInt(item);
-    });
+
     const statusConvert = status === "0" ? false : true;
 
     const user_id = req.user_id;
@@ -403,8 +402,8 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         });
 
         if (uploadFileResult) {
-            const listCategoryId = categories.map((item: number) => ({
-                category_id: item,
+            const listCategoryId = categories.map((item: string) => ({
+                category_id: parseInt(item),
             }));
 
             if (user_id) {
@@ -418,7 +417,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                         user_id: user_id,
                         status: statusConvert,
                         courses_categories: {
-                            create: categoriesConvert,
+                            create: listCategoryId,
                         },
                     },
                 });
@@ -440,7 +439,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     }
 };
 
-export const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
+const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
     try {
         const parsedPageIndex = parseInt(pageIndex.toString(), 10);
         const parsedKeyword = keyword;
@@ -515,7 +514,7 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
     }
 };
 
-export const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
+const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
     try {
         // Check if the course exists
         const existingCourse = await db.course.findUnique({
@@ -544,6 +543,70 @@ export const deleteMyCourse = async (courseId: number): Promise<ResponseBase> =>
     }
 };
 
+const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const courses = await db.enrolled.groupBy({
+            by: ["course_id"],
+            orderBy: {
+                _count: {
+                    user_id: "desc",
+                },
+            },
+            take: 10,
+        });
+
+        const courseList = [];
+
+        for (const course of courses) {
+            const courseItem = await db.course.findFirst({
+                where: {
+                    id: course.course_id,
+                    is_delete: false,
+                },
+                include: {
+                    courses_categories: {
+                        include: {
+                            category: {
+                                select: {
+                                    id: true,
+                                    title: true,
+                                },
+                            },
+                        },
+                    },
+                    user: {
+                        select: {
+                            id: true,
+                            first_name: true,
+                            last_name: true,
+                        },
+                    },
+                },
+            });
+            if (courseItem !== null) courseList.push(courseItem);
+        }
+
+        const result: Top10Courses[] = [];
+
+        courseList.map((course) => {
+            const data: Top10Courses = {
+                id: course.id,
+                thumbnail: course.thumbnail,
+                title: course.title,
+                slug: course.slug,
+                categories: course.courses_categories.map((cate) => cate.category),
+                author: course.user.last_name + " " + course.user.first_name,
+                created_at: course.created_at,
+                updated_at: course.updated_at,
+            };
+            result.push(data);
+        });
+        return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, result);
+    } catch (error) {
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+    }
+};
+
 const CourseService = {
     getCourseDetail,
     registerCourse,
@@ -554,5 +617,6 @@ const CourseService = {
     searchMyCourses,
     deleteMyCourse,
     getCourseDetailById,
+    getTop10Courses,
 };
 export default CourseService;

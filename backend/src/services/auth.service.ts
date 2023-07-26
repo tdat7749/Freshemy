@@ -21,7 +21,7 @@ import {
     MESSAGE_ERROR_UNAUTHORIZED,
     MESSAGE_ERROR_EMAIL_INCORRECT,
 } from "../utils/constant";
-
+import { setResetEmail, setsignUpEmail } from "../configs/nodemailer.config";
 const register = async (req: Request): Promise<ResponseBase> => {
     try {
         const { email, password, first_name, last_name } = req.body;
@@ -59,24 +59,14 @@ const register = async (req: Request): Promise<ResponseBase> => {
             const token = jwt.sign(payload, configs.general.JWT_SECRET_KEY!, {
                 expiresIn: configs.general.TOKEN_ACCESS_EXPIRED_TIME,
             });
-
             const link = `${configs.general.DOMAIN_NAME}/verify-email/${token}`;
+            const html = setsignUpEmail(link)
             const mailOptions: SendMail = {
                 from: "Freshemy",
                 to: `${newUser.email}`,
                 subject: "Freshdemy - Verification email",
                 text: "You recieved message from " + newUser.email,
-                html: `
-                    <p>Hi ${newUser.email}</p>, </br>
-                    <p>Thanks for getting started with our [Freshemy]!</p></br>
-                    
-                    <p>We need a little more information to complete your registration, including a confirmation of your email address.</p> </br>
-                    
-                    <p>Click below to confirm your email address: </p> </br>
-                    
-                    ${link} </br>
-                    
-                    <p>If you have problems, please paste the above URL into your web browser.</p>`,
+                html: html,
             };
 
             const isSendEmailSuccess = sendMail(mailOptions);
@@ -317,15 +307,14 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
                 token: token
             },
         });
-
         const link = `${configs.general.DOMAIN_NAME}/reset-password/${token}`;
-        console.log(token);
+        const html = setResetEmail(link)
         const mailOptions: SendMail = {
             from: "Freshemy",
             to: `${email}`,
             subject: "Freshdemy - Link verification for reseting password",
-            text: "You recieved message from " + email,
-            html: "<p>This is your link verification for your account to reset password:</b></br>" + link,
+            text: "You received message from " + email,
+            html: html,
         };
 
         const isSendEmailSuccess = sendMail(mailOptions);

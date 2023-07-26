@@ -93,17 +93,14 @@ export const updateCourseSchema: ObjectSchema<UpdateCourse> = Joi.object({
         "any.required": MESSAGE_ERROR_COURSE_TITLE_REQUIRED,
         "string.base": MESSAGE_ERROR_COURSE_TITLE_STRING,
     }),
-    slug: Joi.string()
-        .required()
-        .messages({
-            "any.required": MESSAGE_ERROR_COURSE_SLUG_REQUIRED,
-            "string.base": MESSAGE_ERROR_SLUG_STRING,
-            "string.regex": MESSSAGE_ERROR_SLUG_MALFORMED,
-        }),
+    slug: Joi.string().required().messages({
+        "any.required": MESSAGE_ERROR_COURSE_SLUG_REQUIRED,
+        "string.base": MESSAGE_ERROR_SLUG_STRING,
+        "string.regex": MESSSAGE_ERROR_SLUG_MALFORMED,
+    }),
 
-    status: Joi.bool().required().messages({
+    status: Joi.required().messages({
         "any.required": MESSAGE_ERROR_STATUS_REQUIRED,
-        "bool.base": MESSAGE_ERROR_STATUS_BOOLEAN,
     }),
 
     description: Joi.string().required().messages({

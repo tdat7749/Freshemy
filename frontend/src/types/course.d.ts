@@ -2,12 +2,12 @@ import { User } from "./user";
 
 export type Category = {
     id: number;
-    title: String;
+    title: string;
 };
 
 export type NewCourse = {
     title: string;
-    categories: string;
+    categories: number[];
     status: number;
     summary: string;
     description: string;
@@ -21,7 +21,7 @@ export type Course = {
     rate: number;
     thumbnail: string;
     author: string;
-    category: string[];
+    categories: Category[];
     number_section: number;
     slug: string;
 };
@@ -61,22 +61,22 @@ export type CourseDetail = {
     sections: SectionRender[];
     created_at: string;
     updated_at: string;
-    thumbnail: string
-    status: boolean
+    thumbnail: string;
+    status: boolean;
 };
 
 export type ChangeThumbnail = {
-    course_id: number
-    thumbnail: File
-}
+    course_id: number;
+    thumbnail: File;
+};
 
 export type CourseChangeInformation = {
-    id: number | undefined,
-    title: string,
-    summary: string,
-    status: boolean,
-    description: string,
-    categories: Category[],
-    slug: string,
-    thumbnail?: File
-}
+    id: number | undefined;
+    title: string;
+    summary: string;
+    status: boolean;
+    description: string;
+    categories: Category[];
+    slug: string;
+    thumbnail?: string;
+};

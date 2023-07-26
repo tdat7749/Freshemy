@@ -1,22 +1,21 @@
 import { FC, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field, Form } from "formik";
-import { Login as LoginType } from "../types/auth";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { authActions } from "../redux/slice/index";
+import { Login as LoginType } from "../../types/auth";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { authActions } from "../../redux/slice/index";
 import { Navigate } from "react-router-dom";
-import Skeleton from "../assets/images/Skeleton.png";
-import { setMessageEmpty } from "../redux/slice/auth.slice";
-import { loginValidationSchema } from "../validations/auth";
-import Spin from "../components/Spin";
+import Spin from "../../components/Spin";
+import Skeleton from "../../assets/images/Skeleton.png";
+import { setMessageEmpty } from "../../redux/slice/auth.slice";
+import { loginValidationSchema } from "../../validations/auth";
+import toast from "react-hot-toast";
 
 const Login: FC = () => {
     const dispatch = useAppDispatch();
 
     const isLogin: boolean = useAppSelector((state) => state.authSlice.isLogin);
     const isLoading: boolean = useAppSelector((state) => state.authSlice.isLoading);
-
-    let error: string = useAppSelector((state) => state.authSlice.error) ?? "";
 
     const formikRef = useRef(null);
 
@@ -32,24 +31,23 @@ const Login: FC = () => {
     };
 
     const handleOnSubmit: (values: LoginType) => void = (values: LoginType) => {
-        //@ts-ignore
+        // @ts-ignore
         dispatch(authActions.login(values)).then((response) => {
             if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
                 //@ts-ignore
                 dispatch(authActions.getMe());
+            } else {
+                toast.error(response.payload.message);
             }
         });
-    };
-
-    const handleChange: () => void = () => {
-        error = "";
     };
 
     return (
         <>
             {isLoading && <Spin />}
             <div className="container mx-auto">
-                <div className="min-h-screen h-full  flex items-center justify-center mt-[100px]">
+                <div className="flex items-center justify-center mt-[100px] py-10">
                     <div className="bg-primary m-4 rounded-xl shadow-lg">
                         <Formik
                             initialValues={initialValue}
@@ -58,7 +56,7 @@ const Login: FC = () => {
                             innerRef={formikRef}
                         >
                             {(formik) => (
-                                <Form className="p-4" onSubmit={formik.handleSubmit} onChange={handleChange}>
+                                <Form className="p-4" onSubmit={formik.handleSubmit}>
                                     <h1 className="font-bold text-[32px] text-center text-title">LOGIN TO FRESHEMY</h1>
                                     <form className="">
                                         <div className="flex flex-col mb-3">
@@ -99,16 +97,14 @@ const Login: FC = () => {
                                                 className="text-[14px] text-error font-medium"
                                             />
                                         </div>
-                                        {error !== "" && (
-                                            <span className="text-[14px] text-error font-medium">{error}</span>
-                                        )}
                                     </form>
                                     <button
-                                        className="btn btn-primary w-full text-lg"
+                                        className="btn w-full text-white text-lg btn-primary"
                                         type="submit"
-                                        disabled={(error !== "" ? true : false) || isLoading}
+                                        disabled={isLoading}
                                     >
-                                        Login
+                                        {isLoading && <span className="loading loading-spinner"></span>}
+                                        {isLoading ? "Loading..." : "LOGIN"}
                                     </button>
                                     <p className="block mt-3 mb-2 text-center text-lg">
                                         Don't have an account?{" "}

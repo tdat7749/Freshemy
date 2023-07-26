@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { authActions } from "../redux/slice";
-import { ForgotPassword as ForgotPasswordType } from "../types/auth";
-import { setMessageEmpty } from "../redux/slice/auth.slice";
-import { forgotPasswordValidationSchema } from "../validations/auth";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { authActions } from "../../redux/slice";
+import { ForgotPassword as ForgotPasswordType } from "../../types/auth";
+import { setMessageEmpty } from "../../redux/slice/auth.slice";
+import { forgotPasswordValidationSchema } from "../../validations/auth";
 import { Navigate } from "react-router-dom";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 const ForgotPassword: React.FC = () => {
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
-    
+
     let message = useAppSelector((state) => state.authSlice.message) ?? "";
 
     const dispatch = useAppDispatch();
@@ -29,18 +29,17 @@ const ForgotPassword: React.FC = () => {
         //@ts-ignore
         dispatch(authActions.forgotPassword(values)).then((response) => {
             if (response.payload.status_code === 200) {
-                //@ts-ignore
-                toast.success(response.payload.message)
+                toast.success(response.payload.message);
             } else {
-                toast.error(response.payload.message)
+                toast.error(response.payload.message);
             }
-        })
+        });
     };
 
     return (
         <>
             <div className="container mx-auto">
-                <div className="min-h-screen h-full  flex items-center justify-center mt-[100px]">
+                <div className="flex items-center justify-center mt-[100px] py-10">
                     <div className="bg-primary m-4 rounded-xl shadow-lg">
                         <Formik
                             initialValues={initialValues}
@@ -78,10 +77,7 @@ const ForgotPassword: React.FC = () => {
                                             className="text-[14px] text-error font-medium"
                                         />
                                     </form>
-                                    <button
-                                        className="btn btn-primary w-full text-lg"
-                                        type="submit"
-                                    >
+                                    <button className="btn btn-primary w-full text-lg" type="submit">
                                         Reset password
                                     </button>
                                     <span className="block mt-3 mb-2 text-center font-medium text-lg hover:opacity-80">
@@ -90,7 +86,7 @@ const ForgotPassword: React.FC = () => {
                                     <div className="text-center text-lg hover:opacity-80">
                                         Don't have an account?
                                         <Link to={"/register"}>
-                                            <span  className="font-medium"> Signup</span>
+                                            <span className="font-medium"> Signup</span>
                                         </Link>
                                     </div>
                                 </Form>

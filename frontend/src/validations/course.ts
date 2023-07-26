@@ -1,21 +1,29 @@
-import {
-    MESSAGE_ERROR_DESCRIPTION_REQUIRED,
-    MESSAGE_ERROR_SUMMARY_REQUIRED,
-    MESSAGE_ERROR_TITLE_REQUIRED,
-} from "../utils/contants";
+import i18n from "../utils/i18next";
 import * as Yup from "yup";
-
+const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/gif", "image/png"];
 export const editCourseValidationSchema = Yup.object({
-    title: Yup.string().trim().required(MESSAGE_ERROR_TITLE_REQUIRED),
-    summary: Yup.string().trim().required(MESSAGE_ERROR_SUMMARY_REQUIRED),
-    description: Yup.string().trim().required(MESSAGE_ERROR_DESCRIPTION_REQUIRED),
+    categories: Yup.array()
+        .min(1, i18n.t("errorMessages.categoriesIsRequired"))
+        .max(4, i18n.t("errorMessages.categoriesMaxAllowed")),
+    title: Yup.string().trim().required(i18n.t("errorMessages.titleIsRequired")),
+    summary: Yup.string().trim().required(i18n.t("errorMessages.summaryIsRequired")),
+    description: Yup.string().trim().required(i18n.t("errorMessages.descriptionIsRequired")),
 });
 
-
 export const createValidationSchema = Yup.object({
-    // thumbnail: Yup.mixed().required("Thumbnail is required"),
-    // categories: Yup.string().required("Categories is required"),
-    title: Yup.string().trim().required(MESSAGE_ERROR_TITLE_REQUIRED),
-    summary: Yup.string().trim().required(MESSAGE_ERROR_SUMMARY_REQUIRED),
-    description: Yup.string().trim().required(MESSAGE_ERROR_DESCRIPTION_REQUIRED),
+    thumbnail: Yup.mixed()
+        .nullable()
+        .required(i18n.t("errorMessages.thumbnailIsRequired"))
+        .test("fileFormat", i18n.t("errorMessages.fileIsNotSupport"), (value: any) => {
+            return value && SUPPORTED_FORMATS.includes(value.type);
+        })
+        .test("fileSize", i18n.t("errorMessages.thumbnailTooBig"), (value: any) => {
+            return value && value.size <= 1024 * 1024 * 4;
+        }),
+    categories: Yup.array()
+        .min(1, i18n.t("errorMessages.categoriesIsRequired"))
+        .max(4, i18n.t("errorMessages.categoriesMaxAllowed")),
+    title: Yup.string().trim().required(i18n.t("errorMessages.titleIsRequired")),
+    summary: Yup.string().trim().required(i18n.t("errorMessages.summaryIsRequired")),
+    description: Yup.string().trim().required(i18n.t("errorMessages.descriptionIsRequired")),
 });

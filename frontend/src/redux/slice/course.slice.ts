@@ -1,7 +1,8 @@
 import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Response } from "../../types/response";
 
-import {
+/**
+ * import {
     createCourse as createCourseAPI,
     getCategories as getCategoriesAPI,
     getMyCourses as getMyCoursesAPI,
@@ -11,6 +12,7 @@ import {
     changeThumbnail as changeThumbnailAPI,
     changeInformation as changeInformationAPI,
 } from "../../apis/course";
+ */
 
 import {
     NewCourse,
@@ -23,6 +25,7 @@ import {
     ChangeThumbnail as ChangeThumbnailType,
     CourseChangeInformation as CourseChangeInformationType,
 } from "../../types/course";
+import CourseApis from "../../apis/course";
 
 type CourseSlice = {
     selectCategories: Category[];
@@ -40,7 +43,7 @@ export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejec
     "course/createCourse",
     async (body, ThunkAPI) => {
         try {
-            const response = await createCourseAPI(body);
+            const response = await CourseApis.createCourse(body);
             return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -52,7 +55,7 @@ export const getCategories = createAsyncThunk<Response<Category[]>, null, { reje
     "course/getCategories",
     async (body, ThunkAPI) => {
         try {
-            const response = await getCategoriesAPI();
+            const response = await CourseApis.getCategories();
             return response.data.data as Response<Category[]>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -64,7 +67,7 @@ export const getMyCourses = createAsyncThunk<Response<PagingCourse>, GetMyCourse
     "course/getMyCourses",
     async (body, ThunkAPI) => {
         try {
-            const response = await getMyCoursesAPI(body);
+            const response = await CourseApis.getMyCourses(body);
             return response.data as Response<PagingCourse>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -76,7 +79,7 @@ export const getCourseDetail = createAsyncThunk<Response<CourseDetailType>, stri
     "course/getCourseDetail",
     async (body, ThunkAPI) => {
         try {
-            const response = await getCourseDetailAPI(body);
+            const response = await CourseApis.getCourseDetail(body);
             return response.data as Response<CourseDetailType>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -90,7 +93,7 @@ export const getCourseDetailById = createAsyncThunk<
     { rejectValue: Response<null> }
 >("course/getCourseDetailById", async (body, ThunkAPI) => {
     try {
-        const response = await getCourseDetailByIdAPI(body);
+        const response = await CourseApis.getCourseDetailById(body);
         return response.data as Response<CourseChangeInformationType>;
     } catch (error: any) {
         return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -101,7 +104,7 @@ export const deleteCourse = createAsyncThunk<Response<null>, number, { rejectVal
     "course/deleteCourse",
     async (body, ThunkAPI) => {
         try {
-            const response = await deleteCourseAPI(body);
+            const response = await CourseApis.deleteCourse(body);
             return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -113,7 +116,7 @@ export const changeThumbnail = createAsyncThunk<Response<null>, ChangeThumbnailT
     "course/changeThumbnail",
     async (body, ThunkAPI) => {
         try {
-            const response = await changeThumbnailAPI(body);
+            const response = await CourseApis.changeThumbnail(body);
             return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -127,12 +130,24 @@ export const changeInformation = createAsyncThunk<
     { rejectValue: Response<null> }
 >("course/changeInformation", async (body, ThunkAPI) => {
     try {
-        const response = await changeInformationAPI(body);
+        const response = await CourseApis.changeInformation(body);
         return response.data as Response<null>;
     } catch (error: any) {
         return ThunkAPI.rejectWithValue(error.data as Response<null>);
     }
 });
+
+export const getTop10Courses = createAsyncThunk<Response<CourseType[]>, string, { rejectValue: Response<null> }>(
+    "course/getTop10Courses",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.getTop10Courses();
+            return response.data as Response<CourseType[]>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
 
 const initialState: CourseSlice = {
     selectCategories: [],
@@ -164,8 +179,10 @@ const initialState: CourseSlice = {
         categories: [],
         summary: "",
         status: false,
-        description: ""
+        description: "",
+        thumbnail: "",
     },
+
     error: "",
     message: "",
     isLoading: false,
@@ -185,14 +202,6 @@ export const courseSlice = createSlice({
         setMessageEmpty: (state) => {
             state.error = "";
             state.message = "";
-        },
-        addCategories: (state, payload: PayloadAction<number>) => {
-            const category = state.categories.splice(payload.payload, 1)[0];
-            state.selectCategories.push(category);
-        },
-        removeCategories: (state, payload: PayloadAction<number>) => {
-            const category: Category = state.selectCategories.splice(payload.payload, 1)[0];
-            state.categories.push(category);
         },
         setCategories: (state, payload: PayloadAction<Category[]>) => {
             state.categories = payload.payload;
@@ -290,10 +299,12 @@ export const courseSlice = createSlice({
             state.courseChangeDetail = action.payload.data as CourseChangeInformationType;
             state.selectCategories = action.payload.data?.categories as Category[];
 
-            state.selectCategories.forEach((category) => {
-                const index = state.categories.findIndex((item) => item === category);
-                state.categories.splice(index, 1);
-            });
+            // state.selectCategories.forEach((category) => {
+            //     const index = state.categories.findIndex((item) => item.title === category.title);
+            //     if (index >= 0) {
+            //         state.categories.splice(index, 1);
+            //     }
+            // });
             state.isLoading = false;
         });
 
@@ -333,16 +344,26 @@ export const courseSlice = createSlice({
             state.error = action.error as string;
             state.isLoading = false;
         });
+
+        builder.addCase(getTop10Courses.pending, (state) => {
+            state.message = "";
+            state.error = "";
+            state.isLoading = true;
+        });
+
+        builder.addCase(getTop10Courses.fulfilled, (state, action) => {
+            state.message = action.payload.message;
+            state.courses = action.payload.data as Course[];
+            state.isLoading = false;
+        });
+
+        builder.addCase(getTop10Courses.rejected, (state, action) => {
+            state.error = action.error as string;
+            state.isLoading = false;
+        });
     },
 });
 
-export const {
-    setError,
-    setCategories,
-    addCategories,
-    removeCategories,
-    reset,
-    setDeleteCourse,
-} = courseSlice.actions;
+export const { setError, setCategories, reset, setDeleteCourse } = courseSlice.actions;
 
 export default courseSlice.reducer;

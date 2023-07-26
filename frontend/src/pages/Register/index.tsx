@@ -1,13 +1,15 @@
 import React, { FC, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Formik, ErrorMessage, Field } from "formik";
-import { Register as RegisterType } from "../types/auth";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { authActions } from "../redux/slice/index";
+import { Formik, ErrorMessage, Field, Form } from "formik";
+import { Register as RegisterType } from "../../types/auth";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { authActions } from "../../redux/slice/index";
 import { Navigate } from "react-router-dom";
-import Skeleton from "../assets/images/Skeleton.png";
-import { setMessageEmpty } from "../redux/slice/auth.slice";
-import { registerValidationSchema } from "../validations/auth";
+import Skeleton from "../../assets/images/Skeleton.png";
+import { setMessageEmpty } from "../../redux/slice/auth.slice";
+import { registerValidationSchema } from "../../validations/auth";
+
+import toast from "react-hot-toast";
 
 const Register: FC = () => {
     const dispatch = useAppDispatch();
@@ -34,7 +36,13 @@ const Register: FC = () => {
 
     const handleOnSubmit = async (values: RegisterType) => {
         //@ts-ignore
-        dispatch(authActions.register(values));
+        dispatch(authActions.register(values)).then((response) => {
+            if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
+            } else {
+                toast.error(response.payload.message);
+            }
+        });
     };
 
     const handleDeleteMessage = () => {
@@ -45,7 +53,7 @@ const Register: FC = () => {
     return (
         <>
             <div className="container mx-auto">
-                <div className="min-h-screen h-full mt-[100px] flex items-center justify-center">
+                <div className="flex items-center justify-center mt-[100px] py-10">
                     <div className="bg-primary m-4 rounded-xl shadow-lg">
                         <Formik
                             initialValues={initialValues}
@@ -54,10 +62,10 @@ const Register: FC = () => {
                             innerRef={formikRef}
                         >
                             {(formik) => (
-                                <form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
+                                <Form onSubmit={formik.handleSubmit} className="p-4" onChange={handleDeleteMessage}>
                                     <h1 className="font-bold text-[32px] text-center text-title">SIGN UP</h1>
 
-                                    <div className="flex gap-5 shrink-0 mb-3">
+                                    <div className="flex flex-col gap-3 mb-3 tablet:flex-row">
                                         <div className="flex-1 flex flex-col">
                                             <label htmlFor="first_name" className="text-sm mb-1 tablet:text-xl">
                                                 First Name
@@ -175,12 +183,12 @@ const Register: FC = () => {
                                             </span>
                                         </p>
                                     </div>
-                                </form>
+                                </Form>
                             )}
                         </Formik>
                     </div>
                     <div className="hidden laptop:block transition ease-in-out hover:scale-110 duration-200">
-                        <img src={Skeleton} alt="Freshemy"/>
+                        <img src={Skeleton} alt="Freshemy" />
                     </div>
                 </div>
             </div>
