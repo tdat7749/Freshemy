@@ -17,6 +17,25 @@ type categoriesOptions = {
     label: string;
 };
 
+const customStyles = {
+    control: (styles: any) => ({
+        ...styles,
+        position: "static",
+        transform: "none",
+        borderRadius: "0.25rem",
+        padding: "10px",
+        boxShadow: "",
+    }),
+    option: (styles: any) => ({
+        ...styles,
+    }),
+    menu: (styles: any) => ({
+        ...styles,
+        borderRadius: "0.25rem",
+        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1)",
+    }),
+};
+
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
     const [thumbnail, setThumbnail] = useState<File | null>(null);
@@ -208,6 +227,7 @@ const CreateCourse: FC = () => {
                                                         options={categoriesOptions}
                                                         isMulti={true}
                                                         defautlValues={""}
+                                                        styles={customStyles}
                                                     />
                                                 </div>
                                                 <ErrorMessage
@@ -231,6 +251,7 @@ const CreateCourse: FC = () => {
                                                     options={statusOptions}
                                                     isMulti={false}
                                                     placeholder="Uncompleted"
+                                                    styles={customStyles}
                                                 />
                                                 <ErrorMessage
                                                     name="status"
