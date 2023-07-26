@@ -250,7 +250,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
             },
         };
 
-        if (isFoundDuplicateSlug) {
+        if (!isFoundDuplicateSlug) {
             course.data.slug = slug;
         }
 

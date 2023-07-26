@@ -9,7 +9,6 @@ import { MESSAGE_ERROR_INTERNAL_SERVER } from "../utils/constant";
 
 class CourseController {
     async editCourse(req: Request, res: Response): Promise<Response> {
-        console.log(req.body);
         const errorValidate: ValidationError | undefined = updateCourseSchema.validate(req.body).error;
 
         if (errorValidate) {
