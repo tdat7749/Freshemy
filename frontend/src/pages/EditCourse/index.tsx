@@ -15,7 +15,7 @@ import { setMessageEmpty } from "../../redux/slice/auth.slice";
 import slugify from "slugify";
 
 import toast from "react-hot-toast";
-import CustomeSelect from "../CreateCourse/Select";
+import CustomeSelect from "../../components/Select";
 
 type Options = {
     value: number;

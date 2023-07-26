@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import toast from "react-hot-toast";
-import CustomeSelect from "./Select";
+import CustomeSelect from "../../components/Select";
 
 type categoriesOptions = {
     value: number;
