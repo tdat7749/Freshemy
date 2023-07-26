@@ -241,7 +241,6 @@ const EditCourse: React.FC = () => {
             categories: categories,
             slug: slugify(values.title),
         };
-        console.log(dataWithNoThumbnail);
         if (thumbnail && !errorImage) {
             const formData = new FormData();
             formData.set("thumbnail", thumbnail);
