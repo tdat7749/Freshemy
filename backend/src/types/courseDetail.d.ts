@@ -37,9 +37,9 @@ export type Author = {
     id: number;
 };
 export type Lesson = {
+    id: number;
     title: string;
     url_video: string;
-    id: number;
 };
 export type Section = {
     title: string;
