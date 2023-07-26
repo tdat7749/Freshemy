@@ -15,7 +15,7 @@ type AddLessonModalProps = {
 };
 
 const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
-    const isLoading = useAppSelector((state) => state.isLoading) ?? false;
+    const isLoading = useAppSelector((state) => state.sectionSlice.isLoading) ?? false;
     const [error, setError] = useState("");
     const [video, setVideo] = useState<File | null>(null);
     const dispatch = useAppDispatch();

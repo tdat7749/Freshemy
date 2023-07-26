@@ -3,7 +3,7 @@ import Navbar from "../../components/Navbar";
 import { Formik, ErrorMessage, Field } from "formik";
 import { editCourseValidationSchema } from "../../validations/course";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { sectionActions } from "../../redux/slice";
+import { fileStorageActions, sectionActions } from "../../redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
 import Accordion from "../../components/Accordion";
 import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";
@@ -16,6 +16,8 @@ import slugify from "slugify";
 
 import toast from "react-hot-toast";
 import CustomeSelect from "../../components/Select";
+import { FileInformation } from "../../types/filestorage";
+import { previewImage } from "../../utils/helper";
 
 type Options = {
     value: number;
@@ -48,7 +50,6 @@ const EditCourse: React.FC = () => {
     const [isDisplayAddLessonModal, setIsDisplayAddLessonModal] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
     const [itemTitle, setItemTitle] = useState<string>("");
-    const [isDisplaySaveImg, setIsDisplaySaveImg] = useState<boolean>(false);
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [errorImage, setErrorImage] = useState<boolean>(false);
     const categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
@@ -214,66 +215,41 @@ const EditCourse: React.FC = () => {
     const imageRef = useRef<HTMLImageElement>(null);
 
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.currentTarget.files![0]) {
-            if (event.currentTarget.files![0].size > 1024 * 1024 * 4) {
-                setErrorImage(true);
-            } else {
-                setErrorImage(false);
-                setThumbnail(event.currentTarget.files![0]);
-                const thumbnail = event.currentTarget.files![0];
-                if (thumbnail && thumbnail.type.includes("image/")) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        if (imageRef.current) {
-                            imageRef.current.src = e.target?.result as string;
-                            setIsDisplaySaveImg(!isDisplaySaveImg);
-                        }
-                    };
-                    reader.readAsDataURL(thumbnail);
-                    return;
-                }
-            }
+        if (event.currentTarget.files![0] && event.currentTarget.files![0].size > 1024 * 1024 * 4) {
+            setErrorImage(true);
         } else {
-            if (imageRef.current) {
-                imageRef.current.src = courseChangeDetail.thumbnail as string;
-            }
+            setErrorImage(false);
+            setThumbnail(event.currentTarget.files![0]);
+            previewImage(thumbnail, imageRef, courseChangeDetail.thumbnail);
         }
     };
     const handleChangeStatus = (event: any, formik: any) => {
         formik.setFieldValue("status", event);
     };
-    const handleChangeThumbnail = () => {
+
+    const handleOnSubmit = (values: CourseChangeInformationType) => {
         const formData = new FormData();
-        formData.append("thumbnail", thumbnail as File);
-        formData.append("course_id", course_id as string);
+        formData.set("thumbnail", thumbnail as File);
+        formData.set("upload_preset", "Freshemy");
 
         //@ts-ignore
-        dispatch(courseActions.changeThumbnail(formData)).then((response) => {
+        dispatch(fileStorageActions.uploadImage(formData)).then((response) => {
             if (response.payload.status_code === 200) {
-                if (thumbnail) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        if (imageRef.current) {
-                            imageRef.current.src = e.target?.result as string;
-                            setIsDisplaySaveImg(!isDisplaySaveImg);
-                        }
-                    };
-                    reader.readAsDataURL(thumbnail);
-                    return;
-                }
+                previewImage(thumbnail, imageRef);
+                handleSave(values, response.payload.data.url);
             }
         });
     };
 
-    const handleSave = (values: CourseChangeInformationType) => {
+    const handleSave = (values: CourseChangeInformationType, thumbnail: string) => {
         const categories = values.categories.map((item: any) => item.value);
         const data = {
             ...values,
             categories: categories,
             slug: slugify(values.title),
+            thumbnail: thumbnail,
         };
         if (thumbnail && !errorImage) {
-            handleChangeThumbnail();
             //@ts-ignore
             dispatch(courseActions.changeInformation(data)).then((response) => {
                 if (response.payload.status_code === 200) {

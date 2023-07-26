@@ -371,14 +371,13 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
 };
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
-    const { title, slug, description, summary, categories, status, upload_preset } = req.body;
+    const { title, slug, description, summary, categories, status, thumbnail } = req.body;
 
     // Vì formData gửi dữ liệu bằng string nên ở đây phải convert nó về
 
     const statusConvert = status === "0" ? false : true;
 
     const user_id = req.user_id;
-    const thumbnail = req.file as Express.Multer.File;
 
     try {
         const isFoundCourse = await db.course.findUnique({
@@ -390,45 +389,29 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         if (isFoundCourse) {
             return new ResponseError(400, MESSAGE_ERROR_COURSE_SLUG_IS_USED, false);
         }
+        const listCategoryId = categories.map((item: string) => ({
+            category_id: parseInt(item),
+        }));
 
-        const uploadFileResult = await new Promise<undefined | UploadApiResponse>((resolve, rejects) => {
-            cloudinary.uploader.upload(thumbnail.path, (error: UploadApiErrorResponse, result: UploadApiResponse) => {
-                if (error) {
-                    rejects(undefined);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
-
-        if (uploadFileResult) {
-            const listCategoryId = categories.map((item: string) => ({
-                category_id: parseInt(item),
-            }));
-
-            if (user_id) {
-                const isCreateCourse = await db.course.create({
-                    data: {
-                        title: title,
-                        slug: slug,
-                        description: description,
-                        summary: summary,
-                        thumbnail: uploadFileResult.url,
-                        user_id: user_id,
-                        status: statusConvert,
-                        courses_categories: {
-                            create: listCategoryId,
-                        },
+        if (user_id) {
+            const isCreateCourse = await db.course.create({
+                data: {
+                    title: title,
+                    slug: slug,
+                    description: description,
+                    summary: summary,
+                    thumbnail: thumbnail,
+                    user_id: user_id,
+                    status: statusConvert,
+                    courses_categories: {
+                        create: listCategoryId,
                     },
-                });
+                },
+            });
 
-                if (isCreateCourse) {
-                    return new ResponseSuccess(201, MESSAGE_SUCCESS_COURSE_CREATED, true);
-                } else {
-                    await cloudinary.uploader.destroy(uploadFileResult.public_id);
-                }
+            if (isCreateCourse) {
+                return new ResponseSuccess(201, MESSAGE_SUCCESS_COURSE_CREATED, true);
             }
-            return new ResponseError(400, MESSAGE_ERROR_COURSE_CREATE_FAILED, false);
         }
         return new ResponseError(400, MESSAGE_ERROR_COURSE_CREATE_FAILED, false);
     } catch (error: any) {

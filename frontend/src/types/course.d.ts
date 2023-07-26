@@ -11,7 +11,7 @@ export type NewCourse = {
     status: number;
     summary: string;
     description: string;
-    thumbnail: File | null;
+    thumbnail: string;
 };
 
 export type Course = {
