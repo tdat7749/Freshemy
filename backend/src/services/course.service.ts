@@ -1,8 +1,8 @@
-import { Course, CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
+import {CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetail, Lesson, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
+import { CourseDetail, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
@@ -10,6 +10,10 @@ import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 import configs from "../configs";
 import { CourseCategory } from "@prisma/client";
 import i18n from "../utils/i18next";
+import { generateUniqueSlug } from "../utils/helper";
+import services from ".";
+
+
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
     const user_id = req.user_id;
@@ -25,15 +29,17 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             return new ResponseError(400, i18n.t("errorMessages.slugIsUsed"), false);
         }
 
-        const listCategoryId = categories.map((item: string) => ({
-            category_id: parseInt(item),
+        const listCategoryId = categories.map((item: number) => ({
+            category_id: item,
         }));
+
+        const uniqueSlug = generateUniqueSlug(slug)
 
         if (user_id) {
             const isCreateCourse = await db.course.create({
                 data: {
                     title: title,
-                    slug: slug,
+                    slug: uniqueSlug,
                     description: description,
                     summary: summary,
                     thumbnail: thumbnail,
@@ -265,19 +271,22 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
 
 const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
-        const { id, title, slug, summary, description, categories, status, thumbnail } = req.body;
-        const course_id = parseInt(id);
+        const { id, title, summary, description, categories, status, thumbnail } = req.body;
+        const courseId = parseInt(id);
 
-        const isFoundDuplicateSlug = await db.course.findFirst({
-            where: {
-                slug: slug,
-                id: course_id,
-            },
-        });
+        const isFoundCourseById = await db.course.findUnique({
+            where:{
+                id:courseId
+            }
+        })
+        
+        if(!isFoundCourseById){
+            return new ResponseError(400,i18n.t("errorMessages.courseNotFound"),false)
+        }
 
-        const course: any = {
+        const course:any = {
             where: {
-                id: course_id,
+                id: courseId,
             },
             data: {
                 title: title,
@@ -287,10 +296,6 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
             },
         };
 
-        if (!isFoundDuplicateSlug) {
-            course.data.slug = slug;
-        }
-
         if (thumbnail) {
             course.data.thumbnail = thumbnail;
         }
@@ -299,16 +304,19 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
 
         if (!isUpdateCourse) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
 
+        //destroy thumbnail in cloudinary
+        await services.FileStorageService.destroyImageInCloudinary(isFoundCourseById.thumbnail as string)
+
         const isDelete = await configs.db.courseCategory.deleteMany({
             where: {
-                course_id: course_id,
+                course_id: courseId,
             },
         });
         if (!isDelete) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
 
         const data: CourseCategory[] = categories.map((category: number) =>{
             return {
-                course_id: course_id,
+                course_id: courseId,
                 category_id: category
             }
         })
@@ -319,8 +327,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
 
         if(!isUpdateCategory) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
         return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
-        }
-    catch (error: any) {
+    }catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         } else if (error instanceof TokenExpiredError) {
