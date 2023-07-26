@@ -365,8 +365,6 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
 
-    const statusConvert = status === "0" ? false : true;
-
     const user_id = req.user_id;
 
     try {
@@ -392,7 +390,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     summary: summary,
                     thumbnail: thumbnail,
                     user_id: user_id,
-                    status: statusConvert,
+                    status: status,
                     courses_categories: {
                         create: listCategoryId,
                     },

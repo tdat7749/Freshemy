@@ -300,7 +300,7 @@ const CreateCourse: FC = () => {
                                                 formik.resetForm(initialValues);
                                             }}
                                         >
-                                            <Link to={`/my-courses`}></Link>
+                                            <Link to={`/my-courses`}>Cancel</Link>
                                         </button>
                                     </div>
                                 </form>
