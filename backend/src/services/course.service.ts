@@ -242,22 +242,31 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
         const { id, title, slug, summary, description, categories, status } = req.body;
         const course_id = parseInt(id)
+        
+        const isFoundDuplicateSlug = await db.course.findUnique({
+            where: {
+                slug: slug,
+            },
+        })
+        if(isFoundDuplicateSlug) return new ResponseError(400, MESSAGE_ERROR_COURSE_SLUG_IS_USED, false) 
+
         const isFoundCourse = await db.course.findUnique({
             where: {
                 id: course_id,
             },
         });
+
         if (isFoundCourse) {
             const isUpdateCourse = await db.course.update({
-                where: {
-                    id: course_id,
-                },
-                data: {
-                    title: title,
-                    summary: summary,
-                    description: description,
-                    status: status,
-                    slug: slug
+            where: {
+                id: course_id,
+            },
+            data: {
+                title: title,
+                summary: summary,
+                description: description,
+                status: status,
+                slug: slug
                 },
             });
             if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
