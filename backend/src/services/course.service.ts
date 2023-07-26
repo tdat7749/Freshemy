@@ -24,7 +24,7 @@ import {
     MESSAGE_ERROR_COURSE_SLUG_IS_USED,
     MESSAGE_SUCCESS_UPDATE_DATA,
 } from "../utils/constant";
-
+import { courses_categories } from "../types/courseCategory";
 const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
         const { slug } = req.params;
@@ -228,35 +228,43 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
 
 const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
-        const { id, title, slug, summary, description, categories, status } = req.body;
+        const { id, title, slug, summary, description, categories, status, thumbnail } = req.body;
+        const course_id = parseInt(id);
 
-        const isFoundCourse = await db.course.findUnique({
+        const isFoundDuplicateSlug = await db.course.findFirst({
             where: {
-                id: id,
+                slug: slug,
+                id: course_id,
             },
         });
-        if (isFoundCourse) {
-            const isUpdateCourse = await db.course.update({
-                where: {
-                    id: id,
-                },
-                data: {
-                    title: title,
-                    summary: summary,
-                    description: description,
-                    status: status,
-                },
-            });
-            if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+
+        const course: any = {
+            where: {
+                id: course_id,
+            },
+            data: {
+                title: title,
+                summary: summary,
+                description: description,
+                status: status,
+            },
+        };
+
+        if (!isFoundDuplicateSlug) {
+            course.data.slug = slug;
         }
 
-        let newCategories = [];
-        for (let i = 0; i < categories.length; i++) {
-            newCategories.push(categories[i]);
+        if (thumbnail) {
+            course.data.thumbnail = thumbnail;
         }
+
+        const isUpdateCourse = await db.course.update(course);
+
+        if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+
         const currentCategories = await configs.db.courseCategory.findMany({
             where: {
-                course_id: id,
+                course_id: course_id,
             },
             select: {
                 category_id: true,
@@ -265,33 +273,29 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
 
         const isDelete = await configs.db.courseCategory.deleteMany({
             where: {
-                course_id: id,
+                course_id: course_id,
             },
         });
         if (!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
 
         let extractCategories: number[] = [];
-        for (let i = 0; i < currentCategories.length; i++) extractCategories.push(currentCategories[i].category_id);
+        currentCategories.forEach((currentCategories) => {
+            extractCategories.push(currentCategories.category_id);
+        });
 
-        var resultDuplicate = newCategories.filter((value) => extractCategories.includes(value));
-        var resultUnique = newCategories.filter(function (val) {
+        var resultDuplicate = categories.filter((value: number) => extractCategories.includes(value));
+        var resultUnique = categories.filter(function (val: number) {
             return extractCategories.indexOf(val) == -1;
         });
         const finalResult = resultDuplicate.concat(resultUnique);
-
-        let data = [];
-        for (let i = 0; i < finalResult.length; i++) {
-            data.push({
-                course_id: id,
-                category_id: finalResult[i],
-            });
-        }
-
-        const isUpdate = await configs.db.courseCategory.createMany({
-            data: data,
+        let data: courses_categories[] = [];
+        finalResult.forEach(async (category_id: number) => {
+            data.push({ course_id, category_id });
         });
 
-        if (!isUpdate) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        await db.courseCategory.createMany({
+            data,
+        });
         return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -359,12 +363,9 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
 };
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
-    const { title, slug, description, summary, categories, status, upload_preset } = req.body;
-
-    const statusConvert = status === "0" ? false : true;
+    const { title, slug, description, summary, categories, status, thumbnail } = req.body;
 
     const user_id = req.user_id;
-    const thumbnail = req.file as Express.Multer.File;
 
     try {
         const isFoundCourse = await db.course.findUnique({
@@ -376,45 +377,29 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         if (isFoundCourse) {
             return new ResponseError(400, MESSAGE_ERROR_COURSE_SLUG_IS_USED, false);
         }
+        const listCategoryId = categories.map((item: string) => ({
+            category_id: parseInt(item),
+        }));
 
-        const uploadFileResult = await new Promise<undefined | UploadApiResponse>((resolve, rejects) => {
-            cloudinary.uploader.upload(thumbnail.path, (error: UploadApiErrorResponse, result: UploadApiResponse) => {
-                if (error) {
-                    rejects(undefined);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
-
-        if (uploadFileResult) {
-            const listCategoryId = categories.map((item: string) => ({
-                category_id: parseInt(item),
-            }));
-
-            if (user_id) {
-                const isCreateCourse = await db.course.create({
-                    data: {
-                        title: title,
-                        slug: slug,
-                        description: description,
-                        summary: summary,
-                        thumbnail: uploadFileResult.url,
-                        user_id: user_id,
-                        status: statusConvert,
-                        courses_categories: {
-                            create: listCategoryId,
-                        },
+        if (user_id) {
+            const isCreateCourse = await db.course.create({
+                data: {
+                    title: title,
+                    slug: slug,
+                    description: description,
+                    summary: summary,
+                    thumbnail: thumbnail,
+                    user_id: user_id,
+                    status: status,
+                    courses_categories: {
+                        create: listCategoryId,
                     },
-                });
+                },
+            });
 
-                if (isCreateCourse) {
-                    return new ResponseSuccess(201, MESSAGE_SUCCESS_COURSE_CREATED, true);
-                } else {
-                    await cloudinary.uploader.destroy(uploadFileResult.public_id);
-                }
+            if (isCreateCourse) {
+                return new ResponseSuccess(201, MESSAGE_SUCCESS_COURSE_CREATED, true);
             }
-            return new ResponseError(400, MESSAGE_ERROR_COURSE_CREATE_FAILED, false);
         }
         return new ResponseError(400, MESSAGE_ERROR_COURSE_CREATE_FAILED, false);
     } catch (error: any) {

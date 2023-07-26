@@ -4,15 +4,11 @@ import { Response } from "../../types/response";
 import LessonApis from "../../apis/lesson";
 
 type LessonSlice = {
-    error: string;
-    message: string;
     isLoading: boolean;
     lessonList: Lesson[];
 };
 
 const initialState: LessonSlice = {
-    error: "",
-    message: "",
     isLoading: false,
     lessonList: [],
 };
@@ -44,8 +40,6 @@ export const lessonSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(addLesson.pending, (state) => {
-            state.error = "";
-            state.message = "";
             state.isLoading = true;
         });
         builder.addCase(addLesson.fulfilled, (state, action) => {
@@ -53,7 +47,6 @@ export const lessonSlice = createSlice({
             state.isLoading = false;
         });
         builder.addCase(addLesson.rejected, (state, action) => {
-            state.error = action.payload?.message as string;
             state.isLoading = false;
         });
     },

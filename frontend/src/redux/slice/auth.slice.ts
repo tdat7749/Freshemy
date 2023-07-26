@@ -12,8 +12,6 @@ import AuthApis from "../../apis/auth";
 type AuthSlice = {
     user: User;
     isLogin: boolean;
-    error: string;
-    message: string;
     isLoading: boolean;
 };
 
@@ -85,8 +83,6 @@ const initialState: AuthSlice = {
         id: undefined,
     },
     isLogin: false,
-    error: "",
-    message: "",
     isLoading: false,
 };
 
@@ -102,24 +98,12 @@ export const authSlice = createSlice({
 
             state.isLogin = true;
         },
-        setError: (state, action: PayloadAction<string>) => {
-            state.error = action.payload;
-        },
-        setMessage: (state, action: PayloadAction<string>) => {
-            state.message = action.payload;
-        },
         setLogout: (state) => {
             state.isLogin = false;
-        },
-        setMessageEmpty: (state) => {
-            state.error = "";
-            state.message = "";
         },
     },
     extraReducers: (builder) => {
         builder.addCase(login.pending, (state) => {
-            state.message = "";
-            state.error = "";
             state.isLoading = true;
         });
         builder.addCase(login.fulfilled, (state, action) => {
@@ -128,75 +112,57 @@ export const authSlice = createSlice({
 
             state.isLoading = false;
         });
-        builder.addCase(login.rejected, (state, action) => {
-            state.error = action.payload?.message as string;
-
+        builder.addCase(login.rejected, (state) => {
             state.isLoading = false;
         });
 
         //
         builder.addCase(register.pending, (state) => {
-            state.message = "";
-            state.error = "";
             state.isLoading = true;
         });
-        builder.addCase(register.fulfilled, (state, action) => {
-            state.message = action.payload.message;
+        builder.addCase(register.fulfilled, (state) => {
             state.isLoading = false;
         });
-        builder.addCase(register.rejected, (state, action) => {
-            state.error = action.payload?.message as string;
+        builder.addCase(register.rejected, (state) => {
             state.isLoading = false;
         });
 
         //
         builder.addCase(forgotPassword.pending, (state) => {
-            state.message = "";
-            state.error = "";
             state.isLoading = true;
         });
-        builder.addCase(forgotPassword.fulfilled, (state, action) => {
-            state.message = action.payload.message;
+        builder.addCase(forgotPassword.fulfilled, (state) => {
             state.isLoading = false;
         });
-        builder.addCase(forgotPassword.rejected, (state, action) => {
-            state.error = action.payload?.message as string;
+        builder.addCase(forgotPassword.rejected, (state) => {
             state.isLoading = false;
         });
 
         //
         builder.addCase(resetPassword.pending, (state) => {
-            state.message = "";
-            state.error = "";
             state.isLoading = true;
         });
-        builder.addCase(resetPassword.fulfilled, (state, action) => {
-            state.message = action.payload.message;
+        builder.addCase(resetPassword.fulfilled, (state) => {
             state.isLoading = false;
         });
-        builder.addCase(resetPassword.rejected, (state, action) => {
-            state.error = action.payload?.message as string;
+        builder.addCase(resetPassword.rejected, (state) => {
             state.isLoading = false;
         });
 
         //
         builder.addCase(verifyEmail.pending, (state) => {
-            state.message = "";
-            state.error = "";
             state.isLoading = true;
         });
-        builder.addCase(verifyEmail.fulfilled, (state, action) => {
-            state.message = action.payload.message;
+        builder.addCase(verifyEmail.fulfilled, (state) => {
             state.isLoading = false;
         });
-        builder.addCase(verifyEmail.rejected, (state, action) => {
-            state.error = action.payload?.message as string;
+        builder.addCase(verifyEmail.rejected, (state) => {
             state.isLoading = false;
         });
     },
 });
 
-export const { setUsers, setError, setMessage, setLogout, setMessageEmpty } = authSlice.actions;
+export const { setUsers, setLogout } = authSlice.actions;
 
 export default authSlice.reducer;
 

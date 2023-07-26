@@ -19,9 +19,8 @@ type CourseSlice = {
     selectCategories: Category[];
     categories: Category[];
     courses: CourseType[];
-    error: string;
-    message: string;
     isLoading: boolean;
+    isGetLoading: boolean;
     totalPage: number;
     courseDetail: CourseDetailType;
     courseChangeDetail: CourseChangeInformationType;
@@ -170,27 +169,15 @@ const initialState: CourseSlice = {
         description: "",
         thumbnail: "",
     },
-
-    error: "",
-    message: "",
     isLoading: false,
     totalPage: 1,
+    isGetLoading: false,
 };
 
 export const courseSlice = createSlice({
     name: "course",
     initialState: initialState,
     reducers: {
-        setError: (state, payload: PayloadAction<string>) => {
-            state.error = payload.payload;
-        },
-        setMessage: (state, payload: PayloadAction<string>) => {
-            state.message = payload.payload;
-        },
-        setMessageEmpty: (state) => {
-            state.error = "";
-            state.message = "";
-        },
         setCategories: (state, payload: PayloadAction<Category[]>) => {
             state.categories = payload.payload;
         },
@@ -204,154 +191,118 @@ export const courseSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(createCourses.pending, (state) => {
-            state.error = "";
-            state.message = "";
             state.isLoading = true;
         });
-        builder.addCase(createCourses.fulfilled, (state, action) => {
-            state.message = action.payload.message;
+        builder.addCase(createCourses.fulfilled, (state) => {
             state.isLoading = false;
         });
-        builder.addCase(createCourses.rejected, (state, action) => {
-            state.error = action.payload?.message as string;
+        builder.addCase(createCourses.rejected, (state) => {
             state.isLoading = false;
         });
 
         builder.addCase(getCategories.pending, (state) => {
-            state.error = "";
-            state.message = "";
+            state.isLoading = true;
         });
         builder.addCase(getCategories.fulfilled, (state, action) => {
             state.categories = action.payload.data as Category[];
+            state.isLoading = false;
         });
-        builder.addCase(getCategories.rejected, (state, action) => {
-            state.error = action.payload?.message as string;
+        builder.addCase(getCategories.rejected, (state) => {
+            state.isLoading = false;
         });
 
         builder.addCase(getMyCourses.pending, (state) => {
-            state.message = "";
-            state.error = "";
-            state.isLoading = true;
+            state.isGetLoading = true;
         });
 
         builder.addCase(getMyCourses.fulfilled, (state, action) => {
             state.courses = action.payload.data?.courses as Course[];
             state.totalPage = action.payload.data?.total_page as number;
-            state.isLoading = false;
+            state.isGetLoading = false;
         });
 
         builder.addCase(getMyCourses.rejected, (state, action) => {
-            state.message = action.payload?.message as string;
-            state.isLoading = false;
+            state.isGetLoading = false;
         });
 
         builder.addCase(deleteCourse.pending, (state) => {
-            state.message = "";
-            state.error = "";
             state.isLoading = true;
         });
 
-        builder.addCase(deleteCourse.fulfilled, (state, action) => {
+        builder.addCase(deleteCourse.fulfilled, (state) => {
             state.isLoading = false;
         });
 
         builder.addCase(deleteCourse.rejected, (state, action) => {
-            state.error = action.error as string;
             state.isLoading = false;
         });
 
         builder.addCase(getCourseDetail.pending, (state) => {
-            state.message = "";
-            state.error = "";
-            state.isLoading = true;
+            state.isGetLoading = true;
         });
 
         builder.addCase(getCourseDetail.fulfilled, (state, action) => {
             state.courseDetail = action.payload.data as CourseDetailType;
-            state.isLoading = false;
+            state.isGetLoading = false;
         });
 
-        builder.addCase(getCourseDetail.rejected, (state, action) => {
-            state.error = action.error as string;
-
-            state.isLoading = false;
+        builder.addCase(getCourseDetail.rejected, (state) => {
+            state.isGetLoading = false;
         });
 
         builder.addCase(getCourseDetailById.pending, (state) => {
-            state.message = "";
-            state.error = "";
-            state.isLoading = true;
+            state.isGetLoading = true;
         });
 
         builder.addCase(getCourseDetailById.fulfilled, (state, action) => {
             state.courseChangeDetail = action.payload.data as CourseChangeInformationType;
             state.selectCategories = action.payload.data?.categories as Category[];
-
-            // state.selectCategories.forEach((category) => {
-            //     const index = state.categories.findIndex((item) => item.title === category.title);
-            //     if (index >= 0) {
-            //         state.categories.splice(index, 1);
-            //     }
-            // });
-            state.isLoading = false;
+            state.isGetLoading = false;
         });
 
-        builder.addCase(getCourseDetailById.rejected, (state, action) => {
-            state.error = action.error as string;
-            state.isLoading = false;
+        builder.addCase(getCourseDetailById.rejected, (state) => {
+            state.isGetLoading = false;
         });
 
         builder.addCase(changeThumbnail.pending, (state) => {
-            state.message = "";
-            state.error = "";
             state.isLoading = true;
         });
 
-        builder.addCase(changeThumbnail.fulfilled, (state, action) => {
-            state.message = action.payload.message;
+        builder.addCase(changeThumbnail.fulfilled, (state) => {
             state.isLoading = false;
         });
 
-        builder.addCase(changeThumbnail.rejected, (state, action) => {
-            state.error = action.error as string;
+        builder.addCase(changeThumbnail.rejected, (state) => {
             state.isLoading = false;
         });
 
         builder.addCase(changeInformation.pending, (state) => {
-            state.message = "";
-            state.error = "";
             state.isLoading = true;
         });
 
-        builder.addCase(changeInformation.fulfilled, (state, action) => {
-            state.message = action.payload.message;
+        builder.addCase(changeInformation.fulfilled, (state) => {
             state.isLoading = false;
         });
 
-        builder.addCase(changeInformation.rejected, (state, action) => {
-            state.error = action.error as string;
+        builder.addCase(changeInformation.rejected, (state) => {
             state.isLoading = false;
         });
 
         builder.addCase(getTop10Courses.pending, (state) => {
-            state.message = "";
-            state.error = "";
-            state.isLoading = true;
+            state.isGetLoading = true;
         });
 
         builder.addCase(getTop10Courses.fulfilled, (state, action) => {
-            state.message = action.payload.message;
             state.courses = action.payload.data as Course[];
-            state.isLoading = false;
+            state.isGetLoading = false;
         });
 
-        builder.addCase(getTop10Courses.rejected, (state, action) => {
-            state.error = action.error as string;
-            state.isLoading = false;
+        builder.addCase(getTop10Courses.rejected, (state) => {
+            state.isGetLoading = false;
         });
     },
 });
 
-export const { setError, setCategories, reset, setDeleteCourse } = courseSlice.actions;
+export const { setCategories, reset, setDeleteCourse } = courseSlice.actions;
 
 export default courseSlice.reducer;

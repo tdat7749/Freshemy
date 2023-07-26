@@ -35,17 +35,17 @@ export const MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED =
 //data success
 export const MESSAGE_SUCCESS_GET_DATA = "Get data successfully";
 //register course
-export const MESSAGE_SUCCESS_REGISTER_COURSE = "Subcribe successfully"
-export const MESSAGE_SUCCESS_UN_REGISTER_COURSE = "Unsubcribe successfully"
-export const MESSAGE_ERROR_MISSING_DATA = "Course id is required"
-export const MESSAGE_ERROR_WRONG_DATA_TYPE = "Course id must be a number"
+export const MESSAGE_SUCCESS_REGISTER_COURSE = "Subcribe successfully";
+export const MESSAGE_SUCCESS_UN_REGISTER_COURSE = "Unsubcribe successfully";
+export const MESSAGE_ERROR_MISSING_DATA = "Course id is required";
+export const MESSAGE_ERROR_WRONG_DATA_TYPE = "Course id must be a number";
 
 // Reset password
 export const MESSAGE_ERROR_UNAUTHORIZED = "You don't have authorize";
 export const MESSAGE_SUCCESS_RESET_PASSWORD = "Reset successfully, please login your account";
 
 //data failed
-export const MESSAGE_ERROR_GET_DATA = "Cannot find requested resources"
+export const MESSAGE_ERROR_GET_DATA = "Cannot find requested resources";
 
 export const MESSAGE_SUCCESS_CREATE_DATA = "Create successfully";
 export const MESSAGE_SUCCESS_UPDATE_DATA = "Update successfully";
@@ -84,22 +84,27 @@ export const MESSAGE_ERROR_CATEGORIES_REQUIRED = "Categories is required";
 
 export const MESSAGE_ERROR_THUMBNAIL_REQUIRED = "Thumbnail is required";
 
-
 // Category
-export const MESSAGE_SUCCESS_GET_ALL_CATEGORIES = "Get All Categories Successfully"
-export const MESSAGE_SUCCESS_GET_CATEGORY_BY_ID = "Get Category By Id Successfully"
-export const MESSAGE_SUCCESS_CREATED_CATEGORY = "Category Created Successfully"
-export const MESSAGE_SUCCESS_RETRIEVED_CATEGORY = "Categories Retrieved Successfully"
-export const MESSAGE_SUCCESS_UPDATED_CATEGORY = "Category Updated Successfully"
-export const MESSAGE_SUCCESS_DELETED_CATEGORY = "Category Deleted Successfully"
+export const MESSAGE_SUCCESS_GET_ALL_CATEGORIES = "Get All Categories Successfully";
+export const MESSAGE_SUCCESS_GET_CATEGORY_BY_ID = "Get Category By Id Successfully";
+export const MESSAGE_SUCCESS_CREATED_CATEGORY = "Category Created Successfully";
+export const MESSAGE_SUCCESS_RETRIEVED_CATEGORY = "Categories Retrieved Successfully";
+export const MESSAGE_SUCCESS_UPDATED_CATEGORY = "Category Updated Successfully";
+export const MESSAGE_SUCCESS_DELETED_CATEGORY = "Category Deleted Successfully";
 
-export const MESSAGE_ERROR_CATEGORY_NOT_FOUND = "Category Not Found"
+export const MESSAGE_ERROR_CATEGORY_NOT_FOUND = "Category Not Found";
 
 // Course
-export const MESSAGE_SUCCESS_SEARCH_MY_COURSE = "Search My Course Successfully"
-export const MESSAGE_SUCCESS_DELETED_COURSE = "Course Deleted Successfully"
+export const MESSAGE_SUCCESS_SEARCH_MY_COURSE = "Search My Course Successfully";
+export const MESSAGE_SUCCESS_DELETED_COURSE = "Course Deleted Successfully";
 
-export const MESSAGE_ERROR_COURSE_NOT_FOUND = "Course Not Found"
+export const MESSAGE_ERROR_COURSE_NOT_FOUND = "Course Not Found";
 export const MESSAGE_ERROR_SECTION_ID_REQUIRED = "Section id is required";
 
 export const MESSAGE_ERROR_COURSE_ID_REQUIRED = "Course id is required";
+
+//Filestorage
+
+export const MESSAGE_SUCCESS_IMAGE_UPLOADED = "Uploaded Successfully";
+
+export const MESSAGE_ERROR_IMAGE_UPLOADED = "Upload Failed";

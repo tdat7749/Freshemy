@@ -45,3 +45,12 @@ export const errorMessages = {
 export const successMessages = {
     verificationForgotPassword: "Sent a verification code to your email",
 };
+
+export const fileType = {
+    mp4: "mp4",
+    mkv: "mkv",
+    mov: "mov",
+    png: "png",
+    jpg: "jpg",
+    jpeg: "jpeg",
+};
