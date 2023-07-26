@@ -2,7 +2,7 @@ import { Course, CourseInfo, RequestHasLogin, ResponseData } from "../types/requ
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetail, Lesson, Section, Category, CourseEdit, Top10Courses } from "../types/courseDetail";
+import { CourseDetail, Lesson, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
@@ -373,8 +373,6 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, upload_preset } = req.body;
 
-    // Vì formData gửi dữ liệu bằng string nên ở đây phải convert nó về
-
     const statusConvert = status === "0" ? false : true;
 
     const user_id = req.user_id;
@@ -586,10 +584,10 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
             if (courseItem !== null) courseList.push(courseItem);
         }
 
-        const result: Top10Courses[] = [];
+        const result: OutstandingCourse[] = [];
 
         courseList.map((course) => {
-            const data: Top10Courses = {
+            const data: OutstandingCourse = {
                 id: course.id,
                 thumbnail: course.thumbnail,
                 title: course.title,
