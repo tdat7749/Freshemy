@@ -2,7 +2,7 @@ import { Course, CourseInfo, RequestHasLogin, ResponseData } from "../types/requ
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetail, Lesson, Section, Category, CourseEdit, Top10Courses } from "../types/courseDetail";
+import { CourseDetail, Lesson, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
@@ -14,10 +14,6 @@ import {
     MESSAGE_SUCCESS_REGISTER_COURSE,
     MESSAGE_ERROR_BAD_REQUEST,
     MESSAGE_SUCCESS_UN_REGISTER_COURSE,
-    MESSAGE_ERROR_LOGIN_FAILED,
-    MESSAGE_ERROR_SEND_EMAIL,
-    MESSAGE_ERROR_LOGIN_UNVERIFIED,
-    MESSAGE_SUCCESS_LOGIN,
     MESSAGE_ERROR_INTERNAL_SERVER,
     MESSAGE_ERROR_MISSING_REQUEST_BODY,
     MESSAGE_SUCCESS_COURSE_CREATED,
@@ -28,7 +24,7 @@ import {
     MESSAGE_ERROR_COURSE_SLUG_IS_USED,
     MESSAGE_SUCCESS_UPDATE_DATA,
 } from "../utils/constant";
-
+import {courses_categories} from "../types/courseCategory"
 const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
         const { slug } = req.params;
@@ -79,18 +75,10 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                 return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
             } else {
                 const categories: Category[] = [];
-                const sections: Section[] = [];
                 course.courses_categories.forEach((category) => {
                     categories.push(category.category);
                 });
-                course.sections.forEach((section) => {
-                    const lessons: Lesson[] = [];
-                    section.lessons.forEach((lesson) => {
-                        lessons.push(lesson);
-                    });
-                    section.lessons = lessons;
-                    sections.push(section);
-                });
+                const sections: Section[] = course.sections;
                 const courseData: CourseDetail = {
                     id: course.id,
                     slug: course.slug,
@@ -241,34 +229,40 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
 const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
         const { id, title, slug, summary, description, categories, status } = req.body;
+        const course_id = parseInt(id)
+        
+        const isFoundDuplicateSlug = await db.course.findUnique({
+            where: {
+                slug: slug,
+            },
+        })
+        if(isFoundDuplicateSlug) return new ResponseError(400, MESSAGE_ERROR_COURSE_SLUG_IS_USED, false) 
 
         const isFoundCourse = await db.course.findUnique({
             where: {
-                id: id,
+                id: course_id,
             },
         });
+
         if (isFoundCourse) {
             const isUpdateCourse = await db.course.update({
-                where: {
-                    id: id,
-                },
-                data: {
-                    title: title,
-                    summary: summary,
-                    description: description,
-                    status: status,
+            where: {
+                id: course_id,
+            },
+            data: {
+                title: title,
+                summary: summary,
+                description: description,
+                status: status,
+                slug: slug
                 },
             });
             if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         }
 
-        let newCategories = [];
-        for (let i = 0; i < categories.length; i++) {
-            newCategories.push(categories[i]);
-        }
         const currentCategories = await configs.db.courseCategory.findMany({
             where: {
-                course_id: id,
+                course_id: course_id,
             },
             select: {
                 category_id: true,
@@ -277,33 +271,32 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
 
         const isDelete = await configs.db.courseCategory.deleteMany({
             where: {
-                course_id: id,
+                course_id: course_id,
             },
         });
         if (!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-
+        
         let extractCategories: number[] = [];
-        for (let i = 0; i < currentCategories.length; i++) extractCategories.push(currentCategories[i].category_id);
-
-        var resultDuplicate = newCategories.filter((value) => extractCategories.includes(value));
-        var resultUnique = newCategories.filter(function (val) {
+        currentCategories.forEach(currentCategories => {
+            extractCategories.push(currentCategories.category_id);
+        });
+        
+        var resultDuplicate = categories.filter((value: number) => extractCategories.includes(value));
+        var resultUnique = categories.filter(function (val: number) {
             return extractCategories.indexOf(val) == -1;
         });
         const finalResult = resultDuplicate.concat(resultUnique);
-
-        let data = [];
-        for (let i = 0; i < finalResult.length; i++) {
-            data.push({
-                course_id: id,
-                category_id: finalResult[i],
-            });
-        }
-
-        const isUpdate = await configs.db.courseCategory.createMany({
-            data: data,
+        let data: courses_categories[] = [];
+        finalResult.forEach(async (category_id: number) => {
+            data.push(
+                {course_id,
+                category_id}
+            )
         });
 
-        if (!isUpdate) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        await db.courseCategory.createMany({
+            data
+        })
         return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -372,8 +365,6 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
-
-    // Vì formData gửi dữ liệu bằng string nên ở đây phải convert nó về
 
     const statusConvert = status === "0" ? false : true;
 
@@ -569,10 +560,10 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
             if (courseItem !== null) courseList.push(courseItem);
         }
 
-        const result: Top10Courses[] = [];
+        const result: OutstandingCourse[] = [];
 
         courseList.map((course) => {
-            const data: Top10Courses = {
+            const data: OutstandingCourse = {
                 id: course.id,
                 thumbnail: course.thumbnail,
                 title: course.title,

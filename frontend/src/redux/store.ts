@@ -5,6 +5,7 @@ import userSlice from "./slice/user.slice";
 import courseSlice from "./slice/course.slice";
 import fileStorageSlice from "./slice/filestorage.slice";
 import { ToolkitStore } from "@reduxjs/toolkit/dist/configureStore";
+import lessonSlice from "./slice/lesson.slice";
 
 const store: ToolkitStore = configureStore({
     reducer: {
@@ -13,6 +14,7 @@ const store: ToolkitStore = configureStore({
         sectionSlice: sectionSlice,
         courseSlice: courseSlice,
         fileStorageSlice: fileStorageSlice,
+        lessonSlice: lessonSlice,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

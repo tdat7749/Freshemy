@@ -5,6 +5,7 @@ import { Login as LoginType } from "../../types/auth";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { authActions } from "../../redux/slice/index";
 import { Navigate } from "react-router-dom";
+import Spin from "../../components/Spin";
 import Skeleton from "../../assets/images/Skeleton.png";
 import { setMessageEmpty } from "../../redux/slice/auth.slice";
 import { loginValidationSchema } from "../../validations/auth";
@@ -44,6 +45,7 @@ const Login: FC = () => {
 
     return (
         <>
+            {isLoading && <Spin />}
             <div className="container mx-auto">
                 <div className="flex items-center justify-center mt-[100px] py-10">
                     <div className="bg-primary m-4 rounded-xl shadow-lg">
