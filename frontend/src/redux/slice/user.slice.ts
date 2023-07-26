@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { ChangePassword as ChangePasswordType } from "../../types/user";
 import { Response } from "../../types/response";
-import UserApis from "../../apis/user";
+import UserApis from "@src/apis/user";
 
 type UserSlice = {
     isLoading: boolean;

@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../components/Navbar";
-import Accordion from "../../components/Accordion";
+import { Navbar, Accordion, DeleteModal } from "@src/components";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { Section } from "../../types/section";
 import { CourseDetail as CourseDetailType } from "../../types/course";
 import { Link } from "react-router-dom";
-import EditIcon from "../../components/icons/EditIcon";
+import EditIcon from "@src/components/icons/EditIcon";
 import DeleteIcon from "../../components/icons/DeleteIcon";
 import NotFound from "../NotFound";
-import DeleteModal from "../../components/DeleteModal";
-import { courseActions } from "../../redux/slice";
+import { courseActions } from "@redux/slice";
 
 import toast from "react-hot-toast";
 

@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
-import SearchIcon from "../../components/icons/SearchIcon";
-import CreateIcon from "../../components/icons/CreateIcon";
+import SearchIcon from "@src/components/icons/SearchIcon";
+import CreateIcon from "@src/components/icons/CreateIcon";
 import { Link, useNavigate } from "react-router-dom";
-import CourseCard from "../../components/CourseCard";
-import Pagination from "../../components/Pagination";
-import Navbar from "../../components/Navbar";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { courseActions } from "../../redux/slice";
+import { courseActions } from "@redux/slice";
 import { Course } from "../../types/course";
-
 import toast from "react-hot-toast";
-import Spin from "../../components/Spin";
-import DeleteModal from "../../components/DeleteModal";
+import { Spin, DeleteModal, Navbar, Pagination, CourseCard } from "@src/components";
 
 const MyCourses: React.FC = () => {
     const [userInput, setUserInput] = useState<string>("");

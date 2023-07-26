@@ -1,7 +1,7 @@
 import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { authActions } from "../../redux/slice";
+import { authActions } from "@redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
 import { ResetPassword as ResetPasswordType } from "../../types/auth";
 import { resetPasswordValidationSchema } from "../../validations/auth";

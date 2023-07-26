@@ -1,7 +1,7 @@
 import React from "react";
 import UserIcon from "./icons/UserIcon";
-import ChangePasswordIcon from "./icons/Edit_light";
-import MyEnrollCourseIcon from "./icons/MyEnrollCourse";
+import ChangePasswordIcon from "./icons/ChangePasswordIcon";
+import MyEnrollCourseIcon from "./icons/MyEnrollCourseIcon";
 import MyCourseIcon from "./icons/MyCourseIcon";
 import LogoutIcon from "./icons/LogoutIcon";
 import { Link, useNavigate } from "react-router-dom";

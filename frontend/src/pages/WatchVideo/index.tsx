@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { courseActions } from "../../redux/slice";
+import { courseActions } from "@redux/slice";
 import NotFound from "../NotFound";
 import { CourseDetail as CourseDetailType } from "../../types/course";
-import VideoPlayer from "../../components/VideoPlayer";
-import Accordion from "../../components/Accordion";
+import { VideoPlayer, Accordion, Spin } from "@src/components";
 import { Section } from "../../types/section";
-import Spin from "../../components/Spin";
 
 const WatchVideo: React.FC = () => {
     const [isNotFound, setIsNotFound] = useState<boolean>(false);

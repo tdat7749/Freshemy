@@ -1,5 +1,5 @@
 import { EditSection as EditSectionType, Section } from "../types/section";
-import apiCaller from "../api-config/apiCaller";
+import { apiCaller } from "@src/api-config";
 
 import i18n from "../utils/i18next";
 

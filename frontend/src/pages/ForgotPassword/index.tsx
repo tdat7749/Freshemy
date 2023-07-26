@@ -2,11 +2,12 @@ import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { authActions } from "../../redux/slice";
+import { authActions } from "@redux/slice";
 import { ForgotPassword as ForgotPasswordType } from "../../types/auth";
 import { forgotPasswordValidationSchema } from "../../validations/auth";
 import { Navigate } from "react-router-dom";
 import toast from "react-hot-toast";
+
 const ForgotPassword: React.FC = () => {
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
 

@@ -1,6 +1,6 @@
 import React from "react";
-import Navbar from "../../components/Navbar";
-import DefaultAvatar from "../../assets/images/default-avatar.png";
+import { Navbar } from "@src/components";
+import { DefaultAvatar } from "@src/assets";
 import CardVideo from "../HomePage/CardVideo";
 
 const AuthorProfile: React.FC = () => {

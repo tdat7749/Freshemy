@@ -2,7 +2,7 @@ import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { EditSection as EditSectionType, Section as SectionType } from "../../types/section";
 import { Response } from "../../types/response";
-import SectionApis from "../../apis/section";
+import SectionApis from "@src/apis/section";
 
 type SectionSlice = {
     title: string;

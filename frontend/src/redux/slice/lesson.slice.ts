@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { AddLesson as AddLessonType, Lesson } from "../../types/lesson";
 import { Response } from "../../types/response";
-import LessonApis from "../../apis/lesson";
+import LessonApis from "@src/apis/lesson";
 
 type LessonSlice = {
     isLoading: boolean;

@@ -1,20 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
-import Navbar from "../../components/Navbar";
 import { Formik, ErrorMessage, Field } from "formik";
 import { editCourseValidationSchema } from "../../validations/course";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { fileStorageActions, sectionActions } from "../../redux/slice";
+import { fileStorageActions, sectionActions } from "@redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
-import Accordion from "../../components/Accordion";
+import { Accordion, DeleteModal, PopupAddLesson, Navbar, CustomeSelect } from "@src/components";
 import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";
-import DeleteModal from "../../components/DeleteModal";
-import PopupAddLesson from "../../components/PopupAddLesson";
 import { courseActions } from "../../redux/slice";
 import { Category as CategoryType, CourseChangeInformation as CourseChangeInformationType } from "../../types/course";
 import slugify from "slugify";
-
 import toast from "react-hot-toast";
-import CustomeSelect from "../../components/Select";
 import { previewImage } from "../../utils/helper";
 
 type Options = {

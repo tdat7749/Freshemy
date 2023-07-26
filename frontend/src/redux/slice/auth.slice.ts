@@ -1,13 +1,12 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "../../types/user";
-
 import { Login as LoginType, Register as RegisterType, Token as TokenType } from "../../types/auth";
 import { ForgotPassword as ForgotPasswordType } from "../../types/auth";
 import { ResetPassword as ResetPasswordType } from "../../types/auth";
 import { User as UserType } from "../../types/user";
 import Cookies from "js-cookie";
 import { Response } from "../../types/response";
-import AuthApis from "../../apis/auth";
+import { AuthApis } from "@src/apis";
 
 type AuthSlice = {
     user: User;

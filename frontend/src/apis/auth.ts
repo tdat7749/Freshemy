@@ -1,4 +1,4 @@
-import apiCaller from "../api-config/apiCaller";
+import { apiCaller } from "@src/api-config";
 import { Register as RegisterType, Login as LoginType, ResetPassword as ResetPasswordType } from "../types/auth";
 import i18n from "../utils/i18next";
 
@@ -56,7 +56,7 @@ const resetPassword = async (values: ResetPasswordType) => {
     return response;
 };
 
-export const refreshToken = async () => {
+const refreshToken = async () => {
     const path = "auth/refresh";
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
@@ -72,14 +72,4 @@ const verifyEmail = async (token: string) => {
     return response;
 };
 
-const AuthApis = {
-    login,
-    register,
-    getMe,
-    forgotPassword,
-    resetPassword,
-    refreshToken,
-    verifyEmail,
-};
-
-export default AuthApis;
+export { login, register, getMe, forgotPassword, resetPassword, refreshToken, verifyEmail };

@@ -2,14 +2,13 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { Formik, ErrorMessage, Field } from "formik";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { NewCourse as CreateCourseType, Category as CategoryType } from "../../types/course";
-import { courseActions, fileStorageActions } from "../../redux/slice";
+import { courseActions, fileStorageActions } from "@redux/slice";
 import { createValidationSchema } from "../../validations/course";
 import slugify from "slugify";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../../components/Navbar";
 import toast from "react-hot-toast";
-import CustomeSelect from "../../components/Select";
+import { Navbar, CustomeSelect } from "@src/components";
 import { previewImage } from "../../utils/helper";
 
 type CategoriesOptions = {

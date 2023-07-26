@@ -13,7 +13,7 @@ import {
     CourseChangeInformation as CourseChangeInformationType,
 } from "../../types/course";
 
-import CourseApis from "../../apis/course";
+import { CourseApis } from "@src/apis";
 
 type CourseSlice = {
     selectCategories: Category[];

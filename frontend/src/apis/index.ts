@@ -5,13 +5,4 @@ import * as SectionApis from "../apis/section";
 import * as UserApis from "../apis/user";
 import * as FileStorageApis from "../apis/fileStorage";
 
-const Apis = {
-    AuthApis,
-    CourseApis,
-    LessonApis,
-    SectionApis,
-    UserApis,
-    FileStorageApis,
-};
-
-export default Apis;
+export { AuthApis, CourseApis, LessonApis, SectionApis, UserApis, FileStorageApis };

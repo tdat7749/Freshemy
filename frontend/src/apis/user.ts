@@ -1,4 +1,4 @@
-import apiCaller from "../api-config/apiCaller";
+import { apiCaller } from "@src/api-config";
 import { ChangePassword as ChangePasswordType } from "../types/user";
 
 import i18n from "../utils/i18next";

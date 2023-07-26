@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { FileInformation, UploadFile } from "../../types/filestorage";
 import { Response } from "../../types/response";
-import FileStorageApis from "../../apis/fileStorage";
+import FileStorageApis from "@src/apis/fileStorage";
 
 type FileStorage = {
     isLoading: boolean;

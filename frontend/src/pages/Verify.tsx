@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { Navigate, useParams } from "react-router-dom";
-import Skeleton from "../assets/images/Skeleton.png";
+import { Skeleton } from "@src/assets";
 import { authActions } from "../redux/slice";
 import { Link } from "react-router-dom";
 

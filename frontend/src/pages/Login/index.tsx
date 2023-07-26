@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field, Form } from "formik";
 import { Login as LoginType } from "../../types/auth";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { authActions } from "../../redux/slice/index";
+import { authActions } from "@redux/slice/index";
 import { Navigate } from "react-router-dom";
-import Spin from "../../components/Spin";
-import Skeleton from "../../assets/images/Skeleton.png";
+import { Spin } from "@src/components";
+import { Skeleton } from "@src/assets";
 import { loginValidationSchema } from "../../validations/auth";
 import toast from "react-hot-toast";
 
