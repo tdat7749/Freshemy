@@ -28,7 +28,7 @@ import {
     MESSAGE_ERROR_COURSE_SLUG_IS_USED,
     MESSAGE_SUCCESS_UPDATE_DATA,
 } from "../utils/constant";
-
+import {courses_categories} from "../types/courseCategory"
 const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
         const { slug } = req.params;
@@ -241,34 +241,31 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
 const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
         const { id, title, slug, summary, description, categories, status } = req.body;
-
+        const course_id = parseInt(id)
         const isFoundCourse = await db.course.findUnique({
             where: {
-                id: id,
+                id: course_id,
             },
         });
         if (isFoundCourse) {
             const isUpdateCourse = await db.course.update({
                 where: {
-                    id: id,
+                    id: course_id,
                 },
                 data: {
                     title: title,
                     summary: summary,
                     description: description,
                     status: status,
+                    slug: slug
                 },
             });
             if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         }
 
-        let newCategories = [];
-        for (let i = 0; i < categories.length; i++) {
-            newCategories.push(categories[i]);
-        }
         const currentCategories = await configs.db.courseCategory.findMany({
             where: {
-                course_id: id,
+                course_id: course_id,
             },
             select: {
                 category_id: true,
@@ -277,33 +274,32 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
 
         const isDelete = await configs.db.courseCategory.deleteMany({
             where: {
-                course_id: id,
+                course_id: course_id,
             },
         });
         if (!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-
+        
         let extractCategories: number[] = [];
-        for (let i = 0; i < currentCategories.length; i++) extractCategories.push(currentCategories[i].category_id);
-
-        var resultDuplicate = newCategories.filter((value) => extractCategories.includes(value));
-        var resultUnique = newCategories.filter(function (val) {
+        currentCategories.forEach(currentCategories => {
+            extractCategories.push(currentCategories.category_id);
+        });
+        
+        var resultDuplicate = categories.filter((value: number) => extractCategories.includes(value));
+        var resultUnique = categories.filter(function (val: number) {
             return extractCategories.indexOf(val) == -1;
         });
         const finalResult = resultDuplicate.concat(resultUnique);
-
-        let data = [];
-        for (let i = 0; i < finalResult.length; i++) {
-            data.push({
-                course_id: id,
-                category_id: finalResult[i],
-            });
-        }
-
-        const isUpdate = await configs.db.courseCategory.createMany({
-            data: data,
+        let data: courses_categories[] = [];
+        finalResult.forEach(async (category_id: number) => {
+            data.push(
+                {course_id,
+                category_id}
+            )
         });
 
-        if (!isUpdate) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        await db.courseCategory.createMany({
+            data
+        })
         return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
