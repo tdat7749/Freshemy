@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Formik, ErrorMessage, Field, Form } from "formik";
 import { Register as RegisterType } from "../../types/auth";
@@ -6,7 +6,6 @@ import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { authActions } from "../../redux/slice/index";
 import { Navigate } from "react-router-dom";
 import Skeleton from "../../assets/images/Skeleton.png";
-import { setMessageEmpty } from "../../redux/slice/auth.slice";
 import { registerValidationSchema } from "../../validations/auth";
 
 import toast from "react-hot-toast";
@@ -15,14 +14,11 @@ const Register: FC = () => {
     const dispatch = useAppDispatch();
 
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
+    const isLoading = useAppSelector((state) => state.authSlice.isLoading);
     let errorMessage = useAppSelector((state) => state.authSlice.error);
     let successMessage = useAppSelector((state) => state.authSlice.message);
 
     const formikRef = useRef(null);
-
-    useEffect(() => {
-        dispatch(setMessageEmpty());
-    }, [dispatch]);
 
     if (isLogin) return <Navigate to={"/"} />;
 
@@ -172,7 +168,8 @@ const Register: FC = () => {
                                             type="submit"
                                             className="btn btn-primary w-full text-lg"
                                         >
-                                            Create Account
+                                            {isLoading && <span className="loading loading-spinner"></span>}
+                                            {isLoading ? "Loading..." : "Create Account"}
                                         </button>
                                     </div>
                                     <div className="text-center space-y-[8px]">

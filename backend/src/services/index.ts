@@ -13,7 +13,7 @@ const services = {
     SectionService,
     LessonService,
     CategoryService,
-    FileStorageService
+    FileStorageService,
 };
 
 export default services;

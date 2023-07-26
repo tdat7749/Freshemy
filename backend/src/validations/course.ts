@@ -41,8 +41,13 @@ export const createCourseSchema: ObjectSchema<CreateCourse> = Joi.object({
         }),
 
     status: Joi.required().messages({
+
         "any.required": i18n.t("errorMessages.statusIsRequired"),
         //"bool.base": MESSAGE_ERROR_STATUS_BOOLEAN,
+
+        "any.required": MESSAGE_ERROR_STATUS_REQUIRED,
+        "bool.base": MESSAGE_ERROR_STATUS_BOOLEAN,
+
     }),
 
     description: Joi.string()
@@ -65,9 +70,9 @@ export const createCourseSchema: ObjectSchema<CreateCourse> = Joi.object({
             "any.required": i18n.t("errorMessages.categoryIsRequired"),
         }),
 
-    // thumbnail: Joi.required().messages({
-    //     "any.required": MESSAGE_ERROR_THUMBNAIL_REQUIRED,
-    // }),
+    thumbnail: Joi.required().messages({
+        "any.required": MESSAGE_ERROR_THUMBNAIL_REQUIRED,
+    }),
 });
 
 type UpdateCourse = {
@@ -119,9 +124,16 @@ export const updateCourseSchema: ObjectSchema<UpdateCourse> = Joi.object({
             "string.base": i18n.t("errorMessages.summaryMustBeString"),
         }),
 
+
     categories: Joi.array<number[]>()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.categoryIsRequired"),
         }),
+
+    categories: Joi.array<number[]>().required().messages({
+        "any.required": MESSAGE_ERROR_CATEGORIES_REQUIRED,
+    }),
+    thumbnail: Joi.string(),
+
 });

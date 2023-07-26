@@ -1,15 +1,14 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { Formik, Field, ErrorMessage } from "formik";
 import { ChangePassword as ChangePasswordType } from "../../types/user";
 import { useAppDispatch } from "../../hooks/hooks";
 import { userActions } from "../../redux/slice";
 import { useAppSelector } from "../../hooks/hooks";
 import { Link } from "react-router-dom";
-import { setMessageEmpty } from "../../redux/slice/user.slice";
 import { changePasswordValidationSchema } from "../../validations/user";
 import toast from "react-hot-toast";
 const ChangePassword: React.FC = () => {
-    let error = useAppSelector((state) => state.userSlice.error) ?? "";
+    const isLoading = useAppSelector((state) => state.userSlice.isLoading);
 
     const dispatch = useAppDispatch();
 
@@ -20,10 +19,6 @@ const ChangePassword: React.FC = () => {
         new_password: "",
         confirm_password: "",
     };
-
-    useEffect(() => {
-        dispatch(setMessageEmpty());
-    }, [dispatch]);
 
     const handleOnSubmit = (values: ChangePasswordType) => {
         //@ts-ignore
@@ -42,11 +37,6 @@ const ChangePassword: React.FC = () => {
                 toast.error(error);
             });
     };
-
-    const handleChange = () => {
-        error = "";
-    };
-
     return (
         <div className="container mx-auto">
             <div className="flex items-center justify-center mt-[100px] py-10">
@@ -59,7 +49,7 @@ const ChangePassword: React.FC = () => {
                         innerRef={formikRef}
                     >
                         {(formik) => (
-                            <form onSubmit={formik.handleSubmit} onChange={handleChange}>
+                            <form onSubmit={formik.handleSubmit}>
                                 <div className="flex flex-col mb-3">
                                     <label htmlFor="current_password" className="text-sm mb-1 tablet:text-xl">
                                         Current Password
@@ -120,12 +110,13 @@ const ChangePassword: React.FC = () => {
                                         type="submit"
                                         name="save_button"
                                         className="btn btn-primary text-lg"
-                                        disabled={error !== "" ? true : false}
+                                        disabled={isLoading}
                                     >
-                                        Save
+                                        {isLoading && <span className="loading loading-spinner"></span>}
+                                        {isLoading ? "Loading..." : "Save"}
                                     </button>
                                     <Link to={"/"}>
-                                        <button type="submit" className="btn text-lg ml-2">
+                                        <button type="submit" className="btn text-lg ml-2" disabled={isLoading}>
                                             Cancel
                                         </button>
                                     </Link>

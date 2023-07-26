@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import Navbar from "../../components/Navbar";
 import Accordion from "../../components/Accordion";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
@@ -12,8 +11,6 @@ import DeleteIcon from "../../components/icons/DeleteIcon";
 import NotFound from "../NotFound";
 import DeleteModal from "../../components/DeleteModal";
 import { courseActions } from "../../redux/slice";
-// import { useParams } from "react-router-dom";
-// import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 
 import toast from "react-hot-toast";
 

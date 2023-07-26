@@ -4,6 +4,15 @@ import ffprobePath from "@ffprobe-installer/ffprobe";
 import ffmpeg from "fluent-ffmpeg";
 import path from "path";
 import configs from "../configs";
+import cloudinary from "../configs/cloudinary.config";
+import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
+import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
+import {
+    MESSAGE_ERROR_IMAGE_UPLOADED,
+    MESSAGE_ERROR_INTERNAL_SERVER,
+    MESSAGE_SUCCESS_IMAGE_UPLOADED,
+} from "../utils/constant";
+import { RequestHasLogin } from "../types/request";
 
 ffmpeg.setFfmpegPath(ffmpegPath.path);
 ffmpeg.setFfprobePath(ffprobePath.path);
@@ -72,8 +81,32 @@ const createFileM3U8AndTS = async (
     return createMainM3U8(inputVideo, resolutions, outputFolderPath, uuid);
 };
 
+const uploadImageToCloudinary = async (req: RequestHasLogin): Promise<ResponseBase> => {
+    try {
+        const uploadResponse = await new Promise<null | UploadApiResponse>((resolve, rejects) => {
+            cloudinary.uploader.upload(
+                req.file?.path as string,
+                (error: UploadApiErrorResponse, result: UploadApiResponse) => {
+                    if (error) {
+                        rejects(error);
+                    } else {
+                        resolve(result);
+                    }
+                },
+            );
+        });
+        if (uploadResponse) {
+            return new ResponseSuccess(201, MESSAGE_SUCCESS_IMAGE_UPLOADED, true, uploadResponse);
+        }
+        return new ResponseError(400, MESSAGE_ERROR_IMAGE_UPLOADED, false);
+    } catch (error: any) {
+        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+    }
+};
+
 const FileStorageService = {
     createFileM3U8AndTS,
+    uploadImageToCloudinary,
 };
 
 export default FileStorageService;

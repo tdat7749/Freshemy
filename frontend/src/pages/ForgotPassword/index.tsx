@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { authActions } from "../../redux/slice";
 import { ForgotPassword as ForgotPasswordType } from "../../types/auth";
-import { setMessageEmpty } from "../../redux/slice/auth.slice";
 import { forgotPasswordValidationSchema } from "../../validations/auth";
 import { Navigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -14,10 +13,6 @@ const ForgotPassword: React.FC = () => {
     let message = useAppSelector((state) => state.authSlice.message) ?? "";
 
     const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        dispatch(setMessageEmpty());
-    }, [dispatch]);
 
     if (isLogin) return <Navigate to={"/"} />;
 

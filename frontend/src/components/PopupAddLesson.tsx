@@ -6,7 +6,7 @@ import { lessonActions } from "../redux/slice";
 import { addLessonValidationSchema } from "../validations/lesson";
 import toast, { Toaster } from "react-hot-toast";
 import i18n from "../utils/i18next";
-import { errorMessages } from "../utils/contants";
+import { errorMessages, fileType } from "../utils/contants";
 
 type AddLessonModalProps = {
     handleDelete: () => void;
@@ -34,7 +34,11 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                 setError(i18n.t(errorMessages.videoFileSize));
             } else {
                 const videoExtension = video_file?.name.split(".").pop();
-                if (videoExtension === "mp4" || videoExtension === "mkv" || videoExtension === "mov") {
+                if (
+                    videoExtension === i18n.t(fileType.mp4) ||
+                    videoExtension === i18n.t(fileType.mkv) ||
+                    videoExtension === i18n.t(fileType.mov)
+                ) {
                     setVideo(video_file);
                 } else {
                     setError(i18n.t(errorMessages.videoFileType));

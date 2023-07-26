@@ -1,9 +1,8 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { Formik, ErrorMessage, Field } from "formik";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { setMessageEmpty } from "../../redux/slice/auth.slice";
 import { NewCourse as CreateCourseType, Category as CategoryType } from "../../types/course";
-import { courseActions } from "../../redux/slice";
+import { courseActions, fileStorageActions } from "../../redux/slice";
 import { createValidationSchema } from "../../validations/course";
 import slugify from "slugify";
 import { Link } from "react-router-dom";
@@ -11,21 +10,42 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import toast from "react-hot-toast";
 import CustomeSelect from "../../components/Select";
+import { previewImage } from "../../utils/helper";
 
-type categoriesOptions = {
+type CategoriesOptions = {
     value: number;
     label: string;
+};
+
+const customStyles = {
+    control: (styles: any) => ({
+        ...styles,
+        position: "static",
+        transform: "none",
+        borderRadius: "0.25rem",
+        padding: "10px",
+        boxShadow: "",
+    }),
+    option: (styles: any) => ({
+        ...styles,
+    }),
+    menu: (styles: any) => ({
+        ...styles,
+        borderRadius: "0.25rem",
+        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1)",
+    }),
 };
 
 const CreateCourse: FC = () => {
     const dispatch = useAppDispatch();
     const [thumbnail, setThumbnail] = useState<File | null>(null);
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
+    const isUpload = useAppSelector((state) => state.fileStorageSlice.isLoading);
     const categories: CategoryType[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
     const formikRef = useRef(null);
     const imageRef = useRef<HTMLImageElement>(null);
     const navigate = useNavigate();
-    const categoriesOptions: categoriesOptions[] = [];
+    const categoriesOptions: CategoriesOptions[] = [];
     const statusOptions = [
         {
             value: 1,
@@ -38,7 +58,7 @@ const CreateCourse: FC = () => {
     ];
     useEffect(() => {
         categories.forEach((category: CategoryType) => {
-            const temp: categoriesOptions = {
+            const temp: CategoriesOptions = {
                 value: category.id,
                 label: category.title,
             };
@@ -46,7 +66,6 @@ const CreateCourse: FC = () => {
         });
     }, [categories, categoriesOptions]);
     useEffect(() => {
-        dispatch(setMessageEmpty());
         //@ts-ignore
         dispatch(courseActions.getCategories());
         dispatch(courseActions.reset());
@@ -60,29 +79,36 @@ const CreateCourse: FC = () => {
         status: 0,
         summary: "",
         description: "",
-        thumbnail: null,
+        thumbnail: "",
     };
 
     const handleOnSubmit = async (values: CreateCourseType) => {
-        const slug = slugify(values.title.toLowerCase());
-        let formData = new FormData();
-        formData.append("title", values.title);
-        formData.append("description", values.description);
-        formData.append("slug", slug);
-        formData.append("thumbnail", thumbnail as File);
-        formData.append("summary", values.summary);
-        formData.append("status", values.status.toString());
-        // formData.append("upload_preset", "Freshemy");
-        values.categories.forEach((item: any) => {
-            formData.append("categories[]", item.value.toString());
-        });
-        // @ts-ignore
-        dispatch(courseActions.createCourses(formData)).then((response) => {
-            if (response.payload.status_code === 201) {
-                toast.success(response.payload.message);
-                navigate("/my-courses");
+        const formData = new FormData();
+        formData.set("thumbnail", thumbnail as File);
+        formData.set("upload_preset", "Freshemy");
+
+        //@ts-ignore
+        dispatch(fileStorageActions.uploadImage(formData)).then((response) => {
+            if (response.payload && response.payload.status_code === 201) {
+                const slug = slugify(values.title.toLowerCase());
+                const categories = values.categories.map((item: any) => item.value);
+                const data = {
+                    ...values,
+                    slug: slug,
+                    categories: categories,
+                    thumbnail: response.payload.data?.url as string,
+                };
+                //@ts-ignore
+                dispatch(courseActions.createCourses(data)).then((createCourseResponse) => {
+                    if (createCourseResponse.payload && createCourseResponse.payload.status_code === 201) {
+                        toast.success(createCourseResponse.payload.message);
+                        navigate("/my-courses");
+                    } else {
+                        toast.error(createCourseResponse.payload?.message as string);
+                    }
+                });
             } else {
-                toast.error(response.payload.message);
+                toast.error(response.payload?.message as string);
             }
         });
     };
@@ -92,26 +118,17 @@ const CreateCourse: FC = () => {
     };
 
     const handleChangeStatus = (event: any, formik: any) => {
-        formik.setFieldValue("status", event.value);
+        if (event.value === 0) {
+            formik.setFieldValue("status", false);
+        } else {
+            formik.setFieldValue("status", true);
+        }
     };
 
     const onChangeInputFile = (event: React.ChangeEvent<HTMLInputElement>) => {
         setThumbnail(event.currentTarget.files![0]);
         const thumbnail = event.currentTarget.files![0];
-        if (thumbnail && thumbnail.type.includes("image/")) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                if (imageRef.current) {
-                    imageRef.current.src = e.target?.result as string;
-                }
-            };
-            reader.readAsDataURL(thumbnail);
-            return;
-        } else {
-            if (imageRef.current) {
-                imageRef.current.src = "";
-            }
-        }
+        previewImage(thumbnail, imageRef);
     };
 
     return (
@@ -208,6 +225,7 @@ const CreateCourse: FC = () => {
                                                         options={categoriesOptions}
                                                         isMulti={true}
                                                         defautlValues={""}
+                                                        styles={customStyles}
                                                     />
                                                 </div>
                                                 <ErrorMessage
@@ -231,6 +249,7 @@ const CreateCourse: FC = () => {
                                                     options={statusOptions}
                                                     isMulti={false}
                                                     placeholder="Uncompleted"
+                                                    styles={customStyles}
                                                 />
                                                 <ErrorMessage
                                                     name="status"
@@ -283,17 +302,22 @@ const CreateCourse: FC = () => {
 
                                     <div className="py-[12px] flex justify-end">
                                         <button
-                                            disabled={isLoading ? true : false}
+                                            disabled={isLoading || isUpload ? true : false}
                                             type="submit"
                                             className="btn btn-primary text-lg"
                                         >
-                                            {isLoading ? "Loading..." : "Save"}
+                                            {isLoading || isUpload ? (
+                                                <span className="loading loading-spinner"></span>
+                                            ) : (
+                                                ""
+                                            )}
+                                            {isLoading || isUpload ? "Loading..." : "Save"}
                                         </button>
                                         <button
                                             type="button"
                                             className="btn text-lg ml-2"
+                                            disabled={isLoading || isUpload}
                                             onClick={() => {
-                                                console.log(formik.values);
                                                 formik.resetForm(initialValues);
                                             }}
                                         >

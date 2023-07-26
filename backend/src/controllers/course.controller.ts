@@ -10,7 +10,6 @@ import i18n from "../utils/i18next";
 
 class CourseController {
     async editCourse(req: Request, res: Response): Promise<Response> {
-        console.log(req.body);
         const errorValidate: ValidationError | undefined = updateCourseSchema.validate(req.body).error;
 
         if (errorValidate) {

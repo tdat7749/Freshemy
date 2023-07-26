@@ -3,9 +3,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { Navigate, useParams } from "react-router-dom";
 import Skeleton from "../assets/images/Skeleton.png";
 import { authActions } from "../redux/slice";
-import { setMessageEmpty } from "../redux/slice/auth.slice";
 import { Link } from "react-router-dom";
-// import { Link } from 'react-router-dom';
 
 const Verify: React.FC = () => {
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
@@ -15,7 +13,6 @@ const Verify: React.FC = () => {
     const { token } = useParams();
 
     useEffect(() => {
-        dispatch(setMessageEmpty());
         //@ts-ignore
         dispatch(authActions.verifyEmail(token));
     }, [token, dispatch]);

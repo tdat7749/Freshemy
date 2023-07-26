@@ -152,10 +152,4 @@ export const successMessages = {
 
 
 
-// export const MESSAGE_ERROR_LOGIN_FAILED = "Email or password is invalid";
 
-// export const MESSAGE_ERROR_SEND_EMAIL =
-//     "Email sending failed, please login to the account you just registered to be sent confirmation email again";
-
-// export const MESSAGE_ERROR_LOGIN_UNVERIFIED =
-//     "Unverified account, We have sent you a verification link, please check your email soon before it expires!";
