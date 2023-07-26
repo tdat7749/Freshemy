@@ -1,4 +1,4 @@
-import apiCaller from "../api-config/apiCaller";
+import { apiCaller } from "@src/api-config";
 import {
     ChangeThumbnail as ChangeThumbnailType,
     NewCourse as CreateCourseType,
@@ -80,7 +80,7 @@ const getTop10Courses = async () => {
     return response;
 };
 
-const CourseApis = {
+export {
     createCourse,
     getCategories,
     getMyCourses,
@@ -91,5 +91,3 @@ const CourseApis = {
     changeInformation,
     getTop10Courses,
 };
-
-export default CourseApis;

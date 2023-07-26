@@ -1,5 +1,5 @@
 import { UploadFile as UploadFileType } from "../types/filestorage";
-import apiCaller from "../api-config/apiCaller";
+import { apiCaller } from "@src/api-config";
 import i18n from "../utils/i18next";
 
 const uploadFile = async (values: UploadFileType) => {

@@ -1,4 +1,4 @@
-import apiCaller from "../api-config/apiCaller";
+import {apiCaller} from "@src/api-config";
 import { AddLesson as AddLessonType } from "../types/lesson";
 
 import i18n from "../utils/i18next";

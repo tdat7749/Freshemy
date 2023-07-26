@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "../../components/Navbar";
+import { Navbar } from "@src/components";
 import DefaultAvatar from "../../assets/images/default-avatar.png";
 import CardVideo from "../HomePage/CardVideo";
 

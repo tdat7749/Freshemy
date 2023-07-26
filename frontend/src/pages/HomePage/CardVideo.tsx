@@ -12,9 +12,12 @@ interface CardVideoProps {
 }
 
 const CardVideo: React.FC<CardVideoProps> = (props) => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     return (
-        <div className="rounded-lg bg-primary shadow-lg flex flex-col hover:scale-95 cursor-pointer max-w-[200px]" onClick={() => navigate(`/course-detail/${props.slug}`)}>
+        <div
+            className="rounded-lg bg-primary shadow-lg flex flex-col hover:scale-95 hover:duration-300 cursor-pointer max-w-[200px]"
+            onClick={() => navigate(`/course-detail/${props.slug}`)}
+        >
             <img
                 src={props.thumbnail}
                 alt={props.title}

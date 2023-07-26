@@ -7,9 +7,8 @@ import { createValidationSchema } from "../../validations/course";
 import slugify from "slugify";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../../components/Navbar";
 import toast from "react-hot-toast";
-import CustomeSelect from "../../components/Select";
+import { Navbar, CustomeSelect } from "@src/components";
 import { previewImage } from "../../utils/helper";
 
 type CategoriesOptions = {

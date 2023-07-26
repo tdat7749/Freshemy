@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Navbar from "../../components/Navbar";
+import { Navbar } from "@src/components";
 import Skeleton from "../../assets/images/Skeleton.png";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { User as UserType } from "../../types/user";
@@ -12,7 +12,6 @@ const initialValue: UserType = {
     password: "",
     description: "",
 };
-
 
 const handleOnSubmit = () => {};
 
