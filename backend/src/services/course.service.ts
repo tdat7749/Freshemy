@@ -24,7 +24,7 @@ import {
     MESSAGE_ERROR_COURSE_SLUG_IS_USED,
     MESSAGE_SUCCESS_UPDATE_DATA,
 } from "../utils/constant";
-import { courses_categories } from "../types/courseCategory";
+import { CourseCategory } from "@prisma/client";
 const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
         const { slug } = req.params;
@@ -262,15 +262,6 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
 
         if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
 
-        const currentCategories = await configs.db.courseCategory.findMany({
-            where: {
-                course_id: course_id,
-            },
-            select: {
-                category_id: true,
-            },
-        });
-
         const isDelete = await configs.db.courseCategory.deleteMany({
             where: {
                 course_id: course_id,
@@ -278,24 +269,18 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
         });
         if (!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
 
-        let extractCategories: number[] = [];
-        currentCategories.forEach((currentCategories) => {
-            extractCategories.push(currentCategories.category_id);
-        });
+        const data: CourseCategory[] = categories.map((category: number) =>{
+            return {
+                course_id: course_id,
+                category_id: category
+            }
+        })
 
-        var resultDuplicate = categories.filter((value: number) => extractCategories.includes(value));
-        var resultUnique = categories.filter(function (val: number) {
-            return extractCategories.indexOf(val) == -1;
-        });
-        const finalResult = resultDuplicate.concat(resultUnique);
-        let data: courses_categories[] = [];
-        finalResult.forEach(async (category_id: number) => {
-            data.push({ course_id, category_id });
-        });
+        const isUpdateCategory = await db.courseCategory.createMany({
+            data
+        })
 
-        await db.courseCategory.createMany({
-            data,
-        });
+        if(!isUpdateCategory) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
