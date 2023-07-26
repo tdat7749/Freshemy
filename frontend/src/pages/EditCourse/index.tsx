@@ -87,11 +87,11 @@ const EditCourse: React.FC = () => {
     const dispatch = useAppDispatch();
     const statusOptions = [
         {
-            value: 0,
+            value: 1,
             label: "Completed",
         },
         {
-            value: 1,
+            value: 0,
             label: "Uncomplete",
         },
     ];

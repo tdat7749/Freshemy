@@ -2,14 +2,15 @@ import fs from "fs";
 import ffmpegPath from "@ffmpeg-installer/ffmpeg";
 import ffprobePath from "@ffprobe-installer/ffprobe";
 import ffmpeg from "fluent-ffmpeg";
-import path from "path";
+import path, { resolve } from "path";
 import configs from "../configs";
 import cloudinary from "../configs/cloudinary.config";
-import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
+import { UploadApiErrorResponse, UploadApiResponse,DeleteApiResponse } from "cloudinary";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import i18n from "../utils/i18next";
 
 import { RequestHasLogin } from "../types/request";
+import { getPublicIdFromUrl } from "../utils/helper";
 
 ffmpeg.setFfmpegPath(ffmpegPath.path);
 ffmpeg.setFfprobePath(ffprobePath.path);
@@ -101,9 +102,33 @@ const uploadImageToCloudinary = async (req: RequestHasLogin): Promise<ResponseBa
     }
 };
 
+const destroyImageInCloudinary = async (url:string):Promise<boolean> =>{
+    try{
+        const publicId = getPublicIdFromUrl(url)
+        if(publicId){
+            const isDestroy = await new Promise<null | DeleteApiResponse>((resolve,rejects) =>{
+                cloudinary.uploader.destroy(publicId,{},(error:any,result:DeleteApiResponse ) =>{
+                    if(error){
+                        rejects(error)
+                    }else{
+                        resolve(result)
+                    }
+                })
+            })
+            if(isDestroy !== null){
+                return true
+            }
+        }
+        return false
+    }catch(error:any){
+        return false
+    }
+}
+
 const FileStorageService = {
     createFileM3U8AndTS,
     uploadImageToCloudinary,
+    destroyImageInCloudinary
 };
 
 export default FileStorageService;

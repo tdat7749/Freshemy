@@ -4,15 +4,6 @@ export interface RequestHasLogin extends Request {
     user_id?: number;
 }
 
-export interface RequestMyCourseWithUser extends Request {
-    user: {
-        id: number;
-    };
-}
-
-// course.model.ts
-import { User } from "./user.model";
-
 export interface Course {
     id: number;
     title: string;
