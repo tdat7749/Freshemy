@@ -1,14 +1,7 @@
 import { Request } from "express";
 import configs from "../configs";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
-import {
-    MESSAGE_ERROR_INTERNAL_SERVER,
-    MESSAGE_ERROR_MISSING_REQUEST_BODY,
-    MESSAGE_SUCCESS_GET_DATA,
-    MESSAGE_SUCCESS_CREATE_DATA,
-    MESSAGE_SUCCESS_UPDATE_DATA,
-    MESSAGE_SUCCESS_DELETE_DATA,
-} from "../utils/constant";
+
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import { RequestHasLogin } from "../types/request";
@@ -17,6 +10,8 @@ import { resolutions } from "../commons";
 import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+
+import i18n from "../utils/i18next";
 
 const getLesson = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -32,8 +27,8 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
             id: isFoundLesson?.id,
             url_video: isFoundLesson?.url_video,
         };
-        if (isFoundLesson) return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, data);
-        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (isFoundLesson) return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, data);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
@@ -46,7 +41,7 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -72,12 +67,12 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
         if (lesson) {
-            return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true);
+            return new ResponseSuccess(200, i18n.t("successMessages.createDataSuccess"), true);
         } else {
             fs.unlinkSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, uuid));
             fs.unlinkSync(req.file?.path as string);
         }
-        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
@@ -90,7 +85,7 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -107,13 +102,13 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
             });
 
             if (!isFoundLesson) {
-                return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+                return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
             }
 
             const urlVideoSplit = isFoundLesson.url_video.split(`${configs.general.PUBLIC_URL_FOLDER_VIDEOS}`);
             const nameFolder = urlVideoSplit[1].split("/")[1];
             if (!nameFolder) {
-                return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+                return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
             }
             fs.unlinkSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder));
 
@@ -135,7 +130,7 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
             });
 
             if (lesson) {
-                return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true);
+                return new ResponseSuccess(200, i18n.t("successMessages.createDataSuccess"), true);
             } else {
                 fs.unlinkSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder));
                 fs.unlinkSync(req.file?.path as string);
@@ -149,9 +144,9 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
                     title: title,
                 },
             });
-            if (lesson) return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
+            if (lesson) return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
         }
-        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         fs.unlinkSync(req.file?.path as string);
         if (error instanceof PrismaClientKnownRequestError) {
@@ -165,7 +160,7 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -181,8 +176,8 @@ const deleteLesson = async (req: Request): Promise<ResponseBase> => {
                 is_delete: true,
             },
         });
-        if (isDelete) return new ResponseSuccess(200, MESSAGE_SUCCESS_DELETE_DATA, true);
-        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (isDelete) return new ResponseSuccess(200, i18n.t("successMessages.deleteDataSuccess"), true);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
@@ -195,7 +190,7 @@ const deleteLesson = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 const LessonService = {

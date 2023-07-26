@@ -5,7 +5,8 @@ import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
 import services from "../services";
 import { ResponseError, ResponseSuccess } from "../commons/response";
-import { MESSAGE_ERROR_INTERNAL_SERVER } from "../utils/constant";
+
+import i18n from "../utils/i18next";
 
 class CourseController {
     async editCourse(req: Request, res: Response): Promise<Response> {
@@ -38,10 +39,10 @@ class CourseController {
                 return res.status(result.getStatusCode()).json(result);
             } else {
                 // Handle unexpected response
-                return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+                return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
             }
         } catch (error: any) {
-            return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+            return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
         }
     }
 
@@ -58,10 +59,10 @@ class CourseController {
                 return res.status(result.getStatusCode()).json(result);
             } else {
                 // Handle unexpected response
-                return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+                return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
             }
         } catch (error: any) {
-            return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+            return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
         }
     }
 
