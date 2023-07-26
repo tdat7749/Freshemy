@@ -48,8 +48,6 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             if (isCreateCourse) {
                 return new ResponseSuccess(201, i18n.t("successMessages.registerCourseSuccess"), true);
             } else {
-                // If the course creation fails, you can also consider cleaning up any uploaded thumbnail.
-                // await cloudinary.uploader.destroy(uploadFileResult.public_id);
                 return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
             }
         }
@@ -132,7 +130,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     updated_at: course.updated_at,
                     status: course.status,
                 };
-                return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, courseData);
+                return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, courseData);
             }
         }
         return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
@@ -189,7 +187,7 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
                     updated_at: course.updated_at,
                     status: course.status,
                 };
-                return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, courseData);
+                return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, courseData);
             }
         }
         return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
@@ -252,7 +250,7 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
                     },
                 });
                 if (unsubcribe) {
-                    return new ResponseSuccess(200, i18n.t("errorMessages.unRegisterCourseSuccess"), true);
+                    return new ResponseSuccess(200, i18n.t("successMessages.unRegisterCourseSuccess"), true);
                 } else {
                     return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
                 }
@@ -333,7 +331,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, "Internal Server", false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
