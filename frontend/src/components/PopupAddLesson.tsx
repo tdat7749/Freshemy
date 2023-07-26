@@ -48,7 +48,6 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         formData.append("title", values.title);
         formData.append("section_id", props.id.toString());
         formData.append("video", video as File);
-        console.log(formData);
         //@ts-ignore
         dispatch(lessonActions.addLesson(formData))
             //@ts-ignore
