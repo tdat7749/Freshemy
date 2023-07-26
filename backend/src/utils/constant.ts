@@ -23,7 +23,6 @@ export const errorMessages = {
     wrongConfirmPasswordIsRequired: "Wrong Confirm Password is required",
     passwordMustBeString: "Password must be a string",
     passWordAndConfirmPasswordMustBeSameRequired: "Password and comfirm password must be same required !",
-    
 
     // Email
     emailNotExist: "Email does not exist",
@@ -98,6 +97,9 @@ export const errorMessages = {
 
     // Thumbnail
     thumbnailIsRequired: "Thumbnail is required",
+
+    // Upload Image
+    imageUploadError: "Upload Image Error",
 };
 
 export const successMessages = {
@@ -148,8 +150,7 @@ export const successMessages = {
     retrievedCategorySuccess: "Categories Retrieved Successfully",
     updatedCategorySuccess: "Category Updated Successfully",
     deletedCategorySuccess: "Category Deleted Successfully",
+
+    // Upload Image
+    imageUploadSuccess: "Upload Image Successfully",
 };
-
-
-
-

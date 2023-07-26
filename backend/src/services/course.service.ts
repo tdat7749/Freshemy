@@ -13,6 +13,59 @@ import i18n from "../utils/i18next";
 
 import { courses_categories } from "../types/courseCategory";
 
+const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
+    const { title, slug, description, summary, categories, status, thumbnail } = req.body;
+    const user_id = req.user_id;
+
+    try {
+        const isFoundCourse = await db.course.findUnique({
+            where: {
+                slug: slug,
+            },
+        });
+
+        if (isFoundCourse) {
+            return new ResponseError(400, i18n.t("errorMessages.slugIsUsed"), false);
+        }
+
+        const listCategoryId = categories.map((item: string) => ({
+            category_id: parseInt(item),
+        }));
+
+        if (user_id) {
+            const isCreateCourse = await db.course.create({
+                data: {
+                    title: title,
+                    slug: slug,
+                    description: description,
+                    summary: summary,
+                    thumbnail: thumbnail,
+                    user_id: user_id,
+                    status: status,
+                    courses_categories: {
+                        create: listCategoryId,
+                    },
+                },
+            });
+
+            if (isCreateCourse) {
+                return new ResponseSuccess(201, i18n.t("successMessages.registerCourseSuccess"), true);
+            } else {
+                // If the course creation fails, you can also consider cleaning up any uploaded thumbnail.
+                // await cloudinary.uploader.destroy(uploadFileResult.public_id);
+                return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
+            }
+        }
+
+        return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
+    } catch (error: any) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false);
+        }
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+};
+
 const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
         const { slug } = req.params;
@@ -181,6 +234,7 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
+
 const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const user_id = req.user_id;
@@ -226,91 +280,74 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
             },
         });
 
-        if (isFoundCourse) {
-            const isUpdateCourse = await db.course.update({
+        if (!isFoundDuplicateSlug) {
+            const course: any = {
                 where: {
-                    id: id,
+                    id: course_id,
                 },
                 data: {
                     title: title,
+                    slug: slug,
                     summary: summary,
                     description: description,
                     status: status,
                 },
+            };
+
+            if (thumbnail) {
+                course.data.thumbnail = thumbnail;
+            }
+
+            const isUpdateCourse = await db.course.update(course);
+
+            if (!isUpdateCourse) {
+                return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
+            }
+
+            const currentCategories = await db.courseCategory.findMany({
+                where: {
+                    course_id: course_id,
+                },
+                select: {
+                    category_id: true,
+                },
             });
-            if (!isUpdateCourse) return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
 
+            const existingCategoryIds = currentCategories.map((item) => item.category_id);
 
-        const course: any = {
-            where: {
-                id: course_id,
-            },
-            data: {
-                title: title,
-                summary: summary,
-                description: description,
-                status: status,
-            },
-        };
+            const categoriesToAdd = categories.filter(
+                (categoryId: number) => !existingCategoryIds.includes(categoryId),
+            );
+            const categoriesToRemove = existingCategoryIds.filter(
+                (categoryId: number) => !categories.includes(categoryId),
+            );
 
-        if (!isFoundDuplicateSlug) {
-            course.data.slug = slug;
+            await db.courseCategory.deleteMany({
+                where: {
+                    course_id: course_id,
+                    category_id: {
+                        in: categoriesToRemove,
+                    },
+                },
+            });
 
+            const newCourseCategories = categoriesToAdd.map((categoryId: number) => ({
+                course_id,
+                category_id: categoryId,
+            }));
+
+            await db.courseCategory.createMany({
+                data: newCourseCategories,
+            });
+
+            return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
         }
 
-        if (thumbnail) {
-            course.data.thumbnail = thumbnail;
-        }
-
-        const isUpdateCourse = await db.course.update(course);
-
-        if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-
-        const currentCategories = await configs.db.courseCategory.findMany({
-            where: {
-                course_id: course_id,
-            },
-            select: {
-                category_id: true,
-            },
-        });
-
-        const isDelete = await configs.db.courseCategory.deleteMany({
-            where: {
-                course_id: course_id,
-            },
-        });
-        if (!isDelete) return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
-
-        let extractCategories: number[] = [];
-        currentCategories.forEach((currentCategories) => {
-            extractCategories.push(currentCategories.category_id);
-        });
-
-        var resultDuplicate = categories.filter((value: number) => extractCategories.includes(value));
-        var resultUnique = categories.filter(function (val: number) {
-            return extractCategories.indexOf(val) == -1;
-        });
-        const finalResult = resultDuplicate.concat(resultUnique);
-        let data: courses_categories[] = [];
-        finalResult.forEach(async (category_id: number) => {
-            data.push({ course_id, category_id });
-        });
-
-
-        if (!isUpdate) return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
-        return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
-
-        await db.courseCategory.createMany({
-            data,
-        });
-        return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
-
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
-        }
-        if (error instanceof TokenExpiredError) {
+        } else if (error instanceof TokenExpiredError) {
             return new ResponseError(400, error.message, false);
         } else if (error instanceof JsonWebTokenError) {
             return new ResponseError(401, error.message, false);
@@ -337,15 +374,16 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
             return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
         }
 
-        const uploadFileResult = await new Promise<undefined | UploadApiResponse>((resolve, rejects) => {
+        const uploadFileResult = await new Promise<UploadApiResponse | undefined>((resolve, reject) => {
             cloudinary.uploader.upload(thumbnail.path, (error: UploadApiErrorResponse, result: UploadApiResponse) => {
                 if (error) {
-                    rejects(undefined);
+                    reject(undefined);
                 } else {
                     resolve(result);
                 }
             });
         });
+
         if (uploadFileResult) {
             const isUpdate = await db.course.update({
                 where: {
@@ -355,75 +393,20 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     thumbnail: uploadFileResult.url,
                 },
             });
-            if (isUpdate) return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
-            else {
+
+            if (isUpdate) {
+                return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
+            } else {
                 await cloudinary.uploader.destroy(uploadFileResult.public_id);
             }
-            return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
         }
+
         return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
 
-        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
-    }
-};
-
-const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
-    const { title, slug, description, summary, categories, status, thumbnail } = req.body;
-
-    const user_id = req.user_id;
-
-    try {
-        const isFoundCourse = await db.course.findUnique({
-            where: {
-                slug: slug,
-            },
-        });
-
-        if (isFoundCourse) {
-            return new ResponseError(400, i18n.t("errorMessages.slugIsUsed"), false);
-        }
-        const listCategoryId = categories.map((item: string) => ({
-            category_id: parseInt(item),
-        }));
-
-        if (user_id) {
-            const isCreateCourse = await db.course.create({
-                data: {
-                    title: title,
-                    slug: slug,
-                    description: description,
-                    summary: summary,
-                    thumbnail: thumbnail,
-                    user_id: user_id,
-                    status: status,
-                    courses_categories: {
-                        create: listCategoryId,
-                    },
-                },
-            });
-
-
-                if (isCreateCourse) {
-                    return new ResponseSuccess(201, i18n.t("successMessages.registerCourseSuccess"), true);
-                } else {
-                    await cloudinary.uploader.destroy(uploadFileResult.public_id);
-                }
-            }
-            return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
-            if (isCreateCourse) {
-                return new ResponseSuccess(201, MESSAGE_SUCCESS_COURSE_CREATED, true);
-            }
-
-        }
-        return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
-    } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, error.toString(), false);
-        }
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
