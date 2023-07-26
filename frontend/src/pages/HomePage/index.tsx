@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Navbar, Spin } from "@src/components";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { courseActions } from "../../redux/slice";
+import { courseActions } from "@redux/slice";
 import { Course as CourseType } from "../../types/course";
 import CardVideo from "./CardVideo";
 import CategoryCard from "./CategoryCard";

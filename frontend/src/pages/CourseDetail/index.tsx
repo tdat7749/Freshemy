@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import EditIcon from "@src/components/icons/EditIcon";
 import DeleteIcon from "../../components/icons/DeleteIcon";
 import NotFound from "../NotFound";
-import { courseActions } from "../../redux/slice";
+import { courseActions } from "@redux/slice";
 
 import toast from "react-hot-toast";
 

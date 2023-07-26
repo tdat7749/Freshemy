@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Formik, ErrorMessage, Field } from "formik";
 import { editCourseValidationSchema } from "../../validations/course";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { fileStorageActions, sectionActions } from "../../redux/slice";
+import { fileStorageActions, sectionActions } from "@redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
 import { Accordion, DeleteModal, PopupAddLesson, Navbar, CustomeSelect } from "@src/components";
 import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";

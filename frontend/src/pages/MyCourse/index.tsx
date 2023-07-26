@@ -3,7 +3,7 @@ import SearchIcon from "@src/components/icons/SearchIcon";
 import CreateIcon from "@src/components/icons/CreateIcon";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { courseActions } from "../../redux/slice";
+import { courseActions } from "@redux/slice";
 import { Course } from "../../types/course";
 import toast from "react-hot-toast";
 import { Spin, DeleteModal, Navbar, Pagination, CourseCard } from "@src/components";

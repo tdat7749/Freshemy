@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { courseActions } from "../../redux/slice";
+import { courseActions } from "@redux/slice";
 import NotFound from "../NotFound";
 import { CourseDetail as CourseDetailType } from "../../types/course";
 import { VideoPlayer, Accordion, Spin } from "@src/components";

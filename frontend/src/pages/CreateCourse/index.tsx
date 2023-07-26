@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { Formik, ErrorMessage, Field } from "formik";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { NewCourse as CreateCourseType, Category as CategoryType } from "../../types/course";
-import { courseActions, fileStorageActions } from "../../redux/slice";
+import { courseActions, fileStorageActions } from "@redux/slice";
 import { createValidationSchema } from "../../validations/course";
 import slugify from "slugify";
 import { Link } from "react-router-dom";
