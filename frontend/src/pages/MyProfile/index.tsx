@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Navbar } from "@src/components";
-import Skeleton from "../../assets/images/Skeleton.png";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { User as UserType } from "../../types/user";
-import DefaultAvatar from "../../assets/images/default-avatar.png";
+import { DefaultAvatar, Skeleton } from "@src/assets";
 
 const initialValue: UserType = {
     first_name: "",

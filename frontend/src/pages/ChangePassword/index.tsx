@@ -7,6 +7,7 @@ import { useAppSelector } from "../../hooks/hooks";
 import { Link } from "react-router-dom";
 import { changePasswordValidationSchema } from "../../validations/user";
 import toast from "react-hot-toast";
+
 const ChangePassword: React.FC = () => {
     const isLoading = useAppSelector((state) => state.userSlice.isLoading);
 

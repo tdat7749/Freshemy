@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { authActions } from "../../redux/slice/index";
 import { Navigate } from "react-router-dom";
 import { Spin } from "@src/components";
-import Skeleton from "../../assets/images/Skeleton.png";
+import { Skeleton } from "@src/assets";
 import { loginValidationSchema } from "../../validations/auth";
 import toast from "react-hot-toast";
 

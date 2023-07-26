@@ -7,6 +7,7 @@ import { ForgotPassword as ForgotPasswordType } from "../../types/auth";
 import { forgotPasswordValidationSchema } from "../../validations/auth";
 import { Navigate } from "react-router-dom";
 import toast from "react-hot-toast";
+
 const ForgotPassword: React.FC = () => {
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
 
