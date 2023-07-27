@@ -52,7 +52,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             });
 
             if (isCreateCourse) {
-                return new ResponseSuccess(201, i18n.t("successMessages.registerCourseSuccess"), true);
+                return new ResponseSuccess(201, i18n.t("successMessages.createDataSuccess"), true);
             } else {
                 return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
             }
