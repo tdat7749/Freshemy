@@ -119,13 +119,17 @@ const MyCourses: React.FC = () => {
                             />
                         );
                     })}
-                    <div className="flex justify-end my-4">
-                        <Pagination
-                            handleChangePageIndex={handleChangePageIndex}
-                            totalPage={totalPage}
-                            currentPage={pageIndex}
-                        />
-                    </div>
+                    {courseList.length > 0 ? (
+                        <div className="flex justify-end my-4">
+                            <Pagination
+                                handleChangePageIndex={handleChangePageIndex}
+                                totalPage={totalPage}
+                                currentPage={pageIndex}
+                            />
+                        </div>
+                    ) : (
+                        <></>
+                    )}
                 </div>
             </div>
             {/* POPUP DELETE */}
