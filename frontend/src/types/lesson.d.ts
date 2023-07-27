@@ -5,7 +5,13 @@ export type Lesson = {
 };
 
 export type AddLesson = {
-    section_id:string;
+    section_id: string;
+    title: string;
+    video: File | null;
+};
+
+export type UpdateLesson = {
+    id: number;
     title: string;
     video: File | null;
 };
