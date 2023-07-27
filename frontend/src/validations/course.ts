@@ -5,9 +5,18 @@ export const editCourseValidationSchema = Yup.object({
     categories: Yup.array()
         .min(1, i18n.t("errorMessages.categoriesIsRequired"))
         .max(4, i18n.t("errorMessages.categoriesMaxAllowed")),
-    title: Yup.string().trim().required(i18n.t("errorMessages.titleIsRequired")),
-    summary: Yup.string().trim().required(i18n.t("errorMessages.summaryIsRequired")),
-    description: Yup.string().trim().required(i18n.t("errorMessages.descriptionIsRequired")),
+    title: Yup.string()
+        .trim()
+        .required(i18n.t("errorMessages.titleIsRequired"))
+        .max(200, i18n.t("errorMessages.titleTooLong")),
+    summary: Yup.string()
+        .trim()
+        .required(i18n.t("errorMessages.summaryIsRequired"))
+        .max(200, i18n.t("errorMessages.summaryTooLong")),
+    description: Yup.string()
+        .trim()
+        .required(i18n.t("errorMessages.descriptionIsRequired"))
+        .max(200, i18n.t("errorMessages.descriptionTooLong")),
 });
 
 export const createValidationSchema = Yup.object({
@@ -23,7 +32,16 @@ export const createValidationSchema = Yup.object({
     categories: Yup.array()
         .min(1, i18n.t("errorMessages.categoriesIsRequired"))
         .max(4, i18n.t("errorMessages.categoriesMaxAllowed")),
-    title: Yup.string().trim().required(i18n.t("errorMessages.titleIsRequired")),
-    summary: Yup.string().trim().required(i18n.t("errorMessages.summaryIsRequired")),
-    description: Yup.string().trim().required(i18n.t("errorMessages.descriptionIsRequired")),
+    title: Yup.string()
+        .trim()
+        .required(i18n.t("errorMessages.titleIsRequired"))
+        .max(200, i18n.t("errorMessages.titleTooLong")),
+    summary: Yup.string()
+        .trim()
+        .required(i18n.t("errorMessages.summaryIsRequired"))
+        .max(200, i18n.t("errorMessages.summaryTooLong")),
+    description: Yup.string()
+        .trim()
+        .required(i18n.t("errorMessages.descriptionIsRequired"))
+        .max(200, i18n.t("errorMessages.descriptionTooLong")),
 });

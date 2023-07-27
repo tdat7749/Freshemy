@@ -23,6 +23,8 @@ export const errorMessages = {
 
     titleIsRequired: "Title is required",
     titleTooLong: "Title is too long, under 100 characters only",
+    summaryTooLong: "Summary is too long, under 200 characters only",
+    descriptionTooLong: "Description is too long, under 200 characters only",
     summaryIsRequired: "Summary is required",
     descriptionIsRequired: "Description is required",
     currentPasswordIsRequired: "Current password is required",
