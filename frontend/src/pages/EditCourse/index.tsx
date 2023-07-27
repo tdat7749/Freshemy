@@ -246,7 +246,7 @@ const EditCourse: React.FC = () => {
                 if (response.payload.status_code === 201) {
                     const dataWithThumbnail = {
                         ...dataWithNoThumbnail,
-                        thumbnail: response.payload.data.url,
+                        thumbnail: response.payload.data.secure_url,
                     };
                     //@ts-ignore
                     dispatch(courseActions.changeInformation(dataWithThumbnail)).then((response) => {
@@ -480,7 +480,10 @@ const EditCourse: React.FC = () => {
                                         setSection(e.target.value);
                                     }}
                                 />
-                                <button className="text-white btn btn-primary text-lg flex-2" onClick={handleAddSection}>
+                                <button
+                                    className="text-white btn btn-primary text-lg flex-2"
+                                    onClick={handleAddSection}
+                                >
                                     Add section
                                 </button>
                             </div>

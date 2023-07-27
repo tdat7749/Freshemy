@@ -95,7 +95,7 @@ const CreateCourse: FC = () => {
                     ...values,
                     slug: slug,
                     categories: categories,
-                    thumbnail: response.payload.data?.url as string,
+                    thumbnail: response.payload.data?.secure_url as string,
                 };
                 //@ts-ignore
                 dispatch(courseActions.createCourses(data)).then((createCourseResponse) => {
