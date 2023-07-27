@@ -1,4 +1,4 @@
-import {CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
+import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
@@ -12,7 +12,6 @@ import { CourseCategory } from "@prisma/client";
 import i18n from "../utils/i18next";
 import { generateUniqueSlug } from "../utils/helper";
 import services from ".";
-
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
@@ -33,7 +32,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             category_id: item,
         }));
 
-        const uniqueSlug = generateUniqueSlug(slug)
+        const uniqueSlug = generateUniqueSlug(slug);
 
         if (user_id) {
             const isCreateCourse = await db.course.create({
@@ -91,6 +90,9 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                         updated_at: true,
                         id: true,
                         lessons: {
+                            where: {
+                                is_delete: false,
+                            },
                             select: {
                                 id: true,
                                 title: true,
@@ -275,16 +277,16 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
         const courseId = parseInt(id);
 
         const isFoundCourseById = await db.course.findUnique({
-            where:{
-                id:courseId
-            }
-        })
-        
-        if(!isFoundCourseById){
-            return new ResponseError(400,i18n.t("errorMessages.courseNotFound"),false)
+            where: {
+                id: courseId,
+            },
+        });
+
+        if (!isFoundCourseById) {
+            return new ResponseError(400, i18n.t("errorMessages.courseNotFound"), false);
         }
 
-        const course:any = {
+        const course: any = {
             where: {
                 id: courseId,
             },
@@ -305,7 +307,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
         if (!isUpdateCourse) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
 
         //destroy thumbnail in cloudinary
-        await services.FileStorageService.destroyImageInCloudinary(isFoundCourseById.thumbnail as string)
+        await services.FileStorageService.destroyImageInCloudinary(isFoundCourseById.thumbnail as string);
 
         const isDelete = await configs.db.courseCategory.deleteMany({
             where: {
@@ -314,20 +316,20 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
         });
         if (!isDelete) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
 
-        const data: CourseCategory[] = categories.map((category: number) =>{
+        const data: CourseCategory[] = categories.map((category: number) => {
             return {
                 course_id: courseId,
-                category_id: category
-            }
-        })
+                category_id: category,
+            };
+        });
 
         const isUpdateCategory = await db.courseCategory.createMany({
-            data
-        })
+            data,
+        });
 
-        if(!isUpdateCategory) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
+        if (!isUpdateCategory) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
         return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
-    }catch (error: any) {
+    } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         } else if (error instanceof TokenExpiredError) {
@@ -463,7 +465,12 @@ const searchMyCourses = async (pageIndex: number, keyword: string, userId: numbe
             courses: myCoursesData,
         };
 
-        return new ResponseSuccess<ResponseData>(200, i18n.t("successMessages.searchMyCourseSuccess"), true, responseData);
+        return new ResponseSuccess<ResponseData>(
+            200,
+            i18n.t("successMessages.searchMyCourseSuccess"),
+            true,
+            responseData,
+        );
     } catch (error: any) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }

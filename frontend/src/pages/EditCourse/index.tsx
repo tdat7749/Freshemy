@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Formik, ErrorMessage, Field } from "formik";
 import { editCourseValidationSchema } from "../../validations/course";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
-import { fileStorageActions, sectionActions } from "@redux/slice";
+import { fileStorageActions, lessonActions, sectionActions } from "@redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
 import { Accordion, DeleteModal, PopupAddLesson, Navbar, CustomeSelect } from "@src/components";
 import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";
@@ -39,6 +39,7 @@ const customStyles = {
 const EditCourse: React.FC = () => {
     const [isDisplayDeleteModal, setIsDisplayDeleteModal] = useState<boolean>(false);
     const [isDisplayEditModal, setIsDisplayEditModal] = useState<boolean>(false);
+    const [isDeleteSection, setIsDeleteSection] = useState<boolean>(false);
     const [isDisplayAddLessonModal, setIsDisplayAddLessonModal] = useState<boolean>(false);
 
     const [errorImage, setErrorImage] = useState<boolean>(false);
@@ -46,6 +47,7 @@ const EditCourse: React.FC = () => {
     const [section, setSection] = useState<string>("");
     const [idItem, setIdItem] = useState<number>(-1);
     const [itemTitle, setItemTitle] = useState<string>("");
+    // const [itemVideo, setItemVideo] = useState<string>("");
     const [thumbnail, setThumbnail] = useState<File | null>(null);
 
     const categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
@@ -141,9 +143,14 @@ const EditCourse: React.FC = () => {
         });
     };
 
-    const handleDisplayDeleteModal = (id: number) => {
+    const handleDisplayDeleteModal = (id: number, isDeleteSection: boolean) => {
         setIdItem(id);
         setIsDisplayDeleteModal(!isDisplayDeleteModal);
+        if (isDeleteSection) {
+            setIsDeleteSection(true);
+        } else {
+            setIsDeleteSection(false);
+        }
     };
 
     const handleDisplayAddSectionModal = (id: number) => {
@@ -172,6 +179,21 @@ const EditCourse: React.FC = () => {
         setIsDisplayDeleteModal(!isDisplayDeleteModal);
     };
 
+    const handleDeleteLesson = () => {
+        //@ts-ignore
+        dispatch(lessonActions.deleteLesson(idItem)).then((response) => {
+            if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
+                console.log(course_id);
+                // @ts-ignore
+                dispatch(sectionActions.getSectionByCourseId(course_id));
+            } else {
+                toast.error(response.payload.message);
+            }
+        });
+        setIsDisplayDeleteModal(!isDisplayDeleteModal);
+    };
+
     const handleEditSection = (id: number, title: string) => {
         // @ts-ignore
         dispatch(sectionActions.editSection({ id, title })).then((response) => {
@@ -185,11 +207,19 @@ const EditCourse: React.FC = () => {
         setIsDisplayEditModal(!isDisplayEditModal);
     };
 
+    const handleDisplayEditLesson = (id: number, title: string, video: string) => {
+        setIdItem(id);
+        setItemTitle(title);
+        // setItemVideo(video);
+        // setIsDisplayEditLessonModal(!isDisplayAddLessonModal);
+    };
+
     const handleDisplayEditModal = (id: number, title: string) => {
         setIdItem(id);
         setItemTitle(title);
         setIsDisplayEditModal(!isDisplayEditModal);
     };
+
     const handleChangeCategories = (event: any, formik: any) => {
         let createTemp = JSON.parse(JSON.stringify(event));
         let cateTemp = JSON.parse(JSON.stringify(categoriesSelector));
@@ -221,6 +251,7 @@ const EditCourse: React.FC = () => {
             previewImage(thumbnail, imageRef, courseChangeDetail.thumbnail);
         }
     };
+
     const handleChangeStatus = (event: any, formik: any) => {
         if (event.value === 0) {
             formik.setFieldValue("status", false);
@@ -480,7 +511,10 @@ const EditCourse: React.FC = () => {
                                         setSection(e.target.value);
                                     }}
                                 />
-                                <button className="text-white btn btn-primary text-lg flex-2" onClick={handleAddSection}>
+                                <button
+                                    className="text-white btn btn-primary text-lg flex-2"
+                                    onClick={handleAddSection}
+                                >
                                     Add section
                                 </button>
                             </div>
@@ -497,6 +531,7 @@ const EditCourse: React.FC = () => {
                                             handleDisplayEditModal={handleDisplayEditModal}
                                             handleDisplayDeleteModal={handleDisplayDeleteModal}
                                             handleDisplayAddSectionModal={handleDisplayAddSectionModal}
+                                            handleDisplayEditLesson={handleDisplayEditLesson}
                                             isDisplayBtn={true}
                                         />
                                     ))
@@ -504,11 +539,15 @@ const EditCourse: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    {/* POPUP DELETE */}
-                    {isDisplayDeleteModal && (
+                    {/* POPUP DELETE SECTION*/}
+                    {isDisplayDeleteModal && isDeleteSection && (
                         <DeleteModal handleDelete={handleDeleteSection} handleCancel={handleCancelModal} />
                     )}
-                    {/* POPUP EDIT */}
+                    {/* POPUP DELETE LESSON*/}
+                    {isDisplayDeleteModal && !isDeleteSection && (
+                        <DeleteModal handleDelete={handleDeleteLesson} handleCancel={handleCancelModal} />
+                    )}
+                    {/* POPUP EDIT SECTION */}
                     {isDisplayEditModal && (
                         <div className="fixed z-50 w-full h-full top-0 bottom-0 bg-black/50 flex justify-center items-center shadow-lg">
                             <div className="bg-[#F8FFF8] p-4 w-[400px] flex flex-col items-center justify-center rounded-lg ">
@@ -548,6 +587,7 @@ const EditCourse: React.FC = () => {
                             id={idItem}
                         />
                     )}
+                    {/* POPUP EDIT LESSON */}
                 </>
             )}
         </>
