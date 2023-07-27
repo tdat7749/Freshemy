@@ -49,8 +49,35 @@ const changePassword = async (req: RequestHasLogin): Promise<ResponseBase> => {
     }
 };
 
+const getInformation = async (req: RequestHasLogin): Promise<ResponseBase> => {
+    try {
+        const user = await db.user.findFirst({
+            where: {
+                id: req.user_id,
+                is_verify: true,
+            },
+            select: {
+                first_name: true,
+                last_name: true,
+                description: true,
+                url_avatar: true,
+                email: true
+            }
+        });
+
+        if(!user) return new ResponseError(404, i18n.t("errorMessages.userNotFound"), false);
+        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccessfully"), true,user);
+    } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
+        }
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+}
+
 const UserService = {
     changePassword,
+    getInformation
 };
 
 export default UserService;

@@ -19,6 +19,13 @@ class UserController {
 
         return res.status(response.getStatusCode()).json(response);
     }
+
+    async getInformation(req: RequestHasLogin, res: Response) {
+
+        const response = await service.UserService.getInformation(req);
+
+        return res.status(response.getStatusCode()).json(response);
+    }
     
 }
 
