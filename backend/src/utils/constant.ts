@@ -50,10 +50,12 @@ export const errorMessages = {
     // Firstname
     firstNameMustBeString: "First Name must be a string",
     firstNameIsRequired: "First Name is required",
+    tooLongFirstName: "First name is too long",
 
     // Lastname
     lastNameMustBeString: "Last Name must be a string",
     lastNameIsRequired: "Last Name is required",
+    tooLongLastName: "Last name is too long",
 
     // Course
     courseIdIsRequired: "Course id is required",
@@ -84,6 +86,8 @@ export const errorMessages = {
     // Description
     descriptionIsRequired: "Description is required",
     descriptionMustBeString: "Description must be a string",
+    tooLongDecsription: "Description is too long",
+    tooshortDecsription: "Description is too short",
 
     // Summary
     summaryIsRequired: "Summary is required",

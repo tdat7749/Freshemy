@@ -35,3 +35,39 @@ export const changePasswordSchema: ObjectSchema<ChangePassword> = Joi.object({
             "any.required": i18n.t("errorMessages.confirmPasswordIsRequired"),
         }),
 });
+
+type ChangeUserInformation = {
+    first_name: string;
+    last_name: string;
+    description: string;
+};
+
+export const ChangeUserInformation: ObjectSchema<ChangePassword> = Joi.object({
+    first_name: Joi.string()
+        .required()
+        .max(32)
+        .messages({
+            "string.base": i18n.t("errorMessages.firstNameMustBeString"),
+            "any.required": i18n.t("errorMessages.firstNameIsRequired"),
+            "string.max": i18n.t("errorMessages.tooLongFirstName"),
+        }),
+
+    last_name: Joi.string()
+        .required()
+        .max(32)
+        .messages({
+            "string.base": i18n.t("errorMessages.lastNameMustBeString"),
+            "any.required": i18n.t("errorMessages.lastNameIsRequired"),
+            "string.max": i18n.t("errorMessages.tooLongLastName"),
+        }),
+    description: Joi.string()
+        .required()
+        .min(8)
+        .max(32)
+        .messages({
+            "string.base": i18n.t("errorMessages.descriptionMustBeString"),
+            "any.required": i18n.t("errorMessages.descriptionIsRequired"),
+            "string.min": i18n.t("errorMessages.tooShortDescription"),
+            "string.max": i18n.t("errorMessages.tooLongDescription"),
+        }),
+});
