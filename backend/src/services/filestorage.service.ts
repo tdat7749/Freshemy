@@ -2,10 +2,10 @@ import fs from "fs";
 import ffmpegPath from "@ffmpeg-installer/ffmpeg";
 import ffprobePath from "@ffprobe-installer/ffprobe";
 import ffmpeg from "fluent-ffmpeg";
-import path, { resolve } from "path";
+import path from "path";
 import configs from "../configs";
 import cloudinary from "../configs/cloudinary.config";
-import { UploadApiErrorResponse, UploadApiResponse,DeleteApiResponse } from "cloudinary";
+import { UploadApiErrorResponse, UploadApiResponse, DeleteApiResponse } from "cloudinary";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import i18n from "../utils/i18next";
 
@@ -34,7 +34,11 @@ const createMainM3U8 = async (
     outputFolderPath: string,
     uuid: string,
 ): Promise<string> => {
-    const ouputForMainM3U8 = `${outputFolderPath}\\${uuid}\\main.m3u8`;
+    //if local use this
+    //const ouputForMainM3U8 = `${outputFolderPath}\\${uuid}\\main.m3u8`;
+
+    //if deploy to vps (linux) use this
+    const ouputForMainM3U8 = `${outputFolderPath}/${uuid}/main.m3u8`;
 
     const bandwidth = await bandwidthCalculation(inputVideo);
 
@@ -64,13 +68,15 @@ const createFileM3U8AndTS = async (
             fs.mkdirSync(videoPath, { recursive: true });
         }
 
-        const outputForM3U8 = `${videoPath}\\video_${resolution}.m3u8`;
-        // const outputForTS = `${videoPath}\\video_%03d.ts`;
+        //if local use this
+        //const outputForM3U8 = `${videoPath}\\video_${resolution}.m3u8`;
+
+        //if deploy to vps (linux) use this
+        const outputForM3U8 = `${videoPath}/video_${resolution}.m3u8`;
 
         ffmpeg(inputVideo.path)
             .outputOptions([`-s ${resolution}`, "-c:v h264", "-c:a aac", "-f hls", "-hls_time 10", "-hls_list_size 0"])
             .output(outputForM3U8)
-            // .output(outputForTS)
             .on("end", () => console.log("end"))
             .on("error", (error) => console.log(error))
             .run();
@@ -102,33 +108,33 @@ const uploadImageToCloudinary = async (req: RequestHasLogin): Promise<ResponseBa
     }
 };
 
-const destroyImageInCloudinary = async (url:string):Promise<boolean> =>{
-    try{
-        const publicId = getPublicIdFromUrl(url)
-        if(publicId){
-            const isDestroy = await new Promise<null | DeleteApiResponse>((resolve,rejects) =>{
-                cloudinary.uploader.destroy(publicId,{},(error:any,result:DeleteApiResponse ) =>{
-                    if(error){
-                        rejects(error)
-                    }else{
-                        resolve(result)
+const destroyImageInCloudinary = async (url: string): Promise<boolean> => {
+    try {
+        const publicId = getPublicIdFromUrl(url);
+        if (publicId) {
+            const isDestroy = await new Promise<null | DeleteApiResponse>((resolve, rejects) => {
+                cloudinary.uploader.destroy(publicId, {}, (error: any, result: DeleteApiResponse) => {
+                    if (error) {
+                        rejects(error);
+                    } else {
+                        resolve(result);
                     }
-                })
-            })
-            if(isDestroy !== null){
-                return true
+                });
+            });
+            if (isDestroy !== null) {
+                return true;
             }
         }
-        return false
-    }catch(error:any){
-        return false
+        return false;
+    } catch (error: any) {
+        return false;
     }
-}
+};
 
 const FileStorageService = {
     createFileM3U8AndTS,
     uploadImageToCloudinary,
-    destroyImageInCloudinary
+    destroyImageInCloudinary,
 };
 
 export default FileStorageService;
