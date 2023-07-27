@@ -14,8 +14,8 @@
       - DATABASE_URL= 'mysql://root:Abc@1234@localhost:3306/freshemy'
       - TOKEN_HEADER_KEY = "gfg_token_header_key"
       - DOMAIN_NAME = "http://localhost:3000"
-      - EMAIL_SERVER = "freshteam19062023@gmail.com"
-      - PASSWORD_SERVER = "raxqhcxdgoymmybw"
+      - EMAIL_SERVER = "freshemyteam@gmail.com"
+      - PASSWORD_SERVER = "wuhbjbyhqsjitvwl"
       - TOKEN_ACCESS_EXPIRED_TIME = "15m"
       - TOKEN_REFRESH_EXPIRED_TIME = "10d"
       - PUBLIC_URL = "http://localhost:3001"
