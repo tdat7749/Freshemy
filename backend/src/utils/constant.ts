@@ -2,7 +2,7 @@ export const errorMessages = {
     validationFail: "Validation fail",
     internalServer: "Internal server",
     badRequest: "Bad request",
-
+    missingRequestBody: "Missing the request body",
     //Data failed
     getDataFailed: "Cannot find requested resources",
 

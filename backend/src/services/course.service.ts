@@ -1,17 +1,18 @@
-import { Course, CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
+import {CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetail, Lesson, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
+import { CourseDetail, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
 import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 import configs from "../configs";
-
+import { CourseCategory } from "@prisma/client";
 import i18n from "../utils/i18next";
+import { generateUniqueSlug } from "../utils/helper";
+import services from ".";
 
-import { courses_categories } from "../types/courseCategory";
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
@@ -28,15 +29,17 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             return new ResponseError(400, i18n.t("errorMessages.slugIsUsed"), false);
         }
 
-        const listCategoryId = categories.map((item: string) => ({
-            category_id: parseInt(item),
+        const listCategoryId = categories.map((item: number) => ({
+            category_id: item,
         }));
+
+        const uniqueSlug = generateUniqueSlug(slug)
 
         if (user_id) {
             const isCreateCourse = await db.course.create({
                 data: {
                     title: title,
-                    slug: slug,
+                    slug: uniqueSlug,
                     description: description,
                     summary: summary,
                     thumbnail: thumbnail,
@@ -51,8 +54,6 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             if (isCreateCourse) {
                 return new ResponseSuccess(201, i18n.t("successMessages.registerCourseSuccess"), true);
             } else {
-                // If the course creation fails, you can also consider cleaning up any uploaded thumbnail.
-                // await cloudinary.uploader.destroy(uploadFileResult.public_id);
                 return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
             }
         }
@@ -270,81 +271,63 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
 
 const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
-        const { id, title, slug, summary, description, categories, status, thumbnail } = req.body;
-        const course_id = parseInt(id);
+        const { id, title, summary, description, categories, status, thumbnail } = req.body;
+        const courseId = parseInt(id);
 
-        const isFoundDuplicateSlug = await db.course.findFirst({
-            where: {
-                slug: slug,
-                id: course_id,
-            },
-        });
-
-        if (!isFoundDuplicateSlug) {
-            const course: any = {
-                where: {
-                    id: course_id,
-                },
-                data: {
-                    title: title,
-                    slug: slug,
-                    summary: summary,
-                    description: description,
-                    status: status,
-                },
-            };
-
-            if (thumbnail) {
-                course.data.thumbnail = thumbnail;
+        const isFoundCourseById = await db.course.findUnique({
+            where:{
+                id:courseId
             }
-
-            const isUpdateCourse = await db.course.update(course);
-
-            if (!isUpdateCourse) {
-                return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
-            }
-
-            const currentCategories = await db.courseCategory.findMany({
-                where: {
-                    course_id: course_id,
-                },
-                select: {
-                    category_id: true,
-                },
-            });
-
-            const existingCategoryIds = currentCategories.map((item) => item.category_id);
-
-            const categoriesToAdd = categories.filter(
-                (categoryId: number) => !existingCategoryIds.includes(categoryId),
-            );
-            const categoriesToRemove = existingCategoryIds.filter(
-                (categoryId: number) => !categories.includes(categoryId),
-            );
-
-            await db.courseCategory.deleteMany({
-                where: {
-                    course_id: course_id,
-                    category_id: {
-                        in: categoriesToRemove,
-                    },
-                },
-            });
-
-            const newCourseCategories = categoriesToAdd.map((categoryId: number) => ({
-                course_id,
-                category_id: categoryId,
-            }));
-
-            await db.courseCategory.createMany({
-                data: newCourseCategories,
-            });
-
-            return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
+        })
+        
+        if(!isFoundCourseById){
+            return new ResponseError(400,i18n.t("errorMessages.courseNotFound"),false)
         }
 
-        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
-    } catch (error: any) {
+        const course:any = {
+            where: {
+                id: courseId,
+            },
+            data: {
+                title: title,
+                summary: summary,
+                description: description,
+                status: status,
+            },
+        };
+
+        if (thumbnail) {
+            course.data.thumbnail = thumbnail;
+        }
+
+        const isUpdateCourse = await db.course.update(course);
+
+        if (!isUpdateCourse) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
+
+        //destroy thumbnail in cloudinary
+        await services.FileStorageService.destroyImageInCloudinary(isFoundCourseById.thumbnail as string)
+
+        const isDelete = await configs.db.courseCategory.deleteMany({
+            where: {
+                course_id: courseId,
+            },
+        });
+        if (!isDelete) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
+
+        const data: CourseCategory[] = categories.map((category: number) =>{
+            return {
+                course_id: courseId,
+                category_id: category
+            }
+        })
+
+        const isUpdateCategory = await db.courseCategory.createMany({
+            data
+        })
+
+        if(!isUpdateCategory) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
+        return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
+    }catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         } else if (error instanceof TokenExpiredError) {
@@ -371,7 +354,7 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
         });
 
         if (!isFoundCourse) {
-            return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
+            return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
         }
 
         const uploadFileResult = await new Promise<UploadApiResponse | undefined>((resolve, reject) => {
@@ -480,12 +463,7 @@ const searchMyCourses = async (pageIndex: number, keyword: string, userId: numbe
             courses: myCoursesData,
         };
 
-        return new ResponseSuccess<ResponseData>(
-            200,
-            i18n.t("successMessages.searchMyCourseSuccess"),
-            true,
-            responseData,
-        );
+        return new ResponseSuccess<ResponseData>(200, i18n.t("successMessages.searchMyCourseSuccess"), true, responseData);
     } catch (error: any) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
@@ -514,7 +492,7 @@ const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
             },
         });
 
-        return new ResponseSuccess<ResponseData>(200, i18n.t("successMessages.deleteDataSuccess"), true);
+        return new ResponseSuccess<ResponseData>(200, i18n.t("successMessages.deleteCourseSuccess"), true);
     } catch (error: any) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
@@ -578,7 +556,7 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
             };
             result.push(data);
         });
-        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, result);
+        return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, result);
     } catch (error) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
