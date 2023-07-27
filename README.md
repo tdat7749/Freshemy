@@ -1,5 +1,42 @@
 # Freshemy
 
+# Step to start the project in local
+
+1. Clone the project at: 
+  - git clone https://github.com/cvn-intern/Freshemy.git
+2. Before start the project, ensure that you have downloaded MYSQL yet.
+2. Move working directory to project: 
+  - cd Freshemy
+3. Open 2 terminals:
+ - First terminal run Backend and start the server:
+    - Add .env file into root:
+      - PORT = 3001
+      - DATABASE_URL= 'mysql://root:Abc@1234@localhost:3306/freshemy'
+      - TOKEN_HEADER_KEY = "gfg_token_header_key"
+      - DOMAIN_NAME = "http://localhost:3000"
+      - EMAIL_SERVER = "freshteam19062023@gmail.com"
+      - PASSWORD_SERVER = "raxqhcxdgoymmybw"
+      - TOKEN_ACCESS_EXPIRED_TIME = "15m"
+      - TOKEN_REFRESH_EXPIRED_TIME = "10d"
+      - PUBLIC_URL = "http://localhost:3001"
+      - PUBLIC_API_URL = "http://localhost:3001/api"
+      - JWT_SECRET_KEY = "Freshemy"
+      - HASH_SALT = "10"
+      - CLOUDINARY_NAME = "dafpvnxnf"
+      - CLOUDINARY_API_KEY = "361155637793245"
+      - CLOUDINARY_API_SECRET = "_TEg9LCDNiT1r79EnD_5HQ7XU0g"
+      - PUBLIC_URL_FOLDER_VIDEOS = "/public/videos"
+      - UPLOAD_PATH = "/root/videos/"
+    - cd backend
+    - npx prisma db push (update database in MYSQL)
+    - npm install (download necessary packages)
+    - npm run dev
+  - Second terminal run Frontend:
+    - Add .env file into root:
+      - REACT_APP_BASE_URL=http://localhost:3001/api
+    - cd frontend
+    - npm install (download necessary packages)
+    - npm start
 # Requirement
 
 ## I/ Purpose

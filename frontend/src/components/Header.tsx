@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                 <button className="text-white btn btn-primary text-lg">Login</button>
                             </Link>
                             <Link to="/register">
-                                <button className="text-white btn btn-outline text-lg">Signup</button>
+                                <button className="btn btn-outline text-lg">Signup</button>
                             </Link>
                         </div>
                     )}
