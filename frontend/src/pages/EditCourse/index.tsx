@@ -141,6 +141,8 @@ const EditCourse: React.FC = () => {
                 toast.error(response.payload.message);
             }
         });
+
+        setSection("");
     };
 
     const handleDisplayDeleteModal = (id: number, isDeleteSection: boolean) => {
@@ -504,6 +506,7 @@ const EditCourse: React.FC = () => {
                             <div className="flex flex-col gap-4 tablet:flex-row tablet:justify-between">
                                 <input
                                     type="text"
+                                    maxLength={100}
                                     className="px-2 py-2 rounded-lg border-[1px] outline-none flex-1 max-w-2xl"
                                     placeholder="Name's section"
                                     value={section}

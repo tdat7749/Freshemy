@@ -166,12 +166,15 @@ const CourseDetail: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button className="text-white btn btn-primary text-lg">
-                                        <WatchVideoIcon />
-                                        <Link to={`/course-detail/${courseDetail.slug}/watch`}>
-                                            <span>Learn Now</span>
-                                        </Link>
-                                    </button>
+                                    {(courseDetail.sections.length > 0) && (
+                                        <button className="text-white btn btn-primary text-lg">
+                                            <WatchVideoIcon />
+                                            <Link to={`/course-detail/${courseDetail.slug}/watch`}>
+                                                <span>Learn Now</span>
+                                            </Link>
+                                        </button>
+                                    )}
+
                                     <button className="text-white btn btn-primary text-lg">
                                         <EditIcon color="#ffffff" />
                                         <Link to={`/my-courses/edit/${courseDetail.id}`}>
