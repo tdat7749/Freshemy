@@ -11,10 +11,11 @@ type AccordionType = {
     handleDisplayAddSectionModal?: (id: number) => void;
     isDisplayBtn: boolean;
     handleDeleteSection?: (id: number) => void;
-    handleDisplayDeleteModal?: (id: number) => void;
+    handleDisplayDeleteModal?: (id: number, isDeleteSection: boolean) => void;
     handleDisplayEditModal?: (id: number, title: string) => void;
-    handleChangeSourceVideo?: (source:string) => void
-    source?:string
+    handleDisplayEditLesson?: (id: number, title: string, video: string) => void;
+    handleChangeSourceVideo?: (source: string) => void;
+    source?: string;
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
@@ -73,7 +74,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                                     className="cursor-pointer"
                                     onClick={() => {
                                         if (props.handleDisplayDeleteModal) {
-                                            props.handleDisplayDeleteModal(props.section.id);
+                                            props.handleDisplayDeleteModal(props.section.id, true);
                                         }
                                     }}
                                 >
@@ -87,12 +88,42 @@ const Accordion: React.FC<AccordionType> = (props) => {
             {show &&
                 props.section.lessons &&
                 props.section?.lessons.map((lesson, index) => (
-                    <div className={`py-4 pl-8 border rounded-lg my-2 hover:cursor-pointer ${lesson.url_video === props.source ? "bg-backgroundHover" : ""}`} onClick={() => {
-                        if(props.handleChangeSourceVideo){
-                            props.handleChangeSourceVideo(lesson.url_video)
-                        }
-                    }} key={index}>
+                    <div
+                        className={`py-4 pl-8 pr-4 border rounded-lg my-2 hover:cursor-pointer flex justify-between${
+                            lesson.url_video === props.source ? "bg-backgroundHover" : ""
+                        }`}
+                        onClick={() => {
+                            if (props.handleChangeSourceVideo) {
+                                props.handleChangeSourceVideo(lesson.url_video);
+                            }
+                        }}
+                        key={index}
+                    >
                         <p>{lesson.title}</p>
+                        {props.isDisplayBtn && (
+                            <div className="flex gap-2">
+                                <div
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        if (props.handleDisplayEditLesson) {
+                                            props.handleDisplayEditLesson(lesson.id, lesson.title, lesson.url_video);
+                                        }
+                                    }}
+                                >
+                                    <EditSectionIcon />
+                                </div>
+                                <div
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        if (props.handleDisplayDeleteModal) {
+                                            props.handleDisplayDeleteModal(lesson.id, false);
+                                        }
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 ))}
         </>

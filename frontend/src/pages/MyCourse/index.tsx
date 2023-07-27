@@ -128,7 +128,7 @@ const MyCourses: React.FC = () => {
                             />
                         </div>
                     ) : (
-                        <></>
+                        <p className="mt-4 text-2xl text-error text-center font-bold">You don't have any courses!</p>
                     )}
                 </div>
             </div>
