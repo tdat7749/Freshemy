@@ -94,7 +94,7 @@ const Login: FC = () => {
                                         </div>
                                     </form>
                                     <button
-                                        className="btn w-full text-white text-lg btn-primary"
+                                        className="text-white btn w-full text-lg btn-primary"
                                         type="submit"
                                         disabled={isLoading}
                                     >

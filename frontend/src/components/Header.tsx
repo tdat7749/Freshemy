@@ -80,10 +80,10 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                 All Courses
                             </span>
                             <Link to="/login">
-                                <button className="btn btn-primary text-lg">Login</button>
+                                <button className="text-white btn btn-primary text-lg">Login</button>
                             </Link>
                             <Link to="/register">
-                                <button className="btn btn-outline text-lg">Signup</button>
+                                <button className="text-white btn btn-outline text-lg">Signup</button>
                             </Link>
                         </div>
                     )}
