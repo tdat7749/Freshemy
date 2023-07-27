@@ -4,7 +4,7 @@ import { editCourseValidationSchema } from "../../validations/course";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { fileStorageActions, lessonActions, sectionActions } from "@redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
-import { Accordion, DeleteModal, PopupAddLesson, Navbar, CustomeSelect } from "@src/components";
+import { Accordion, DeleteModal, PopupAddLesson, PopupUpdateLesson, Navbar, CustomeSelect } from "@src/components";
 import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";
 import { courseActions } from "../../redux/slice";
 import { Category as CategoryType, CourseChangeInformation as CourseChangeInformationType } from "../../types/course";
@@ -41,13 +41,14 @@ const EditCourse: React.FC = () => {
     const [isDisplayEditModal, setIsDisplayEditModal] = useState<boolean>(false);
     const [isDeleteSection, setIsDeleteSection] = useState<boolean>(false);
     const [isDisplayAddLessonModal, setIsDisplayAddLessonModal] = useState<boolean>(false);
+    const [isDisplayEditLessonModal, setIsDisplayEditLessonModal] = useState<boolean>(false);
 
     const [errorImage, setErrorImage] = useState<boolean>(false);
 
     const [section, setSection] = useState<string>("");
     const [idItem, setIdItem] = useState<number>(-1);
     const [itemTitle, setItemTitle] = useState<string>("");
-    // const [itemVideo, setItemVideo] = useState<string>("");
+    const [itemVideo, setItemVideo] = useState<string>("");
     const [thumbnail, setThumbnail] = useState<File | null>(null);
 
     const categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
@@ -166,6 +167,12 @@ const EditCourse: React.FC = () => {
         setIsDisplayAddLessonModal(!isDisplayAddLessonModal);
     };
 
+    const handleCancelModalUpdateLesson = () => {
+        setIsDisplayEditLessonModal(!isDisplayEditLessonModal);
+        // @ts-ignore
+        dispatch(sectionActions.getSectionByCourseId(course_id));
+    };
+
     const handleDeleteSection = () => {
         //@ts-ignore
         dispatch(sectionActions.deleteSection(idItem)).then((response) => {
@@ -210,8 +217,8 @@ const EditCourse: React.FC = () => {
     const handleDisplayEditLesson = (id: number, title: string, video: string) => {
         setIdItem(id);
         setItemTitle(title);
-        // setItemVideo(video);
-        // setIsDisplayEditLessonModal(!isDisplayAddLessonModal);
+        setItemVideo(video);
+        setIsDisplayEditLessonModal(!isDisplayEditLessonModal);
     };
 
     const handleDisplayEditModal = (id: number, title: string) => {
@@ -588,6 +595,14 @@ const EditCourse: React.FC = () => {
                         />
                     )}
                     {/* POPUP EDIT LESSON */}
+                    {isDisplayEditLessonModal && itemVideo !== "" && (
+                        <PopupUpdateLesson
+                            handleDelete={handleDeleteSection}
+                            handleCancel={handleCancelModalUpdateLesson}
+                            id={idItem}
+                            title={itemTitle}
+                        />
+                    )}
                 </>
             )}
         </>

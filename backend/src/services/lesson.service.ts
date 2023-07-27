@@ -25,6 +25,7 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
         });
         const data = {
             id: isFoundLesson?.id,
+            title: isFoundLesson?.title,
             url_video: isFoundLesson?.url_video,
         };
         if (isFoundLesson) return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, data);
