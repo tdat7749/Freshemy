@@ -63,7 +63,7 @@ export const ChangeUserInformation: ObjectSchema<ChangePassword> = Joi.object({
     description: Joi.string()
         .required()
         .min(8)
-        .max(32)
+        .max(200)
         .messages({
             "string.base": i18n.t("errorMessages.descriptionMustBeString"),
             "any.required": i18n.t("errorMessages.descriptionIsRequired"),

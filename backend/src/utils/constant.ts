@@ -86,8 +86,8 @@ export const errorMessages = {
     // Description
     descriptionIsRequired: "Description is required",
     descriptionMustBeString: "Description must be a string",
-    tooLongDecsription: "Description is too long",
-    tooshortDecsription: "Description is too short",
+    tooLongDescription: "Description is too long",
+    tooshortDescription: "Description is too short",
 
     // Summary
     summaryIsRequired: "Summary is required",

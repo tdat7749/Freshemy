@@ -1,14 +1,23 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { ChangePassword as ChangePasswordType } from "../../types/user";
+import { ChangePassword as ChangePasswordType, UpdateInformation as UpdateInformationType, User } from "../../types/user";
 import { Response } from "../../types/response";
 import UserApis from "@src/apis/user";
 
 type UserSlice = {
     isLoading: boolean;
+    user: User;
 };
 
 const initialState: UserSlice = {
     isLoading: false,
+    user: {
+        url_avatar: "",
+        password: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        description: "",
+    },
 };
 
 export const changePassword = createAsyncThunk<Response<null>, ChangePasswordType, { rejectValue: Response<null> }>(
@@ -23,8 +32,32 @@ export const changePassword = createAsyncThunk<Response<null>, ChangePasswordTyp
     }
 );
 
+export const getInformation = createAsyncThunk<Response<User>, null, { rejectValue: Response<null> }>(
+    "users/getInformation",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await UserApis.getInformation();
+            return response.data as Response<User>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const updateInformation = createAsyncThunk<Response<User>, UpdateInformationType, { rejectValue: Response<null> }>(
+    "users/updateInformation",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await UserApis.updateInformation(body);
+            return response.data as Response<User>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 export const userSlice = createSlice({
-    name: "user",
+    name: "users",
     initialState: initialState,
     reducers: {},
     extraReducers: (builder) => {
@@ -35,6 +68,17 @@ export const userSlice = createSlice({
             state.isLoading = false;
         });
         builder.addCase(changePassword.rejected, (state) => {
+            state.isLoading = false;
+        });
+
+        builder.addCase(getInformation.pending, (state) => {
+            state.isLoading = true;
+        });
+        builder.addCase(getInformation.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.user = action.payload.data as User;
+        });
+        builder.addCase(getInformation.rejected, (state) => {
             state.isLoading = false;
         });
     },
