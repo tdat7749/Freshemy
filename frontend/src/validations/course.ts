@@ -8,7 +8,7 @@ export const editCourseValidationSchema = Yup.object({
     title: Yup.string()
         .trim()
         .required(i18n.t("errorMessages.titleIsRequired"))
-        .max(200, i18n.t("errorMessages.titleTooLong")),
+        .max(100, i18n.t("errorMessages.titleTooLong")),
     summary: Yup.string()
         .trim()
         .required(i18n.t("errorMessages.summaryIsRequired"))
@@ -35,7 +35,7 @@ export const createValidationSchema = Yup.object({
     title: Yup.string()
         .trim()
         .required(i18n.t("errorMessages.titleIsRequired"))
-        .max(200, i18n.t("errorMessages.titleTooLong")),
+        .max(100, i18n.t("errorMessages.titleTooLong")),
     summary: Yup.string()
         .trim()
         .required(i18n.t("errorMessages.summaryIsRequired"))
