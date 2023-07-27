@@ -2,7 +2,7 @@ import { Router } from "express";
 import controllers from "../controllers/index";
 import { uploadFileMdw } from "../middlewares/multer";
 import { isLogin } from "../middlewares/isLogin";
-import { isAuthor } from "src/middlewares/isAuthor";
+import { isAuthor } from "../middlewares/isAuthor";
 const courseRouter: Router = Router();
 
 courseRouter.get("/:course_id/section", isLogin, controllers.sectionController.getAllSectionByCourseId);
