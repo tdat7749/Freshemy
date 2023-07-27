@@ -11,6 +11,7 @@ import NotFound from "../NotFound";
 import { courseActions } from "@redux/slice";
 
 import toast from "react-hot-toast";
+import WatchVideoIcon from "@src/components/icons/WatchVideoIcon";
 
 const CourseDetail: React.FC = () => {
     let { slug } = useParams();
@@ -82,7 +83,7 @@ const CourseDetail: React.FC = () => {
                                     <div className=" mb-3">
                                         <span className="text-xl laptop:text-2xl font-bold">Author: </span>
                                         <Link
-                                            to={"/profile/:userID"}
+                                            to={`/profile/${courseDetail.author.id}`}
                                             className="text-xl laptop:text-2xl underline font-medium text-blue-600"
                                         >
                                             {courseDetail.author?.first_name}
@@ -165,7 +166,13 @@ const CourseDetail: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button className="btn btn-primary text-lg">
+                                    <button className="text-white btn btn-primary text-lg">
+                                        <WatchVideoIcon />
+                                        <Link to={`/course-detail/${courseDetail.slug}/watch`}>
+                                            <span>Learn Now</span>
+                                        </Link>
+                                    </button>
+                                    <button className="text-white btn btn-primary text-lg">
                                         <EditIcon color="#ffffff" />
                                         <Link to={`/my-courses/edit/${courseDetail.id}`}>
                                             <span>Edit</span>

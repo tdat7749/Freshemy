@@ -99,7 +99,7 @@ const MyCourses: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex-3 flex btn btn-primary text-lg">
+                        <div className="text-white flex-3 flex btn btn-primary text-lg">
                             <CreateIcon />
                             <Link to={"/create-course"}>Create New</Link>
                         </div>

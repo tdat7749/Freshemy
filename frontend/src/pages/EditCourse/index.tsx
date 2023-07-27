@@ -444,7 +444,7 @@ const EditCourse: React.FC = () => {
                                         </div>
                                         <div className="flex justify-end mt-4">
                                             <button
-                                                className="btn btn-primary text-lg"
+                                                className="text-white btn btn-primary text-lg"
                                                 type="submit"
                                                 disabled={isLoading || isUpload ? true : false}
                                             >
@@ -480,7 +480,7 @@ const EditCourse: React.FC = () => {
                                         setSection(e.target.value);
                                     }}
                                 />
-                                <button className="btn btn-primary text-lg flex-2" onClick={handleAddSection}>
+                                <button className="text-white btn btn-primary text-lg flex-2" onClick={handleAddSection}>
                                     Add section
                                 </button>
                             </div>
@@ -525,7 +525,7 @@ const EditCourse: React.FC = () => {
                                 </form>
                                 <div className="mt-2 flex justify-end w-full">
                                     <button
-                                        className="btn btn-primary text-lg"
+                                        className="text-white btn btn-primary text-lg"
                                         onClick={() => handleEditSection(idItem, itemTitle)}
                                     >
                                         Save

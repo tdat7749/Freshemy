@@ -93,7 +93,7 @@ const ResetPassword: React.FC<{}> = () => {
                                             className="text-[14px] text-error font-medium"
                                         />
                                     </div>
-                                    <button type="submit" className="btn btn-primary w-full text-lg">
+                                    <button type="submit" className="text-white btn btn-primary w-full text-lg">
                                         Submit
                                     </button>
                                 </Form>

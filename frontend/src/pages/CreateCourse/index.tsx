@@ -303,7 +303,7 @@ const CreateCourse: FC = () => {
                                         <button
                                             disabled={isLoading || isUpload ? true : false}
                                             type="submit"
-                                            className="btn btn-primary text-lg"
+                                            className="text-white btn btn-primary text-lg"
                                         >
                                             {isLoading || isUpload ? (
                                                 <span className="loading loading-spinner"></span>
