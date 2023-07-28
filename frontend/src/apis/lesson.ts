@@ -1,11 +1,36 @@
-import apiCaller from "../api-config/apiCaller";
-import { AddLesson as AddLessonType } from "../types/lesson";
-import { HTTP_POST } from "../utils/contants";
+import { apiCaller } from "@src/api-config";
+import { AddLesson as AddLessonType, UpdateLesson as UpdateLessonType } from "../types/lesson";
 
-export const addLesson = async (values: AddLessonType) => {
+import i18n from "../utils/i18next";
+
+const addLesson = async (values: AddLessonType) => {
     const path = "/lessons";
 
-    const response = await apiCaller(HTTP_POST, path, values);
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, values);
 
     return response;
 };
+
+const updateLesson = async (values: UpdateLessonType) => {
+    const path = `/lesson/${values.id}`;
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_PUT"), path, values);
+
+    return response;
+};
+
+const deleteLesson = async (id: number) => {
+    const path = `/lessons/${id}`;
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_DELETE"), path);
+
+    return response;
+};
+
+const LessonApis = {
+    addLesson,
+    updateLesson,
+    deleteLesson,
+};
+
+export default LessonApis;

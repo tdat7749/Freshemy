@@ -1,17 +1,13 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { changePassword as changePasswordAPI } from "../../apis/user";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { ChangePassword as ChangePasswordType } from "../../types/user";
 import { Response } from "../../types/response";
+import UserApis from "@src/apis/user";
 
 type UserSlice = {
-    error: string;
-    message: string;
     isLoading: boolean;
 };
 
 const initialState: UserSlice = {
-    error: "",
-    message: "",
     isLoading: false,
 };
 
@@ -19,7 +15,7 @@ export const changePassword = createAsyncThunk<Response<null>, ChangePasswordTyp
     "auth/verifyEmail",
     async (body, ThunkAPI) => {
         try {
-            const response = await changePasswordAPI(body);
+            const response = await UserApis.changePassword(body);
             return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -30,36 +26,18 @@ export const changePassword = createAsyncThunk<Response<null>, ChangePasswordTyp
 export const userSlice = createSlice({
     name: "user",
     initialState: initialState,
-    reducers: {
-        setError: (state, payload: PayloadAction<string>) => {
-            state.error = payload.payload;
-        },
-        setMessage: (state, payload: PayloadAction<string>) => {
-            state.message = payload.payload;
-        },
-        setMessageEmpty: (state) => {
-            state.error = "";
-            state.message = "";
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder.addCase(changePassword.pending, (state) => {
-            state.message = "";
-            state.error = "";
             state.isLoading = true;
         });
-        builder.addCase(changePassword.fulfilled, (state, action) => {
-            state.message = action.payload.message;
+        builder.addCase(changePassword.fulfilled, (state) => {
             state.isLoading = false;
         });
-        builder.addCase(changePassword.rejected, (state, action) => {
-            state.error = action.payload?.message as string;
-
+        builder.addCase(changePassword.rejected, (state) => {
             state.isLoading = false;
         });
     },
 });
 
 export default userSlice.reducer;
-
-export const { setError, setMessage, setMessageEmpty } = userSlice.actions;

@@ -2,32 +2,69 @@ import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetailResponseData, Lesson, Section, Category } from "../types/courseDetail";
+import { CourseDetail, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
 import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 import configs from "../configs";
-import {
-    MESSAGE_SUCCESS_GET_DATA,
-    MESSAGE_ERROR_GET_DATA,
-    MESSAGE_SUCCESS_REGISTER_COURSE,
-    MESSAGE_ERROR_BAD_REQUEST,
-    MESSAGE_SUCCESS_UN_REGISTER_COURSE,
-    MESSAGE_ERROR_LOGIN_FAILED,
-    MESSAGE_ERROR_SEND_EMAIL,
-    MESSAGE_ERROR_LOGIN_UNVERIFIED,
-    MESSAGE_SUCCESS_LOGIN,
-    MESSAGE_ERROR_INTERNAL_SERVER,
-    MESSAGE_ERROR_MISSING_REQUEST_BODY,
-    MESSAGE_SUCCESS_COURSE_CREATED,
-    MESSAGE_ERROR_COURSE_CREATE_FAILED,
-    MESSAGE_SUCCESS_SEARCH_MY_COURSE,
-    MESSAGE_ERROR_COURSE_NOT_FOUND,
-    MESSAGE_SUCCESS_DELETED_COURSE,
-    MESSAGE_ERROR_COURSE_SLUG_IS_USED,
-    MESSAGE_SUCCESS_UPDATE_DATA,
-} from "../utils/constant";
+import { CourseCategory } from "@prisma/client";
+import i18n from "../utils/i18next";
+import { generateUniqueSlug } from "../utils/helper";
+import services from ".";
+
+const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
+    const { title, slug, description, summary, categories, status, thumbnail } = req.body;
+    const user_id = req.user_id;
+
+    try {
+        const isFoundCourse = await db.course.findUnique({
+            where: {
+                slug: slug,
+            },
+        });
+
+        if (isFoundCourse) {
+            return new ResponseError(400, i18n.t("errorMessages.slugIsUsed"), false);
+        }
+
+        const listCategoryId = categories.map((item: number) => ({
+            category_id: item,
+        }));
+
+        const uniqueSlug = generateUniqueSlug(slug);
+
+        if (user_id) {
+            const isCreateCourse = await db.course.create({
+                data: {
+                    title: title,
+                    slug: uniqueSlug,
+                    description: description,
+                    summary: summary,
+                    thumbnail: thumbnail,
+                    user_id: user_id,
+                    status: status,
+                    courses_categories: {
+                        create: listCategoryId,
+                    },
+                },
+            });
+
+            if (isCreateCourse) {
+                return new ResponseSuccess(201, i18n.t("successMessages.createDataSuccess"), true);
+            } else {
+                return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
+            }
+        }
+
+        return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
+    } catch (error: any) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false);
+        }
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+};
 
 const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -53,6 +90,9 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                         updated_at: true,
                         id: true,
                         lessons: {
+                            where: {
+                                is_delete: false,
+                            },
                             select: {
                                 id: true,
                                 title: true,
@@ -76,22 +116,14 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
 
         if (course) {
             if (course.is_delete) {
-                return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
+                return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
             } else {
                 const categories: Category[] = [];
-                const sections: Section[] = [];
                 course.courses_categories.forEach((category) => {
                     categories.push(category.category);
                 });
-                course.sections.forEach((section) => {
-                    const lessons: Lesson[] = [];
-                    section.lessons.forEach((lesson) => {
-                        lessons.push(lesson);
-                    });
-                    section.lessons = lessons;
-                    sections.push(section);
-                });
-                const courseData: CourseDetailResponseData = {
+                const sections: Section[] = course.sections;
+                const courseData: CourseDetail = {
                     id: course.id,
                     slug: course.slug,
                     title: course.title,
@@ -106,20 +138,19 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     updated_at: course.updated_at,
                     status: course.status,
                 };
-                return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, courseData);
+                return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, courseData);
             }
         }
-        return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
+        return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
     } catch (error) {
-        console.log(error);
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
 const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
-        const course = await db.course.findUnique({
+        const course = await db.course.findFirst({
             where: {
                 id: parseInt(id),
             },
@@ -134,28 +165,11 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
                         },
                     },
                 },
-                sections: {
-                    select: {
-                        title: true,
-                        updated_at: true,
-                        id: true,
-                        lessons: {
-                            select: {
-                                id: true,
-                                title: true,
-                                url_video: true,
-                            },
-                        },
-                    },
-                    where: {
-                        is_delete: false,
-                    },
-                },
                 user: {
                     select: {
+                        id: true,
                         first_name: true,
                         last_name: true,
-                        id: true,
                     },
                 },
             },
@@ -163,43 +177,30 @@ const getCourseDetailById = async (req: Request): Promise<ResponseBase> => {
 
         if (course) {
             if (course.is_delete) {
-                return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
+                return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
             } else {
                 const categories: Category[] = [];
-                const sections: Section[] = [];
                 course.courses_categories.forEach((category) => {
                     categories.push(category.category);
                 });
-                course.sections.forEach((section) => {
-                    const lessons: Lesson[] = [];
-                    section.lessons.forEach((lesson) => {
-                        lessons.push(lesson);
-                    });
-                    section.lessons = lessons;
-                    sections.push(section);
-                });
-                const courseData: CourseDetailResponseData = {
+                const courseData: CourseEdit = {
                     id: course.id,
                     slug: course.slug,
                     title: course.title,
                     categories: categories,
                     summary: course.summary,
-                    author: course.user,
-                    ratings: 5,
                     thumbnail: course.thumbnail,
                     description: course.description,
-                    sections: sections,
                     created_at: course.created_at,
                     updated_at: course.updated_at,
                     status: course.status,
                 };
-                return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, courseData);
+                return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, courseData);
             }
         }
-        return new ResponseError(404, MESSAGE_ERROR_GET_DATA, false);
+        return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
     } catch (error) {
-        console.log(error);
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -215,28 +216,28 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 },
             });
             if (checkRegisted) {
-                return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+                return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
             } else {
                 const register = await db.enrolled.create({
-                    //@ts-ignore
                     data: {
                         user_id: user_id,
                         course_id: course_id,
                     },
                 });
                 if (register) {
-                    return new ResponseSuccess(200, MESSAGE_SUCCESS_REGISTER_COURSE, true);
+                    return new ResponseSuccess(200, i18n.t("successMessages.registerCourseSuccess"), true);
                 } else {
-                    return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+                    return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
                 }
             }
         } else {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+            return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
         }
     } catch (error) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
+
 const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const user_id = req.user_id;
@@ -249,7 +250,7 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
                 },
             });
             if (!checkRegisted) {
-                return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+                return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
             } else {
                 const unsubcribe = await db.enrolled.delete({
                     where: {
@@ -257,92 +258,81 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
                     },
                 });
                 if (unsubcribe) {
-                    return new ResponseSuccess(200, MESSAGE_SUCCESS_UN_REGISTER_COURSE, true);
+                    return new ResponseSuccess(200, i18n.t("successMessages.unRegisterCourseSuccess"), true);
                 } else {
-                    return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+                    return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
                 }
             }
         } else {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+            return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
         }
     } catch (error) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
 const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
-        const { id, title, slug, summary, description, categories, status } = req.body;
+        const { id, title, summary, description, categories, status, thumbnail } = req.body;
+        const courseId = parseInt(id);
 
-        const isFoundCourse = await db.course.findUnique({
+        const isFoundCourseById = await db.course.findUnique({
             where: {
-                id: id,
+                id: courseId,
             },
         });
 
-        if (isFoundCourse) {
-            const isUpdateCourse = await db.course.update({
-                where: {
-                    id: id,
-                },
-                data: {
-                    title: title,
-                    summary: summary,
-                    description: description,
-                    status: status,
-                },
-            });
-            if (!isUpdateCourse) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (!isFoundCourseById) {
+            return new ResponseError(400, i18n.t("errorMessages.courseNotFound"), false);
         }
 
-        let newCategories = [];
-        for (let i = 0; i < categories.length; i++) {
-            newCategories.push(categories[i]);
-        }
-        const currentCategories = await configs.db.courseCategory.findMany({
+        const course: any = {
             where: {
-                course_id: id,
+                id: courseId,
             },
-            select: {
-                category_id: true,
+            data: {
+                title: title,
+                summary: summary,
+                description: description,
+                status: status,
             },
-        });
+        };
+
+        if (thumbnail) {
+            course.data.thumbnail = thumbnail;
+        }
+
+        const isUpdateCourse = await db.course.update(course);
+
+        if (!isUpdateCourse) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
+
+        //destroy thumbnail in cloudinary
+        await services.FileStorageService.destroyImageInCloudinary(isFoundCourseById.thumbnail as string);
 
         const isDelete = await configs.db.courseCategory.deleteMany({
             where: {
-                course_id: id,
+                course_id: courseId,
             },
         });
-        if (!isDelete) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (!isDelete) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
 
-        let extractCategories: number[] = [];
-        for (let i = 0; i < currentCategories.length; i++) extractCategories.push(currentCategories[i].category_id);
-
-        var resultDuplicate = newCategories.filter((value) => extractCategories.includes(value));
-        var resultUnique = newCategories.filter(function (val) {
-            return extractCategories.indexOf(val) == -1;
-        });
-        const finalResult = resultDuplicate.concat(resultUnique);
-
-        let data = [];
-        for (let i = 0; i < finalResult.length; i++) {
-            data.push({
-                course_id: id,
-                category_id: finalResult[i],
-            });
-        }
-
-        const isUpdate = await configs.db.courseCategory.createMany({
-            data: data,
+        const data: CourseCategory[] = categories.map((category: number) => {
+            return {
+                course_id: courseId,
+                category_id: category,
+            };
         });
 
-        if (!isUpdate) return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
-        return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
+        const isUpdateCategory = await db.courseCategory.createMany({
+            data,
+        });
+
+        if (!isUpdateCategory) return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
+        return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
-        }
-        if (error instanceof TokenExpiredError) {
+        } else if (error instanceof TokenExpiredError) {
             return new ResponseError(400, error.message, false);
         } else if (error instanceof JsonWebTokenError) {
             return new ResponseError(401, error.message, false);
@@ -350,7 +340,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, "Internal Server", false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -365,20 +355,20 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
 
-        console.log(isFoundCourse);
         if (!isFoundCourse) {
-            return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+            return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
         }
 
-        const uploadFileResult = await new Promise<undefined | UploadApiResponse>((resolve, rejects) => {
+        const uploadFileResult = await new Promise<UploadApiResponse | undefined>((resolve, reject) => {
             cloudinary.uploader.upload(thumbnail.path, (error: UploadApiErrorResponse, result: UploadApiResponse) => {
                 if (error) {
-                    rejects(undefined);
+                    reject(undefined);
                 } else {
                     resolve(result);
                 }
             });
         });
+
         if (uploadFileResult) {
             const isUpdate = await db.course.update({
                 where: {
@@ -388,94 +378,25 @@ const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     thumbnail: uploadFileResult.url,
                 },
             });
-            if (isUpdate) return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
-            else {
+
+            if (isUpdate) {
+                return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
+            } else {
                 await cloudinary.uploader.destroy(uploadFileResult.public_id);
             }
-            return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
         }
-        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
-const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
-    const { title, slug, description, summary, categories, status } = req.body;
-
-    // Vì formData gửi dữ liệu bằng string nên ở đây phải convert nó về
-    const categoriesConvert = categories.map((item: string) => {
-        category_id: parseInt(item);
-    });
-    const statusConvert = status === "0" ? false : true;
-
-    const user_id = req.user_id;
-    const thumbnail = req.file as Express.Multer.File;
-
-    try {
-        const isFoundCourse = await db.course.findUnique({
-            where: {
-                slug: slug,
-            },
-        });
-
-        if (isFoundCourse) {
-            return new ResponseError(400, MESSAGE_ERROR_COURSE_SLUG_IS_USED, false);
-        }
-
-        const uploadFileResult = await new Promise<undefined | UploadApiResponse>((resolve, rejects) => {
-            cloudinary.uploader.upload(thumbnail.path, (error: UploadApiErrorResponse, result: UploadApiResponse) => {
-                if (error) {
-                    rejects(undefined);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
-
-        if (uploadFileResult) {
-            const listCategoryId = categories.map((item: number) => ({
-                category_id: item,
-            }));
-
-            if (user_id) {
-                const isCreateCourse = await db.course.create({
-                    data: {
-                        title: title,
-                        slug: slug,
-                        description: description,
-                        summary: summary,
-                        thumbnail: uploadFileResult.url,
-                        user_id: user_id,
-                        status: statusConvert,
-                        courses_categories: {
-                            create: categoriesConvert,
-                        },
-                    },
-                });
-
-                if (isCreateCourse) {
-                    return new ResponseSuccess(201, MESSAGE_SUCCESS_COURSE_CREATED, true);
-                } else {
-                    await cloudinary.uploader.destroy(uploadFileResult.public_id);
-                }
-            }
-            return new ResponseError(400, MESSAGE_ERROR_COURSE_CREATE_FAILED, false);
-        }
-        return new ResponseError(400, MESSAGE_ERROR_COURSE_CREATE_FAILED, false);
-    } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, error.toString(), false);
-        }
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
-    }
-};
-
-export const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
+const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
     try {
         const parsedPageIndex = parseInt(pageIndex.toString(), 10);
         const parsedKeyword = keyword;
@@ -544,13 +465,18 @@ export const searchMyCourses = async (pageIndex: number, keyword: string, userId
             courses: myCoursesData,
         };
 
-        return new ResponseSuccess<ResponseData>(200, MESSAGE_SUCCESS_SEARCH_MY_COURSE, true, responseData);
+        return new ResponseSuccess<ResponseData>(
+            200,
+            i18n.t("successMessages.searchMyCourseSuccess"),
+            true,
+            responseData,
+        );
     } catch (error: any) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
-export const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
+const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
     try {
         // Check if the course exists
         const existingCourse = await db.course.findUnique({
@@ -560,7 +486,7 @@ export const deleteMyCourse = async (courseId: number): Promise<ResponseBase> =>
         });
 
         if (!existingCourse) {
-            return new ResponseError(404, MESSAGE_ERROR_COURSE_NOT_FOUND, false);
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
         }
 
         // Set is_delete field to true to mark the course as deleted
@@ -573,9 +499,73 @@ export const deleteMyCourse = async (courseId: number): Promise<ResponseBase> =>
             },
         });
 
-        return new ResponseSuccess<ResponseData>(200, MESSAGE_SUCCESS_DELETED_COURSE, true);
+        return new ResponseSuccess<ResponseData>(200, i18n.t("successMessages.deleteCourseSuccess"), true);
     } catch (error: any) {
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+};
+
+const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const courses = await db.enrolled.groupBy({
+            by: ["course_id"],
+            orderBy: {
+                _count: {
+                    user_id: "desc",
+                },
+            },
+            take: 10,
+        });
+
+        const courseList = [];
+
+        for (const course of courses) {
+            const courseItem = await db.course.findFirst({
+                where: {
+                    id: course.course_id,
+                    is_delete: false,
+                },
+                include: {
+                    courses_categories: {
+                        include: {
+                            category: {
+                                select: {
+                                    id: true,
+                                    title: true,
+                                },
+                            },
+                        },
+                    },
+                    user: {
+                        select: {
+                            id: true,
+                            first_name: true,
+                            last_name: true,
+                        },
+                    },
+                },
+            });
+            if (courseItem !== null) courseList.push(courseItem);
+        }
+
+        const result: OutstandingCourse[] = [];
+
+        courseList.map((course) => {
+            const data: OutstandingCourse = {
+                id: course.id,
+                thumbnail: course.thumbnail,
+                title: course.title,
+                slug: course.slug,
+                categories: course.courses_categories.map((cate) => cate.category),
+                author: course.user.last_name + " " + course.user.first_name,
+                created_at: course.created_at,
+                updated_at: course.updated_at,
+            };
+            result.push(data);
+        });
+        return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, result);
+    } catch (error) {
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -589,5 +579,6 @@ const CourseService = {
     searchMyCourses,
     deleteMyCourse,
     getCourseDetailById,
+    getTop10Courses,
 };
 export default CourseService;

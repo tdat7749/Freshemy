@@ -1,31 +1,58 @@
-export const HTTP_POST = "POST";
-export const HTTP_GET = "GET";
-export const HTTP_PATCH = "PATCH";
-export const HTTP_PUT = "PUT";
-export const HTTP_DELETE = "DELETE";
+// messages.ts
+export const HTTP_CALL = {
+    HTTP_POST: "POST",
+    HTTP_GET: "GET",
+    HTTP_PATCH: "PATCH",
+    HTTP_PUT: "PUT",
+    HTTP_DELETE: "DELETE",
+};
 
-export const MESSAGE_ERROR_PASSWORD_WRONG = "Wrong password";
-export const MESSAGE_ERROR_EMAIL_NOT_EXIST = "Email does not exist";
-export const MESSSAGE_ERROR_VALIDATION_FAIL = "Validation fail";
-export const MESSAGE_ERROR_INTERNAL_SERVER = "Internal server"
-export const MESSAGE_SUCCESS_VERIFCATION_FORGOT_PASSWORD = "Sent a verification code to your email";
-export const MESSAGE_ERROR_EMAIL_INVALID = "Invalid email";
-export const MESSAGE_ERROR_EMAIL_REQUIRED = "Email is required";
-export const MESSAGE_ERROR_PASSWORD_REQUIRED = "Password is required";
-export const MESSAGE_ERROR_TITLE_REQUIRED = "Title is required";
-export const MESSAGE_ERROR_SUMMARY_REQUIRED = "Summary is required";
-export const MESSAGE_ERROR_DESCRIPTION_REQUIRED = "Description is required";
-export const MESSAGE_ERROR_WEAK_PASSWORD = "Weak Password"
-export const MESSAGE_ERROR_TOO_LONG_PASSWORD = "Password is too long"
-export const MESSAGE_ERROR_PASSWORD_WEAK = "Weak password"
-export const MESSAGE_ERROR_PASSWORD_LONG = "Password is too long"
-export const MESSAGE_ERROR_CURRENT_PASSWORD_REQUIRED = "Current password is required";
-export const MESSAGE_ERROR_NEW_PASSWORD_REQUIRED = "New password is required";
-export const MESSAGE_ERROR_PASSWORD_NEW_DIFFERENT_FROM_CONFIRM = "Confirm password must be the same with new password"
+export const errorMessages = {
+    wrongPassword: "Wrong password",
+    weakPassword: "Weak password",
+    tooLongPassword: "Password is too long",
+    emailNotExist: "Email does not exist",
+    validationFail: "Validation fail",
+    internalServer: "Internal server",
+    invalidEmail: "Invalid email",
+    emailIsRequired: "Email is required",
+    passwordIsRequired: "Password is required",
+    newPasswordRequired: "New Password is required",
+    confirmPasswordIsRequired: "Confirm Password is required",
+    wrongConfirmPasswordIsRequired: "Wrong Confirm Password is required",
 
-export const MESSAGE_ERROR_FIRST_NAME_REQUIRED = "First Name is required"
-export const MESSAGE_ERROR_LAST_NAME_REQUIRED = "Last Name is required"
-export const MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED = "Confirm Password is required"
-export const MESSAGE_ERROR_WRONG_CONFIRM_PASSWORD_REQUIRED = "Wrong Confirm Password is required"
+    titleIsRequired: "Title is required",
+    titleTooLong: "Title is too long, under 100 characters only",
+    summaryTooLong: "Summary is too long, under 200 characters only",
+    descriptionTooLong: "Description is too long, under 200 characters only",
+    summaryIsRequired: "Summary is required",
+    descriptionIsRequired: "Description is required",
+    currentPasswordIsRequired: "Current password is required",
+    newPasswordIsRequired: "New password is required",
+    firstNameIsRequired: "First Name is required",
+    lastNameIsRequired: "Last Name is required",
+    newPasswordDiiferentOldPassword: "Confirm password must be the same with new password",
 
+    categoriesIsRequired: "Category is required",
+    categoriesMaxAllowed: "Categories Max Allowied are 4",
 
+    fileIsNotSupport: "File is not support",
+    thumbnailIsRequired: "Thumbnail is required",
+    thumbnailTooBig: "Thumbnail too big",
+
+    videoFileType: "Invalid file type, .mp4 .mkv .mov file only",
+    videoFileSize: "Video too large, video size lower than 100MB only",
+};
+
+export const successMessages = {
+    verificationForgotPassword: "Sent a verification code to your email",
+};
+
+export const fileType = {
+    mp4: "mp4",
+    mkv: "mkv",
+    mov: "mov",
+    png: "png",
+    jpg: "jpg",
+    jpeg: "jpeg",
+};
