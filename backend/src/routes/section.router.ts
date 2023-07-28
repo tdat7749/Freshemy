@@ -4,8 +4,7 @@ import { isLogin } from "../middlewares/isLogin";
 
 const sectionRouter: Router = Router();
 
-sectionRouter.get("/:id", controllers.sectionController.getSection);
 sectionRouter.post("/", controllers.sectionController.createSection);
-sectionRouter.put("/:id",isLogin, controllers.sectionController.updateSection);
-sectionRouter.delete("/:id",isLogin, controllers.sectionController.deleteSection);
+sectionRouter.put("/:id", isLogin, controllers.sectionController.updateSection);
+sectionRouter.delete("/:id", isLogin, controllers.sectionController.deleteSection);
 export default sectionRouter;

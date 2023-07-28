@@ -1,32 +1,30 @@
 import { Request, Response } from "express";
 import { ResponseError, ResponseSuccess } from "../commons/response";
 import CategoryService from "../services/category.service";
-import {
-    MESSAGE_ERROR_CATEGORY_NOT_FOUND,
-    MESSAGE_ERROR_INTERNAL_SERVER,
-    MESSAGE_SUCCESS_CREATED_CATEGORY,
-    MESSAGE_SUCCESS_DELETED_CATEGORY,
-    MESSAGE_SUCCESS_RETRIEVED_CATEGORY,
-    MESSAGE_SUCCESS_UPDATED_CATEGORY,
-} from "../utils/constant";
+
+import i18n from "../utils/i18next";
 
 class CategoryController {
     // async createCategory(req: Request, res: Response): Promise<Response> {
     //     try {
     //         const { title } = req.body;
     //         const category = await CategoryService.createCategory({ title });
-    //         return res.json(new ResponseSuccess(200, MESSAGE_SUCCESS_CREATED_CATEGORY, true, category));
+    //         return res.json(new ResponseSuccess(200, i18n.t("successMessages.createCategorySuccess"), true, category));
     //     } catch (error: any) {
-    //         return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+    //         return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
     //     }
     // }
 
     async getAllCategories(req: Request, res: Response): Promise<Response> {
         try {
             const response = await CategoryService.getAllCategories();
-            return res.status(response.getStatusCode()).json(new ResponseSuccess(200, MESSAGE_SUCCESS_RETRIEVED_CATEGORY, true, response));
+
+            return res
+                .status(response.getStatusCode())
+                .json(new ResponseSuccess(200, i18n.t("successMessages.retrievedCategorySuccess"), true, response));
+            // return res.status(response.getStatusCode()).json(new ResponseSuccess(200, MESSAGE_SUCCESS_RETRIEVED_CATEGORY, true, response));
         } catch (error: any) {
-            return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+            return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
         }
     }
 
@@ -35,12 +33,14 @@ class CategoryController {
     //         const categoryId: number = parseInt(req.params.id);
     //         const category = await CategoryService.getCategoryById(categoryId);
     //         if (category) {
-    //             return res.json(new ResponseSuccess(200, MESSAGE_SUCCESS_RETRIEVED_CATEGORY, true, category));
+    //             return res.json(
+    //                 new ResponseSuccess(200, i18n.t("successMessages.retrievedCategorySuccess"), true, category),
+    //             );
     //         } else {
-    //             return res.status(404).json(new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false));
+    //             return res.status(404).json(new ResponseError(404, i18n.t("errorMessages.categoryNotFound"), false));
     //         }
     //     } catch (error: any) {
-    //         return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+    //         return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
     //     }
     // }
 
@@ -52,12 +52,14 @@ class CategoryController {
     //         const updatedCategory = await CategoryService.editCategory(categoryId, { title });
 
     //         if (updatedCategory) {
-    //             return res.json(new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATED_CATEGORY, true, updatedCategory));
+    //             return res.json(
+    //                 new ResponseSuccess(200, i18n.t("successMessages.updatedCategorySuccess"), true, updatedCategory),
+    //             );
     //         } else {
-    //             return res.status(404).json(new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false));
+    //             return res.status(404).json(new ResponseError(404, i18n.t("errorMessages.categoryNotFound"), false));
     //         }
     //     } catch (error: any) {
-    //         return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+    //         return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
     //     }
     // }
 
@@ -68,12 +70,12 @@ class CategoryController {
     //         const deletedCategory = await CategoryService.deleteCategory(categoryId);
 
     //         if (deletedCategory) {
-    //             return res.json(new ResponseSuccess(200, MESSAGE_SUCCESS_DELETED_CATEGORY, true));
+    //             return res.json(new ResponseSuccess(200, i18n.t("successMessages.deletedCategorySuccess"), true));
     //         } else {
-    //             return res.status(404).json(new ResponseError(404, MESSAGE_ERROR_CATEGORY_NOT_FOUND, false));
+    //             return res.status(404).json(new ResponseError(404, i18n.t("errorMessages.categoryNotFound"), false));
     //         }
     //     } catch (error: any) {
-    //         return res.status(500).json(new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false));
+    //         return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
     //     }
     // }
 }

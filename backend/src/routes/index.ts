@@ -4,6 +4,7 @@ import sectionRouter from "./section.router";
 import categoryRouter from "./category.router";
 import courseRouter from "./course.router";
 import lessonRouter from "./lesson.router";
+import fileStorageRouter from "./filestorage.router";
 
 const routers = {
     authRouter: authRouter,
@@ -12,6 +13,7 @@ const routers = {
     sectionRouter: sectionRouter,
     lessonRouter: lessonRouter,
     categoryRouter: categoryRouter,
+    fileStorageRouter: fileStorageRouter,
 };
 
 export default routers;

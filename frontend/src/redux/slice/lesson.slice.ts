@@ -1,18 +1,14 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { addLesson as addLessonAPI } from "../../apis/lesson";
 import { AddLesson as AddLessonType, Lesson } from "../../types/lesson";
 import { Response } from "../../types/response";
+import LessonApis from "@src/apis/lesson";
 
 type LessonSlice = {
-    error: string;
-    message: string;
     isLoading: boolean;
     lessonList: Lesson[];
-}
+};
 
 const initialState: LessonSlice = {
-    error: "",
-    message: "",
     isLoading: false,
     lessonList: [],
 };
@@ -21,7 +17,19 @@ export const addLesson = createAsyncThunk<Response<null>, AddLessonType, { rejec
     "lesson/addLesson",
     async (body, ThunkAPI) => {
         try {
-            const response = await addLessonAPI(body);
+            const response = await LessonApis.addLesson(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const deleteLesson = createAsyncThunk<Response<null>, number, { rejectValue: Response<null> }>(
+    "lesson/deleteLesson",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await LessonApis.deleteLesson(body);
             return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
@@ -41,11 +49,12 @@ export const lessonSlice = createSlice({
                 return lesson;
             });
         },
+        setDeleteLesson: (state, action: PayloadAction<number>) => {
+            state.lessonList = state.lessonList.filter((lesson: Lesson) => lesson.id !== action.payload);
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(addLesson.pending, (state) => {
-            state.error = "";
-            state.message = "";
             state.isLoading = true;
         });
         builder.addCase(addLesson.fulfilled, (state, action) => {
@@ -53,8 +62,21 @@ export const lessonSlice = createSlice({
             state.isLoading = false;
         });
         builder.addCase(addLesson.rejected, (state, action) => {
-            state.error = action.payload?.message as string;
+            state.isLoading = false;
+        });
+
+        builder.addCase(deleteLesson.pending, (state) => {
+            state.isLoading = true;
+        });
+        builder.addCase(deleteLesson.fulfilled, (state, action) => {
+            state.isLoading = false;
+        });
+        builder.addCase(deleteLesson.rejected, (state, action) => {
             state.isLoading = false;
         });
     },
 });
+
+export const { setAddLesson, setDeleteLesson } = lessonSlice.actions;
+
+export default lessonSlice.reducer;

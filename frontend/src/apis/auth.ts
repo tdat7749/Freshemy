@@ -1,19 +1,19 @@
-import apiCaller from "../api-config/apiCaller";
+import { apiCaller } from "@src/api-config";
 import { Register as RegisterType, Login as LoginType, ResetPassword as ResetPasswordType } from "../types/auth";
-import { HTTP_GET, HTTP_POST } from "../utils/contants";
+import i18n from "../utils/i18next";
 
-export const login = async (values: LoginType) => {
+const login = async (values: LoginType) => {
     const path = "auth/login";
     const data = {
         email: values.email,
         password: values.password,
     };
 
-    const response = await apiCaller(HTTP_POST, path, data);
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, data);
     return response;
 };
 
-export const register = async (values: RegisterType) => {
+const register = async (values: RegisterType) => {
     const path = "/auth/signup";
 
     const data: RegisterType = {
@@ -24,48 +24,52 @@ export const register = async (values: RegisterType) => {
         confirm_password: values.confirm_password,
     };
 
-    const response = await apiCaller(HTTP_POST, path, data);
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, data);
     return response;
 };
 
-export const getMe = async () => {
+const getMe = async () => {
     const path = "auth/me";
-    const response = await apiCaller(HTTP_GET, path);
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
     return response;
 };
 
-export const forgotPassword = async (email: string) => {
+const forgotPassword = async (email: string) => {
     const path = "auth/forgot-password";
     const data = {
         email,
     };
-    const response = await apiCaller(HTTP_POST, path, data);
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, data);
     return response;
 };
 
-export const resetPassword = async (values: ResetPasswordType) => {
+const resetPassword = async (values: ResetPasswordType) => {
     const path = `auth/reset-password`;
     const data = {
         confirmPassword: values.confirmPassword,
         password: values.password,
         token: values.token,
     };
-    const response = await apiCaller(HTTP_POST, path, data);
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, data);
+
     return response;
 };
 
-export const refreshToken = async () => {
+const refreshToken = async () => {
     const path = "auth/refresh";
 
-    const response = await apiCaller(HTTP_GET, path);
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
 
     return response;
 };
 
-export const verifyEmail = async (token: string) => {
+const verifyEmail = async (token: string) => {
     const path = `auth/verify-email/${token}`;
 
-    const response = await apiCaller(HTTP_GET, path);
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
 
     return response;
 };
+
+export { login, register, getMe, forgotPassword, resetPassword, refreshToken, verifyEmail };

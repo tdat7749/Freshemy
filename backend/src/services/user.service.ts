@@ -1,64 +1,56 @@
-import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response"
-import { RequestHasLogin } from "../types/request"
-import { db } from '../configs/db.config'
+import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
+import { RequestHasLogin } from "../types/request";
+import { db } from "../configs/db.config";
 import * as bcrypt from "bcrypt";
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import configs from "../configs";
-import {
-    MESSAGE_ERROR_PASSWORD_NEW_DIFFERENT_FROM_CONFIRM,
-    MESSAGE_SUCCESS_CHANGE_PASSWORD,
-    MESSAGE_ERROR_PASSWORD_WRONG,
-    MESSAGE_ERROR_USER_NOT_FOUND,
-    MESSAGE_ERROR_BAD_REQUEST,
-    MESSAGE_ERROR_INTERNAL_SERVER,
-} from "../utils/constant"
 
+import i18n from "../utils/i18next";
 
 const changePassword = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const { current_password, new_password, confirm_password } = req.body
+        const { current_password, new_password, confirm_password } = req.body;
 
         if (new_password !== confirm_password) {
-            return new ResponseError(400, MESSAGE_ERROR_PASSWORD_NEW_DIFFERENT_FROM_CONFIRM, false)
+            return new ResponseError(400, i18n.t("errorMessages.newPasswordDiiferentOldPassword"), false);
         }
 
         const user = await db.user.findFirst({
             where: {
                 id: req.user_id,
-                is_verify: true
-            }
-        })
+                is_verify: true,
+            },
+        });
         if (user) {
-            const isCorrectPassword = await bcrypt.compare(current_password, user.password)
+            const isCorrectPassword = await bcrypt.compare(current_password, user.password);
             if (isCorrectPassword) {
-                const hashedNewPassword = await bcrypt.hash(new_password, configs.general.HASH_SALT) 
+                const hashedNewPassword = await bcrypt.hash(new_password, configs.general.HASH_SALT);
 
                 await db.user.update({
                     where: {
-                        id: user.id
+                        id: user.id,
                     },
                     data: {
-                        password: hashedNewPassword
-                    }
-                })
-                return new ResponseSuccess(200, MESSAGE_SUCCESS_CHANGE_PASSWORD, true)
+                        password: hashedNewPassword,
+                    },
+                });
+                return new ResponseSuccess(200, i18n.t("successMessages.changePasswordSuccessfully"), true);
             }
 
-            return new ResponseError(400, MESSAGE_ERROR_PASSWORD_WRONG, false)
+            return new ResponseError(400, i18n.t("errorMessages.wrongPassword"), false);
         }
 
-        return new ResponseError(404, MESSAGE_ERROR_USER_NOT_FOUND, false)
+        return new ResponseError(404, i18n.t("errorMessages.userNotFound"), false);
     } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, MESSAGE_ERROR_BAD_REQUEST, false);
+            return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
         }
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
-}
-
+};
 
 const UserService = {
-    changePassword
-}
+    changePassword,
+};
 
-export default UserService
+export default UserService;

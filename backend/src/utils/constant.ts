@@ -1,103 +1,156 @@
-export const MESSAGE_ERROR_PASSWORD_WRONG = "Wrong password";
-export const MESSAGE_ERROR_EMAIL_NOT_EXIST = "Email does not exist";
-export const MESSSAGE_ERROR_VALIDATION_FAIL = "Validation fail";
-export const MESSAGE_SUCCESS_VERIFCATION_FORGOT_PASSWORD = "Sent a verification code to your email";
-export const MESSAGE_ERROR_EMAIL_REQUIRED = "Email is required";
-export const MESSAGE_SUCCESS_REQUEST = "Request successfully";
-export const MESSAGE_ERROR_UNAUTHORIZED = "You don't have authorize";
-export const MESSAGE_ERROR_EMAIL_INVALID = "Invalid email";
-export const MESSAGE_ERROR_PASSWORD_REQUIRED = "Password is required";
-export const MESSAGE_ERROR_PASSWORD_WEAK = "Weak password";
-export const MESSAGE_ERROR_PASSWORD_LONG = "Password is too long";
-export const MESSAGE_ERROR_CURRENT_PASSWORD_REQUIRED = "Current password is required";
-export const MESSAGE_ERROR_NEW_PASSWORD_REQUIRED = "New password is required";
-export const MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED = "Confirm password is required";
-export const MESSAGE_ERROR_MISSING_REQUEST_BODY = "Validation failed";
-export const MESSAGE_ERROR_PASSWORD_NEW_DIFFERENT_FROM_CONFIRM = "Confirm password must be the same with new password";
-export const MESSAGE_ERROR_USER_NOT_FOUND = " User is not found ";
-export const MESSAGE_ERROR_INTERNAL_SERVER = " Internal Server ";
-export const MESSAGE_ERROR_BAD_REQUEST = "Bad request";
-export const MESSAGE_ERROR_PASSWORD_IS_STRING = "Password must be a string";
-//success
-export const MESSAGE_SUCCESS_CHANGE_PASSWORD = "Change password succesfully";
-export const MESSAGE_ERROR_EMAIL_STRING = "Email must be a string";
-export const MESSAGE_ERROR_EMAIL_INCORRECT = "Incorrect email";
-export const MESSAGE_ERROR_PASSWORD_STRING = "Password must be a string";
-export const MESSAGE_ERROR_LOGIN_FAILED = "Email or password is invalid";
-export const MESSAGE_ERROR_SEND_EMAIL =
-    "Email sending failed, please login to the account you just registered to be sent confirmation email again";
-export const MESSAGE_ERROR_LOGIN_UNVERIFIED =
-    "Unverified account, We have sent you a verification link, please check your email soon before it expires!";
-export const MESSAGE_SUCCESS_LOGIN = "Logged in successfully";
-export const MESSAGE_ERROR_FIRST_NAME_STRING = "First Name must be a string";
-export const MESSAGE_ERROR_FIRST_NAME_REQUIRED = "First Name is required";
-export const MESSAGE_ERROR_LAST_NAME_STRING = "Last Name must be a string";
-export const MESSAGE_ERROR_LAST_NAME_REQUIRED = "Last Name is required";
-export const MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED =
-    "Password and comfirm password must be same";
-//data success
-export const MESSAGE_SUCCESS_GET_DATA = "Get data successfully";
-//register course
-export const MESSAGE_SUCCESS_REGISTER_COURSE = "Subcribe successfully"
-export const MESSAGE_SUCCESS_UN_REGISTER_COURSE = "Unsubcribe successfully"
-export const MESSAGE_ERROR_MISSING_DATA = "Course id is required"
-export const MESSAGE_ERROR_WRONG_DATA_TYPE = "Course id must be a number"
-//data failed
-export const MESSAGE_ERROR_GET_DATA = "Cannot find requested resources"
+export const errorMessages = {
+    validationFail: "Validation fail",
+    internalServer: "Internal server",
+    badRequest: "Bad request",
+    missingRequestBody: "Missing the request body",
+    //Data failed
+    getDataFailed: "Cannot find requested resources",
 
-export const MESSAGE_SUCCESS_CREATE_DATA = "Create successfully";
-export const MESSAGE_SUCCESS_UPDATE_DATA = "Update successfully";
-export const MESSAGE_SUCCESS_DELETE_DATA = "Delete successfully";
-export const MESSAGE_ERROR_COURSE_SLUG_IS_USED = "This slug is already in use";
+    // Token
+    tokenExpired: "The verification code has expired, please login so we can resend it",
+    tokenVerfiedCode: "The verification code is not correct",
+    tokenGernerateCode: "This verification code was never generated",
 
-export const MESSAGE_SUCCESS_COURSE_CREATED = "Create a new successful course";
+    // Password
+    wrongPassword: "Wrong password",
+    weakPassword: "Weak password",
+    tooLongPassword: "Password is too long",
+    passwordIsRequired: "Password is required",
+    newPasswordIsRequired: "New Password is required",
+    currentPasswordIsRequired: "Current password is required",
+    confirmPasswordIsRequired: "Confirm Password is required",
+    newPasswordDiiferentOldPassword: "Confirm password must be the same with new password",
+    wrongConfirmPasswordIsRequired: "Wrong Confirm Password is required",
+    passwordMustBeString: "Password must be a string",
+    passWordAndConfirmPasswordMustBeSameRequired: "Password and comfirm password must be same required !",
 
-export const MESSAGE_ERROR_COURSE_CREATE_FAILED = "Create a new failed course";
+    // Email
+    emailNotExist: "Email does not exist",
+    emailAlreadyExists: "Email already exists",
+    invalidEmail: "Invalid email",
+    emailIsRequired: "Email is required",
+    emailMustBeString: "Email must be a string",
+    inCorrectEmail: "Incorrect email",
+    errorSendEmail:
+        "Email sending failed, please login to the account you just registered to be sent confirmation email again",
 
-export const MESSAGE_ERROR_COURSE_TITLE_REQUIRED = "Title is required";
+    // Verified Email
+    verifiedEmail: "This account has been verified before",
+    verifiedEmailFailed: "Verify email failed",
 
-export const MESSAGE_ERROR_COURSE_TITLE_STRING = "Title must be a string";
+    // Login
+    loginFailed: "Email or password is invalid",
+    signUpFailed: "Sign Up Failed",
 
-export const MESSAGE_ERROR_COURSE_SLUG_REQUIRED = "Slug is required";
+    // User
+    userNotFound: " User is not found ",
+    loginUnverified:
+        "Unverified account, We have sent you a verification link, please check your email soon before it expires!",
 
-export const MESSSAGE_ERROR_SLUG_MALFORMED = "Slug malformed";
+    // Firstname
+    firstNameMustBeString: "First Name must be a string",
+    firstNameIsRequired: "First Name is required",
 
-export const MESSAGE_ERROR_SLUG_STRING = "Slug must be a string";
+    // Lastname
+    lastNameMustBeString: "Last Name must be a string",
+    lastNameIsRequired: "Last Name is required",
 
-export const MESSAGE_ERROR_STATUS_REQUIRED = "Status is required";
+    // Course
+    courseIdIsRequired: "Course id is required",
+    courseIdMustBeNumber: "Course id must be a number",
+    createCourseFailed: "Create a new failed course",
+    courseNotFound: "Course Not Found",
 
-export const MESSAGE_ERROR_STATUS_BOOLEAN = "Status must be a boolean";
+    // Section
+    sectionIdIsRequired: "Section id is required",
 
-export const MESSAGE_ERROR_DESCRIPTION_REQUIRED = "Description is required";
+    // Reset password
+    UnAuthorized: "You don't have authorize",
 
-export const MESSAGE_ERROR_DESCRIPTION_STRING = "Description must be a string";
+    // Slug
+    slugIsUsed: "This slug is already in use",
+    courseSlugIsRequired: "Course Slug is required",
+    courseSlugMalformed: "Course Slug malformed",
+    courseSlugMustBeString: "Course Slug must be a string",
 
-export const MESSAGE_ERROR_SUMMARY_REQUIRED = "Summary is required";
+    // Title
+    courseTitleIsRequired: "Title is required",
+    courseTitleMustBeString: "Title must be a string",
 
-export const MESSAGE_ERROR_SUMMARY_STRING = "Summary must be a string";
+    // Status
+    statusIsRequired: "Status is required",
+    statusMustBeBoolean: "Status must be a boolean",
 
-export const MESSAGE_ERROR_CATEGORIES_ARRAY_NUMBER = "Categories must be a array int";
+    // Description
+    descriptionIsRequired: "Description is required",
+    descriptionMustBeString: "Description must be a string",
 
-export const MESSAGE_ERROR_CATEGORIES_REQUIRED = "Categories is required";
+    // Summary
+    summaryIsRequired: "Summary is required",
+    summaryMustBeString: "Summary must be a string",
 
-export const MESSAGE_ERROR_THUMBNAIL_REQUIRED = "Thumbnail is required";
+    // Category
+    categoryArrayNumber: "Categories must be a array int",
+    // export const MESSAGE_ERROR_CATEGORIES_ARRAY_NUMBER = "Categories must be a array int";
+    categoryIsRequired: "Categories is required",
+    categoryNotFound: "Category Not Found",
 
+    // Thumbnail
+    thumbnailIsRequired: "Thumbnail is required",
 
-// Category
-export const MESSAGE_SUCCESS_GET_ALL_CATEGORIES = "Get All Categories Successfully"
-export const MESSAGE_SUCCESS_GET_CATEGORY_BY_ID = "Get Category By Id Successfully"
-export const MESSAGE_SUCCESS_CREATED_CATEGORY = "Category Created Successfully"
-export const MESSAGE_SUCCESS_RETRIEVED_CATEGORY = "Categories Retrieved Successfully"
-export const MESSAGE_SUCCESS_UPDATED_CATEGORY = "Category Updated Successfully"
-export const MESSAGE_SUCCESS_DELETED_CATEGORY = "Category Deleted Successfully"
+    // Upload Image
+    imageUploadError: "Upload Image Error",
+};
 
-export const MESSAGE_ERROR_CATEGORY_NOT_FOUND = "Category Not Found"
+export const successMessages = {
+    // Request
+    requestSuccess: "Request successful",
 
-// Course
-export const MESSAGE_SUCCESS_SEARCH_MY_COURSE = "Search My Course Successfully"
-export const MESSAGE_SUCCESS_DELETED_COURSE = "Course Deleted Successfully"
+    // Request Body
+    validationFailed: "Validation failed",
 
-export const MESSAGE_ERROR_COURSE_NOT_FOUND = "Course Not Found"
-export const MESSAGE_ERROR_SECTION_ID_REQUIRED = "Section id is required";
+    // Data Success
+    getDataSuccess: "Get data successfully",
+    createDataSuccess: "Create successfully",
+    updateDataSuccess: "Update successfully",
+    deleteDataSuccess: "Delete successfully",
 
-export const MESSAGE_ERROR_COURSE_ID_REQUIRED = "Course id is required";
+    // Email
+    verificationForgotPassword: "Sent a verification code to your email",
+
+    // Verified Email
+    verifiedEmail: "Account verification successful",
+    verifiedEmailBefore: "This account has been verified before",
+
+    // Password
+    changePasswordSuccessfully: "Change password succesfully",
+
+    // Login
+    successLogin: "Logged in successfully",
+
+    // Sign-up
+    signUpSuccess: "Signup successful, please check your email",
+
+    // Register Course
+    registerCourseSuccess: "Subcribe successfully",
+    unRegisterCourseSuccess: "Unsubcribe successfully",
+
+    // Reset password
+    resetPasswordSuccess: "Reset successfully, please login your account",
+
+    // Course
+    createCourseSuccess: "Create a new successful course",
+    searchMyCourseSuccess: "Search My Course Successfully",
+    deleteCourseSuccess: "Course Deleted Successfully",
+
+    // Category
+    getAllCategoriesSuccess: "Get All Categories Successfully",
+    getCategoryByIdSuccess: "Get Category By Id Successfully",
+    createCategorySuccess: "Category Created Successfully",
+    retrievedCategorySuccess: "Categories Retrieved Successfully",
+    updatedCategorySuccess: "Category Updated Successfully",
+    deletedCategorySuccess: "Category Deleted Successfully",
+
+    // Upload Image
+    imageUploadSuccess: "Upload Image Successfully",
+};

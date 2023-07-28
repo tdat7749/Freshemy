@@ -2,33 +2,37 @@ import { Request } from "express";
 import configs from "../configs";
 import { db } from "../configs/db.config";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
-import {
-    MESSAGE_ERROR_INTERNAL_SERVER,
-    MESSAGE_ERROR_MISSING_REQUEST_BODY,
-    MESSAGE_SUCCESS_GET_DATA,
-    MESSAGE_SUCCESS_CREATE_DATA,
-    MESSAGE_SUCCESS_UPDATE_DATA,
-    MESSAGE_SUCCESS_DELETE_DATA,
-} from "../utils/constant";
+
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 
-const getSection = async (req: Request): Promise<ResponseBase> => {
+import i18n from "../utils/i18next";
+
+const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
     try {
-        const { id } = req.params;
-        const section_id = +id;
-        const isFoundSection = await configs.db.section.findFirst({
+        const { course_id } = req.params;
+        const isFoundSection = await configs.db.section.findMany({
             where: {
-                id: section_id,
+                course_id: parseInt(course_id),
                 is_delete: false,
             },
+            include: {
+                lessons: {
+                    where: {
+                        is_delete: false,
+                    },
+                    select: {
+                        title: true,
+                        id: true,
+                        url_video: true,
+                        updated_at: true,
+                    },
+                },
+            },
         });
-        const data = {
-            id: isFoundSection?.id,
-            title: isFoundSection?.title,
-        };
-        if (isFoundSection) return new ResponseSuccess(200, MESSAGE_SUCCESS_GET_DATA, true, data);
-        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (isFoundSection)
+            return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, isFoundSection);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
@@ -41,7 +45,7 @@ const getSection = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -54,19 +58,8 @@ const createSection = async (req: Request): Promise<ResponseBase> => {
                 course_id: course_id,
             },
         });
-        const next = await configs.db.section.findMany({
-            take: 1,
-            orderBy: {
-                id: "desc",
-            },
-        });
-        const data = {
-            id: next[0].id,
-            title: next[0].title,
-            course_id: next[0].course_id,
-        };
-        if (section) return new ResponseSuccess(200, MESSAGE_SUCCESS_CREATE_DATA, true, data);
-        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (section) return new ResponseSuccess(201, i18n.t("successMessages.createDataSuccess"), true);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
@@ -79,7 +72,7 @@ const createSection = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -96,8 +89,8 @@ const updateSection = async (req: Request): Promise<ResponseBase> => {
                 title: title,
             },
         });
-        if (section) return new ResponseSuccess(200, MESSAGE_SUCCESS_UPDATE_DATA, true);
-        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (section) return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
@@ -110,7 +103,7 @@ const updateSection = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
@@ -126,8 +119,8 @@ const deleteSection = async (req: Request): Promise<ResponseBase> => {
                 is_delete: true,
             },
         });
-        if (isDelete) return new ResponseSuccess(200, MESSAGE_SUCCESS_DELETE_DATA, true);
-        return new ResponseError(400, MESSAGE_ERROR_MISSING_REQUEST_BODY, false);
+        if (isDelete) return new ResponseSuccess(200, i18n.t("successMessages.deleteDataSuccess"), true);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
@@ -140,11 +133,11 @@ const deleteSection = async (req: Request): Promise<ResponseBase> => {
             return new ResponseError(401, error.message, false);
         }
 
-        return new ResponseError(500, MESSAGE_ERROR_INTERNAL_SERVER, false);
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 const SectionService = {
-    getSection,
+    getAllSectionByCourseId,
     createSection,
     updateSection,
     deleteSection,

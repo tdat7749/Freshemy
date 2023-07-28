@@ -11,20 +11,25 @@ type AccordionType = {
     handleDisplayAddSectionModal?: (id: number) => void;
     isDisplayBtn: boolean;
     handleDeleteSection?: (id: number) => void;
-    handleDisplayDeleteModal?: (id: number) => void;
+    handleDisplayDeleteModal?: (id: number, isDeleteSection: boolean) => void;
     handleDisplayEditModal?: (id: number, title: string) => void;
+    handleDisplayEditLesson?: (id: number, title: string, video: string) => void;
+    handleChangeSourceVideo?: (source: string) => void;
+    source?: string;
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
     const [show, setShow] = useState<boolean>(false);
 
-    // const lessonList: Lesson[] = useAppSelector((state) => state.lessonSlice.lessontionList) ?? [];
-
     return (
         <>
             <div>
                 <h2 id="accordion-collapse-heading-1">
-                    <div className="flex items-center justify-between w-full p-4 bg-primary rounded-lg my-1 ">
+                    <div
+                        className={`flex items-center justify-between w-full p-4  bg-primary rounded-lg my-1 flex-wrap ${
+                            show ? " shadow-xl" : ""
+                        }`}
+                    >
                         <div className="flex gap-2 items-center cursor-pointer" onClick={() => setShow(!show)}>
                             <svg
                                 className={`w-3 h-3 ${show ? "rotate-180" : ""} shrink-0`}
@@ -45,11 +50,14 @@ const Accordion: React.FC<AccordionType> = (props) => {
                         </div>
                         {props.isDisplayBtn && (
                             <div className="flex gap-2">
-                                <div className="cursor-pointer" onClick={() => {
+                                <div
+                                    className="cursor-pointer"
+                                    onClick={() => {
                                         if (props.handleDisplayAddSectionModal) {
                                             props.handleDisplayAddSectionModal(props.section.id);
                                         }
-                                    }} >
+                                    }}
+                                >
                                     <AddIcon />
                                 </div>
                                 <div
@@ -66,7 +74,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                                     className="cursor-pointer"
                                     onClick={() => {
                                         if (props.handleDisplayDeleteModal) {
-                                            props.handleDisplayDeleteModal(props.section.id);
+                                            props.handleDisplayDeleteModal(props.section.id, true);
                                         }
                                     }}
                                 >
@@ -80,8 +88,44 @@ const Accordion: React.FC<AccordionType> = (props) => {
             {show &&
                 props.section.lessons &&
                 props.section?.lessons.map((lesson, index) => (
-                    <div className="py-4 pl-8 border rounded-lg" key={index}>
+                    <div
+                        className={`py-4 pl-8 pr-4 border rounded-lg my-2 hover:cursor-pointer flex justify-between  ${
+                            lesson.url_video === props.source ? "bg-backgroundHover" : ""
+                        }`}
+                        onClick={() => {
+                            if (props.handleChangeSourceVideo) {
+                                props.handleChangeSourceVideo(lesson.url_video);
+                            }
+                        }}
+                        key={index}
+                    >
                         <p>{lesson.title}</p>
+
+                        {/* TODO: IMPLEMENT IN NEXT SPRINT */}
+                        {/* {props.isDisplayBtn && (
+                            <div className="flex gap-2">
+                                <div
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        if (props.handleDisplayEditLesson) {
+                                            props.handleDisplayEditLesson(lesson.id, lesson.title, lesson.url_video);
+                                        }
+                                    }}
+                                >
+                                    <EditSectionIcon />
+                                </div>
+                                <div
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        if (props.handleDisplayDeleteModal) {
+                                            props.handleDisplayDeleteModal(lesson.id, false);
+                                        }
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                </div>
+                            </div>
+                        )} */}
                     </div>
                 ))}
         </>

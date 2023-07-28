@@ -1,17 +1,6 @@
 import Joi, { ObjectSchema } from "joi";
-import {
-    MESSAGE_ERROR_EMAIL_STRING,
-    MESSAGE_ERROR_EMAIL_INCORRECT,
-    MESSAGE_ERROR_PASSWORD_STRING,
-    MESSAGE_ERROR_PASSWORD_REQUIRED,
-    MESSAGE_ERROR_EMAIL_REQUIRED,
-    MESSAGE_ERROR_FIRST_NAME_STRING,
-    MESSAGE_ERROR_LAST_NAME_STRING,
-    MESSAGE_ERROR_FIRST_NAME_REQUIRED,
-    MESSAGE_ERROR_LAST_NAME_REQUIRED,
-    MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED,
-    MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED,
-} from "../utils/constant";
+
+import i18n from "../utils/i18next";
 
 type Login = {
     email: string;
@@ -23,15 +12,17 @@ export const loginSchema: ObjectSchema<Login> = Joi.object({
         .regex(/^\S+@\S+\.\S+$/)
         .required()
         .messages({
-            "string.base": MESSAGE_ERROR_EMAIL_STRING,
-            "any.required": MESSAGE_ERROR_EMAIL_REQUIRED,
-            "string.regex": MESSAGE_ERROR_EMAIL_INCORRECT,
+            "string.base": i18n.t("errorMessages.emailMustBeString"),
+            "any.required": i18n.t("errorMessages.emailIsRequired"),
+            "string.regex": i18n.t("errorMessages.inCorrectEmail"),
         }),
 
-    password: Joi.string().required().messages({
-        "string.base": MESSAGE_ERROR_PASSWORD_STRING,
-        "any.required": MESSAGE_ERROR_PASSWORD_REQUIRED,
-    }),
+    password: Joi.string()
+        .required()
+        .messages({
+            "string.base": i18n.t("errorMessages.passwordMustBeString"),
+            "any.required": i18n.t("errorMessages.passwordIsRequired"),
+        }),
 });
 
 type Registration = {
@@ -47,30 +38,39 @@ export const registrationSchema: ObjectSchema<Registration> = Joi.object({
         .regex(/^\S+@\S+\.\S+$/)
         .required()
         .messages({
-            "string.base": MESSAGE_ERROR_EMAIL_STRING,
-            "any.required": MESSAGE_ERROR_EMAIL_REQUIRED,
-            "string.regex": MESSAGE_ERROR_EMAIL_INCORRECT,
+            "string.base": i18n.t("errorMessages.emailMustBeString"),
+            "any.required": i18n.t("errorMessages.emailIsRequired"),
+            "string.regex": i18n.t("errorMessages.inCorrectEmail"),
         }),
 
-    password: Joi.string().required().messages({
-        "string.base": MESSAGE_ERROR_PASSWORD_STRING,
-        "any.required": MESSAGE_ERROR_PASSWORD_REQUIRED,
-    }),
+    password: Joi.string()
+        .required()
+        .messages({
+            "string.base": i18n.t("errorMessages.passwordMustBeString"),
+            "any.required": i18n.t("errorMessages.passwordIsRequired"),
+        }),
 
-    first_name: Joi.string().required().messages({
-        "string.base": MESSAGE_ERROR_FIRST_NAME_STRING,
-        "any.required": MESSAGE_ERROR_FIRST_NAME_REQUIRED,
-    }),
+    first_name: Joi.string()
+        .required()
+        .messages({
+            "string.base": i18n.t("errorMessages.firstNameMustBeString"),
+            "any.required": i18n.t("errorMessages.firstNameIsRequired"),
+        }),
 
-    last_name: Joi.string().required().messages({
-        "string.base": MESSAGE_ERROR_LAST_NAME_STRING,
-        "any.required": MESSAGE_ERROR_LAST_NAME_REQUIRED,
-    }),
+    last_name: Joi.string()
+        .required()
+        .messages({
+            "string.base": i18n.t("errorMessages.lastNameMustBeString"),
+            "any.required": i18n.t("errorMessages.lastNameIsRequired"),
+        }),
 
     // confirmPassword: Joi.string().valid(Joi.ref("password")).required().strict(),
 
-    confirm_password: Joi.string().valid(Joi.ref("password")).required().messages({
-        "any.only": MESSAGE_ERROR_PASSOWRD_CONFIRM_PASSWORD_MUST_BE_SAME_REQUIRED,
-        "any.required": MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED,
-    }),
+    confirm_password: Joi.string()
+        .valid(Joi.ref("password"))
+        .required()
+        .messages({
+            "any.only": i18n.t("errorMessages.newPasswordDiiferentOldPassword"),
+            "any.required": i18n.t("errorMessages.confirmPasswordIsRequired"),
+        }),
 });
