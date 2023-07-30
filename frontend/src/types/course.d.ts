@@ -56,13 +56,27 @@ export type CourseDetail = {
     categories: Category[];
     summary: string;
     author: User;
-    ratings: number | undefined;
+    ratings: Rating[];
     description: string;
     sections: SectionRender[];
     created_at: string;
     updated_at: string;
     thumbnail: string;
     status: boolean;
+};
+
+export type Rating = {
+    id: number;
+    score: number;
+    content: string;
+    created_at: Date;
+    user_id: number;
+    course_id: number;
+    user: {
+        first_name: string;
+        last_name: string;
+        url_avatar: string | null;
+    };
 };
 
 export type ChangeThumbnail = {

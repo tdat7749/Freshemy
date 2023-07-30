@@ -5,13 +5,27 @@ export type CourseDetail = {
     categories: Category[];
     summary: string;
     author: Author;
-    ratings: number;
+    ratings: Rating[];
     thumbnail: string;
     description: string;
     sections: Section[];
     created_at: Date;
     updated_at: Date;
     status: boolean;
+};
+
+export type Rating = {
+    id: number;
+    score: number;
+    content: string;
+    created_at: Date;
+    user_id: number;
+    course_id: number;
+    user: {
+        first_name: string;
+        last_name: string;
+        url_avatar: string | null;
+    };
 };
 
 export type CourseEdit = {

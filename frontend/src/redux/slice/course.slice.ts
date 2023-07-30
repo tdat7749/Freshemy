@@ -151,7 +151,7 @@ const initialState: CourseSlice = {
             first_name: "",
             last_name: "",
         },
-        ratings: undefined,
+        ratings: [],
         description: "",
         sections: [],
         created_at: "",
