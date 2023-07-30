@@ -81,6 +81,24 @@ export const sectionSlice = createSlice({
                 return section;
             });
         },
+        reOderLesson: (state, action: PayloadAction<any>) => {
+            const min = Math.min(action.payload[1], action.payload[2]);
+            const max = Math.max(action.payload[1], action.payload[2]);
+            state.sectionList = state.sectionList.map((section) => {
+                section.lessons?.map((lesson: any) => {
+                    if (lesson.order <= max && lesson.order >= min) {
+                        if (lesson.id === action.payload[0]) {
+                            lesson.order = action.payload[1];
+                        } else {
+                            lesson.order = lesson.order + action.payload[3];
+                        }
+                    }
+                    return lesson;
+                });
+                return section;
+            });
+            console.log(state.sectionList);
+        },
     },
     extraReducers: (builder) => {
         // add section
@@ -129,7 +147,6 @@ export const sectionSlice = createSlice({
 
         builder.addCase(getSectionByCourseId.fulfilled, (state, action) => {
             state.sectionList = action.payload.data as SectionType[];
-            state.isGetLoading = false;
         });
 
         builder.addCase(getSectionByCourseId.rejected, (state) => {
@@ -138,6 +155,6 @@ export const sectionSlice = createSlice({
     },
 });
 
-export const { setDeleteSection, setEditSection } = sectionSlice.actions;
+export const { setDeleteSection, setEditSection, reOderLesson } = sectionSlice.actions;
 
 export default sectionSlice.reducer;

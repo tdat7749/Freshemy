@@ -100,9 +100,11 @@ model Lesson {
   url_video  String   @db.MediumText
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
+  order      Int
   section_id Int
-  section    Section @relation(fields: [section_id], references: [id], onDelete: Cascade)
+  section    Section  @relation(fields: [section_id], references: [id], onDelete: Cascade)
+
+  @@index([order])
 }
 
 model Category {

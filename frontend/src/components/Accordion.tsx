@@ -3,6 +3,7 @@ import { Section } from "../types/section";
 import AddIcon from "./icons/AddIcon";
 import DeleteIcon from "./icons/DeleteIcon";
 import EditSectionIcon from "./icons/EditSectionIcon";
+import DragDrop from "./DragDrop";
 // import { useAppSelector } from "../hooks/hooks";
 // import { Lesson } from "../types/lesson";
 
@@ -20,7 +21,6 @@ type AccordionType = {
 
 const Accordion: React.FC<AccordionType> = (props) => {
     const [show, setShow] = useState<boolean>(false);
-
     return (
         <>
             <div>
@@ -85,24 +85,24 @@ const Accordion: React.FC<AccordionType> = (props) => {
                     </div>
                 </h2>
             </div>
-            {show &&
-                props.section.lessons &&
-                props.section?.lessons.map((lesson, index) => (
-                    <div
-                        className={`py-4 pl-8 pr-4 border rounded-lg my-2 hover:cursor-pointer flex justify-between  ${
-                            lesson.url_video === props.source ? "bg-backgroundHover" : ""
-                        }`}
-                        onClick={() => {
-                            if (props.handleChangeSourceVideo) {
-                                props.handleChangeSourceVideo(lesson.url_video);
-                            }
-                        }}
-                        key={index}
-                    >
-                        <p>{lesson.title}</p>
+            {show && props.section.lessons && (
+                <DragDrop
+                    initialItems={props.section?.lessons.map((lesson, index) => (
+                        <div
+                            className={`py-4 pl-8 pr-4 border rounded-lg my-2 hover:cursor-pointer flex justify-between  ${
+                                lesson.url_video === props.source ? "bg-backgroundHover" : ""
+                            }`}
+                            onClick={() => {
+                                if (props.handleChangeSourceVideo) {
+                                    props.handleChangeSourceVideo(lesson.url_video);
+                                }
+                            }}
+                            key={`${lesson.id}-${lesson.order}`}
+                        >
+                            <p>{lesson.title}</p>
 
-                        {/* TODO: IMPLEMENT IN NEXT SPRINT */}
-                        {/* {props.isDisplayBtn && (
+                            {/* TODO: IMPLEMENT IN NEXT SPRINT */}
+                            {/* {props.isDisplayBtn && (
                             <div className="flex gap-2">
                                 <div
                                     className="cursor-pointer"
@@ -126,8 +126,11 @@ const Accordion: React.FC<AccordionType> = (props) => {
                                 </div>
                             </div>
                         )} */}
-                    </div>
-                ))}
+                        </div>
+                    ))}
+                    status={2}
+                />
+            )}
         </>
     );
 };

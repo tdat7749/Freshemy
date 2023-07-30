@@ -27,7 +27,25 @@ const deleteLesson = async (id: number) => {
     return response;
 };
 
+const getLessonOrder = async (id: number) => {
+    const path = `/lessons/${id}/lessonOrder`;
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
+
+    return response;
+};
+
+const reOrderLesson = async (values: any) => {
+    const path = `/lessons/reOrderLesson`;
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_PUT"), path, values);
+
+    return response;
+};
+
 const LessonApis = {
+    reOrderLesson,
+    getLessonOrder,
     addLesson,
     updateLesson,
     deleteLesson,

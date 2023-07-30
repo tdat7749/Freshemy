@@ -26,7 +26,13 @@ const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
                         id: true,
                         url_video: true,
                         updated_at: true,
+                        order: true,
                     },
+                    orderBy: [
+                        {
+                            order: "asc",
+                        },
+                    ],
                 },
             },
         });

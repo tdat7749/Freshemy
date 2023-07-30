@@ -13,8 +13,9 @@ import UserDropDown from "./UserDropDown";
 import VideoPlayer from "./VideoPlayer";
 import CategoryIcon from "./icons/CategoryIcon";
 import Icon from "./icons";
-
+import DragDrop from "./DragDrop";
 export {
+    DragDrop,
     Accordion,
     CourseCard,
     DeleteModal,

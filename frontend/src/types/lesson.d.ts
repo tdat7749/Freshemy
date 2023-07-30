@@ -1,7 +1,13 @@
 export type Lesson = {
+    order?: number;
     id: number;
     title: string;
     url_video: string;
+};
+
+export type orderLesson = {
+    id: number;
+    order: number;
 };
 
 export type AddLesson = {

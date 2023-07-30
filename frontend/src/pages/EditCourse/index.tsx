@@ -51,6 +51,7 @@ const EditCourse: React.FC = () => {
     const [thumbnail, setThumbnail] = useState<File | null>(null);
 
     const categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
+    const sectionSelector = useAppSelector((state) => state.sectionSlice.sectionList);
 
     const [categoriesOptions, setcategoriesOptions] = useState<Options[]>(categoriesSelector);
     const createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
@@ -312,6 +313,20 @@ const EditCourse: React.FC = () => {
         }
     };
 
+    const handleReOrderLesson = () => {
+        const newOrder: any = [];
+        sectionSelector.forEach((section: SectionType) => {
+            section.lessons?.forEach((lesson: any) => {
+                newOrder.push({
+                    id: lesson.id,
+                    order: lesson.order,
+                });
+            });
+        });
+        //@ts-ignore
+        dispatch(lessonActions.reOrderLesson(newOrder));
+    };
+
     return (
         <>
             {isGetLoading !== true && (
@@ -351,7 +366,7 @@ const EditCourse: React.FC = () => {
                                 validationSchema={editCourseValidationSchema}
                                 onSubmit={handleOnSubmit}
                             >
-                                {(formik) => (
+                                {(formik: any) => (
                                     <form
                                         onSubmit={formik.handleSubmit}
                                         className="mt-4 laptop:mt-0 flex-1 flex flex-col border border-dashed border-black rounded-lg p-4 bg-background shadow-lg"
@@ -540,8 +555,10 @@ const EditCourse: React.FC = () => {
                                     ))
                                 )}
                             </div>
+                            <button onClick={handleReOrderLesson}>H!!!!!!!!!!!!!!!!!!!</button>
                         </div>
                     </div>
+
                     {/* POPUP DELETE SECTION*/}
                     {isDisplayDeleteModal && isDeleteSection && (
                         <DeleteModal handleDelete={handleDeleteSection} handleCancel={handleCancelModal} />

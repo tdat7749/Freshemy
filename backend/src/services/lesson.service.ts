@@ -44,6 +44,32 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
+const getLessonOrderByCourseId = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const { course_id } = req.params;
+        const orderLesson = await configs.db.lesson.findMany({
+            select: {
+                id: true,
+                order: true,
+            },
+        });
+        if (orderLesson) return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, orderLesson);
+        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
+    } catch (error: any) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false);
+        }
+        if (error instanceof TokenExpiredError) {
+            return new ResponseError(400, error.message, false);
+        } else if (error instanceof JsonWebTokenError) {
+            return new ResponseError(401, error.message, false);
+        } else if (error instanceof NotBeforeError) {
+            return new ResponseError(401, error.message, false);
+        }
+
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+};
 
 const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
@@ -193,7 +219,41 @@ const deleteLesson = async (req: Request): Promise<ResponseBase> => {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
+
+const reOrderLesson = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const newOrers = req.body;
+        for (const newOrder of newOrers) {
+            console.log(newOrder);
+            await configs.db.lesson.update({
+                where: {
+                    id: newOrder.id,
+                },
+                data: {
+                    order: newOrder.order,
+                },
+            });
+        }
+        return new ResponseSuccess(200, i18n.t("successMessages.deleteDataSuccess"), true, req.body);
+        // return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
+    } catch (error: any) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false);
+        }
+        if (error instanceof TokenExpiredError) {
+            return new ResponseError(400, error.message, false);
+        } else if (error instanceof JsonWebTokenError) {
+            return new ResponseError(401, error.message, false);
+        } else if (error instanceof NotBeforeError) {
+            return new ResponseError(401, error.message, false);
+        }
+
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+};
 const LessonService = {
+    reOrderLesson,
+    getLessonOrderByCourseId,
     getLesson,
     createLesson,
     updateLesson,
