@@ -5,7 +5,18 @@ export type CourseDetail = {
     categories: Category[];
     summary: string;
     author: Author;
-    ratings: number;
+    ratings: {
+        id: number;
+        score: number;
+        content: string;
+        created_at: Date;
+        user: {
+            id: number;
+            first_name: string;
+            last_name: string;
+        };
+    }[];
+    attendees: number;
     thumbnail: string;
     description: string;
     sections: Section[];
@@ -57,4 +68,10 @@ export type OutstandingCourse = {
     author: string;
     created_at: Date;
     updated_at: Date;
+};
+
+export type FilteredCourseResult = {
+    courses: CourseDetail[];
+    total_page: number;
+    total_record: number;
 };

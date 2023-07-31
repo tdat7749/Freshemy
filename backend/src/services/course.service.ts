@@ -2,7 +2,14 @@ import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetail, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
+import {
+    CourseDetail,
+    Section,
+    Category,
+    CourseEdit,
+    OutstandingCourse,
+    FilteredCourseResult,
+} from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
@@ -48,7 +55,44 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                         create: listCategoryId,
                     },
                 },
+                include: {
+                    user: true,
+                    courses_categories: {
+                        include: {
+                            category: true,
+                        },
+                    },
+                    ratings: {
+                        include: {
+                            user: true,
+                        },
+                    },
+                    sections: {
+                        include: {
+                            lessons: true,
+                        },
+                    },
+                },
             });
+
+            // if (isCreateCourse) {
+            //     // Fetch all courses after creating the new course
+            //     const allCourses = await getAllCourses(1, "", 0, "newest");
+
+            //     // Find the index of the newly created course in the sorted list
+            //     const newCourseIndex = allCourses.data.courses.findIndex(
+            //         (course: any) => course.id === isCreateCourse.id,
+            //     );
+
+            //     // Move the newly created course to the beginning of the list
+            //     if (newCourseIndex !== -1) {
+            //         allCourses.data.courses.unshift(allCourses.data.courses.splice(newCourseIndex, 1)[0]);
+            //     }
+
+            //     return allCourses;
+            // } else {
+            //     return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
+            // }
 
             if (isCreateCourse) {
                 return new ResponseSuccess(201, i18n.t("successMessages.createDataSuccess"), true);
@@ -111,6 +155,11 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                         id: true,
                     },
                 },
+                ratings: {
+                    include: {
+                        user: true,
+                    },
+                },
             },
         });
 
@@ -130,13 +179,14 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories: categories,
                     summary: course.summary,
                     author: course.user,
-                    ratings: 5,
+                    ratings: course.ratings,
                     thumbnail: course.thumbnail,
                     description: course.description,
                     sections: sections,
                     created_at: course.created_at,
                     updated_at: course.updated_at,
                     status: course.status,
+                    attendees: 0,
                 };
                 return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, courseData);
             }
@@ -569,6 +619,152 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
+const getAllCourses = async (
+    pageIndex: number,
+    keyword: string,
+    categories: string[],
+    sortBy: string,
+): Promise<ResponseBase> => {
+    try {
+        const take = 5;
+        const skip = (pageIndex - 1) * take;
+
+        const categoryIDs = categories.map((categoryID) => parseInt(categoryID, 10));
+
+        const coursesQuery = db.course.findMany({
+            where: {
+                title: {
+                    contains: keyword.toLowerCase(),
+                },
+                is_delete: false,
+                courses_categories: {
+                    some: {
+                        category: {
+                            id: {
+                                in: categoryIDs ,
+                            },
+                        },
+                    },
+                },
+            },
+            include: {
+                user: true,
+                courses_categories: {
+                    include: {
+                        category: true,
+                    },
+                },
+                ratings: {
+                    include: {
+                        user: true,
+                    },
+                },
+                sections: {
+                    include: {
+                        lessons: true,
+                    },
+                },
+                enrolleds: {
+                    include: {
+                        user: true,
+                    },
+                },
+            },
+            skip,
+            take,
+            orderBy:
+                sortBy === "newest"
+                    ? { created_at: "desc" }
+                    : sortBy === "attendee"
+                    ? { enrolleds: { _count: "desc" } }
+                    : undefined,
+        });
+
+        const [courses, totalRecord] = await Promise.all([
+            coursesQuery,
+            db.course.count({
+                where: {
+                    title: {
+                        contains: keyword,
+                    },
+                    is_delete: false,
+                    courses_categories: {
+                        some: {
+                            category: {
+                                id: {
+                                    in: categoryIDs ,
+                                },
+                            },
+                        },
+                    },
+                },
+            }),
+        ]);
+
+        const totalPage = Math.ceil(totalRecord / take);
+
+        const coursesData = courses.map((course) => {
+            const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
+            const averageRating = (course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0).toFixed(1);
+
+            return {
+                id: course.id,
+                slug: course.slug,
+                thumbnail: course.thumbnail,
+                author: {
+                    id: course.user.id,
+                    first_name: course.user.first_name,
+                    last_name: course.user.last_name,
+                },
+                rate: averageRating,
+                categories: course.courses_categories.map((cc) => {
+                    return {
+                        id: cc.category.id,
+                        title: cc.category.title,
+                    };
+                }),
+                title: course.title,
+                summary: course.summary,
+                description: course.description,
+                sections: course.sections,
+                status: course.status,
+                attendees: course.enrolleds.length,
+                created_at: course.created_at,
+                updated_at: course.updated_at,
+                ratings: course.ratings.map((rating) => ({
+                    id: rating.id,
+                    score: rating.score,
+                    content: rating.content,
+                    created_at: rating.created_at,
+                    user: {
+                        id: rating.user.id,
+                        first_name: rating.user.first_name,
+                        last_name: rating.user.last_name,
+                    },
+                })),
+            };
+        });
+
+        const responseData: FilteredCourseResult = {
+            total_page: totalPage,
+            total_record: totalRecord,
+            courses: coursesData,
+        };
+
+        console.log("Courses Data:", responseData);
+
+
+        return new ResponseSuccess<FilteredCourseResult>(
+            200,
+            i18n.t("successMessages.getDataSuccess"),
+            true,
+            responseData,
+        );
+    } catch (error) {
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+};
+
 const CourseService = {
     getCourseDetail,
     registerCourse,
@@ -580,5 +776,6 @@ const CourseService = {
     deleteMyCourse,
     getCourseDetailById,
     getTop10Courses,
+    getAllCourses,
 };
 export default CourseService;
