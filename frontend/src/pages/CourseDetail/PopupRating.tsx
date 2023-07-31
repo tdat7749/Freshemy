@@ -4,17 +4,17 @@ import { RatingCourse as RatingCourseType } from "../../types/course";
 import RatingInPopup from "./RatingInPopup";
 import { useAppDispatch } from "../../hooks/hooks";
 import { courseActions } from "@redux/slice";
-// import toast, { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 // import i18n from "../utils/i18next";
 
 type RatingCourseProps = {
-    // handleCancel: () => void
+    handleCancel: () => void;
     course_id: number | undefined;
 };
 
 const PopupRating: React.FC<RatingCourseProps> = (props) => {
     const course_id = props.course_id;
-    const [checked, setChecked] = useState(0);
+    const [checked, setChecked] = useState(5);
     const formikRef = useRef(null);
     const dispatch = useAppDispatch();
     const initialValue = {
@@ -33,18 +33,25 @@ const PopupRating: React.FC<RatingCourseProps> = (props) => {
         };
         console.log(data);
         //@ts-ignore
-        dispatch(courseActions.ratingCourse(data));
+        dispatch(courseActions.ratingCourse(data)).then((response) => {
+            if (response.payload.status_code === 200) {
+                toast.success("Rate Successfully");
+                props.handleCancel();
+            } else {
+                toast.error("Rate Unsuccessfully");
+            }
+        });
     };
 
     return (
         <div className="fixed z-50 top-0 left-0 right-0 bottom-0 bg-black/50 flex items-center justify-center">
-            {/* <Toaster /> */}
+            <Toaster />
             <div className="  max-w-[360px] tablet:max-w-[550px] max-h-[630px] tablet:max-h-[1000px] rounded-[12px] bg-background mx-auto tablet:mx-0 flex-1">
                 <div className="w-full p-[12px]">
                     <Formik initialValues={initialValue} onSubmit={handleOnSubmit} innerRef={formikRef}>
                         {(formik) => (
                             <form onSubmit={formik.handleSubmit} className="text-sm mb-1 tablet:text-xl font-medium">
-                                <div className="px-5 py-3">
+                                <div className="px-5 py-3 flex items-center space-x-4">
                                     <label htmlFor="title" className="text-sm mb-1 tablet:text-xl font-medium">
                                         Vote: {checked}
                                     </label>
@@ -78,7 +85,7 @@ const PopupRating: React.FC<RatingCourseProps> = (props) => {
                                         SAVE
                                         {/* {isLoading ? "Loading..." : "Save"} */}
                                     </button>
-                                    <button type="button" className="btn text-lg ml-2">
+                                    <button onClick={props.handleCancel} type="button" className="btn text-lg ml-2">
                                         Cancel
                                     </button>
                                 </div>

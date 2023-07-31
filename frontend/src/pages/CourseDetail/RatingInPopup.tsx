@@ -6,7 +6,7 @@ type RatingInPopupProps = {
 
 const RatingInPopup: React.FC<RatingInPopupProps> = (props) => {
     return (
-        <div className="rating ">
+        <div className="rating mt-[-4px] space-x-1">
             <input
                 type="radio"
                 name="rating-1"

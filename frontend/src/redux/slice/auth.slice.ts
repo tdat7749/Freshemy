@@ -12,9 +12,15 @@ type AuthSlice = {
     user: User;
     isLogin: boolean;
     isLoading: boolean;
+    role: Role;
     error: string;
     success: string;
 };
+enum Role {
+    UnenrolledUser = "UnenrolledUser",
+    EnrolledUser = "EnrolledUser",
+    Author = "Author",
+}
 
 export const login = createAsyncThunk<Response<TokenType>, LoginType, { rejectValue: Response<null> }>(
     "auth/login",
@@ -85,6 +91,7 @@ const initialState: AuthSlice = {
     },
     isLogin: false,
     isLoading: false,
+    role: Role.UnenrolledUser,
     error: "",
     success: "",
 };

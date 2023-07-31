@@ -1,10 +1,10 @@
 import React from "react";
-import TotalRating from "./TotalRating";
+import { TotalRating } from "@src/components";
 import { Rating } from "../../types/course";
-type CommentBoxProps = {
+type CommentCardProps = {
     rating: Rating;
 };
-const CommentBox: React.FC<CommentBoxProps> = (props) => {
+const CommentCard: React.FC<CommentCardProps> = (props) => {
     const date = props.rating.created_at.toString().split("T");
     return (
         <div>
@@ -35,4 +35,4 @@ const CommentBox: React.FC<CommentBoxProps> = (props) => {
         </div>
     );
 };
-export default CommentBox;
+export default CommentCard;

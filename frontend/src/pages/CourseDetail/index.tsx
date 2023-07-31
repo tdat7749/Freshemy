@@ -11,22 +11,25 @@ import NotFound from "../NotFound";
 import { courseActions } from "@redux/slice";
 import PopupRating from "./PopupRating";
 
-import TotalRating from "./TotalRating";
-import CommentBox from "./CommentBox";
+import { TotalRating } from "@src/components";
 import toast from "react-hot-toast";
 import AuthorButton from "./AuthorButton";
-// import WatchVideoIcon from "@src/components/icons/WatchVideoIcon";
-
+import GuestButton from "./GuestButton";
+import SubscribeUserButton from "./SubscribeUserButton";
+import UnsubscribeModal from "./UnsubcribeModal";
+import CommentSection from "./CommentSection";
 const CourseDetail: React.FC = () => {
     let { slug } = useParams();
     const dispatch = useAppDispatch();
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
-    // const [isOpenPopupRating, setIsOpenPopupRating] = useState<boolean>(true);
+    const [isOpenPopupRating, setIsOpenPopupRating] = useState<boolean>(false);
+    const [isOpenUnsubscribeModal, setIsOpenUnsubscribeModal] = useState<boolean>(false);
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
     const navigate = useNavigate();
 
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
+    const ratings: Rating[] = useAppSelector((state) => state.courseSlice.ratings) ?? [];
     // const isLoading:boolean = useAppSelector((state => state.courseSlice.isLoading))
 
     const handleDeleteCourse = () => {
@@ -47,10 +50,11 @@ const CourseDetail: React.FC = () => {
     const handleCancelModal = () => {
         setIsOpenDeleteModal(!isOpenDeleteModal);
     };
-    const ratingScore = (): number => {
-        let score: number = 0;
-        courseDetail.ratings.map((rating) => (score += rating.score));
-        return Number((score / courseDetail.ratings.length).toFixed(1));
+    const handleTogglePopupRating = () => {
+        setIsOpenPopupRating(!isOpenPopupRating);
+    };
+    const handleToggleUnsubcribeCourse = () => {
+        setIsOpenUnsubscribeModal(!isOpenUnsubscribeModal);
     };
     useEffect(() => {
         // @ts-ignore
@@ -67,9 +71,11 @@ const CourseDetail: React.FC = () => {
 
     return (
         <>
-            {/* {isOpenPopupRating && <PopupRating />} */}
-            {false && <PopupRating course_id={courseDetail.id} />}
+            {isOpenPopupRating && <PopupRating handleCancel={handleTogglePopupRating} course_id={courseDetail.id} />}
             {isOpenDeleteModal && <DeleteModal handleDelete={handleDeleteCourse} handleCancel={handleCancelModal} />}
+            {isOpenUnsubscribeModal && (
+                <UnsubscribeModal handleCancel={handleToggleUnsubcribeCourse} course_id={courseDetail.id} />
+            )}
             <Navbar />
             <div className="container mx-auto">
                 <div className="min-h-screen h-full px-4 tablet:px-[60px]">
@@ -94,7 +100,7 @@ const CourseDetail: React.FC = () => {
                                     <div className=" mb-3">
                                         <span className="text-xl laptop:text-2xl font-bold">Author: </span>
                                         <Link
-                                            to={`/profile/${courseDetail.author.id}`}
+                                            to={"/profile/:userID"}
                                             className="text-xl laptop:text-2xl underline font-medium text-blue-600"
                                         >
                                             {courseDetail.author?.first_name}
@@ -103,8 +109,12 @@ const CourseDetail: React.FC = () => {
                                     </div>
                                     <div className="flex items-center text-xl laptop:text-3xl font-medium mb-3">
                                         <span className="text-xl laptop:text-2xl font-bold mr-2">Ratings:</span>
-                                        <TotalRating ratingId={0} totalScore={ratingScore()} isForCourse={true} />
-                                        <p className="italic text-xl laptop:text-2xl ml-2 ">{ratingScore() || 0}</p>
+                                        <TotalRating
+                                            ratingId={0}
+                                            totalScore={Number(courseDetail.rating)}
+                                            isForCourse={true}
+                                        />
+                                        <p className="italic text-xl laptop:text-2xl ml-2 ">{courseDetail.rating}</p>
                                     </div>
                                     <div className="flex items-center text-xl laptop:text-2xl font-bold">
                                         <span className="mr-2">Status:</span>
@@ -118,6 +128,12 @@ const CourseDetail: React.FC = () => {
                                         setIsOpenDeleteModal(!isOpenDeleteModal);
                                         setIdItem(courseDetail.id as number);
                                     }}
+                                    courseDetail={courseDetail}
+                                />
+                                <GuestButton isLogin={true} course_id={courseDetail.id} />
+                                <SubscribeUserButton
+                                    handleTogglePopupRating={handleTogglePopupRating}
+                                    handleToggleUnsubscribeCourse={handleToggleUnsubcribeCourse}
                                     courseDetail={courseDetail}
                                 />
                             </div>
@@ -136,13 +152,7 @@ const CourseDetail: React.FC = () => {
                                     return <Accordion key={index} isDisplayBtn={false} section={section} />;
                                 })}
                             </div>
-                            <div className="comment my-4">
-                                <h2 className="text-xl tablet:text-3xl font-bold mb-3">Ratings</h2>
-                                <span className="w-[60px] h-1 bg-black block mb-4"></span>
-                                {courseDetail.ratings.map((rating: Rating, index: number) => {
-                                    return <CommentBox key={index} rating={rating} />;
-                                })}
-                            </div>
+                            <CommentSection ratings={ratings} />
                         </div>
                     </div>
                 </div>

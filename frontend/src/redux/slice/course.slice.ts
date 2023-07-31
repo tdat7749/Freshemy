@@ -12,6 +12,8 @@ import {
     ChangeThumbnail as ChangeThumbnailType,
     CourseChangeInformation as CourseChangeInformationType,
     RatingCourse as RatingCourseType,
+    Rating as RatingType,
+    EnrollCourse as EnrollCourseType,
 } from "../../types/course";
 
 import { CourseApis } from "@src/apis";
@@ -25,6 +27,7 @@ type CourseSlice = {
     totalPage: number;
     courseDetail: CourseDetailType;
     courseChangeDetail: CourseChangeInformationType;
+    ratings: RatingType[];
 };
 
 export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejectValue: Response<null> }>(
@@ -148,6 +151,28 @@ export const ratingCourse = createAsyncThunk<Response<null>, RatingCourseType, {
         }
     }
 );
+export const subscribeCourse = createAsyncThunk<Response<null>, EnrollCourseType, { rejectValue: Response<null> }>(
+    "course/rating",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.subscribeCourse(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+export const unsubcribeCourse = createAsyncThunk<Response<null>, EnrollCourseType, { rejectValue: Response<null> }>(
+    "course/rating",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.unsubcribeCourse(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
 
 const initialState: CourseSlice = {
     selectCategories: [],
@@ -164,7 +189,7 @@ const initialState: CourseSlice = {
             first_name: "",
             last_name: "",
         },
-        ratings: [],
+        rating: undefined,
         description: "",
         sections: [],
         created_at: "",
@@ -185,6 +210,7 @@ const initialState: CourseSlice = {
     isLoading: false,
     totalPage: 1,
     isGetLoading: false,
+    ratings: [],
 };
 
 export const courseSlice = createSlice({

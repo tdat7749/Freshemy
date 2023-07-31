@@ -5,6 +5,7 @@ import {
     GetMyCourses as GetMyCoursesType,
     CourseChangeInformation as CourseChangeInformationType,
     RatingCourse as RatingCourseType,
+    EnrollCourse as EnrollCourseType,
 } from "../types/course";
 
 import i18n from "../utils/i18next";
@@ -87,6 +88,17 @@ const ratingCourse = async (values: RatingCourseType) => {
     return response;
 };
 
+const subscribeCourse = async (values: EnrollCourseType) => {
+    const path = `courses/registration`;
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, values);
+    return response;
+};
+const unsubcribeCourse = async (values: EnrollCourseType) => {
+    const path = `courses/unsubcribe`;
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_DELETE"), path, values);
+    return response;
+};
+
 export {
     createCourse,
     getCategories,
@@ -98,4 +110,6 @@ export {
     changeInformation,
     getTop10Courses,
     ratingCourse,
+    subscribeCourse,
+    unsubcribeCourse,
 };
