@@ -165,7 +165,7 @@ const Register: FC = () => {
                                         <button
                                             disabled={errorMessage !== "" ? true : false}
                                             type="submit"
-                                            className="btn btn-primary w-full text-lg"
+                                            className="text-white btn btn-primary w-full text-lg"
                                         >
                                             {isLoading && <span className="loading loading-spinner"></span>}
                                             {isLoading ? "Loading..." : "Create Account"}

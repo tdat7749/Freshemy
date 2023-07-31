@@ -73,7 +73,7 @@ const ForgotPassword: React.FC = () => {
                                             className="text-[14px] text-error font-medium"
                                         />
                                     </form>
-                                    <button className="btn btn-primary w-full text-lg" type="submit">
+                                    <button className="text-white btn btn-primary w-full text-lg" type="submit">
                                         Reset password
                                     </button>
                                     <span className="block mt-3 mb-2 text-center font-medium text-lg hover:opacity-80">

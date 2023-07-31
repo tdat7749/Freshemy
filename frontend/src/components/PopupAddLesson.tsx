@@ -128,7 +128,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                                     <button
                                         type="submit"
                                         name="save_button"
-                                        className="btn btn-primary text-lg"
+                                        className="text-white btn btn-primary text-lg"
                                         disabled={error !== "" || isLoading ? true : false}
                                     >
                                         {isLoading ? "Loading..." : "Save"}

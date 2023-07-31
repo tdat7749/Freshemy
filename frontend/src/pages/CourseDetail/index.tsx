@@ -15,6 +15,7 @@ import TotalRating from "./TotalRating";
 import CommentBox from "./CommentBox";
 import toast from "react-hot-toast";
 import AuthorButton from "./AuthorButton";
+// import WatchVideoIcon from "@src/components/icons/WatchVideoIcon";
 
 const CourseDetail: React.FC = () => {
     let { slug } = useParams();
@@ -93,7 +94,7 @@ const CourseDetail: React.FC = () => {
                                     <div className=" mb-3">
                                         <span className="text-xl laptop:text-2xl font-bold">Author: </span>
                                         <Link
-                                            to={"/profile/:userID"}
+                                            to={`/profile/${courseDetail.author.id}`}
                                             className="text-xl laptop:text-2xl underline font-medium text-blue-600"
                                         >
                                             {courseDetail.author?.first_name}

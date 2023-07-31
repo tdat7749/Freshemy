@@ -151,7 +151,7 @@ const MyProfile: React.FC = () => {
                                             </div>
                                             {isEdit ? (
                                                 <div className="flex justify-end">
-                                                    <button className="btn btn-primary text-lg" type="submit">
+                                                    <button className="text-white btn btn-primary text-lg" type="submit">
                                                         Save
                                                     </button>
                                                     <button className="btn ml-2 text-lg">Cancel</button>
@@ -159,12 +159,12 @@ const MyProfile: React.FC = () => {
                                             ) : (
                                                 <div className="flex justify-end">
                                                     <button
-                                                        className="btn btn-primary text-lg"
+                                                        className="text-white btn btn-primary text-lg"
                                                         onClick={() => setEdit(true)}
                                                     >
                                                         Edit
                                                     </button>
-                                                    <button className="btn ml-2 btn-error text-lg">Logout</button>
+                                                    <button className="text-white btn ml-2 btn-error text-lg">Logout</button>
                                                 </div>
                                             )}
                                         </div>

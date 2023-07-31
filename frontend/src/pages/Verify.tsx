@@ -18,7 +18,7 @@ const Verify: React.FC = () => {
     }, [token, dispatch]);
 
     const errorMessage = useAppSelector((state) => state.authSlice.error) ?? "";
-    const successMessage = useAppSelector((state) => state.authSlice.message) ?? "";
+    const successMessage = useAppSelector((state) => state.authSlice.success) ?? "";
 
     if (isLogin) return <Navigate to={"/"} />;
 

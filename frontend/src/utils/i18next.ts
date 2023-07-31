@@ -7,7 +7,7 @@ i18n.use(Backend)
     .use(LanguageDetector)
     .init({
         fallbackLng: "en",
-        debug: true,
+        debug: false,
         resources: {
             en: {
                 translation: {

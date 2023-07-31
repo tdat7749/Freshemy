@@ -99,7 +99,7 @@ const MyCourses: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex-3 flex btn btn-primary text-lg">
+                        <div className="text-white flex-3 flex btn btn-primary text-lg">
                             <CreateIcon />
                             <Link to={"/create-course"}>Create New</Link>
                         </div>
@@ -119,13 +119,17 @@ const MyCourses: React.FC = () => {
                             />
                         );
                     })}
-                    <div className="flex justify-end my-4">
-                        <Pagination
-                            handleChangePageIndex={handleChangePageIndex}
-                            totalPage={totalPage}
-                            currentPage={pageIndex}
-                        />
-                    </div>
+                    {courseList.length > 0 ? (
+                        <div className="flex justify-end my-4">
+                            <Pagination
+                                handleChangePageIndex={handleChangePageIndex}
+                                totalPage={totalPage}
+                                currentPage={pageIndex}
+                            />
+                        </div>
+                    ) : (
+                        <p className="mt-4 text-2xl text-error text-center font-bold">You don't have any courses!</p>
+                    )}
                 </div>
             </div>
             {/* POPUP DELETE */}

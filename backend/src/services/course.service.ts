@@ -12,7 +12,6 @@ import { CourseCategory } from "@prisma/client";
 import i18n from "../utils/i18next";
 import { generateUniqueSlug } from "../utils/helper";
 import services from ".";
-import { errorMessages } from "src/utils/constant";
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
@@ -52,7 +51,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             });
 
             if (isCreateCourse) {
-                return new ResponseSuccess(201, i18n.t("successMessages.registerCourseSuccess"), true);
+                return new ResponseSuccess(201, i18n.t("successMessages.createDataSuccess"), true);
             } else {
                 return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
             }
@@ -92,6 +91,9 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                         updated_at: true,
                         id: true,
                         lessons: {
+                            where: {
+                                is_delete: false,
+                            },
                             select: {
                                 id: true,
                                 title: true,

@@ -55,9 +55,6 @@ const WatchVideo: React.FC = () => {
                     <div className="laptop:flex justify-center space-x-2">
                         <VideoPlayer sourse={source} />
                         <div className="flex-2 w-full mt-[-8px] laptop:w-[540px] laptop:max-h-[480px] laptop:mt-0 laptop:overflow-y-auto">
-                            {/* {courseDetail.sections.map((section) => {
-                                return <Accordion isDisplayBtn={isDisplayBtn} section={section} />
-                            })} */}
                             {courseDetail.sections.map((section: Section) => {
                                 return (
                                     <Accordion

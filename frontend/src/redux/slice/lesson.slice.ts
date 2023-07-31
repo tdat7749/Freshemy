@@ -25,6 +25,18 @@ export const addLesson = createAsyncThunk<Response<null>, AddLessonType, { rejec
     }
 );
 
+export const deleteLesson = createAsyncThunk<Response<null>, number, { rejectValue: Response<null> }>(
+    "lesson/deleteLesson",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await LessonApis.deleteLesson(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 export const lessonSlice = createSlice({
     name: "lesson",
     initialState: initialState,
@@ -36,6 +48,9 @@ export const lessonSlice = createSlice({
                 }
                 return lesson;
             });
+        },
+        setDeleteLesson: (state, action: PayloadAction<number>) => {
+            state.lessonList = state.lessonList.filter((lesson: Lesson) => lesson.id !== action.payload);
         },
     },
     extraReducers: (builder) => {
@@ -49,9 +64,19 @@ export const lessonSlice = createSlice({
         builder.addCase(addLesson.rejected, (state, action) => {
             state.isLoading = false;
         });
+
+        builder.addCase(deleteLesson.pending, (state) => {
+            state.isLoading = true;
+        });
+        builder.addCase(deleteLesson.fulfilled, (state, action) => {
+            state.isLoading = false;
+        });
+        builder.addCase(deleteLesson.rejected, (state, action) => {
+            state.isLoading = false;
+        });
     },
 });
 
-export const { setAddLesson } = lessonSlice.actions;
+export const { setAddLesson, setDeleteLesson } = lessonSlice.actions;
 
 export default lessonSlice.reducer;

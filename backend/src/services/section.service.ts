@@ -18,6 +18,9 @@ const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
             },
             include: {
                 lessons: {
+                    where: {
+                        is_delete: false,
+                    },
                     select: {
                         title: true,
                         id: true,

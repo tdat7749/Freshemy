@@ -110,7 +110,7 @@ const ChangePassword: React.FC = () => {
                                     <button
                                         type="submit"
                                         name="save_button"
-                                        className="btn btn-primary text-lg"
+                                        className="text-white btn btn-primary text-lg"
                                         disabled={isLoading}
                                     >
                                         {isLoading && <span className="loading loading-spinner"></span>}
