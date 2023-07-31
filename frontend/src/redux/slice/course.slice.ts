@@ -11,6 +11,7 @@ import {
     CourseDetail as CourseDetailType,
     ChangeThumbnail as ChangeThumbnailType,
     CourseChangeInformation as CourseChangeInformationType,
+    RatingCourse as RatingCourseType,
 } from "../../types/course";
 
 import { CourseApis } from "@src/apis";
@@ -130,6 +131,18 @@ export const getTop10Courses = createAsyncThunk<Response<CourseType[]>, string, 
         try {
             const response = await CourseApis.getTop10Courses();
             return response.data as Response<CourseType[]>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const ratingCourse = createAsyncThunk<Response<null>, RatingCourseType, { rejectValue: Response<null> }>(
+    "course/rating",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.ratingCourse(body);
+            return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
         }

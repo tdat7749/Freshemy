@@ -126,5 +126,9 @@ class CourseController {
         const response = await services.CourseService.getTop10Courses(req);
         return res.status(response.getStatusCode()).json(response);
     }
+    async ratingCourse(req: Request, res: Response) {
+        const response = await services.CourseService.ratingCourse(req);
+        return res.status(response.getStatusCode()).json(response);
+    }
 }
 export default CourseController;

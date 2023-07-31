@@ -47,9 +47,9 @@ export const successMessages = {
 };
 
 export const fileType = {
-    mp4: "mp4",
-    mkv: "mkv",
-    mov: "mov",
+    mp4: "video/mp4",
+    mkv: "video/x-matroska",
+    mov: "video/quicktime",
     png: "png",
     jpg: "jpg",
     jpeg: "jpeg",

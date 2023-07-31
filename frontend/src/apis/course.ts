@@ -4,6 +4,7 @@ import {
     NewCourse as CreateCourseType,
     GetMyCourses as GetMyCoursesType,
     CourseChangeInformation as CourseChangeInformationType,
+    RatingCourse as RatingCourseType,
 } from "../types/course";
 
 import i18n from "../utils/i18next";
@@ -80,6 +81,12 @@ const getTop10Courses = async () => {
     return response;
 };
 
+const ratingCourse = async (values: RatingCourseType) => {
+    const path = `courses/rating`;
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, values);
+    return response;
+};
+
 export {
     createCourse,
     getCategories,
@@ -90,4 +97,5 @@ export {
     changeThumbnail,
     changeInformation,
     getTop10Courses,
+    ratingCourse,
 };

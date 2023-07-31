@@ -12,6 +12,7 @@ courseRouter.post("/", isLogin, uploadFileMdw, controllers.courseController.crea
 courseRouter.post("/registration", isLogin, controllers.courseController.registerCourse);
 courseRouter.delete("/unsubcribe", isLogin, controllers.courseController.unsubcribeCourse);
 courseRouter.patch("/change-thumbnail", isLogin, uploadFileMdw, controllers.courseController.editThumbnail);
+courseRouter.post("/rating", isLogin, controllers.courseController.ratingCourse);
 
 courseRouter.get("/top-10", controllers.courseController.getTop10Courses);
 

@@ -9,6 +9,7 @@ import EditIcon from "@src/components/icons/EditIcon";
 import DeleteIcon from "../../components/icons/DeleteIcon";
 import NotFound from "../NotFound";
 import { courseActions } from "@redux/slice";
+import PopupRating from "./PopupRating";
 
 import toast from "react-hot-toast";
 
@@ -16,6 +17,7 @@ const CourseDetail: React.FC = () => {
     let { slug } = useParams();
     const dispatch = useAppDispatch();
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
+    // const [isOpenPopupRating, setIsOpenPopupRating] = useState<boolean>(true);
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
     const navigate = useNavigate();
@@ -57,6 +59,8 @@ const CourseDetail: React.FC = () => {
 
     return (
         <>
+            {/* {isOpenPopupRating && <PopupRating />} */}
+            {false && <PopupRating course_id={courseDetail.id} />}
             {isOpenDeleteModal && <DeleteModal handleDelete={handleDeleteCourse} handleCancel={handleCancelModal} />}
             <Navbar />
             <div className="container mx-auto">

@@ -80,3 +80,9 @@ export type CourseChangeInformation = {
     slug: string;
     thumbnail?: string;
 };
+
+export type RatingCourse = {
+    ratings: number;
+    content: string;
+    course_id: number;
+};
