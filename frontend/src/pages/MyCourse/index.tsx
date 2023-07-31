@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from "react";
-import SearchIcon from "../components/icons/SearchIcon";
-import CreateIcon from "../components/icons/CreateIcon";
+import SearchIcon from "@src/components/icons/SearchIcon";
+import CreateIcon from "@src/components/icons/CreateIcon";
 import { Link, useNavigate } from "react-router-dom";
-import CourseCard from "../components/CourseCard";
-import Pagination from "../components/Pagination";
-import Navbar from "../components/Navbar";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { courseActions } from "../redux/slice";
-import { Course } from "../types/course";
-
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { courseActions } from "@redux/slice";
+import { Course } from "../../types/course";
 import toast from "react-hot-toast";
+import { Spin, DeleteModal, Navbar, Pagination, CourseCard } from "@src/components";
 
 const MyCourses: React.FC = () => {
     const [userInput, setUserInput] = useState<string>("");
     const [keyword, setKeyword] = useState<string>("");
     const [pageIndex, setPageIndex] = useState<number>(1);
+    const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
+    const [idItem, setIdItem] = useState<number>(-1);
     const inputRef = React.useRef<HTMLInputElement>(null);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
     let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
+
+    const isGetLoading = useAppSelector((state) => state.courseSlice.isGetLoading);
 
     useEffect(() => {
         // @ts-ignore
@@ -50,20 +51,31 @@ const MyCourses: React.FC = () => {
         navigate(`/my-courses/edit/${id}`);
     };
 
-    const handleDeleteCourse = (courseId: number) => {
+    const handleDeleteCourse = () => {
         //@ts-ignore
-        dispatch(courseActions.deleteCourse(courseId)).then((response) => {
+        dispatch(courseActions.deleteCourse(idItem)).then((response) => {
             if (response.payload.status_code === 200) {
-                dispatch(courseActions.setDeleteCourse(courseId));
+                dispatch(courseActions.setDeleteCourse(idItem));
                 toast.success(response.payload.message);
             } else {
                 toast.error(response.payload.message);
             }
         });
+        setIsOpenDeleteModal(false);
+    };
+
+    const handleCancelDeleteModal = () => {
+        setIsOpenDeleteModal(!isOpenDeleteModal);
+    };
+
+    const handleDiplayDeleteModal = (courseId: number) => {
+        setIdItem(courseId);
+        setIsOpenDeleteModal(true);
     };
 
     return (
         <>
+            {isGetLoading && <Spin />}
             <Navbar />
             <div className="container mx-auto">
                 <div className="px-4 tablet:px-[60px]">
@@ -87,7 +99,7 @@ const MyCourses: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex-3 flex btn btn-primary text-lg">
+                        <div className="text-white flex-3 flex btn btn-primary text-lg">
                             <CreateIcon />
                             <Link to={"/create-course"}>Create New</Link>
                         </div>
@@ -102,20 +114,28 @@ const MyCourses: React.FC = () => {
                                 title={course.title}
                                 summary={course.summary}
                                 author={course.author}
-                                handleDeleteCourse={handleDeleteCourse}
+                                handleDeleteCourse={handleDiplayDeleteModal}
                                 handleEditCourse={handleEditCourse}
                             />
                         );
                     })}
-                    <div className="flex justify-end my-4">
-                        <Pagination
-                            handleChangePageIndex={handleChangePageIndex}
-                            totalPage={totalPage}
-                            currentPage={pageIndex}
-                        />
-                    </div>
+                    {courseList.length > 0 ? (
+                        <div className="flex justify-end my-4">
+                            <Pagination
+                                handleChangePageIndex={handleChangePageIndex}
+                                totalPage={totalPage}
+                                currentPage={pageIndex}
+                            />
+                        </div>
+                    ) : (
+                        <p className="mt-4 text-2xl text-error text-center font-bold">You don't have any courses!</p>
+                    )}
                 </div>
             </div>
+            {/* POPUP DELETE */}
+            {isOpenDeleteModal && (
+                <DeleteModal handleDelete={handleDeleteCourse} handleCancel={handleCancelDeleteModal} />
+            )}
         </>
     );
 };

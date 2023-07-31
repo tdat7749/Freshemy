@@ -1,25 +1,24 @@
 import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { authActions } from "../redux/slice";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { authActions } from "@redux/slice";
 import { useNavigate, useParams } from "react-router-dom";
-import { ResetPassword as ResetPasswordType } from "../types/auth";
-import { resetPasswordValidationSchema } from "../validations/auth";
+import { ResetPassword as ResetPasswordType } from "../../types/auth";
+import { resetPasswordValidationSchema } from "../../validations/auth";
 import toast from "react-hot-toast";
 
 const ResetPassword: React.FC<{}> = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { token } = useParams();
-    
+
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
     if (isLogin) navigate("/");
-    
+
     // Check token is undefined and navigate to homepage
     if (token === undefined) {
         navigate("/");
     }
-
 
     const initialValues: ResetPasswordType = {
         password: "",
@@ -94,7 +93,7 @@ const ResetPassword: React.FC<{}> = () => {
                                             className="text-[14px] text-error font-medium"
                                         />
                                     </div>
-                                    <button type="submit" className="btn btn-primary w-full text-lg">
+                                    <button type="submit" className="text-white btn btn-primary w-full text-lg">
                                         Submit
                                     </button>
                                 </Form>

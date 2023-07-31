@@ -1,43 +1,39 @@
-import {
-    MESSAGE_ERROR_EMAIL_INVALID,
-    MESSAGE_ERROR_EMAIL_REQUIRED,
-    MESSAGE_ERROR_PASSWORD_REQUIRED,
-    MESSAGE_ERROR_FIRST_NAME_REQUIRED,
-    MESSAGE_ERROR_LAST_NAME_REQUIRED,
-    MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED,
-    MESSAGE_ERROR_WRONG_CONFIRM_PASSWORD_REQUIRED,
-    MESSAGE_ERROR_WEAK_PASSWORD,
-    MESSAGE_ERROR_TOO_LONG_PASSWORD,
-} from "../utils/contants";
+import i18n from "../utils/i18next";
 import * as Yup from "yup";
 
 export const loginValidationSchema = Yup.object({
-    email: Yup.string().email(MESSAGE_ERROR_EMAIL_INVALID).required(MESSAGE_ERROR_EMAIL_REQUIRED),
-    password: Yup.string().required(MESSAGE_ERROR_PASSWORD_REQUIRED),
+    email: Yup.string().email().required(i18n.t("errorMessages.emailIsRequired")),
+    password: Yup.string().required(i18n.t("errorMessages.passwordIsRequired")),
 });
 
 export const forgotPasswordValidationSchema = Yup.object({
-    email: Yup.string().email(MESSAGE_ERROR_EMAIL_INVALID).required(MESSAGE_ERROR_EMAIL_REQUIRED),
+    email: Yup.string().email(i18n.t("errorMessages.invalidEmail")).required(i18n.t("errorMessages.emailIsRequired")),
 });
 
 export const resetPasswordValidationSchema = Yup.object({
-    password: Yup.string().required("Password is required").min(8, "Weak password").max(32, "Password is too long"),
+    password: Yup.string()
+        .required(i18n.t("errorMessages.passwordIsRequired"))
+        .min(8, i18n.t("errorMessages.weakPassword"))
+        .max(32, i18n.t("errorMessages.tooLongPassword")),
     confirmPassword: Yup.string()
-        .required("Confirm password is required")
-        .oneOf([Yup.ref("password")], "Confirm password must match"),
+        .required(i18n.t("errorMessages.confirmPasswordIsRequired"))
+        .oneOf([Yup.ref("password")], i18n.t("errorMessages.newPasswordDiiferentOldPassword")),
 });
 
 export const registerValidationSchema = Yup.object({
-    first_name: Yup.string().required(MESSAGE_ERROR_FIRST_NAME_REQUIRED).trim(),
-    last_name: Yup.string().required(MESSAGE_ERROR_LAST_NAME_REQUIRED).trim(),
-    email: Yup.string().email(MESSAGE_ERROR_EMAIL_INVALID).required(MESSAGE_ERROR_EMAIL_REQUIRED).trim(),
+    first_name: Yup.string().required(i18n.t("errorMessages.firstNameIsRequired")).trim(),
+    last_name: Yup.string().required(i18n.t("errorMessages.lastNameIsRequired")).trim(),
+    email: Yup.string()
+        .email(i18n.t("errorMessages.invalidEmail"))
+        .required(i18n.t("errorMessages.emailIsRequired"))
+        .trim(),
     password: Yup.string()
-        .required(MESSAGE_ERROR_PASSWORD_REQUIRED)
-        .min(8, MESSAGE_ERROR_WEAK_PASSWORD)
-        .max(32, MESSAGE_ERROR_TOO_LONG_PASSWORD)
+        .required(i18n.t("errorMessages.passwordIsRequired"))
+        .min(8, i18n.t("errorMessages.weakPassword"))
+        .max(32, i18n.t("errorMessages.tooLongPassword"))
         .trim(),
     confirm_password: Yup.string()
-        .required(MESSAGE_ERROR_CONFIRM_PASSWORD_REQUIRED)
-        .oneOf([Yup.ref("password")], MESSAGE_ERROR_WRONG_CONFIRM_PASSWORD_REQUIRED)
+        .required(i18n.t("errorMessages.confirmPasswordIsRequired"))
+        .oneOf([Yup.ref("password")], i18n.t("errorMessages.newPasswordDiiferentOldPassword"))
         .trim(),
 });

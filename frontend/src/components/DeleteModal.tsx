@@ -20,7 +20,7 @@ const DeleteModal: React.FC<DeleteModalProps> = (props: DeleteModalProps) => {
                     </div>
                     <div className="">
                         <button
-                            className="btn btn-error text-lg"
+                            className="text-white btn btn-error text-lg"
                             onClick={props.handleDelete}
                         >
                             Yes, delete it

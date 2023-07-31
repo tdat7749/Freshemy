@@ -1,23 +1,19 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { authActions } from "../redux/slice";
-import { ForgotPassword as ForgotPasswordType } from "../types/auth";
-import { setMessageEmpty } from "../redux/slice/auth.slice";
-import { forgotPasswordValidationSchema } from "../validations/auth";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { authActions } from "@redux/slice";
+import { ForgotPassword as ForgotPasswordType } from "../../types/auth";
+import { forgotPasswordValidationSchema } from "../../validations/auth";
 import { Navigate } from "react-router-dom";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
+
 const ForgotPassword: React.FC = () => {
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
-    
+
     let message = useAppSelector((state) => state.authSlice.message) ?? "";
 
     const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        dispatch(setMessageEmpty());
-    }, [dispatch]);
 
     if (isLogin) return <Navigate to={"/"} />;
 
@@ -29,11 +25,11 @@ const ForgotPassword: React.FC = () => {
         //@ts-ignore
         dispatch(authActions.forgotPassword(values)).then((response) => {
             if (response.payload.status_code === 200) {
-                toast.success(response.payload.message)
+                toast.success(response.payload.message);
             } else {
-                toast.error(response.payload.message)
+                toast.error(response.payload.message);
             }
-        })
+        });
     };
 
     return (
@@ -77,10 +73,7 @@ const ForgotPassword: React.FC = () => {
                                             className="text-[14px] text-error font-medium"
                                         />
                                     </form>
-                                    <button
-                                        className="btn btn-primary w-full text-lg"
-                                        type="submit"
-                                    >
+                                    <button className="text-white btn btn-primary w-full text-lg" type="submit">
                                         Reset password
                                     </button>
                                     <span className="block mt-3 mb-2 text-center font-medium text-lg hover:opacity-80">
@@ -89,7 +82,7 @@ const ForgotPassword: React.FC = () => {
                                     <div className="text-center text-lg hover:opacity-80">
                                         Don't have an account?
                                         <Link to={"/register"}>
-                                            <span  className="font-medium"> Signup</span>
+                                            <span className="font-medium"> Signup</span>
                                         </Link>
                                     </div>
                                 </Form>

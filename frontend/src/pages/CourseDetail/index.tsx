@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react";
-
-import Navbar from "../components/Navbar";
-import Accordion from "../components/Accordion";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+import { Navbar, Accordion, DeleteModal } from "@src/components";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useNavigate, useParams } from "react-router-dom";
-import { Section } from "../types/section";
-import { CourseDetail as CourseDetailType } from "../types/course";
+import { Section } from "../../types/section";
+import { CourseDetail as CourseDetailType } from "../../types/course";
 import { Link } from "react-router-dom";
-import EditIcon from "../components/icons/EditIcon";
-import DeleteIcon from "../components/icons/DeleteIcon";
-import NotFound from "./NotFound";
-import DeleteModal from "../components/DeleteModal";
-import { courseActions } from "../redux/slice";
-// import { useParams } from "react-router-dom";
-// import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+import EditIcon from "@src/components/icons/EditIcon";
+import DeleteIcon from "../../components/icons/DeleteIcon";
+import NotFound from "../NotFound";
+import { courseActions } from "@redux/slice";
 
 import toast from "react-hot-toast";
+import WatchVideoIcon from "@src/components/icons/WatchVideoIcon";
 
 const CourseDetail: React.FC = () => {
     let { slug } = useParams();
@@ -31,11 +27,13 @@ const CourseDetail: React.FC = () => {
     const handleDeleteCourse = () => {
         //@ts-ignore
         dispatch(courseActions.deleteCourse(idItem)).then((response) => {
-            if (response.payload.status_code === 200) {
-                toast.success(response.payload.message);
-                navigate("/my-courses");
-            } else {
-                toast.error(response.payload.message);
+            if (response.payload) {
+                if (response.payload.status_code === 200) {
+                    toast.success(response.payload.message);
+                    navigate("/my-courses");
+                } else {
+                    toast.error(response.payload.message);
+                }
             }
         });
         setIsOpenDeleteModal(!isOpenDeleteModal);
@@ -48,7 +46,7 @@ const CourseDetail: React.FC = () => {
     useEffect(() => {
         // @ts-ignore
         dispatch(courseActions.getCourseDetail(slug)).then((response) => {
-            if (response.payload.status_code !== 200) {
+            if (response.payload && response.payload.status_code !== 200) {
                 setIsNotFound(true);
             }
         });
@@ -85,7 +83,7 @@ const CourseDetail: React.FC = () => {
                                     <div className=" mb-3">
                                         <span className="text-xl laptop:text-2xl font-bold">Author: </span>
                                         <Link
-                                            to={"/profile/:userID"}
+                                            to={`/profile/${courseDetail.author.id}`}
                                             className="text-xl laptop:text-2xl underline font-medium text-blue-600"
                                         >
                                             {courseDetail.author?.first_name}
@@ -168,7 +166,16 @@ const CourseDetail: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button className="btn btn-primary text-lg">
+                                    {(courseDetail.sections.length > 0) && (
+                                        <button className="text-white btn btn-primary text-lg">
+                                            <WatchVideoIcon />
+                                            <Link to={`/course-detail/${courseDetail.slug}/watch`}>
+                                                <span>Learn Now</span>
+                                            </Link>
+                                        </button>
+                                    )}
+
+                                    <button className="text-white btn btn-primary text-lg">
                                         <EditIcon color="#ffffff" />
                                         <Link to={`/my-courses/edit/${courseDetail.id}`}>
                                             <span>Edit</span>

@@ -6,13 +6,15 @@ import { db } from "../configs/db.config";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import configs from "../configs";
 
+import i18n from "../utils/i18next";
+
 export const isLogin = async (req: RequestHasLogin, res: Response, next: NextFunction) => {
     try {
         const authHeader = req.headers.authorization;
         const jsonWebToken = authHeader?.split(" ")[1];
 
         if (!jsonWebToken) {
-            res.status(401).json({ message: "Unauthorized" });
+            res.status(401).json({ message: i18n.t("errorMessages.UnAuthorized") });
             return;
         } else {
             const decodeJsonWebToken = jwt.verify(jsonWebToken, configs.general.JWT_SECRET_KEY) as MyJwtPayload;
@@ -41,6 +43,6 @@ export const isLogin = async (req: RequestHasLogin, res: Response, next: NextFun
             return res.status(401).json({ message: error.message });
         }
 
-        return res.status(500).json({ message: "Internal Server" });
+        return res.status(500).json({ message: i18n.t("errorMessages.internalServer") });
     }
 };

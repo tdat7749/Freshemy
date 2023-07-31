@@ -1,15 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { Formik, Field, ErrorMessage } from "formik";
-import { ChangePassword as ChangePasswordType } from "../types/user";
-import { useAppDispatch } from "../hooks/hooks";
-import { userActions } from "../redux/slice";
-import { useAppSelector } from "../hooks/hooks";
+import { ChangePassword as ChangePasswordType } from "../../types/user";
+import { useAppDispatch } from "../../hooks/hooks";
+import { userActions } from "@redux/slice";
+import { useAppSelector } from "../../hooks/hooks";
 import { Link } from "react-router-dom";
-import { setMessageEmpty } from "../redux/slice/user.slice";
-import { changePasswordValidationSchema } from "../validations/user";
+import { changePasswordValidationSchema } from "../../validations/user";
 import toast from "react-hot-toast";
+
 const ChangePassword: React.FC = () => {
-    let error = useAppSelector((state) => state.userSlice.error) ?? "";
+    const isLoading = useAppSelector((state) => state.userSlice.isLoading);
 
     const dispatch = useAppDispatch();
 
@@ -21,29 +21,23 @@ const ChangePassword: React.FC = () => {
         confirm_password: "",
     };
 
-    useEffect(() => {
-        dispatch(setMessageEmpty());
-    }, [dispatch]);
-
     const handleOnSubmit = (values: ChangePasswordType) => {
         //@ts-ignore
         dispatch(userActions.changePassword(values))
-            .then((response: any) => {
-                if (response.payload.status_code !== 200) {
-                    toast.error(response.payload.message);
-                } else {
-                    toast.success(response.payload.message);
+            //@ts-ignore
+            .then((response) => {
+                if (response.payload) {
+                    if (response.payload.status_code !== 200) {
+                        toast.error(response.payload.message);
+                    } else {
+                        toast.success(response.payload.message);
+                    }
                 }
             })
             .catch((error: any) => {
                 toast.error(error);
             });
     };
-
-    const handleChange = () => {
-        error = "";
-    };
-
     return (
         <div className="container mx-auto">
             <div className="flex items-center justify-center mt-[100px] py-10">
@@ -56,10 +50,7 @@ const ChangePassword: React.FC = () => {
                         innerRef={formikRef}
                     >
                         {(formik) => (
-                            <form
-                                onSubmit={formik.handleSubmit}
-                                onChange={handleChange}
-                            >
+                            <form onSubmit={formik.handleSubmit}>
                                 <div className="flex flex-col mb-3">
                                     <label htmlFor="current_password" className="text-sm mb-1 tablet:text-xl">
                                         Current Password
@@ -87,9 +78,7 @@ const ChangePassword: React.FC = () => {
                                         type="password"
                                         name="new_password"
                                         className={`px-2 py-4 rounded-lg border-[1px] outline-none max-w-sm ${
-                                            formik.errors.new_password &&
-                                            formik.touched.new_password &&
-                                            "border-error"
+                                            formik.errors.new_password && formik.touched.new_password && "border-error"
                                         }`}
                                     />
                                     <ErrorMessage
@@ -121,16 +110,14 @@ const ChangePassword: React.FC = () => {
                                     <button
                                         type="submit"
                                         name="save_button"
-                                        className="btn btn-primary text-lg"
-                                        disabled={error !== "" ? true : false}
+                                        className="text-white btn btn-primary text-lg"
+                                        disabled={isLoading}
                                     >
-                                        Save
+                                        {isLoading && <span className="loading loading-spinner"></span>}
+                                        {isLoading ? "Loading..." : "Save"}
                                     </button>
                                     <Link to={"/"}>
-                                        <button
-                                            type="submit"
-                                            className="btn text-lg ml-2"
-                                        >
+                                        <button type="submit" className="btn text-lg ml-2" disabled={isLoading}>
                                             Cancel
                                         </button>
                                     </Link>

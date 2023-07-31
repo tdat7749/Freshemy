@@ -5,7 +5,8 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { lessonActions } from "../redux/slice";
 import { addLessonValidationSchema } from "../validations/lesson";
 import toast, { Toaster } from "react-hot-toast";
-import { MESSAGE_ERROR_VIDEO_FILE_TYPE, MESSAGE_ERROR_VIDEO_FILE_SIZE } from "../utils/contants";
+import i18n from "../utils/i18next";
+import { errorMessages, fileType } from "../utils/contants";
 
 type AddLessonModalProps = {
     handleDelete: () => void;
@@ -14,7 +15,7 @@ type AddLessonModalProps = {
 };
 
 const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
-    const isLoading = useAppSelector((state) => state.isLoading) ?? false;
+    const isLoading = useAppSelector((state) => state.lessonSlice.isLoading) ?? false;
     const [error, setError] = useState("");
     const [video, setVideo] = useState<File | null>(null);
     const dispatch = useAppDispatch();
@@ -30,13 +31,17 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         const video_file: File = event.currentTarget.files![0];
         if (video_file) {
             if (video_file.size > 1024 * 1024 * 100) {
-                setError(MESSAGE_ERROR_VIDEO_FILE_SIZE);
+                setError(i18n.t(errorMessages.videoFileSize));
             } else {
                 const videoExtension = video_file?.name.split(".").pop();
-                if (videoExtension === "mp4" || videoExtension === "mkv" || videoExtension === "mov") {
+                if (
+                    videoExtension === i18n.t(fileType.mp4) ||
+                    videoExtension === i18n.t(fileType.mkv) ||
+                    videoExtension === i18n.t(fileType.mov)
+                ) {
                     setVideo(video_file);
                 } else {
-                    setError(MESSAGE_ERROR_VIDEO_FILE_TYPE);
+                    setError(i18n.t(errorMessages.videoFileType));
                 }
             }
         }
@@ -49,12 +54,15 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
         formData.append("video", video as File);
         //@ts-ignore
         dispatch(lessonActions.addLesson(formData))
-            .then((response: any) => {
-                if (response.payload.status_code !== 200) {
-                    toast.error(response.payload.message);
-                } else {
-                    toast.success(response.payload.message);
-                    props.handleCancel();
+            //@ts-ignore
+            .then((response) => {
+                if (response.payload) {
+                    if (response.payload.status_code !== 200) {
+                        toast.error(response.payload.message);
+                    } else {
+                        toast.success(response.payload.message);
+                        props.handleCancel();
+                    }
                 }
             })
             .catch((error: any) => {
@@ -119,7 +127,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                                     <button
                                         type="submit"
                                         name="save_button"
-                                        className="btn btn-primary text-lg"
+                                        className="text-white btn btn-primary text-lg"
                                         disabled={error !== "" || isLoading ? true : false}
                                     >
                                         {isLoading ? "Loading..." : "Save"}

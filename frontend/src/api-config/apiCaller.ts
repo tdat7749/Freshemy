@@ -1,10 +1,9 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import { refreshToken } from "../apis/auth";
-
+import { AuthApis } from "@src/apis";
 
 const axiosPublic = axios.create({
-    baseURL: "http://localhost:3001/api",
+    baseURL: process.env.REACT_APP_BASE_URL,
 });
 
 const axiosInstance = axios.create();
@@ -30,7 +29,7 @@ axiosPublic.interceptors.response.use(
         const config = error?.config;
         if (error?.response?.status === 401 && !config._retry) {
             config._retry = true;
-            const response = await refreshToken();
+            const response = await AuthApis.refreshToken();
             const accessToken = response.data.data.accessToken;
             if (accessToken) {
                 Cookies.set("accessToken", accessToken);
