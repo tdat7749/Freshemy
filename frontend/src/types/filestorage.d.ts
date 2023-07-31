@@ -8,4 +8,5 @@ export type FileInformation = {
     width: number | undefined;
     height: number | undefined;
     url: string | undefined;
+    secure_url: string | undefined;
 };

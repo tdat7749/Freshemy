@@ -12,6 +12,8 @@ type AuthSlice = {
     user: User;
     isLogin: boolean;
     isLoading: boolean;
+    error: string;
+    success: string;
 };
 
 export const login = createAsyncThunk<Response<TokenType>, LoginType, { rejectValue: Response<null> }>(
@@ -83,6 +85,8 @@ const initialState: AuthSlice = {
     },
     isLogin: false,
     isLoading: false,
+    error: "",
+    success: "",
 };
 
 export const authSlice = createSlice({
@@ -150,12 +154,16 @@ export const authSlice = createSlice({
 
         //
         builder.addCase(verifyEmail.pending, (state) => {
+            state.error = "";
+            state.success = "";
             state.isLoading = true;
         });
-        builder.addCase(verifyEmail.fulfilled, (state) => {
+        builder.addCase(verifyEmail.fulfilled, (state, action) => {
+            state.success = action.payload.message;
             state.isLoading = false;
         });
-        builder.addCase(verifyEmail.rejected, (state) => {
+        builder.addCase(verifyEmail.rejected, (state, action) => {
+            state.error = action.payload?.message as string;
             state.isLoading = false;
         });
     },

@@ -60,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                 </Link>
                                 <div
                                     data-dropdown-toggle="dropdown"
-                                    className="w-[60px] h-[60px] rounded-full flex items-center justify-center relative border-[1px]"
+                                    className="w-[60px] h-[60px] rounded-full flex items-center justify-center relative border-[1px] hover:cursor-pointer"
                                     onClick={() => {
                                         setDisplay(!display);
                                     }}

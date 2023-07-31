@@ -27,6 +27,7 @@ const initialState: FileStorage = {
         width: undefined,
         height: undefined,
         url: undefined,
+        secure_url: undefined,
     },
 };
 
