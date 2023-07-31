@@ -117,9 +117,22 @@ const getAuthorInformation = async (req: RequestHasLogin): Promise<ResponseBase>
                 id: user_id,
                 is_verify: true,
             },
-            include: {
+            select: {
+                first_name:true,
+                last_name: true,
+                url_avatar: true,
+                description: true,
                 courses:{
-                    include: {
+                    where: {
+                        is_delete: false
+                    },
+                    select: {
+                        id: true,
+                        title: true,
+                        thumbnail: true,
+                        summary: true,
+                        ratings: true,
+                        slug: true,
                         courses_categories: {
                             include: {
                                 category: {
