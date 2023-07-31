@@ -11,6 +11,7 @@ import {
     CourseDetail as CourseDetailType,
     ChangeThumbnail as ChangeThumbnailType,
     CourseChangeInformation as CourseChangeInformationType,
+    SelectCourse,
 } from "../../types/course";
 
 import { CourseApis } from "@src/apis";
@@ -22,6 +23,7 @@ type CourseSlice = {
     isLoading: boolean;
     isGetLoading: boolean;
     totalPage: number;
+    totalRecord: number;
     courseDetail: CourseDetailType;
     courseChangeDetail: CourseChangeInformationType;
 };
@@ -111,6 +113,18 @@ export const changeThumbnail = createAsyncThunk<Response<null>, ChangeThumbnailT
     }
 );
 
+export const selectCourses = createAsyncThunk<Response<PagingCourse>, SelectCourse, { rejectValue: Response<null> }>(
+    "course/selectCourses",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.selectCourses(body);
+            return response.data as Response<PagingCourse>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 export const changeInformation = createAsyncThunk<
     Response<null>,
     CourseChangeInformationType,
@@ -171,6 +185,7 @@ const initialState: CourseSlice = {
     },
     isLoading: false,
     totalPage: 1,
+    totalRecord: 0,
     isGetLoading: false,
 };
 
@@ -298,6 +313,20 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getTop10Courses.rejected, (state) => {
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(selectCourses.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(selectCourses.fulfilled, (state, action) => {
+            state.courses = action.payload.data?.courses as Course[];
+            state.totalPage = action.payload.data?.total_page as number;
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(selectCourses.rejected, (state) => {
             state.isGetLoading = false;
         });
     },

@@ -4,6 +4,7 @@ import {
     NewCourse as CreateCourseType,
     GetMyCourses as GetMyCoursesType,
     CourseChangeInformation as CourseChangeInformationType,
+    SelectCourse,
 } from "../types/course";
 
 import i18n from "../utils/i18next";
@@ -80,6 +81,29 @@ const getTop10Courses = async () => {
     return response;
 };
 
+const selectCourses = async (values: SelectCourse) => {
+    let pathBase = `/api/courses/?page_index=${values.page_index}`;
+    if (values.rating) {
+        pathBase = pathBase + `&rating=${values.rating}`;
+    }
+
+    if (values.keyword) {
+        pathBase = pathBase + `&keyword=${values.keyword}`;
+    }
+
+    if (values.sort_by) {
+        pathBase = pathBase + `&sort_by=${values.sort_by}`;
+    }
+
+    if (values.category) {
+        values.category.map((category) => (pathBase = pathBase + `&category=${category}`));
+    }
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), pathBase);
+
+    return response;
+};
+
 export {
     createCourse,
     getCategories,
@@ -90,4 +114,5 @@ export {
     changeThumbnail,
     changeInformation,
     getTop10Courses,
+    selectCourses,
 };

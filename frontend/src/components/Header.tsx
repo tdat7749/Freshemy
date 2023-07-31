@@ -3,14 +3,21 @@ import Logo from "../assets/images/logo.png";
 import UserDropDown from "./UserDropDown";
 import SearchIcon from "./icons/SearchIcon";
 import DefaultAvatar from "../assets/images/default-avatar.png";
-import { Link } from "react-router-dom";
-import { Toaster } from "react-hot-toast"
+import { Link, useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 interface HeaderProps {
     isLogin: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({ isLogin }) => {
     const [display, setDisplay] = useState<boolean>(false);
+    const [keyword, setKeyword] = useState<string>("");
+    const navigate = useNavigate();
+
+    const handleKeyWordSearch = () => {
+        navigate(`/all-courses?keyword=${keyword}`);
+        setKeyword("");
+    };
 
     return (
         <>
@@ -22,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
             )}
 
             <header className="w-full h-[100px] max-w-full bg-background shadow-sm fixed top-0 left-0 z-[10]">
-                <Toaster/>
+                <Toaster />
                 <div className="w-full h-full flex items-center py-[10px] px-4 tablet:px-[60px]">
                     <div className="flex-1 flex gap-4 laptop:gap-[120px] items-center">
                         <Link to={"/"} className="w-[60px] h-[60px] shrink-0">
@@ -33,8 +40,15 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                 type="text"
                                 placeholder="Search for anything"
                                 className="rounded-full py-4 px-10 w-[70%] max-w-[700px] border-[1px] border-black"
+                                value={keyword}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setKeyword(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") handleKeyWordSearch();
+                                }}
                             />
-                            <SearchIcon />
+                            <div className="cursor-pointer" onClick={handleKeyWordSearch}>
+                                <SearchIcon />
+                            </div>
                         </div>
                     </div>
                     {isLogin ? (

@@ -23,6 +23,8 @@ export type Course = {
     author: string;
     categories: Category[];
     number_section: number;
+    status: boolean;
+    attendees: number;
     slug: string;
 };
 
@@ -79,4 +81,12 @@ export type CourseChangeInformation = {
     categories: Category[];
     slug: string;
     thumbnail?: string;
+};
+
+export type SelectCourse = {
+    page_index: nunber;
+    keyword?: string;
+    category?: string[];
+    rating?: number;
+    sort_by?: string;
 };

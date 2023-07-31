@@ -18,13 +18,10 @@ import MyCourses from "./pages/MyCourse";
 import Cookies from "js-cookie";
 import EditCourse from "./pages/EditCourse";
 import CourseDetail from "./pages/CourseDetail";
-<<<<<<< HEAD
 import AllCourses from "./pages/AllCourses";
-=======
 import WatchVideo from "./pages/WatchVideo";
 import MyProfile from "./pages/MyProfile";
 import AuthorProfile from "./pages/AuthorProfile";
->>>>>>> origin/dev
 
 function App() {
     const dispatch = useAppDispatch();
