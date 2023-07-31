@@ -85,7 +85,7 @@ export type ChangeThumbnail = {
 };
 
 export type CourseChangeInformation = {
-    id: number | undefined;
+    course_id: number | undefined;
     title: string;
     summary: string;
     status: boolean;

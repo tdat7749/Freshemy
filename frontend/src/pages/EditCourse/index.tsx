@@ -82,7 +82,7 @@ const EditCourse: React.FC = () => {
         categories: createCategories,
         status: courseChangeDetail.status,
         description: courseChangeDetail.description,
-        id: Number(course_id),
+        course_id: Number(course_id),
         slug: courseChangeDetail.slug,
     };
     const courseStatus: string = courseChangeDetail.status ? "Completed" : "Uncomplete";
