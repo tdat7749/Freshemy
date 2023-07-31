@@ -26,6 +26,13 @@ class UserController {
 
         return res.status(response.getStatusCode()).json(response);
     }
+
+    async getAuthorInformation(req: RequestHasLogin, res: Response) {
+
+        const response = await service.UserService.getAuthorInformation(req);
+
+        return res.status(response.getStatusCode()).json(response);
+    }
     
     async changeUserInformation(req: RequestHasLogin, res: Response) {
         const errorValidate: ValidationError | undefined = ChangeUserInformation.validate(req.body).error;

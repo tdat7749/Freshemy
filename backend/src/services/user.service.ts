@@ -107,10 +107,47 @@ const changeUserInformation = async (req: RequestHasLogin): Promise<ResponseBase
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 }
+
+const getAuthorInformation = async (req: RequestHasLogin): Promise<ResponseBase> => {
+    try {
+        const { id } = req.params;
+        const user_id = +id;
+        const user = await db.user.findMany({
+            where: {
+                id: user_id,
+                is_verify: true,
+            },
+            include: {
+                courses:{
+                    include: {
+                        courses_categories: {
+                            include: {
+                                category: {
+                                    select: {
+                                        id: true,
+                                        title: true,
+                                    },
+                                },
+                            },
+                        },
+                    }
+                },
+            },
+        });
+        if(!user) return new ResponseError(404, i18n.t("errorMessages.userNotFound"), false);
+        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccessfully"), true,user);
+    } catch (error) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
+        }
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+}
 const UserService = {
     changePassword,
     getInformation,
-    changeUserInformation
+    changeUserInformation,
+    getAuthorInformation
 };
 
 export default UserService;
