@@ -56,7 +56,7 @@ export type CourseDetail = {
     categories: Category[];
     summary: string;
     author: User;
-    ratings: Rating[];
+    rating: number | undefined;
     description: string;
     sections: SectionRender[];
     created_at: string;
@@ -98,5 +98,9 @@ export type CourseChangeInformation = {
 export type RatingCourse = {
     ratings: number;
     content: string;
+    course_id: number;
+};
+
+export type EnrollCourse = {
     course_id: number;
 };

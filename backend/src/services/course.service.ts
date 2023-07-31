@@ -135,7 +135,11 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories.push(category.category);
                 });
                 const sections: Section[] = course.sections;
-                const ratings: Rating[] = course.ratings;
+                let averageRating: number = 0;
+                if (course.ratings.length > 0) {
+                    const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
+                    averageRating = Number((ratingsSum / course.ratings.length).toFixed(1));
+                }
                 const courseData: CourseDetail = {
                     id: course.id,
                     slug: course.slug,
@@ -143,7 +147,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories: categories,
                     summary: course.summary,
                     author: course.user,
-                    ratings: ratings,
+                    rating: averageRating,
                     thumbnail: course.thumbnail,
                     description: course.description,
                     sections: sections,
@@ -156,7 +160,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
         }
         return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
     } catch (error) {
-        console.log(error);
         return new ResponseError(500, error as string, false);
     }
 };
@@ -457,8 +460,11 @@ const searchMyCourses = async (pageIndex: number, keyword: string, userId: numbe
         const totalPage = Math.ceil(totalRecord / take);
 
         const myCoursesData: CourseInfo[] = courses.map((course) => {
-            const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
-            const averageRating = course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0;
+            let averageRating: number = 0;
+            if (course.ratings.length > 0) {
+                const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
+                averageRating = Number((ratingsSum / course.ratings.length).toFixed(1));
+            }
 
             return {
                 id: course.id,
@@ -594,6 +600,15 @@ const ratingCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         });
         if (!isFindCourse) {
             return new ResponseError(404, "Khong ton tai course", false);
+        }
+        const isAlreadyRated = await db.rating.findFirst({
+            where: {
+                user_id: user_id,
+                course_id: course_id,
+            },
+        });
+        if (isAlreadyRated) {
+            return new ResponseError(400, "Da dang ki roi", false);
         }
         const create_rating = await db.rating.create({
             data: {
