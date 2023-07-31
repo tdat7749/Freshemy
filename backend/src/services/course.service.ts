@@ -619,7 +619,7 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const getAllCourses = async (
+export const getAllCourses = async (
     pageIndex: number,
     keyword: string,
     categories: string[],
@@ -629,7 +629,7 @@ const getAllCourses = async (
         const take = 5;
         const skip = (pageIndex - 1) * take;
 
-        const categoryIDs = categories.map((categoryID) => parseInt(categoryID, 10));
+        const categoryIDs = await getCategoryIDs(categories);
 
         const coursesQuery = db.course.findMany({
             where: {
@@ -641,7 +641,7 @@ const getAllCourses = async (
                     some: {
                         category: {
                             id: {
-                                in: categoryIDs ,
+                                in: categoryIDs,
                             },
                         },
                     },
@@ -676,8 +676,8 @@ const getAllCourses = async (
                 sortBy === "newest"
                     ? { created_at: "desc" }
                     : sortBy === "attendee"
-                    ? { enrolleds: { _count: "desc" } }
-                    : undefined,
+                        ? { enrolleds: { _count: "desc" } }
+                        : undefined,
         });
 
         const [courses, totalRecord] = await Promise.all([
@@ -692,7 +692,7 @@ const getAllCourses = async (
                         some: {
                             category: {
                                 id: {
-                                    in: categoryIDs ,
+                                    in: categoryIDs,
                                 },
                             },
                         },
@@ -703,7 +703,7 @@ const getAllCourses = async (
 
         const totalPage = Math.ceil(totalRecord / take);
 
-        const coursesData = courses.map((course) => {
+        const coursesData: CourseDetail[] = courses.map((course) => {
             const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
             const averageRating = (course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0).toFixed(1);
 
@@ -753,7 +753,6 @@ const getAllCourses = async (
 
         console.log("Courses Data:", responseData);
 
-
         return new ResponseSuccess<FilteredCourseResult>(
             200,
             i18n.t("successMessages.getDataSuccess"),
@@ -764,6 +763,25 @@ const getAllCourses = async (
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
+
+const getCategoryIDs = async (categories: string[]): Promise<number[]> => {
+    const categoryIDs: number[] = [];
+    for (const category of categories) {
+        const categoryData = await db.category.findFirst({
+            where: {
+                title: category,
+            },
+            select: {
+                id: true,
+            },
+        });
+        if (categoryData) {
+            categoryIDs.push(categoryData.id);
+        }
+    }
+    return categoryIDs;
+};
+
 
 const CourseService = {
     getCourseDetail,
@@ -777,5 +795,6 @@ const CourseService = {
     getCourseDetailById,
     getTop10Courses,
     getAllCourses,
+    getCategoryIDs
 };
 export default CourseService;
