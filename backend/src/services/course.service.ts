@@ -2,7 +2,7 @@ import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetail, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
+import { CourseDetail, Rating, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import cloudinary from "../configs/cloudinary.config";
@@ -12,6 +12,7 @@ import { CourseCategory } from "@prisma/client";
 import i18n from "../utils/i18next";
 import { generateUniqueSlug } from "../utils/helper";
 import services from ".";
+import { errorMessages } from "src/utils/constant";
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
@@ -109,6 +110,17 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                         id: true,
                     },
                 },
+                ratings: {
+                    include: {
+                        user: {
+                            select: {
+                                first_name: true,
+                                last_name: true,
+                                url_avatar: true,
+                            },
+                        },
+                    },
+                },
             },
         });
 
@@ -121,6 +133,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories.push(category.category);
                 });
                 const sections: Section[] = course.sections;
+                const ratings: Rating[] = course.ratings;
                 const courseData: CourseDetail = {
                     id: course.id,
                     slug: course.slug,
@@ -128,7 +141,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories: categories,
                     summary: course.summary,
                     author: course.user,
-                    ratings: 5,
+                    ratings: ratings,
                     thumbnail: course.thumbnail,
                     description: course.description,
                     sections: sections,
@@ -141,7 +154,8 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
         }
         return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
     } catch (error) {
-        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+        console.log(error);
+        return new ResponseError(500, error as string, false);
     }
 };
 

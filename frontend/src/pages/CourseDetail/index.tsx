@@ -3,15 +3,18 @@ import { Navbar, Accordion, DeleteModal } from "@src/components";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { Section } from "../../types/section";
-import { CourseDetail as CourseDetailType } from "../../types/course";
+import { CourseDetail as CourseDetailType, Rating } from "../../types/course";
 import { Link } from "react-router-dom";
-import EditIcon from "@src/components/icons/EditIcon";
-import DeleteIcon from "../../components/icons/DeleteIcon";
+// import EditIcon from "@src/components/icons/EditIcon";
+// import DeleteIcon from "../../components/icons/DeleteIcon";
 import NotFound from "../NotFound";
 import { courseActions } from "@redux/slice";
 import PopupRating from "./PopupRating";
 
+import TotalRating from "./TotalRating";
+import CommentBox from "./CommentBox";
 import toast from "react-hot-toast";
+import AuthorButton from "./AuthorButton";
 
 const CourseDetail: React.FC = () => {
     let { slug } = useParams();
@@ -43,7 +46,11 @@ const CourseDetail: React.FC = () => {
     const handleCancelModal = () => {
         setIsOpenDeleteModal(!isOpenDeleteModal);
     };
-
+    const ratingScore = (): number => {
+        let score: number = 0;
+        courseDetail.ratings.map((rating) => (score += rating.score));
+        return Number((score / courseDetail.ratings.length).toFixed(1));
+    };
     useEffect(() => {
         // @ts-ignore
         dispatch(courseActions.getCourseDetail(slug)).then((response) => {
@@ -95,71 +102,8 @@ const CourseDetail: React.FC = () => {
                                     </div>
                                     <div className="flex items-center text-xl laptop:text-3xl font-medium mb-3">
                                         <span className="text-xl laptop:text-2xl font-bold mr-2">Ratings:</span>
-                                        <div className="rating rating-lg rating-half">
-                                            <input type="radio" name="rating-10" className="rating-hidden" />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-1"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-2"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-1"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-2"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-1"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-2"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-1"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-2"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-1"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-2"
-                                                checked
-                                            />
-                                        </div>
-                                        <p className="italic text-xl laptop:text-2xl ml-2 ">{courseDetail.ratings}</p>
+                                        <TotalRating ratingId={0} totalScore={ratingScore()} isForCourse={true} />
+                                        <p className="italic text-xl laptop:text-2xl ml-2 ">{ratingScore() || 0}</p>
                                     </div>
                                     <div className="flex items-center text-xl laptop:text-2xl font-bold">
                                         <span className="mr-2">Status:</span>
@@ -168,24 +112,13 @@ const CourseDetail: React.FC = () => {
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex gap-2">
-                                    <button className="btn btn-primary text-lg">
-                                        <EditIcon color="#ffffff" />
-                                        <Link to={`/my-courses/edit/${courseDetail.id}`}>
-                                            <span>Edit</span>
-                                        </Link>
-                                    </button>
-                                    <button
-                                        className="btn btn-error text-lg"
-                                        onClick={() => {
-                                            setIsOpenDeleteModal(!isOpenDeleteModal);
-                                            setIdItem(courseDetail.id as number);
-                                        }}
-                                    >
-                                        <DeleteIcon color="#000000" />
-                                        <span>Delete</span>
-                                    </button>
-                                </div>
+                                <AuthorButton
+                                    handleDelete={() => {
+                                        setIsOpenDeleteModal(!isOpenDeleteModal);
+                                        setIdItem(courseDetail.id as number);
+                                    }}
+                                    courseDetail={courseDetail}
+                                />
                             </div>
                         </div>
                         <div>
@@ -200,6 +133,13 @@ const CourseDetail: React.FC = () => {
                                 <span className="w-[60px] h-1 bg-black block mb-4"></span>
                                 {courseDetail.sections.map((section: Section, index: number) => {
                                     return <Accordion key={index} isDisplayBtn={false} section={section} />;
+                                })}
+                            </div>
+                            <div className="comment my-4">
+                                <h2 className="text-xl tablet:text-3xl font-bold mb-3">Ratings</h2>
+                                <span className="w-[60px] h-1 bg-black block mb-4"></span>
+                                {courseDetail.ratings.map((rating: Rating, index: number) => {
+                                    return <CommentBox key={index} rating={rating} />;
                                 })}
                             </div>
                         </div>
