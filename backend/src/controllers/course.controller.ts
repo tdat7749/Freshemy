@@ -126,8 +126,14 @@ class CourseController {
         const response = await services.CourseService.getTop10Courses(req);
         return res.status(response.getStatusCode()).json(response);
     }
+
     async getRightOfCourse(req: Request, res: Response): Promise<Response> {
         const response = await services.CourseService.getRightOfCourse(req);
+        return res.status(response.getStatusCode()).json(response);
+    }
+
+    async getListRatingsOfCourseBySlug(req: Request, res: Response): Promise<Response> {
+        const response = await services.CourseService.getListRatingsOfCourseBySlug(req);
         return res.status(response.getStatusCode()).json(response);
     }
 }

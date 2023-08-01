@@ -12,6 +12,7 @@ import { CourseCategory } from "@prisma/client";
 import i18n from "../utils/i18next";
 import { generateUniqueSlug } from "../utils/helper";
 import services from ".";
+import { RatingResponse } from "../types/ratings";
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
@@ -273,7 +274,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
         });
 
         if (!isFoundCourseById) {
-            return new ResponseError(400, i18n.t("errorMessages.courseNotFound"), false);
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
         }
 
         const course: any = {
@@ -587,6 +588,77 @@ const getRightOfCourse = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
+const getListRatingsOfCourseBySlug = async (req: Request): Promise<ResponseBase> => {
+    const { slug } = req.params;
+    const { page_index: pageIndex } = req.query;
+    const pageSize = configs.general.PAGE_SIZE;
+
+    const isFoundCourse = await configs.db.course.findUnique({
+        where: {
+            slug: slug,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!isFoundCourse) {
+        return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+    }
+
+    const listRatings = await configs.db.rating.findMany({
+        skip: pageSize * (Number(pageIndex) - 1),
+        take: pageSize,
+        where: {
+            course_id: isFoundCourse.id,
+        },
+        include: {
+            user: {
+                select: {
+                    url_avatar: true,
+                    first_name: true,
+                    last_name: true,
+                },
+            },
+        },
+        orderBy: {
+            created_at: "desc",
+        },
+    });
+
+    const totalRecord = await configs.db.rating.count({
+        where: {
+            course_id: isFoundCourse.id,
+        },
+    });
+
+    const totalPage = Math.ceil(totalRecord / configs.general.PAGE_SIZE);
+
+    const formatListRatings: RatingResponse[] = [];
+
+    listRatings.map((item) => {
+        let rating: RatingResponse = {
+            id: item.id,
+            content: item.content,
+            created_at: item.created_at.toString(),
+            ratings: item.score,
+            url_avatar: item.user.url_avatar,
+            first_name: item.user.first_name,
+            last_name: item.user.last_name,
+            user_id: item.user_id,
+        };
+        return formatListRatings.push(rating);
+    });
+
+    const responseData = {
+        total_record: totalRecord,
+        total_page: totalPage,
+        list_data: formatListRatings,
+    };
+
+    return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, responseData);
+};
+
 const CourseService = {
     getRightOfCourse,
     getCourseDetail,
@@ -599,5 +671,6 @@ const CourseService = {
     deleteMyCourse,
     getCourseDetailById,
     getTop10Courses,
+    getListRatingsOfCourseBySlug,
 };
 export default CourseService;

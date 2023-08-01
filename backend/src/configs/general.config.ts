@@ -24,4 +24,5 @@ export const general = {
     PUBLIC_FOLDER_VIDEOS: process.env.PUBLIC_FOLDER_VIDEOS,
     PATH_TO_PUBLIC_FOLDER_VIDEOS: path.join(process.cwd(), "public/videos"),
     PUBLIC_URL_FOLDER_VIDEOS: (process.env.PUBLIC_URL as string) + process.env.PUBLIC_URL_FOLDER_VIDEOS,
+    PAGE_SIZE: Number(process.env.PAGE_SIZE),
 };
