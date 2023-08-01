@@ -45,8 +45,8 @@ const Home: React.FC = () => {
                                     <CardVideo
                                         thumbnail={course.thumbnail}
                                         title={course.title}
-                                        author={course.author}
-                                        rating={course.rate}
+                                        author={course.author as string}
+                                        rating={course.rating}
                                         categories={course.categories}
                                         slug={course.slug}
                                     />

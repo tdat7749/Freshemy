@@ -18,9 +18,9 @@ export type Course = {
     id: number;
     title: string;
     summary: string;
-    rate: number;
+    rating: number;
     thumbnail: string;
-    author: string;
+    author?: string;
     categories: Category[];
     number_section: number;
     slug: string;
