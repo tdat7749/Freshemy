@@ -15,6 +15,7 @@ const MyProfile: React.FC = () => {
     const navigate = useNavigate();
 
     const initialValue: UserType = {
+        id: user.id,
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,

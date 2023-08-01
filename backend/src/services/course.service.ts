@@ -67,26 +67,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     },
                 },
             });
-
-            // if (isCreateCourse) {
-            //     // Fetch all courses after creating the new course
-            //     const allCourses = await getAllCourses(1, "", 0, "newest");
-
-            //     // Find the index of the newly created course in the sorted list
-            //     const newCourseIndex = allCourses.data.courses.findIndex(
-            //         (course: any) => course.id === isCreateCourse.id,
-            //     );
-
-            //     // Move the newly created course to the beginning of the list
-            //     if (newCourseIndex !== -1) {
-            //         allCourses.data.courses.unshift(allCourses.data.courses.splice(newCourseIndex, 1)[0]);
-            //     }
-
-            //     return allCourses;
-            // } else {
-            //     return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
-            // }
-
+            
             if (isCreateCourse) {
                 return new ResponseSuccess(201, i18n.t("successMessages.createDataSuccess"), true);
             } else {
@@ -445,7 +426,11 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 summary: course.summary,
                 thumbnail: course.thumbnail,
                 rate: averageRating,
-                author: `${course.user?.first_name} ${course.user?.last_name}`,
+                author: {
+                    first_name: course.user.first_name,
+                    last_name: course.user.last_name,
+                    id: course.user_id
+                },
                 category: course.courses_categories.map((cc) => cc.category.title),
                 number_section: course.sections.length,
                 slug: course.slug,
@@ -545,7 +530,7 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
                 title: course.title,
                 slug: course.slug,
                 categories: course.courses_categories.map((cate) => cate.category),
-                author: course.user.last_name + " " + course.user.first_name,
+                author: course.user,
                 created_at: course.created_at,
                 updated_at: course.updated_at,
             };

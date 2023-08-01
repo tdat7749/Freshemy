@@ -20,12 +20,13 @@ export type Course = {
     summary: string;
     rating: number;
     thumbnail: string;
-    author?: string;
+    author?: User;
     categories: Category[];
     number_section: number;
     status: boolean;
     attendees: number;
     slug: string;
+    author?: User;
 };
 
 export type GetMyCourses = {
@@ -89,4 +90,10 @@ export type SelectCourse = {
     category?: string[];
     rating?: number;
     sortBy?: string;
+};
+
+export type FilterCourse = {
+    total_page: number;
+    total_record: number;
+    courses: Course[];
 };

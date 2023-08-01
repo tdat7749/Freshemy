@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import ThreeDotIcon from "../components/icons/ThreedotIcon";
 import EditIcon from "../components/icons/EditIcon";
 import DeleteIcon from "../components/icons/DeleteIcon";
+import { User } from "../types/user";
 
 type Course = {
     id: number;
@@ -10,9 +11,12 @@ type Course = {
     title: string;
     summary: string;
     thumbnail: string;
-    author: string;
-    handleDeleteCourse: (courseId: number) => void;
-    handleEditCourse: (id: number) => void;
+    author: User;
+    rating?: number;
+    status?: boolean;
+    numberOfSection?: number;
+    handleDeleteCourse?: (courseId: number) => void;
+    handleEditCourse?: (id: number) => void;
 };
 
 const CourseCard: FC<Course> = (props: Course) => {
@@ -35,7 +39,7 @@ const CourseCard: FC<Course> = (props: Course) => {
                         <p className="text-base tablet:text-xl font-bold">
                             <span>Author: </span>
                             <Link to={`/profile/${props.id}`} className="text-blue-600 font-normal">
-                                {props.author}
+                                {props.author.first_name + " " + props.author.last_name}
                             </Link>
                         </p>
                     </div>
@@ -51,14 +55,18 @@ const CourseCard: FC<Course> = (props: Course) => {
                         >
                             <div
                                 className="flex items-center p-2 rounded-lg hover:bg-backgroundHover cursor-pointer"
-                                onClick={() => props.handleEditCourse(props.id)}
+                                onClick={() => {
+                                    if (props.handleEditCourse) props.handleEditCourse(props.id);
+                                }}
                             >
                                 <EditIcon />
                                 <span className="ml-2">Edit</span>
                             </div>
                             <div
                                 className="flex items-center p-2 rounded-lg hover:bg-backgroundHover cursor-pointer"
-                                onClick={() => props.handleDeleteCourse(props.id)}
+                                onClick={() => {
+                                    if (props.handleDeleteCourse) props.handleDeleteCourse(props.id);
+                                }}
                             >
                                 <DeleteIcon />
                                 <span className="ml-2">Delete</span>

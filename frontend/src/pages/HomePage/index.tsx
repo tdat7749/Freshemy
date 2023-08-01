@@ -7,6 +7,7 @@ import CardVideo from "./CardVideo";
 import CategoryCard from "./CategoryCard";
 import { Category as CategoryType } from "../../types/course";
 import CategoryIcon from "@src/components/icons/CategoryIcon";
+import { User } from "../../types/user";
 
 const Home: React.FC = () => {
     const thumbnail: React.FC[] = CategoryIcon;
@@ -45,7 +46,7 @@ const Home: React.FC = () => {
                                     <CardVideo
                                         thumbnail={course.thumbnail}
                                         title={course.title}
-                                        author={course.author as string}
+                                        author={course.author as User}
                                         rating={course.rating}
                                         categories={course.categories}
                                         slug={course.slug}

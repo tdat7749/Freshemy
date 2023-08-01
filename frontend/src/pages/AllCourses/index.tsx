@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 // import CourseCard from "./CourseCard";
-import { Pagination } from "@src/components";
+import { CourseCard, Pagination } from "@src/components";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { Category, Course, SelectCourse } from "../../types/course";
 import { courseActions } from "@redux/slice";
 import { eveluateList, sortingBy } from "../../utils/helper";
 import useQueryParams from "../../hooks/useQueryParams";
+import { User } from "../../types/user";
 
 const AllCourses: React.FC = () => {
     const { keyword, rating } = useQueryParams();
@@ -22,6 +23,8 @@ const AllCourses: React.FC = () => {
     let totalRecord: number = useAppSelector((state) => state.courseSlice.totalRecord) ?? 1;
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
 
+    console.log(courseList);
+
     const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = event.target;
         if (checked) {
@@ -33,6 +36,7 @@ const AllCourses: React.FC = () => {
 
     // HANDLE FILTER BTN CLICK
     const handleFilterCourse = () => {
+        console.log("filter")
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword as string,
@@ -45,6 +49,7 @@ const AllCourses: React.FC = () => {
 
     // HANDLE SORTING BTN CLICK
     const handleSortingCourse = (sortBy: string) => {
+        console.log("sorting")
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword as string,
@@ -57,12 +62,13 @@ const AllCourses: React.FC = () => {
     };
 
     useEffect(() => {
+        console.log("effect")
         // @ts-ignore
         dispatch(courseActions.getCategories());
 
         const query: SelectCourse = {
             pageIndex: pageIndex,
-            sortBy:"attendees",
+            keyword: keyword,
         };
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
@@ -149,22 +155,21 @@ const AllCourses: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex-1">
-                            {/* {courseList.map((course) => (
+                            {courseList.map((course) => (
                                 <CourseCard
                                     key={course.id}
                                     id={course.id}
-                                    isOwner={course.isOwner}
                                     title={course.title}
                                     thumbnail={course.thumbnail}
                                     rating={course.rating}
                                     status={course.status}
-                                    numberOfSection={course.numberOfSection}
+                                    numberOfSection={course.number_section}
                                     slug={course.slug}
                                     summary={course.summary}
-                                    author={course.author}
-                                    handleGetCourse={handleGetCourse}
+                                    author={course.author as User}
+                                    // handleGetCourse={handleGetCourse}
                                 />
-                            ))} */}
+                            ))}
                         </div>
                     </div>
                 </div>

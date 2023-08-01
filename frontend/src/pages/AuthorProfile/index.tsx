@@ -20,18 +20,13 @@ const AuthorProfile: React.FC = () => {
         dispatch(userActions.getAuthorInformation(id));
     }, [dispatch, id]);
 
-
     return (
         <>
             <Navbar />
             <div className="container mx-auto px-4 mt-[100px] laptop:mt-0">
                 <div className="px-4 tablet:px-[60px] flex gap-4 bg-primary mt-4 p-4 rounded-lg">
                     <div className="w-32 h-32 rounded-full border">
-                        <img
-                            src={user.url_avatar || DefaultAvatar}
-                            alt="Avatar"
-                            className="w-full h-full object-cover rounded-full"
-                        />
+                        <img src={user.url_avatar || DefaultAvatar} alt="Avatar" className="w-full h-full object-cover rounded-full" />
                     </div>
                     <div className="">
                         <h1 className="text-3xl font-bold mb-2">
@@ -52,7 +47,7 @@ const AuthorProfile: React.FC = () => {
                                     slug={course.slug}
                                     thumbnail={course.thumbnail}
                                     title={course.title}
-                                    author={user.last_name + " " + user.first_name}
+                                    author={course.author as User}
                                     rating={course.rating}
                                     categories={course.categories}
                                 />

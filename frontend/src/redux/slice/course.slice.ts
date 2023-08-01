@@ -12,6 +12,7 @@ import {
     ChangeThumbnail as ChangeThumbnailType,
     CourseChangeInformation as CourseChangeInformationType,
     SelectCourse,
+    FilterCourse,
 } from "../../types/course";
 
 import { CourseApis } from "@src/apis";
@@ -113,12 +114,12 @@ export const changeThumbnail = createAsyncThunk<Response<null>, ChangeThumbnailT
     }
 );
 
-export const selectCourses = createAsyncThunk<Response<PagingCourse>, SelectCourse, { rejectValue: Response<null> }>(
+export const selectCourses = createAsyncThunk<Response<FilterCourse>, SelectCourse, { rejectValue: Response<null> }>(
     "course/selectCourses",
     async (body, ThunkAPI) => {
         try {
             const response = await CourseApis.selectCourses(body);
-            return response.data as Response<PagingCourse>;
+            return response.data as Response<FilterCourse>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
         }
@@ -161,7 +162,7 @@ const initialState: CourseSlice = {
         categories: [],
         summary: "",
         author: {
-            id: undefined,
+            id: 0,
             first_name: "",
             last_name: "",
         },
@@ -321,7 +322,8 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(selectCourses.fulfilled, (state, action) => {
-            state.courses = action.payload.data?.data as Course[];
+            console.log(action.payload.data);
+            state.courses = action.payload.data?.courses as Course[];
             state.totalPage = action.payload.data?.total_page as number;
             state.isGetLoading = false;
         });

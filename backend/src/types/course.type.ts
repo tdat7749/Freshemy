@@ -23,7 +23,7 @@ export type CourseInfo = {
     summary: string;
     thumbnail: string;
     rate: number;
-    author: string;
+    author: Author;
     category: string[];
     number_section: number;
     slug: string;
@@ -53,7 +53,7 @@ export type OutstandingCourse = {
     title: string;
     slug: string;
     categories: Category[];
-    author: string;
+    author: Author;
     created_at: Date;
     updated_at: Date;
 };

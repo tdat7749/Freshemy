@@ -7,6 +7,7 @@ import { courseActions } from "@redux/slice";
 import { Course } from "../../types/course";
 import toast from "react-hot-toast";
 import { Spin, DeleteModal, Navbar, Pagination, CourseCard } from "@src/components";
+import { User } from "../../types/user";
 
 const MyCourses: React.FC = () => {
     const [userInput, setUserInput] = useState<string>("");
@@ -113,7 +114,7 @@ const MyCourses: React.FC = () => {
                                 slug={course.slug}
                                 title={course.title}
                                 summary={course.summary}
-                                author={course.author as string}
+                                author={course.author as User}
                                 handleDeleteCourse={handleDiplayDeleteModal}
                                 handleEditCourse={handleEditCourse}
                             />

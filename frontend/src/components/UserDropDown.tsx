@@ -19,7 +19,7 @@ const UserDropDown: React.FC = () => {
 
     return (
         <>
-            <Link to={"/profile"} className="w-full rounded-lg hover:bg-backgroundHover">
+            <Link to={"/my-profile"} className="w-full rounded-lg hover:bg-backgroundHover">
                 <div className="flex justify-start items-center px-4 py-4">
                     <UserIcon />
                     <span className="ml-3 font-medium text-lg">Profile Setting</span>
