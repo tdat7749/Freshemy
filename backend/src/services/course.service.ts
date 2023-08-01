@@ -265,8 +265,8 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
 
 const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
-        const { id, title, summary, description, categories, status, thumbnail } = req.body;
-        const courseId = parseInt(id);
+        const { course_id, title, summary, description, categories, status, thumbnail } = req.body;
+        const courseId = parseInt(course_id);
 
         const isFoundCourseById = await db.course.findUnique({
             where: {
@@ -501,7 +501,7 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
             };
             result.push(data);
         });
-        return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, result);
+        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccessfully"), true, result);
     } catch (error) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
