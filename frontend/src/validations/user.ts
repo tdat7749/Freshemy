@@ -17,7 +17,17 @@ export const changePasswordValidationSchema = Yup.object({
 });
 
 export const updateProfileValidationSchema = Yup.object({
-    first_name: Yup.string().trim().required(i18n.t("errorMessages.firstNameIsRequired")),
-    last_name: Yup.string().trim().required(i18n.t("errorMessages.lastNameIsRequired")),
-    description: Yup.string().trim().required(i18n.t("errorMessages.descriptionIsRequired")),
+    first_name: Yup.string()
+        .trim()
+        .max(32, i18n.t("errorMessages.firstNameIsTooLong"))
+        .required(i18n.t("errorMessages.firstNameIsRequired")),
+    last_name: Yup.string()
+        .trim()
+        .max(32, i18n.t("errorMessages.lastNameIsTooLong"))
+        .required(i18n.t("errorMessages.lastNameIsRequired")),
+    description: Yup.string()
+        .trim()
+        .min(8, i18n.t("errorMessages.descriptionTooWeak"))
+        .max(200, i18n.t("errorMessages.descriptionTooLong"))
+        .required(i18n.t("errorMessages.descriptionIsRequired")),
 });

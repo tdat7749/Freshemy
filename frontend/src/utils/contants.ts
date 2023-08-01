@@ -24,6 +24,7 @@ export const errorMessages = {
     titleIsRequired: "Title is required",
     titleTooLong: "Title is too long, under 100 characters only",
     summaryTooLong: "Summary is too long, under 200 characters only",
+    descriptionTooWeak: "Description is too short, minimum 8 characters",
     descriptionTooLong: "Description is too long, under 200 characters only",
     summaryIsRequired: "Summary is required",
     descriptionIsRequired: "Description is required",
@@ -31,6 +32,8 @@ export const errorMessages = {
     newPasswordIsRequired: "New password is required",
     firstNameIsRequired: "First Name is required",
     lastNameIsRequired: "Last Name is required",
+    firstNameIsTooLong: "First Name is maximum 32 character",
+    lastNameIsTooLong: "Last Name is maximum 32 character",
     newPasswordDiiferentOldPassword: "Confirm password must be the same with new password",
 
     categoriesIsRequired: "Category is required",
