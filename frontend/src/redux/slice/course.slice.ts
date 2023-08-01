@@ -160,7 +160,7 @@ const initialState: CourseSlice = {
         status: false,
     },
     courseChangeDetail: {
-        id: undefined,
+        course_id: undefined,
         slug: "",
         title: "",
         categories: [],
