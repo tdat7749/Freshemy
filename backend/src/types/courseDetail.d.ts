@@ -80,7 +80,6 @@ export type AllCourseDetail = {
     attendees: number;
     thumbnail: string;
     description: string;
-    sections: Section[];
     created_at: Date;
     updated_at: Date;
     status: boolean;
