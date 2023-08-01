@@ -8,7 +8,6 @@ import { ResponseError, ResponseSuccess } from "../commons/response";
 
 import i18n from "../utils/i18next";
 
-
 class CourseController {
     async editCourse(req: Request, res: Response): Promise<Response> {
         const errorValidate: ValidationError | undefined = updateCourseSchema.validate(req.body).error;
@@ -135,21 +134,27 @@ class CourseController {
             const categories: string[] = Array.isArray(req.query.categories)
                 ? (req.query.categories as string[])
                 : [req.query.categories as string];
-            const sortBy: string = req.query.sortBy as string || 'newest';
+            const sortBy: string = (req.query.sortBy as string) || "newest";
+            const filterByRatings: "asc" | "desc" | undefined = req.query.filterByRatings as "asc" | "desc" | undefined;
 
-
-            const response = await services.CourseService.getAllCourses(pageIndex, keyword, categories, sortBy);
-            console.log('response:', pageIndex, keyword, categories, sortBy);
+            const response = await services.CourseService.getAllCourses(
+                pageIndex,
+                keyword,
+                categories,
+                sortBy,
+                filterByRatings,
+            );
+            console.log("response:", pageIndex, keyword, categories, sortBy);
 
             if (response instanceof ResponseSuccess) {
                 return res.json(response);
             } else if (response instanceof ResponseError) {
                 return res.status(response.getStatusCode()).json(response);
             } else {
-                return res.status(500).json(new ResponseError(500, i18n.t('errorMessages.internalServer'), false));
+                return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
             }
         } catch (error: any) {
-            return res.status(500).json(new ResponseError(500, i18n.t('errorMessages.internalServer'), false));
+            return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
         }
     }
 }
