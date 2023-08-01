@@ -759,8 +759,6 @@ export const getAllCourses = async (
             courses: coursesData,
         };
 
-        console.log("Courses Data:", responseData);
-
         return new ResponseSuccess<FilteredCourseResult>(
             200,
             i18n.t("successMessages.getDataSuccess"),

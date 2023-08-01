@@ -82,7 +82,7 @@ const getTop10Courses = async () => {
 };
 
 const selectCourses = async (values: SelectCourse) => {
-    let pathBase = `/api/courses/?page_index=${values.page_index}`;
+    let pathBase = `/courses/get-all-courses?pageIndex=${values.pageIndex}`;
     if (values.rating) {
         pathBase = pathBase + `&rating=${values.rating}`;
     }
@@ -91,8 +91,8 @@ const selectCourses = async (values: SelectCourse) => {
         pathBase = pathBase + `&keyword=${values.keyword}`;
     }
 
-    if (values.sort_by) {
-        pathBase = pathBase + `&sort_by=${values.sort_by}`;
+    if (values.sortBy) {
+        pathBase = pathBase + `&sortBy=${values.sortBy}`;
     }
 
     if (values.category) {

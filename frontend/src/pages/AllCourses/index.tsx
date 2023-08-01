@@ -34,7 +34,7 @@ const AllCourses: React.FC = () => {
     // HANDLE FILTER BTN CLICK
     const handleFilterCourse = () => {
         const query: SelectCourse = {
-            page_index: pageIndex,
+            pageIndex: pageIndex,
             keyword: keyword as string,
             rating: evaluate,
             category: categories,
@@ -46,33 +46,29 @@ const AllCourses: React.FC = () => {
     // HANDLE SORTING BTN CLICK
     const handleSortingCourse = (sortBy: string) => {
         const query: SelectCourse = {
-            page_index: pageIndex,
+            pageIndex: pageIndex,
             keyword: keyword as string,
             rating: evaluate,
-            sort_by: sortBy,
+            sortBy: sortBy,
             category: categories,
         };
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
     };
 
-    
     useEffect(() => {
         // @ts-ignore
         dispatch(courseActions.getCategories());
 
         const query: SelectCourse = {
-            page_index: pageIndex,
-            keyword: keyword,
-            sort_by: "",
-            rating: 5,
-            category: [],
+            pageIndex: pageIndex,
+            sortBy:"attendees",
         };
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
         setPageIndex(1);
     }, [dispatch, keyword, pageIndex]);
-    
+
     const handleChangePageIndex = () => {};
     return (
         <>

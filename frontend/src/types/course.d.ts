@@ -84,9 +84,9 @@ export type CourseChangeInformation = {
 };
 
 export type SelectCourse = {
-    page_index: nunber;
+    pageIndex: nunber;
     keyword?: string;
     category?: string[];
     rating?: number;
-    sort_by?: string;
+    sortBy?: string;
 };
