@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
 import { ChangeUserInformation, changePasswordSchema } from "../validations/user";

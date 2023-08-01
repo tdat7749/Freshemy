@@ -1,6 +1,6 @@
 import { Response } from "express";
 import services from "../services";
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 
 class FileStorageController {
     async uploadImageToCloudinary(req: RequestHasLogin, res: Response): Promise<Response> {

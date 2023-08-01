@@ -1,18 +1,18 @@
-import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetail, Rating, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
+import { CourseDetail, Category, CourseEdit, OutstandingCourse, CourseInfo } from "../types/course.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
-import cloudinary from "../configs/cloudinary.config";
-import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
+import { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import configs from "../configs";
 import { CourseCategory } from "@prisma/client";
 import i18n from "../utils/i18next";
 import { generateUniqueSlug } from "../utils/helper";
 import services from ".";
-import { RatingResponse } from "../types/ratings";
+import { RatingResponse } from "../types/ratings.type";
+import { PagingResponse } from "../types/response.type";
+import { Section } from "../types/section.type";
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
@@ -352,62 +352,13 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
+const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const thumbnail = req.file as Express.Multer.File;
-        const { course_id } = req.body;
-        const idConvert = +course_id;
-        const isFoundCourse = await db.course.findUnique({
-            where: {
-                id: idConvert,
-            },
-        });
+        const { page_index: pageIndex, keyword } = req.query;
+        const { user_id: userId } = req;
 
-        if (!isFoundCourse) {
-            return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
-        }
-
-        const uploadFileResult = await new Promise<UploadApiResponse | undefined>((resolve, reject) => {
-            cloudinary.uploader.upload(thumbnail.path, (error: UploadApiErrorResponse, result: UploadApiResponse) => {
-                if (error) {
-                    reject(undefined);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
-
-        if (uploadFileResult) {
-            const isUpdate = await db.course.update({
-                where: {
-                    id: idConvert,
-                },
-                data: {
-                    thumbnail: uploadFileResult.url,
-                },
-            });
-
-            if (isUpdate) {
-                return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
-            } else {
-                await cloudinary.uploader.destroy(uploadFileResult.public_id);
-            }
-        }
-
-        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
-    } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, error.toString(), false);
-        }
-
-        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
-    }
-};
-
-const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
-    try {
-        const parsedPageIndex = parseInt(pageIndex.toString(), 10);
-        const parsedKeyword = keyword;
+        const parsedPageIndex = Number(pageIndex);
+        const parsedKeyword = keyword as string;
 
         const skip = (parsedPageIndex - 1) * 10;
         const take = 10;
@@ -470,18 +421,13 @@ const searchMyCourses = async (pageIndex: number, keyword: string, userId: numbe
             };
         });
 
-        const responseData: ResponseData = {
+        const responseData: PagingResponse<CourseInfo[]> = {
             total_page: totalPage,
             total_record: totalRecord,
-            courses: myCoursesData,
+            data: myCoursesData,
         };
 
-        return new ResponseSuccess<ResponseData>(
-            200,
-            i18n.t("successMessages.searchMyCourseSuccess"),
-            true,
-            responseData,
-        );
+        return new ResponseSuccess(200, i18n.t("successMessages.searchMyCourseSuccess"), true, responseData);
     } catch (error: any) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
@@ -510,7 +456,7 @@ const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
             },
         });
 
-        return new ResponseSuccess<ResponseData>(200, i18n.t("successMessages.deleteCourseSuccess"), true);
+        return new ResponseSuccess(200, i18n.t("successMessages.deleteCourseSuccess"), true);
     } catch (error: any) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
@@ -705,10 +651,10 @@ const getListRatingsOfCourseBySlug = async (req: Request): Promise<ResponseBase>
         return formatListRatings.push(rating);
     });
 
-    const responseData = {
+    const responseData: PagingResponse<RatingResponse[]> = {
         total_record: totalRecord,
         total_page: totalPage,
-        list_data: formatListRatings,
+        data: formatListRatings,
     };
 
     return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, responseData);
@@ -721,7 +667,6 @@ const CourseService = {
     unsubcribeCourse,
     createCourse,
     editCourse,
-    editThumbnail,
     searchMyCourses,
     deleteMyCourse,
     getCourseDetailById,

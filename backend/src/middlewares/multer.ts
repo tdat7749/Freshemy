@@ -1,4 +1,4 @@
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import { uploadFile, uploadVideo } from "../configs/multer.config";
 import { Response, NextFunction } from "express";
 import { MulterError } from "multer";

@@ -12,7 +12,6 @@ courseRouter.post("/", isLogin, uploadFileMdw, controllers.courseController.crea
 courseRouter.post("/rating", isLogin, controllers.courseController.ratingCourse);
 courseRouter.post("/registration", isLogin, controllers.courseController.registerCourse);
 courseRouter.delete("/unsubcribe", isLogin, controllers.courseController.unsubcribeCourse);
-courseRouter.patch("/change-thumbnail", isLogin, isAuthor, uploadFileMdw, controllers.courseController.editThumbnail);
 
 courseRouter.get("/:slug/ratings", controllers.courseController.getListRatingsOfCourseBySlug);
 courseRouter.get("/top-10", controllers.courseController.getTop10Courses);
