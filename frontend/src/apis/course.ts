@@ -26,7 +26,7 @@ const getCategories = async () => {
 };
 
 const getMyCourses = async (values: GetMyCoursesType) => {
-    const path = `courses/search-my-courses?pageIndex=${values.pageIndex}&keyword=${values.keyword}`;
+    const path = `courses/search-my-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
 

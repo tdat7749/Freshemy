@@ -83,7 +83,7 @@ type UpdateCourse = {
 };
 
 export const updateCourseSchema: ObjectSchema<UpdateCourse> = Joi.object({
-    id: Joi.number()
+    course_id: Joi.number()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.courseIdIsRequired"),

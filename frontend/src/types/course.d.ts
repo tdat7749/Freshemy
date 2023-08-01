@@ -8,7 +8,7 @@ export type Category = {
 export type NewCourse = {
     title: string;
     categories: number[];
-    status: number;
+    status: boolean;
     summary: string;
     description: string;
     thumbnail: string;
@@ -18,9 +18,9 @@ export type Course = {
     id: number;
     title: string;
     summary: string;
-    rate: number;
+    rating: number;
     thumbnail: string;
-    author: string;
+    author?: string;
     categories: Category[];
     number_section: number;
     status: boolean;
@@ -48,7 +48,7 @@ export type DeleteCourse = {
 export type PagingCourse = {
     total_page: number;
     total_record: number;
-    courses: Course[];
+    data: Course[];
 };
 
 export type CourseDetail = {
@@ -73,7 +73,7 @@ export type ChangeThumbnail = {
 };
 
 export type CourseChangeInformation = {
-    id: number | undefined;
+    course_id: number | undefined;
     title: string;
     summary: string;
     status: boolean;

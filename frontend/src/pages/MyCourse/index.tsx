@@ -113,7 +113,7 @@ const MyCourses: React.FC = () => {
                                 slug={course.slug}
                                 title={course.title}
                                 summary={course.summary}
-                                author={course.author}
+                                author={course.author as string}
                                 handleDeleteCourse={handleDiplayDeleteModal}
                                 handleEditCourse={handleEditCourse}
                             />

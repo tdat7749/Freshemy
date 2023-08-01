@@ -1,7 +1,7 @@
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import { Response, NextFunction } from "express";
 import jwt, { TokenExpiredError, JsonWebTokenError, NotBeforeError } from "jsonwebtoken";
-import { MyJwtPayload } from "../types/decodeToken";
+import { MyJwtPayload } from "../types/decodeToken.type";
 import { db } from "../configs/db.config";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import configs from "../configs";

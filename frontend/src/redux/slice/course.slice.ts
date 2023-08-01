@@ -174,7 +174,7 @@ const initialState: CourseSlice = {
         status: false,
     },
     courseChangeDetail: {
-        id: undefined,
+        course_id: undefined,
         slug: "",
         title: "",
         categories: [],
@@ -231,7 +231,7 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getMyCourses.fulfilled, (state, action) => {
-            state.courses = action.payload.data?.courses as Course[];
+            state.courses = action.payload.data?.data as Course[];
             state.totalPage = action.payload.data?.total_page as number;
             state.isGetLoading = false;
         });
@@ -321,7 +321,7 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(selectCourses.fulfilled, (state, action) => {
-            state.courses = action.payload.data?.courses as Course[];
+            state.courses = action.payload.data?.data as Course[];
             state.totalPage = action.payload.data?.total_page as number;
             state.isGetLoading = false;
         });
