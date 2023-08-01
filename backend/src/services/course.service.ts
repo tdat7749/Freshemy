@@ -9,6 +9,8 @@ import {
     CourseEdit,
     OutstandingCourse,
     FilteredCourseResult,
+    AllCourseDetail,
+    CourseOrderByWithRelationInput,
 } from "../types/courseDetail";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
@@ -179,14 +181,13 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories: categories,
                     summary: course.summary,
                     author: course.user,
-                    ratings: course.ratings,
+                    rating: 5,
                     thumbnail: course.thumbnail,
                     description: course.description,
                     sections: sections,
                     created_at: course.created_at,
                     updated_at: course.updated_at,
                     status: course.status,
-                    attendees: 0,
                 };
                 return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, courseData);
             }
@@ -624,12 +625,24 @@ export const getAllCourses = async (
     keyword: string,
     categories: string[],
     sortBy: string,
+    filterByRatings: "asc" | "desc" | undefined,
 ): Promise<ResponseBase> => {
     try {
         const take = 5;
         const skip = (pageIndex - 1) * take;
 
         const categoryIDs = await getCategoryIDs(categories);
+        const orderBy: CourseOrderByWithRelationInput = {};
+
+        if (sortBy === "newest") {
+            orderBy.created_at = "desc";
+        } else if (sortBy === "attendee") {
+            orderBy.attendees = { _count: "desc" };
+        }
+
+        if (filterByRatings) {
+            orderBy.ratings = { _count: filterByRatings };
+        }
 
         const coursesQuery = db.course.findMany({
             where: {
@@ -672,12 +685,7 @@ export const getAllCourses = async (
             },
             skip,
             take,
-            orderBy:
-                sortBy === "newest"
-                    ? { created_at: "desc" }
-                    : sortBy === "attendee"
-                        ? { enrolleds: { _count: "desc" } }
-                        : undefined,
+            orderBy,
         });
 
         const [courses, totalRecord] = await Promise.all([
@@ -703,7 +711,7 @@ export const getAllCourses = async (
 
         const totalPage = Math.ceil(totalRecord / take);
 
-        const coursesData: CourseDetail[] = courses.map((course) => {
+        const coursesData: AllCourseDetail[] = courses.map((course) => {
             const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
             const averageRating = (course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0).toFixed(1);
 
@@ -782,7 +790,6 @@ const getCategoryIDs = async (categories: string[]): Promise<number[]> => {
     return categoryIDs;
 };
 
-
 const CourseService = {
     getCourseDetail,
     registerCourse,
@@ -795,6 +802,6 @@ const CourseService = {
     getCourseDetailById,
     getTop10Courses,
     getAllCourses,
-    getCategoryIDs
+    getCategoryIDs,
 };
 export default CourseService;
