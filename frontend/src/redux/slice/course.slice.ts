@@ -12,8 +12,9 @@ import {
     ChangeThumbnail as ChangeThumbnailType,
     CourseChangeInformation as CourseChangeInformationType,
     RatingCourse as RatingCourseType,
-    Rating as RatingType,
+    RatingResponse as RatingResponseType,
     EnrollCourse as EnrollCourseType,
+    GetRating as GetRatingType,
 } from "../../types/course";
 
 import { CourseApis } from "@src/apis";
@@ -27,7 +28,8 @@ type CourseSlice = {
     totalPage: number;
     courseDetail: CourseDetailType;
     courseChangeDetail: CourseChangeInformationType;
-    ratings: RatingType[];
+    ratings: RatingResponseType[];
+    totalRatingPage: number;
     role: string;
 };
 
@@ -186,6 +188,19 @@ export const getRightOfCourse = createAsyncThunk<Response<string>, number, { rej
     }
 );
 
+export const getListRatingsOfCourseBySlug = createAsyncThunk<
+    Response<RatingResponseType[]>,
+    GetRatingType,
+    { rejectValue: Response<null> }
+>("course/getListRatingsOfCourseBySlug", async (body, ThunkAPI) => {
+    try {
+        const response = await CourseApis.getListRatingsOfCourseBySlug(body);
+        return response.data as Response<RatingResponseType[]>;
+    } catch (error: any) {
+        return ThunkAPI.rejectWithValue(error.data as Response<null>);
+    }
+});
+
 const initialState: CourseSlice = {
     selectCategories: [],
     categories: [],
@@ -223,6 +238,7 @@ const initialState: CourseSlice = {
     totalPage: 1,
     isGetLoading: false,
     ratings: [],
+    totalRatingPage: 1,
     role: "",
 };
 
@@ -366,38 +382,53 @@ export const courseSlice = createSlice({
             state.isGetLoading = false;
         });
         builder.addCase(ratingCourse.pending, (state) => {
-            state.isGetLoading = true;
+            state.isLoading = true;
         });
 
         builder.addCase(ratingCourse.fulfilled, (state, action) => {
-            state.isGetLoading = false;
+            state.isLoading = false;
         });
 
         builder.addCase(ratingCourse.rejected, (state) => {
-            state.isGetLoading = false;
+            state.isLoading = false;
         });
         builder.addCase(subscribeCourse.pending, (state) => {
-            state.isGetLoading = true;
+            state.isLoading = true;
         });
 
         builder.addCase(subscribeCourse.fulfilled, (state) => {
             state.role = "Enrolled";
-            state.isGetLoading = false;
+            state.isLoading = false;
         });
 
         builder.addCase(subscribeCourse.rejected, (state) => {
-            state.isGetLoading = false;
+            state.isLoading = false;
         });
         builder.addCase(unsubcribeCourse.pending, (state) => {
-            state.isGetLoading = true;
+            state.isLoading = true;
         });
 
         builder.addCase(unsubcribeCourse.fulfilled, (state) => {
             state.role = "Unenrolled";
-            state.isGetLoading = false;
+            state.isLoading = false;
         });
 
         builder.addCase(unsubcribeCourse.rejected, (state) => {
+            state.isLoading = false;
+        });
+        builder.addCase(getListRatingsOfCourseBySlug.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(getListRatingsOfCourseBySlug.fulfilled, (state, action) => {
+            //@ts-ignore
+            state.ratings = action.payload.data.list_data as RatingResponseType[];
+            //@ts-ignore
+            state.totalRatingPage = action.payload.data?.total_page as number;
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(getListRatingsOfCourseBySlug.rejected, (state) => {
             state.isGetLoading = false;
         });
     },

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAppDispatch } from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { courseActions } from "@redux/slice";
 import toast from "react-hot-toast";
 
@@ -11,6 +11,7 @@ type GuestButtonProps = {
 
 const GuestButton: React.FC<GuestButtonProps> = ({ isLogin, course_id }) => {
     const dispatch = useAppDispatch();
+    const isLoading = useAppSelector((state) => state.courseSlice.isLoading) ?? false;
     const handleGetItClick = () => {
         if (!isLogin) {
             return;
@@ -33,7 +34,7 @@ const GuestButton: React.FC<GuestButtonProps> = ({ isLogin, course_id }) => {
                         onClick={handleGetItClick}
                         className="btn btn-primary bg-backgroundHover border-backgroundHover hover:bg-backgroundHover hover:border-backgroundHover text-black text-lg"
                     >
-                        <span>Get it</span>
+                        <span>{isLoading ? "Loading..." : "Get it"}</span>
                     </button>
                 </Link>
             </div>

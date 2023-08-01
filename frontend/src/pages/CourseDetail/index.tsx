@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Navbar, Accordion, DeleteModal } from "@src/components";
+import { Navbar, Accordion, DeleteModal, Spin } from "@src/components";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { Section } from "../../types/section";
-import { CourseDetail as CourseDetailType, Rating as RatingType } from "../../types/course";
+import { CourseDetail as CourseDetailType, GetRating, RatingResponse as RatingResponseType } from "../../types/course";
 import { Link } from "react-router-dom";
-// import EditIcon from "@src/components/icons/EditIcon";
-// import DeleteIcon from "../../components/icons/DeleteIcon";
 import NotFound from "../NotFound";
 import { courseActions } from "@redux/slice";
 import PopupRating from "./PopupRating";
 
-import { TotalRating } from "@src/components";
+import { TotalRating, Pagination } from "@src/components";
 import toast from "react-hot-toast";
 import AuthorButton from "./AuthorButton";
 import GuestButton from "./GuestButton";
 import SubscribeUserButton from "./SubscribeUserButton";
 import UnsubscribeModal from "./UnsubcribeModal";
 import CommentSection from "./CommentSection";
+import i18n from "../../utils/i18next";
 
 type CourseDetailProps = {
     isLogin: boolean;
@@ -31,13 +30,24 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
     const [isOpenUnsubscribeModal, setIsOpenUnsubscribeModal] = useState<boolean>(false);
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
+    const [pageIndex, setPageIndex] = useState<number>(1);
     const navigate = useNavigate();
 
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
-    const ratings: RatingType[] = useAppSelector((state) => state.courseSlice.ratings) ?? [];
+    const ratings: RatingResponseType[] = useAppSelector((state) => state.courseSlice.ratings) ?? [];
+    const totalRatingPage: number = useAppSelector((state) => state.courseSlice.totalRatingPage) ?? 1;
     const role: string = useAppSelector((state) => state.courseSlice.role) ?? "";
-    console.log(role);
-    // const isLoading:boolean = useAppSelector((state => state.courseSlice.isLoading))
+    const isLoading: boolean = useAppSelector((state) => state.courseSlice.isLoading) ?? false;
+    const isGetLoading: boolean = useAppSelector((state) => state.courseSlice.isGetLoading) ?? false;
+    const handleChangePageIndex = (pageIndex: number) => {
+        if (pageIndex < 1) {
+            setPageIndex(totalRatingPage);
+        } else if (pageIndex > totalRatingPage) setPageIndex(1);
+        else {
+            setPageIndex(pageIndex);
+        }
+        return;
+    };
 
     const handleDeleteCourse = () => {
         //@ts-ignore
@@ -59,12 +69,6 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
     };
     const handleTogglePopupRating = () => {
         setIsOpenPopupRating(!isOpenPopupRating);
-        // @ts-ignore
-        dispatch(courseActions.getCourseDetail(slug)).then((response) => {
-            if (response.payload && response.payload.status_code !== 200) {
-                setIsNotFound(true);
-            }
-        });
     };
     const handleToggleUnsubcribeCourse = () => {
         setIsOpenUnsubscribeModal(!isOpenUnsubscribeModal);
@@ -76,15 +80,22 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                 setIsNotFound(true);
             }
         });
-    }, [dispatch, slug, isNotFound]);
+    }, [dispatch, slug, isNotFound, isOpenPopupRating]);
     useEffect(() => {
         if (courseDetail.id && isLogin) {
             //@ts-ignore
             dispatch(courseActions.getRightOfCourse(courseDetail.id));
         }
     }, [dispatch, courseDetail.id, isLogin]);
-
-    // if(isLoading) return <Spin/>;
+    useEffect(() => {
+        const values: GetRating = {
+            slug: slug as string,
+            page_index: pageIndex,
+        };
+        //@ts-ignore
+        dispatch(courseActions.getListRatingsOfCourseBySlug(values));
+    }, [dispatch, slug, pageIndex, isOpenPopupRating]);
+    if (isLoading) return <Spin />;
 
     if (isNotFound) return <NotFound />;
 
@@ -142,7 +153,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                                         </p>
                                     </div>
                                 </div>
-                                {isLogin && role === "Author" && (
+                                {isLogin && role === i18n.t("ROLE.AUTHOR") && (
                                     <AuthorButton
                                         handleDelete={() => {
                                             setIsOpenDeleteModal(!isOpenDeleteModal);
@@ -151,14 +162,16 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                                         courseDetail={courseDetail}
                                     />
                                 )}
-                                {isLogin && role === "Enrolled" && (
+                                {isLogin && role === i18n.t("ROLE.ENROLLED") && (
                                     <SubscribeUserButton
                                         handleTogglePopupRating={handleTogglePopupRating}
                                         handleToggleUnsubscribeCourse={handleToggleUnsubcribeCourse}
                                         courseDetail={courseDetail}
                                     />
                                 )}
-                                {role === "Unenrolled" && <GuestButton isLogin={isLogin} course_id={courseDetail.id} />}
+                                {role === i18n.t("ROLE.UNENROLLED") && (
+                                    <GuestButton isLogin={isLogin} course_id={courseDetail.id} />
+                                )}
                                 {!isLogin && <GuestButton isLogin={isLogin} course_id={courseDetail.id} />}
                             </div>
                         </div>
@@ -176,7 +189,22 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                                     return <Accordion key={index} isDisplayBtn={false} section={section} />;
                                 })}
                             </div>
-                            <CommentSection ratings={ratings} />
+                            {isGetLoading ? (
+                                <p className="mt-4 text-2x text-center font-bold">Loading</p>
+                            ) : (
+                                <CommentSection ratings={ratings} />
+                            )}
+                            {ratings.length > 0 ? (
+                                <div className="flex justify-end my-4">
+                                    <Pagination
+                                        handleChangePageIndex={handleChangePageIndex}
+                                        totalPage={totalRatingPage}
+                                        currentPage={pageIndex}
+                                    />
+                                </div>
+                            ) : (
+                                <p className="mt-4 text-2xl text-error text-center font-bold">Such empty</p>
+                            )}
                         </div>
                     </div>
                 </div>

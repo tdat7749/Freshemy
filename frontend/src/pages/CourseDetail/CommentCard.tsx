@@ -1,8 +1,8 @@
 import React from "react";
 import { TotalRating } from "@src/components";
-import { Rating } from "../../types/course";
+import { RatingResponse } from "../../types/course";
 type CommentCardProps = {
-    rating: Rating;
+    rating: RatingResponse;
 };
 const CommentCard: React.FC<CommentCardProps> = (props) => {
     const date = props.rating.created_at.toString().split("T");
@@ -11,7 +11,7 @@ const CommentCard: React.FC<CommentCardProps> = (props) => {
             <div className={` flex items-center justify-between w-full p-4 rounded-lg my-0 `}>
                 <div className="avatar mr-1">
                     <div className=" items-center justify-between w-14 rounded-full">
-                        <img alt="1" src="https://i.kym-cdn.com/photos/images/newsfeed/002/205/323/176.jpg" />
+                        <img alt="1" src={props.rating.url_avatar as string} />
                     </div>
                 </div>
                 <div
@@ -19,8 +19,8 @@ const CommentCard: React.FC<CommentCardProps> = (props) => {
                 >
                     <div className="">
                         <p className="comment-author mb-1 ">
-                            {props.rating.user.first_name}
-                            {props.rating.user.last_name}
+                            {props.rating.first_name}
+                            {props.rating.last_name}
                         </p>
                         <p className="comment w-full truncate line-height:1.5 max-height:1.5 ">
                             {props.rating.content}
@@ -28,7 +28,7 @@ const CommentCard: React.FC<CommentCardProps> = (props) => {
                     </div>
                     <div className="">
                         <p className="comment-date mb-1 ">{date[0]}</p>
-                        <TotalRating ratingId={props.rating.id} totalScore={props.rating.score} isForCourse={false} />
+                        <TotalRating ratingId={props.rating.id} totalScore={props.rating.ratings} isForCourse={false} />
                     </div>
                 </div>
             </div>

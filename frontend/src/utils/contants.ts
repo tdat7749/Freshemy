@@ -7,6 +7,12 @@ export const HTTP_CALL = {
     HTTP_DELETE: "DELETE",
 };
 
+export const ROLE = {
+    AUTHOR: "Author",
+    ENROLLED: "Enrolled",
+    UNENROLLED: "Unenrolled",
+};
+
 export const errorMessages = {
     wrongPassword: "Wrong password",
     weakPassword: "Weak password",

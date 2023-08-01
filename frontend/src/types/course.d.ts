@@ -65,18 +65,19 @@ export type CourseDetail = {
     status: boolean;
 };
 
-export type Rating = {
+export type RatingResponse = {
     id: number;
-    score: number;
+    ratings: number;
     content: string;
-    created_at: Date;
+    created_at: string;
+    url_avatar: string | null;
+    first_name: string;
+    last_name: string;
     user_id: number;
-    course_id: number;
-    user: {
-        first_name: string;
-        last_name: string;
-        url_avatar: string | null;
-    };
+};
+export type GetRating = {
+    slug: string;
+    page_index: number;
 };
 
 export type ChangeThumbnail = {

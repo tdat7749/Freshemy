@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Formik, Field, ErrorMessage } from "formik";
 import { RatingCourse as RatingCourseType } from "../../types/course";
 import RatingInPopup from "./RatingInPopup";
-import { useAppDispatch } from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { courseActions } from "@redux/slice";
 import toast, { Toaster } from "react-hot-toast";
 // import i18n from "../utils/i18next";
@@ -20,6 +20,7 @@ const PopupRating: React.FC<RatingCourseProps> = (props) => {
     const initialValue = {
         content: "",
     };
+    const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
     const handleCheck = (event: any) => {
         const rating = event.target.id;
         setChecked(Number(rating));
@@ -31,14 +32,13 @@ const PopupRating: React.FC<RatingCourseProps> = (props) => {
             course_id,
             ratings: checked,
         };
-        console.log(data);
         //@ts-ignore
         dispatch(courseActions.ratingCourse(data)).then((response) => {
             if (response.payload.status_code === 200) {
-                toast.success("Rate Successfully");
+                toast.success(response.payload.message);
                 props.handleCancel();
             } else {
-                toast.error("Rate Unsuccessfully");
+                toast.error(response.payload.message);
             }
         });
     };
@@ -80,10 +80,8 @@ const PopupRating: React.FC<RatingCourseProps> = (props) => {
                                         type="submit"
                                         name="save_button"
                                         className="btn btn-primary text-white text-lg"
-                                        // disabled={error !== "" || isLoading ? true : false}
                                     >
-                                        SAVE
-                                        {/* {isLoading ? "Loading..." : "Save"} */}
+                                        {isLoading ? "Loading..." : "Save"}
                                     </button>
                                     <button onClick={props.handleCancel} type="button" className="btn text-lg ml-2">
                                         Cancel

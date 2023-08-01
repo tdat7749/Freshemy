@@ -10,9 +10,10 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
     const ratingName = isForCourse ? "rating-total" : `rating-comment-${props.ratingId}`;
     return (
         <div className={`  rating ${isForCourse ? "rating-lg" : "rating-xs"} rating-half   `}>
-            <input id="0" type="radio" name={ratingName} className="rating-hidden" checked />
+            <input id="0" readOnly type="radio" name={ratingName} className="rating-hidden" checked />
             <input
                 id="1"
+                readOnly
                 type="radio"
                 name={ratingName}
                 disabled
@@ -21,6 +22,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
             />
             <input
                 id="2"
+                readOnly
                 type="radio"
                 name={ratingName}
                 disabled
@@ -29,6 +31,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
             />
             <input
                 id="3"
+                readOnly
                 type="radio"
                 name={ratingName}
                 disabled
@@ -37,6 +40,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
             />
             <input
                 id="4"
+                readOnly
                 type="radio"
                 name={ratingName}
                 disabled
@@ -45,6 +49,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
             />
             <input
                 id="5"
+                readOnly
                 type="radio"
                 name={ratingName}
                 disabled
@@ -53,6 +58,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
             />
             <input
                 id="6"
+                readOnly
                 type="radio"
                 name={ratingName}
                 disabled
@@ -61,6 +67,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
             />
             <input
                 id="7"
+                readOnly
                 type="radio"
                 name={ratingName}
                 disabled
@@ -69,6 +76,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
             />
             <input
                 id="8"
+                readOnly
                 type="radio"
                 name={ratingName}
                 disabled
@@ -77,6 +85,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
             />
             <input
                 id="9"
+                readOnly
                 type="radio"
                 name={ratingName}
                 disabled
@@ -85,6 +94,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
             />
             <input
                 id="10"
+                readOnly
                 type="radio"
                 name={ratingName}
                 disabled

@@ -1,6 +1,6 @@
 import React from "react";
 import WarningIcon from "@src/components/icons/WarningIcon";
-import { useAppDispatch } from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { courseActions } from "@redux/slice";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -12,14 +12,15 @@ type UnsubscribeModalProps = {
 const UnsubscribeModal: React.FC<UnsubscribeModalProps> = (props: UnsubscribeModalProps) => {
     const course_id = props.course_id;
     const dispatch = useAppDispatch();
+    const isLoading = useAppSelector((state) => state.courseSlice.isLoading) ?? false;
     const handleUnsubscribeCourse = () => {
         //@ts-ignore
         dispatch(courseActions.unsubcribeCourse({ course_id })).then((response) => {
             if (response.payload.status_code === 200) {
-                toast.success("Unsubcribe Successfully");
+                toast.success(response.payload.message);
                 props.handleCancel();
             } else {
-                toast.error("Unsubcribe Unsuccessfully");
+                toast.error(response.payload.message);
             }
         });
     };
@@ -37,7 +38,7 @@ const UnsubscribeModal: React.FC<UnsubscribeModalProps> = (props: UnsubscribeMod
                     </div>
                     <div className="">
                         <button className="text-white btn btn-error text-lg" onClick={handleUnsubscribeCourse}>
-                            Yes, unsubcribe it
+                            {isLoading ? "Loading..." : "Yes, unsubcribe it"}
                         </button>
                         <button className="btn text-lg ml-2" onClick={props.handleCancel}>
                             Cancel

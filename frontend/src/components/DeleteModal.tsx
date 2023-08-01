@@ -1,5 +1,6 @@
 import React from "react";
 import WarningIcon from "./icons/WarningIcon";
+import { useAppSelector } from "../hooks/hooks";
 
 type DeleteModalProps = {
     handleDelete: () => void;
@@ -7,6 +8,7 @@ type DeleteModalProps = {
 };
 
 const DeleteModal: React.FC<DeleteModalProps> = (props: DeleteModalProps) => {
+    const isLoading = useAppSelector((state) => state.courseSlice.isLoading) ?? false;
     return (
         <>
             <div className="fixed z-50 w-full h-full top-0 bottom-0 bg-black/50 flex justify-center items-center">
@@ -19,16 +21,10 @@ const DeleteModal: React.FC<DeleteModalProps> = (props: DeleteModalProps) => {
                         <span className="text-xl">You won't be able to revert it</span>
                     </div>
                     <div className="">
-                        <button
-                            className="text-white btn btn-error text-lg"
-                            onClick={props.handleDelete}
-                        >
-                            Yes, delete it
+                        <button className="text-white btn btn-error text-lg" onClick={props.handleDelete}>
+                            {isLoading ? "Loading..." : " Yes, delete it "}
                         </button>
-                        <button
-                            className="btn text-lg ml-2"
-                            onClick={props.handleCancel}
-                        >
+                        <button className="btn text-lg ml-2" onClick={props.handleCancel}>
                             Cancel
                         </button>
                     </div>

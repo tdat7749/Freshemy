@@ -34,7 +34,6 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                 setError(i18n.t(errorMessages.videoFileSize));
             } else {
                 const video_extension = video_file.type;
-                console.log(video_extension);
                 if (
                     video_extension === i18n.t(fileType.mp4) ||
                     video_extension === i18n.t(fileType.mkv) ||
