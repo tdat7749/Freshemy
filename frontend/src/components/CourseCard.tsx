@@ -11,8 +11,8 @@ type Course = {
     summary: string;
     thumbnail: string;
     author: string;
-    handleDeleteCourse: (courseId: number) => void;
-    handleEditCourse: (id: number) => void;
+    handleDeleteCourse?: (courseId: number) => void;
+    handleEditCourse?: (id: number) => void;
 };
 
 const CourseCard: FC<Course> = (props: Course) => {
@@ -51,14 +51,18 @@ const CourseCard: FC<Course> = (props: Course) => {
                         >
                             <div
                                 className="flex items-center p-2 rounded-lg hover:bg-backgroundHover cursor-pointer"
-                                onClick={() => props.handleEditCourse(props.id)}
+                                onClick={() => {
+                                    if (props.handleEditCourse) props.handleEditCourse(props.id);
+                                }}
                             >
                                 <EditIcon />
                                 <span className="ml-2">Edit</span>
                             </div>
                             <div
                                 className="flex items-center p-2 rounded-lg hover:bg-backgroundHover cursor-pointer"
-                                onClick={() => props.handleDeleteCourse(props.id)}
+                                onClick={() => {
+                                    if (props.handleDeleteCourse) props.handleDeleteCourse(props.id);
+                                }}
                             >
                                 <DeleteIcon />
                                 <span className="ml-2">Delete</span>
