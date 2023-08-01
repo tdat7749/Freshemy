@@ -60,7 +60,7 @@ const CourseDetail: React.FC = () => {
         <>
             {isOpenDeleteModal && <DeleteModal handleDelete={handleDeleteCourse} handleCancel={handleCancelModal} />}
             <Navbar />
-            <div className="container mx-auto">
+            <div className="container mx-auto mt-[100px]">
                 <div className="min-h-screen h-full px-4 tablet:px-[60px]">
                     <div className="mt-4 container mx-auto p-4">
                         <div className="flex flex-col gap-4 laptop:flex-row shadow-xl bg-primary rounded-lg">

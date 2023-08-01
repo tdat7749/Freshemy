@@ -7,7 +7,7 @@ const AuthorProfile: React.FC = () => {
     return (
         <>
             <Navbar />
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto px-4 mt-[100px] laptop:mt-0">
                 <div className="px-4 tablet:px-[60px] flex gap-4 bg-primary mt-4 p-4 rounded-lg">
                     <div className="w-32 h-32 rounded-full border">
                         <img src={DefaultAvatar} alt="Avatar" className="w-full h-full object-cover rounded-full" />

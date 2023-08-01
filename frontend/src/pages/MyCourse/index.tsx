@@ -77,7 +77,7 @@ const MyCourses: React.FC = () => {
         <>
             {isGetLoading && <Spin />}
             <Navbar />
-            <div className="container mx-auto">
+            <div className="container mx-auto mt-[100px] laptop:mt-0">
                 <div className="px-4 tablet:px-[60px]">
                     <h1 className="text-center text-[32px] py-4 font-bold text-title">MY COURSE</h1>
                     <div className="w-full flex flex-col gap-4 justify-between shrink-0 tablet:flex-row">

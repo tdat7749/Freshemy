@@ -31,22 +31,32 @@ const AllCourses: React.FC = () => {
         }
     };
 
+    // HANDLE FILTER BTN CLICK
     const handleFilterCourse = () => {
         const query: SelectCourse = {
             page_index: pageIndex,
             keyword: keyword as string,
-            sort_by: "",
-            rating: 5,
-            category: [],
+            rating: evaluate,
+            category: categories,
         };
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
     };
 
-    const handleSortingCourse = (sortBy: string) => {};
+    // HANDLE SORTING BTN CLICK
+    const handleSortingCourse = (sortBy: string) => {
+        const query: SelectCourse = {
+            page_index: pageIndex,
+            keyword: keyword as string,
+            rating: evaluate,
+            sort_by: sortBy,
+            category: categories,
+        };
+        // @ts-ignore
+        dispatch(courseActions.selectCourses(query));
+    };
 
-    const handleChangePageIndex = () => {};
-
+    
     useEffect(() => {
         // @ts-ignore
         dispatch(courseActions.getCategories());
@@ -61,12 +71,13 @@ const AllCourses: React.FC = () => {
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
         setPageIndex(1);
-    }, [dispatch, categories, keyword, pageIndex]);
-
+    }, [dispatch, keyword, pageIndex]);
+    
+    const handleChangePageIndex = () => {};
     return (
         <>
             <Navbar />
-            <div className="container mx-auto p-4">
+            <div className="container mx-auto p-4 mt-[100px] laptop:mt-0">
                 <div className="">
                     <h1 className="text-2xl">{totalRecord} results have been found </h1>
                     <div className="flex flex-col gap-4 laptop:flex-row">

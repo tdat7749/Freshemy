@@ -28,7 +28,7 @@ const Home: React.FC = () => {
         <>
             <Navbar />
             {isLoading && <Spin />}
-            <div className="h-[200px] tablet:h-[400px] flex items-center bg-hero-pattern bg-cover">
+            <div className="h-[200px] tablet:h-[400px] flex items-center bg-hero-pattern bg-cover mt-[100px] laptop:mt-0">
                 <div className="px-24">
                     <h1 className="text-title text-2xl tablet:text-[40px] font-bold min-w-fit">LEARN NEW SKILLS</h1>
                     <p className="text-xl font-medium">Learn as hard as you can</p>

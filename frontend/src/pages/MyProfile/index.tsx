@@ -19,7 +19,7 @@ const MyProfile: React.FC = () => {
     return (
         <>
             <Navbar />
-            <div className="container mx-auto">
+            <div className="container mx-auto mt-[100px] laptop:mt-0">
                 <div className="px-4 tablet:px-[60px]">
                     <h1 className="text-center text-[32px] py-4 font-bold text-title">MY PROFILE</h1>
                     <div className="flex justify-center items-center">

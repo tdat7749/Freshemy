@@ -14,14 +14,14 @@ const Navbar: React.FC = () => {
 
     return (
         <>
-            <div className="w-full h-[80px] bg-backgroundHover mt-[100px] flex items-center justify-center">
-                <ul className="px-20 grid grid-cols-4 overflow-hidden mx-auto">
+            <div className="hidden w-full h-[80px] bg-backgroundHover mt-[100px] laptop:flex">
+                <ul className="min-w-fit px-20 flex justify-center mx-auto">
                     {categoriesList.length > 0 &&
                         categoriesList.map((category, index) => {
                             return (
                                 <li
                                     key={category.id}
-                                    className="hover:bg-primary text-lg font-medium text-center cursor-pointer px-6 py-[26px]"
+                                    className="hover:bg-primary text-lg font-medium text-center cursor-pointer px-6 py-[26px] min-w-fit"
                                 >
                                     {category.title}
                                 </li>
