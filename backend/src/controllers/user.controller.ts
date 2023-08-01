@@ -4,7 +4,7 @@ import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
 import { ChangeUserInformation, changePasswordSchema } from "../validations/user";
 import service from "../services";
-
+import { Request } from "express"
 class UserController {
     async changePassword(req: RequestHasLogin, res: Response) {
         const errorValidate: ValidationError | undefined = changePasswordSchema.validate(req.body).error;
@@ -27,7 +27,7 @@ class UserController {
         return res.status(response.getStatusCode()).json(response);
     }
 
-    async getAuthorInformation(req: RequestHasLogin, res: Response) {
+    async getAuthorInformation(req: Request, res: Response) {
 
         const response = await service.UserService.getAuthorInformation(req);
 

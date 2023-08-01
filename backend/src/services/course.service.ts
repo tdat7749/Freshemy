@@ -334,58 +334,6 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const editThumbnail = async (req: RequestHasLogin): Promise<ResponseBase> => {
-    try {
-        const thumbnail = req.file as Express.Multer.File;
-        const { course_id } = req.body;
-        const idConvert = +course_id;
-        const isFoundCourse = await db.course.findUnique({
-            where: {
-                id: idConvert,
-            },
-        });
-
-        if (!isFoundCourse) {
-            return new ResponseError(400, i18n.t("errorMessages.missingRequestBody"), false);
-        }
-
-        const uploadFileResult = await new Promise<UploadApiResponse | undefined>((resolve, reject) => {
-            cloudinary.uploader.upload(thumbnail.path, (error: UploadApiErrorResponse, result: UploadApiResponse) => {
-                if (error) {
-                    reject(undefined);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
-
-        if (uploadFileResult) {
-            const isUpdate = await db.course.update({
-                where: {
-                    id: idConvert,
-                },
-                data: {
-                    thumbnail: uploadFileResult.url,
-                },
-            });
-
-            if (isUpdate) {
-                return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
-            } else {
-                await cloudinary.uploader.destroy(uploadFileResult.public_id);
-            }
-        }
-
-        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
-    } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, error.toString(), false);
-        }
-
-        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
-    }
-};
-
 const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
     try {
         const parsedPageIndex = parseInt(pageIndex.toString(), 10);
@@ -594,7 +542,6 @@ const CourseService = {
     unsubcribeCourse,
     createCourse,
     editCourse,
-    editThumbnail,
     searchMyCourses,
     deleteMyCourse,
     getCourseDetailById,

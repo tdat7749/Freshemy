@@ -260,6 +260,8 @@ const getMe = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 email: isFoundUser.email,
                 first_name: isFoundUser.first_name,
                 last_name: isFoundUser.last_name,
+                url_avatar: isFoundUser.url_avatar,
+                description: isFoundUser.description
             };
             return new ResponseSuccess(200, i18n.t("successMessages.requestSuccess"), true, userInformation);
         }
