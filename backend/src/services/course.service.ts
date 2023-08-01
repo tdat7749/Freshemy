@@ -263,8 +263,8 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
 
 const editCourse = async (req: Request): Promise<ResponseBase> => {
     try {
-        const { id, title, summary, description, categories, status, thumbnail } = req.body;
-        const courseId = parseInt(id);
+        const { course_id, title, summary, description, categories, status, thumbnail } = req.body;
+        const courseId = parseInt(course_id);
 
         const isFoundCourseById = await db.course.findUnique({
             where: {
