@@ -75,6 +75,13 @@ export type RatingResponse = {
     last_name: string;
     user_id: number;
 };
+
+export type PagingRating = {
+    total_page: number;
+    total_record: number;
+    data: RatingResponse[];
+};
+
 export type GetRating = {
     slug: string;
     page_index: number;
@@ -104,4 +111,8 @@ export type RatingCourse = {
 
 export type EnrollCourse = {
     course_id: number;
+};
+
+export type GetRight = {
+    role: string;
 };

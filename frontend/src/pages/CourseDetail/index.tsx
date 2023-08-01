@@ -37,7 +37,6 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
     const ratings: RatingResponseType[] = useAppSelector((state) => state.courseSlice.ratings) ?? [];
     const totalRatingPage: number = useAppSelector((state) => state.courseSlice.totalRatingPage) ?? 1;
     const role: string = useAppSelector((state) => state.courseSlice.role) ?? "";
-    const isLoading: boolean = useAppSelector((state) => state.courseSlice.isLoading) ?? false;
     const isGetLoading: boolean = useAppSelector((state) => state.courseSlice.isGetLoading) ?? false;
     const handleChangePageIndex = (pageIndex: number) => {
         if (pageIndex < 1) {
@@ -95,7 +94,6 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
         //@ts-ignore
         dispatch(courseActions.getListRatingsOfCourseBySlug(values));
     }, [dispatch, slug, pageIndex, isOpenPopupRating]);
-    if (isLoading) return <Spin />;
 
     if (isNotFound) return <NotFound />;
 
@@ -107,6 +105,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                 <UnsubscribeModal handleCancel={handleToggleUnsubcribeCourse} course_id={courseDetail.id} />
             )}
             <Navbar />
+            {isGetLoading && <Spin />}
             <div className="container mx-auto">
                 <div className="min-h-screen h-full px-4 tablet:px-[60px]">
                     <div className="mt-4 container mx-auto p-4">
@@ -169,10 +168,9 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                                         courseDetail={courseDetail}
                                     />
                                 )}
-                                {role === i18n.t("ROLE.UNENROLLED") && (
+                                {(!isLogin || role === i18n.t("ROLE.UNENROLLED")) && (
                                     <GuestButton isLogin={isLogin} course_id={courseDetail.id} />
                                 )}
-                                {!isLogin && <GuestButton isLogin={isLogin} course_id={courseDetail.id} />}
                             </div>
                         </div>
                         <div>

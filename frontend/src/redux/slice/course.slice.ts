@@ -15,6 +15,8 @@ import {
     RatingResponse as RatingResponseType,
     EnrollCourse as EnrollCourseType,
     GetRating as GetRatingType,
+    PagingRating,
+    GetRight as GetRightType,
 } from "../../types/course";
 
 import { CourseApis } from "@src/apis";
@@ -176,12 +178,12 @@ export const unsubcribeCourse = createAsyncThunk<Response<null>, EnrollCourseTyp
         }
     }
 );
-export const getRightOfCourse = createAsyncThunk<Response<string>, number, { rejectValue: Response<null> }>(
+export const getRightOfCourse = createAsyncThunk<Response<GetRightType>, number, { rejectValue: Response<null> }>(
     "course/right",
     async (body, ThunkAPI) => {
         try {
             const response = await CourseApis.getRightOfCourse(body);
-            return response.data as Response<string>;
+            return response.data as Response<GetRightType>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
         }
@@ -189,13 +191,13 @@ export const getRightOfCourse = createAsyncThunk<Response<string>, number, { rej
 );
 
 export const getListRatingsOfCourseBySlug = createAsyncThunk<
-    Response<RatingResponseType[]>,
+    Response<PagingRating>,
     GetRatingType,
     { rejectValue: Response<null> }
 >("course/getListRatingsOfCourseBySlug", async (body, ThunkAPI) => {
     try {
         const response = await CourseApis.getListRatingsOfCourseBySlug(body);
-        return response.data as Response<RatingResponseType[]>;
+        return response.data as Response<PagingRating>;
     } catch (error: any) {
         return ThunkAPI.rejectWithValue(error.data as Response<null>);
     }
@@ -373,8 +375,7 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getRightOfCourse.fulfilled, (state, action) => {
-            //@ts-ignore
-            state.role = action.payload.data.role as string;
+            state.role = action.payload.data?.role as string;
             state.isGetLoading = false;
         });
 
@@ -421,9 +422,8 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getListRatingsOfCourseBySlug.fulfilled, (state, action) => {
-            //@ts-ignore
-            state.ratings = action.payload.data.list_data as RatingResponseType[];
-            //@ts-ignore
+            state.ratings = action.payload.data?.data as RatingResponseType[];
+
             state.totalRatingPage = action.payload.data?.total_page as number;
             state.isGetLoading = false;
         });
