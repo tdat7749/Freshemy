@@ -2,13 +2,13 @@ import { Request } from "express";
 import * as bcrypt from "bcrypt";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
-import { MyJwtPayload } from "../types/decodeToken";
+import { MyJwtPayload } from "../types/decodeToken.type";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import { sendMail } from "../commons";
 import configs from "../configs";
 import { db } from "../configs/db.config";
-import { SendMail } from "../types/sendmail";
+import { SendMail } from "../types/sendmail.type";
 
 import { setResetEmail, setsignUpEmail } from "../configs/nodemailer.config";
 import i18n from "../utils/i18next";

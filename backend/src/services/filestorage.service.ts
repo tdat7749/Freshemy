@@ -9,7 +9,7 @@ import { UploadApiErrorResponse, UploadApiResponse, DeleteApiResponse } from "cl
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import i18n from "../utils/i18next";
 
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import { getPublicIdFromUrl } from "../utils/helper";
 
 ffmpeg.setFfmpegPath(ffmpegPath.path);

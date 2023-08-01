@@ -4,7 +4,7 @@ import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/respons
 
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import services from ".";
 import { resolutions } from "../commons";
 import fs from "fs";
