@@ -27,10 +27,19 @@ const updateInformation = async (values: UpdateInformationType) => {
     return response;
 };
 
+const getAuthorInformation = async (id: number) => {
+    const path = `/users/${id}`;
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
+
+    return response;
+};
+
 const UserApis = {
     changePassword,
     getInformation,
     updateInformation,
+    getAuthorInformation,
 };
 
 export default UserApis;

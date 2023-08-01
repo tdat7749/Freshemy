@@ -4,7 +4,7 @@ import { db } from "../configs/db.config";
 import * as bcrypt from "bcrypt";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import configs from "../configs";
-
+import {OutstandingCourse} from "../types/courseDetail"
 import i18n from "../utils/i18next";
 
 const changePassword = async (req: RequestHasLogin): Promise<ResponseBase> => {
@@ -112,7 +112,7 @@ const getAuthorInformation = async (req: RequestHasLogin): Promise<ResponseBase>
     try {
         const { id } = req.params;
         const user_id = +id;
-        const user = await db.user.findMany({
+        const user = await db.user.findFirst({
             where: {
                 id: user_id,
                 is_verify: true,
@@ -126,15 +126,9 @@ const getAuthorInformation = async (req: RequestHasLogin): Promise<ResponseBase>
                     where: {
                         is_delete: false
                     },
-                    select: {
-                        id: true,
-                        title: true,
-                        thumbnail: true,
-                        summary: true,
-                        ratings: true,
-                        slug: true,
+                    include: {
                         courses_categories: {
-                            include: {
+                            select: {
                                 category: {
                                     select: {
                                         id: true,
@@ -147,8 +141,33 @@ const getAuthorInformation = async (req: RequestHasLogin): Promise<ResponseBase>
                 },
             },
         });
+
         if(!user) return new ResponseError(404, i18n.t("errorMessages.userNotFound"), false);
-        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccessfully"), true,user);
+
+        const courses: OutstandingCourse[] = [];
+    
+        user?.courses.map((course) =>{
+            const data: OutstandingCourse = {
+                id: course.id,
+                thumbnail: course.thumbnail,
+                title: course.title,
+                slug: course.slug,
+                categories: course.courses_categories.map((cate) => cate.category),
+                author: user.last_name + " " + user.first_name,
+                created_at: course.created_at,
+                updated_at: course.updated_at
+            };
+            courses.push(data);
+        })
+
+        const data = {
+            first_name: user.first_name,
+            last_name: user.last_name,
+            url_avatar: user.url_avatar,
+            description: user.description,
+            courses: courses,
+        }
+        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccessfully"), true,data);
     } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
@@ -156,6 +175,8 @@ const getAuthorInformation = async (req: RequestHasLogin): Promise<ResponseBase>
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 }
+
+
 const UserService = {
     changePassword,
     getInformation,

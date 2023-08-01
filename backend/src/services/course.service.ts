@@ -563,7 +563,7 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
             };
             result.push(data);
         });
-        return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, result);
+        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccessfully"), true, result);
     } catch (error) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
