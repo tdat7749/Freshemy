@@ -100,6 +100,9 @@ export const errorMessages = {
 
     // Upload Image
     imageUploadError: "Upload Image Error",
+
+    //Rating
+    ratingError: "You have already rated",
 };
 
 export const successMessages = {
@@ -153,4 +156,7 @@ export const successMessages = {
 
     // Upload Image
     imageUploadSuccess: "Upload Image Successfully",
+
+    //Rating
+    ratingSuccess: "Rate successfully",
 };

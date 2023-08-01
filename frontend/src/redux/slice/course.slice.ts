@@ -28,6 +28,7 @@ type CourseSlice = {
     courseDetail: CourseDetailType;
     courseChangeDetail: CourseChangeInformationType;
     ratings: RatingType[];
+    role: string;
 };
 
 export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejectValue: Response<null> }>(
@@ -152,7 +153,7 @@ export const ratingCourse = createAsyncThunk<Response<null>, RatingCourseType, {
     }
 );
 export const subscribeCourse = createAsyncThunk<Response<null>, EnrollCourseType, { rejectValue: Response<null> }>(
-    "course/rating",
+    "course/registration",
     async (body, ThunkAPI) => {
         try {
             const response = await CourseApis.subscribeCourse(body);
@@ -163,11 +164,22 @@ export const subscribeCourse = createAsyncThunk<Response<null>, EnrollCourseType
     }
 );
 export const unsubcribeCourse = createAsyncThunk<Response<null>, EnrollCourseType, { rejectValue: Response<null> }>(
-    "course/rating",
+    "course/unsubscribe",
     async (body, ThunkAPI) => {
         try {
             const response = await CourseApis.unsubcribeCourse(body);
             return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+export const getRightOfCourse = createAsyncThunk<Response<string>, number, { rejectValue: Response<null> }>(
+    "course/right",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.getRightOfCourse(body);
+            return response.data as Response<string>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
         }
@@ -211,6 +223,7 @@ const initialState: CourseSlice = {
     totalPage: 1,
     isGetLoading: false,
     ratings: [],
+    role: "",
 };
 
 export const courseSlice = createSlice({
@@ -337,6 +350,54 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getTop10Courses.rejected, (state) => {
+            state.isGetLoading = false;
+        });
+        builder.addCase(getRightOfCourse.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(getRightOfCourse.fulfilled, (state, action) => {
+            //@ts-ignore
+            state.role = action.payload.data.role as string;
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(getRightOfCourse.rejected, (state) => {
+            state.isGetLoading = false;
+        });
+        builder.addCase(ratingCourse.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(ratingCourse.fulfilled, (state, action) => {
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(ratingCourse.rejected, (state) => {
+            state.isGetLoading = false;
+        });
+        builder.addCase(subscribeCourse.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(subscribeCourse.fulfilled, (state) => {
+            state.role = "Enrolled";
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(subscribeCourse.rejected, (state) => {
+            state.isGetLoading = false;
+        });
+        builder.addCase(unsubcribeCourse.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(unsubcribeCourse.fulfilled, (state) => {
+            state.role = "Unenrolled";
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(unsubcribeCourse.rejected, (state) => {
             state.isGetLoading = false;
         });
     },

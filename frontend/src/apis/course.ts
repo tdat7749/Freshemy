@@ -98,6 +98,13 @@ const unsubcribeCourse = async (values: EnrollCourseType) => {
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_DELETE"), path, values);
     return response;
 };
+const getRightOfCourse = async (courseId: number) => {
+    const path = `courses/right/${courseId}`;
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
+
+    return response;
+};
 
 export {
     createCourse,
@@ -112,4 +119,5 @@ export {
     ratingCourse,
     subscribeCourse,
     unsubcribeCourse,
+    getRightOfCourse,
 };

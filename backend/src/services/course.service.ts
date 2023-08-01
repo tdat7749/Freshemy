@@ -589,7 +589,7 @@ const ratingCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
         if (!isFindCourse) {
-            return new ResponseError(404, "Khong ton tai course", false);
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
         }
         const isAlreadyRated = await db.rating.findFirst({
             where: {
@@ -598,7 +598,7 @@ const ratingCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
         if (isAlreadyRated) {
-            return new ResponseError(400, "Da dang ki roi", false);
+            return new ResponseError(400, i18n.t("errorMessages.ratingError"), false);
         }
         const create_rating = await db.rating.create({
             data: {
@@ -609,14 +609,14 @@ const ratingCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
 
-        return new ResponseSuccess(200, "Ngon lanh roi", true);
+        return new ResponseSuccess(200, i18n.t("successMessages.ratingSuccess"), true);
     } catch (error: any) {
         return new ResponseError(500, error.message, false);
     }
 };
-const getRightOfCourse = async (req: Request): Promise<ResponseBase> => {
+const getRightOfCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const user_id = parseInt(req.params.user_id);
+        const user_id = req.user_id;
         const course_id = parseInt(req.params.course_id);
         const isAuthor = await configs.db.course.findFirst({
             where: {
@@ -625,7 +625,7 @@ const getRightOfCourse = async (req: Request): Promise<ResponseBase> => {
             },
         });
         if (isAuthor) {
-            return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, "Author");
+            return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, { role: "Author" });
         }
         const isEnrolled = await configs.db.enrolled.findFirst({
             where: {
@@ -634,9 +634,9 @@ const getRightOfCourse = async (req: Request): Promise<ResponseBase> => {
             },
         });
         if (isEnrolled) {
-            return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, "Enrolled");
+            return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, { role: "Enrolled" });
         }
-        return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, "Unregister");
+        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, { role: "Unenrolled" });
     } catch (error) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }

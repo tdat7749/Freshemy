@@ -3,7 +3,7 @@ import { Navbar, Accordion, DeleteModal } from "@src/components";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { Section } from "../../types/section";
-import { CourseDetail as CourseDetailType, Rating } from "../../types/course";
+import { CourseDetail as CourseDetailType, Rating as RatingType } from "../../types/course";
 import { Link } from "react-router-dom";
 // import EditIcon from "@src/components/icons/EditIcon";
 // import DeleteIcon from "../../components/icons/DeleteIcon";
@@ -18,7 +18,12 @@ import GuestButton from "./GuestButton";
 import SubscribeUserButton from "./SubscribeUserButton";
 import UnsubscribeModal from "./UnsubcribeModal";
 import CommentSection from "./CommentSection";
-const CourseDetail: React.FC = () => {
+
+type CourseDetailProps = {
+    isLogin: boolean;
+};
+
+const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
     let { slug } = useParams();
     const dispatch = useAppDispatch();
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
@@ -29,7 +34,9 @@ const CourseDetail: React.FC = () => {
     const navigate = useNavigate();
 
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
-    const ratings: Rating[] = useAppSelector((state) => state.courseSlice.ratings) ?? [];
+    const ratings: RatingType[] = useAppSelector((state) => state.courseSlice.ratings) ?? [];
+    const role: string = useAppSelector((state) => state.courseSlice.role) ?? "";
+    console.log(role);
     // const isLoading:boolean = useAppSelector((state => state.courseSlice.isLoading))
 
     const handleDeleteCourse = () => {
@@ -52,6 +59,12 @@ const CourseDetail: React.FC = () => {
     };
     const handleTogglePopupRating = () => {
         setIsOpenPopupRating(!isOpenPopupRating);
+        // @ts-ignore
+        dispatch(courseActions.getCourseDetail(slug)).then((response) => {
+            if (response.payload && response.payload.status_code !== 200) {
+                setIsNotFound(true);
+            }
+        });
     };
     const handleToggleUnsubcribeCourse = () => {
         setIsOpenUnsubscribeModal(!isOpenUnsubscribeModal);
@@ -64,6 +77,12 @@ const CourseDetail: React.FC = () => {
             }
         });
     }, [dispatch, slug, isNotFound]);
+    useEffect(() => {
+        if (courseDetail.id && isLogin) {
+            //@ts-ignore
+            dispatch(courseActions.getRightOfCourse(courseDetail.id));
+        }
+    }, [dispatch, courseDetail.id, isLogin]);
 
     // if(isLoading) return <Spin/>;
 
@@ -119,23 +138,28 @@ const CourseDetail: React.FC = () => {
                                     <div className="flex items-center text-xl laptop:text-2xl font-bold">
                                         <span className="mr-2">Status:</span>
                                         <p className="font-normal">
-                                            {courseDetail.status === false ? "Uncomplete" : " Completed"}
+                                            {courseDetail.status === false ? "Incompleted" : " Completed"}
                                         </p>
                                     </div>
                                 </div>
-                                <AuthorButton
-                                    handleDelete={() => {
-                                        setIsOpenDeleteModal(!isOpenDeleteModal);
-                                        setIdItem(courseDetail.id as number);
-                                    }}
-                                    courseDetail={courseDetail}
-                                />
-                                <GuestButton isLogin={true} course_id={courseDetail.id} />
-                                <SubscribeUserButton
-                                    handleTogglePopupRating={handleTogglePopupRating}
-                                    handleToggleUnsubscribeCourse={handleToggleUnsubcribeCourse}
-                                    courseDetail={courseDetail}
-                                />
+                                {isLogin && role === "Author" && (
+                                    <AuthorButton
+                                        handleDelete={() => {
+                                            setIsOpenDeleteModal(!isOpenDeleteModal);
+                                            setIdItem(courseDetail.id as number);
+                                        }}
+                                        courseDetail={courseDetail}
+                                    />
+                                )}
+                                {isLogin && role === "Enrolled" && (
+                                    <SubscribeUserButton
+                                        handleTogglePopupRating={handleTogglePopupRating}
+                                        handleToggleUnsubscribeCourse={handleToggleUnsubcribeCourse}
+                                        courseDetail={courseDetail}
+                                    />
+                                )}
+                                {role === "Unenrolled" && <GuestButton isLogin={isLogin} course_id={courseDetail.id} />}
+                                {!isLogin && <GuestButton isLogin={isLogin} course_id={courseDetail.id} />}
                             </div>
                         </div>
                         <div>
