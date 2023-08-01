@@ -20,7 +20,6 @@ const AuthorProfile: React.FC = () => {
         dispatch(userActions.getAuthorInformation(id));
     }, [dispatch, id]);
 
-    console.log(user);
 
     return (
         <>
