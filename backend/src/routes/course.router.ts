@@ -16,7 +16,11 @@ courseRouter.patch("/change-thumbnail", isLogin, isAuthor, uploadFileMdw, contro
 courseRouter.get("/top-10", controllers.courseController.getTop10Courses);
 
 courseRouter.get("/search-my-courses", isLogin, controllers.courseController.searchMyCourses);
+courseRouter.get("/get-all-courses", isLogin, controllers.courseController.getAllCourses);
+
 courseRouter.get("/:slug", controllers.courseController.getCourseDetail);
+
+
 courseRouter.get("/detail/:id", isLogin, controllers.courseController.getCourseDetailById);
 courseRouter.delete("/:id", isLogin, isAuthor, controllers.courseController.deleteMyCourse);
 
