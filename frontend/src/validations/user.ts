@@ -15,3 +15,9 @@ export const changePasswordValidationSchema = Yup.object({
         .required(i18n.t("errorMessages.confirmPasswordIsRequired"))
         .oneOf([Yup.ref("new_password")], i18n.t("errorMessages.newPasswordDiiferentOldPassword")),
 });
+
+export const updateProfileValidationSchema = Yup.object({
+    first_name: Yup.string().trim().required(i18n.t("errorMessages.firstNameIsRequired")),
+    last_name: Yup.string().trim().required(i18n.t("errorMessages.lastNameIsRequired")),
+    description: Yup.string().trim().required(i18n.t("errorMessages.descriptionIsRequired")),
+});

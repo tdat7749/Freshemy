@@ -202,9 +202,7 @@ export const refreshToken = async () => {
                 window.location.href = "/login";
             }
         }
-    } catch (error: any) {
-        console.log(error);
-    }
+    } catch (error: any) {}
 };
 
 export const logout = () => async (dispatch: any) => {
