@@ -557,45 +557,56 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-export const getAllCourses = async (
-    pageIndex: number,
-    keyword: string,
-    categories: string[],
-    sortBy: string,
-    filterByRatings: "asc" | "desc" | undefined,
+const getAllCourses = async (
+    pageIndex?: number,
+    keyword?: string,
+    categories?: string[],
+    sortBy?: string,
+    filterByRatings?: "asc" | "desc" | undefined,
+    ratings?: number,
 ): Promise<ResponseBase> => {
     try {
-        const take = 5;
-        const skip = (pageIndex - 1) * take;
+        const take = 10;
+        const skip = ((pageIndex ?? 1) - 1) * take;
 
-        const categoryIDs = await getCategoryIDs(categories);
+        const categoryIDs = await getCategoryIDs(categories ?? []);
         const orderBy: CourseOrderByWithRelationInput = {};
 
         if (sortBy === "newest") {
             orderBy.created_at = "desc";
-        } else if (sortBy === "attendee") {
+        } else if (sortBy === "attendees") {
             orderBy.attendees = { _count: "desc" };
-        }
-
-        if (filterByRatings) {
-            orderBy.ratings = { _count: filterByRatings };
         }
 
         const coursesQuery = db.course.findMany({
             where: {
-                title: {
-                    contains: keyword.toLowerCase(),
-                },
+                title: keyword
+                    ? {
+                          contains: keyword.toLowerCase(),
+                      }
+                    : undefined,
                 is_delete: false,
-                courses_categories: {
-                    some: {
-                        category: {
-                            id: {
-                                in: categoryIDs,
-                            },
-                        },
-                    },
-                },
+
+                ratings: ratings
+                    ? {
+                          some: {
+                              score: ratings,
+                          },
+                      }
+                    : undefined,
+
+                courses_categories:
+                    categories && categories.length > 0
+                        ? {
+                              some: {
+                                  category: {
+                                      title: {
+                                          in: categories,
+                                      },
+                                  },
+                              },
+                          }
+                        : undefined,
             },
             include: {
                 user: true,
@@ -629,9 +640,7 @@ export const getAllCourses = async (
             coursesQuery,
             db.course.count({
                 where: {
-                    title: {
-                        contains: keyword,
-                    },
+                    title: keyword ? { contains: keyword.toLowerCase() } : undefined,
                     is_delete: false,
                     courses_categories: {
                         some: {
@@ -648,7 +657,23 @@ export const getAllCourses = async (
 
         const totalPage = Math.ceil(totalRecord / take);
 
-        const coursesData: AllCourseDetail[] = courses.map((course) => {
+        // Filter courses based on the ratings
+        const filteredCourses = courses.filter((course) => {
+            const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
+            const averageRating = course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0;
+
+            if (ratings === undefined) {
+                return true; // No rating filter, include all courses
+            }
+
+            if (filterByRatings === "asc") {
+                return averageRating >= ratings;
+            } else {
+                return averageRating <= ratings;
+            }
+        });
+
+        const coursesData: AllCourseDetail[] = filteredCourses.map((course) => {
             const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
             const averageRating = (course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0).toFixed(1);
 
@@ -671,7 +696,6 @@ export const getAllCourses = async (
                 title: course.title,
                 summary: course.summary,
                 description: course.description,
-                sections: course.sections,
                 status: course.status,
                 attendees: course.enrolleds.length,
                 created_at: course.created_at,

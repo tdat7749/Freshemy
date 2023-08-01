@@ -107,13 +107,18 @@ class CourseController {
 
     async getAllCourses(req: Request, res: Response): Promise<Response> {
         try {
-            const pageIndex: number = parseInt(req.query.pageIndex as string, 10);
-            const keyword: string = req.query.keyword as string;
-            const categories: string[] = Array.isArray(req.query.categories)
-                ? (req.query.categories as string[])
-                : [req.query.categories as string];
-            const sortBy: string = (req.query.sortBy as string) || "newest";
+            const pageIndex: number | undefined = req.query.pageIndex
+                ? parseInt(req.query.pageIndex as string, 10)
+                : undefined;
+            const keyword: string | undefined = req.query.keyword ? (req.query.keyword as string) : undefined;
+            const categories: string[] | undefined = req.query.categories
+                ? Array.isArray(req.query.categories)
+                    ? (req.query.categories as string[])
+                    : [req.query.categories as string]
+                : undefined;
+            const sortBy: string | undefined = req.query.sortBy ? (req.query.sortBy as string) : undefined;
             const filterByRatings: "asc" | "desc" | undefined = req.query.filterByRatings as "asc" | "desc" | undefined;
+            const ratings: number | undefined = req.query.ratings ? parseFloat(req.query.ratings as string) : undefined;
 
             const response = await services.CourseService.getAllCourses(
                 pageIndex,
@@ -121,7 +126,9 @@ class CourseController {
                 categories,
                 sortBy,
                 filterByRatings,
-            );
+                ratings,
+            ); 
+
             console.log("response:", pageIndex, keyword, categories, sortBy);
 
             if (response instanceof ResponseSuccess) {
