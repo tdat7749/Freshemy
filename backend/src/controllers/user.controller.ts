@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
 import { changePasswordSchema } from "../validations/user";
@@ -19,7 +19,6 @@ class UserController {
 
         return res.status(response.getStatusCode()).json(response);
     }
-    
 }
 
 export default UserController;
