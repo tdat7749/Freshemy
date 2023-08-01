@@ -18,16 +18,6 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const user_id = req.user_id;
     const status_convert = status === 0 ? false : true;
     try {
-        const isFoundCourse = await db.course.findUnique({
-            where: {
-                slug: slug,
-            },
-        });
-
-        if (isFoundCourse) {
-            return new ResponseError(400, i18n.t("errorMessages.slugIsUsed"), false);
-        }
-
         const listCategoryId = categories.map((item: number) => ({
             category_id: item,
         }));
@@ -70,7 +60,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
 const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
     try {
         const { slug } = req.params;
-        const course = await db.course.findFirst({
+        const course = await db.course.findUnique({
             where: {
                 slug: slug,
             },
@@ -621,11 +611,39 @@ const ratingCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
 
         return new ResponseSuccess(200, "Ngon lanh roi", true);
     } catch (error: any) {
+        return new ResponseError(500, error.message, false);
+    }
+};
+const getRightOfCourse = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const user_id = parseInt(req.params.user_id);
+        const course_id = parseInt(req.params.course_id);
+        const isAuthor = await configs.db.course.findFirst({
+            where: {
+                id: course_id,
+                user_id: user_id,
+            },
+        });
+        if (isAuthor) {
+            return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, "Author");
+        }
+        const isEnrolled = await configs.db.enrolled.findFirst({
+            where: {
+                course_id: course_id,
+                user_id: user_id,
+            },
+        });
+        if (isEnrolled) {
+            return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, "Enrolled");
+        }
+        return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, "Unregister");
+    } catch (error) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
 
 const CourseService = {
+    getRightOfCourse,
     getCourseDetail,
     registerCourse,
     unsubcribeCourse,

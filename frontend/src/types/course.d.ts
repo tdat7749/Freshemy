@@ -8,7 +8,7 @@ export type Category = {
 export type NewCourse = {
     title: string;
     categories: number[];
-    status: number;
+    status: boolean;
     summary: string;
     description: string;
     thumbnail: string;
