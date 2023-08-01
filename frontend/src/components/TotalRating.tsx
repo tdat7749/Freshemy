@@ -9,15 +9,23 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
     const isForCourse = props.isForCourse;
     const ratingName = isForCourse ? "rating-total" : `rating-comment-${props.ratingId}`;
     return (
-        <div className={`  rating ${isForCourse ? "rating-lg" : "rating-xs"} rating-half   `}>
-            <input id="0" readOnly type="radio" name={ratingName} className="rating-hidden" checked />
+        <div className={`  rating ${isForCourse ? "rating-lg" : "rating-xs"} rating-half hover:cursor-default  `}>
+            <input
+                id="0"
+                readOnly
+                disabled
+                type="radio"
+                name={ratingName}
+                className="rating-hidden hover:cursor-default"
+                checked
+            />
             <input
                 id="1"
                 readOnly
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-1"
+                className="bg-yellow-300 mask-star-2 mask-half-1  hover:cursor-default"
                 checked={score > 0}
             />
             <input
@@ -26,7 +34,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-2"
+                className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
                 checked={score > 0.5}
             />
             <input
@@ -35,7 +43,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-1"
+                className="bg-yellow-300 mask-star-2 mask-half-1 hover:cursor-default"
                 checked={score > 1}
             />
             <input
@@ -44,7 +52,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-2"
+                className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
                 checked={score > 1.5}
             />
             <input
@@ -53,7 +61,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-1"
+                className="bg-yellow-300 mask-star-2 mask-half-1 hover:cursor-default"
                 checked={score > 2}
             />
             <input
@@ -62,7 +70,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-2"
+                className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
                 checked={score > 2.5}
             />
             <input
@@ -71,7 +79,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-1"
+                className="bg-yellow-300 mask-star-2 mask-half-1 hover:cursor-default"
                 checked={score > 3}
             />
             <input
@@ -80,7 +88,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-2"
+                className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
                 checked={score > 3.5}
             />
             <input
@@ -89,7 +97,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-1"
+                className="bg-yellow-300 mask-star-2 mask-half-1 hover:cursor-default"
                 checked={score > 4}
             />
             <input
@@ -98,7 +106,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-2"
+                className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
                 checked={score > 4.5}
             />
         </div>

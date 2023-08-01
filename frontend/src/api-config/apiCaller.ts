@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { AuthApis } from "@src/apis";
 
 const axiosPublic = axios.create({
-    baseURL: "http://localhost:3001/api/",
+    baseURL: process.env.REACT_APP_BASE_URL,
 });
 
 const axiosInstance = axios.create();

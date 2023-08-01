@@ -17,19 +17,6 @@ export type CourseDetail = {
     status: boolean;
 };
 
-export type Rating = {
-    id: number;
-    score: number;
-    content: string;
-    created_at: Date;
-    user_id: number;
-    course_id: number;
-    user: {
-        first_name: string;
-        last_name: string;
-        url_avatar: string | null;
-    };
-};
 export type CourseInfo = {
     id: number;
     title: string;

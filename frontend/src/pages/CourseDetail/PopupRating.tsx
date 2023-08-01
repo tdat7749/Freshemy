@@ -5,9 +5,11 @@ import RatingInPopup from "./RatingInPopup";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { courseActions } from "@redux/slice";
 import toast, { Toaster } from "react-hot-toast";
+import { ratingValidationSchema } from "../../validations/rating";
 // import i18n from "../utils/i18next";
 
 type RatingCourseProps = {
+    handleAfterVote: () => void;
     handleCancel: () => void;
     course_id: number | undefined;
 };
@@ -34,9 +36,10 @@ const PopupRating: React.FC<RatingCourseProps> = (props) => {
         };
         //@ts-ignore
         dispatch(courseActions.ratingCourse(data)).then((response) => {
-            if (response.payload.status_code === 200) {
+            if (response.payload.status_code === 201) {
                 toast.success(response.payload.message);
                 props.handleCancel();
+                props.handleAfterVote();
             } else {
                 toast.error(response.payload.message);
             }
@@ -48,7 +51,12 @@ const PopupRating: React.FC<RatingCourseProps> = (props) => {
             <Toaster />
             <div className="  max-w-[360px] tablet:max-w-[550px] max-h-[630px] tablet:max-h-[1000px] rounded-[12px] bg-background mx-auto tablet:mx-0 flex-1">
                 <div className="w-full p-[12px]">
-                    <Formik initialValues={initialValue} onSubmit={handleOnSubmit} innerRef={formikRef}>
+                    <Formik
+                        validationSchema={ratingValidationSchema}
+                        initialValues={initialValue}
+                        onSubmit={handleOnSubmit}
+                        innerRef={formikRef}
+                    >
                         {(formik) => (
                             <form onSubmit={formik.handleSubmit} className="text-sm mb-1 tablet:text-xl font-medium">
                                 <div className="px-5 py-3 flex items-center space-x-4">
@@ -60,12 +68,14 @@ const PopupRating: React.FC<RatingCourseProps> = (props) => {
                                 <div className="px-5 py-3">
                                     <label htmlFor="title" className="text-sm mb-1 tablet:text-xl font-medium">
                                         Comment:
-                                    </label>{" "}
+                                    </label>
                                     <br />
                                     <Field
                                         as="textarea"
                                         name="content"
-                                        className={` w-full px-2 py-2 rounded-lg border-[1px] outline-none  `}
+                                        className={` w-full px-2 py-2 rounded-lg border-[1px] outline-none ${
+                                            formik.errors.content && formik.touched.content && "border-error"
+                                        } `}
                                     />
                                     <br />
                                     <ErrorMessage

@@ -9,35 +9,35 @@ const RatingInPopup: React.FC<RatingInPopupProps> = (props) => {
         <div className="rating mt-[-4px] space-x-1">
             <input
                 type="radio"
-                name="rating-1"
+                name="rating-popup"
                 id="1"
                 className="mask mask-star-2 bg-yellow-400"
                 onChange={props.handleCheck}
             />
             <input
                 type="radio"
-                name="rating-1"
+                name="rating-popup"
                 id="2"
                 className="mask mask-star-2 bg-yellow-400"
                 onChange={props.handleCheck}
             />
             <input
                 type="radio"
-                name="rating-1"
+                name="rating-popup"
                 id="3"
                 className="mask mask-star-2 bg-yellow-400"
                 onChange={props.handleCheck}
             />
             <input
                 type="radio"
-                name="rating-1"
+                name="rating-popup"
                 id="4"
                 className="mask mask-star-2 bg-yellow-400"
                 onChange={props.handleCheck}
             />
             <input
                 type="radio"
-                name="rating-1"
+                name="rating-popup"
                 id="5"
                 className="mask mask-star-2 bg-yellow-400"
                 onChange={props.handleCheck}

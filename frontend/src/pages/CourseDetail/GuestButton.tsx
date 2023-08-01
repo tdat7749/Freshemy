@@ -18,10 +18,10 @@ const GuestButton: React.FC<GuestButtonProps> = ({ isLogin, course_id }) => {
         } else {
             //@ts-ignore
             dispatch(courseActions.subscribeCourse({ course_id })).then((response) => {
-                if (response.payload.status_code === 200) {
-                    toast.success("Subscribe Successfully");
+                if (response.payload.status_code === 201) {
+                    toast.success(response.payload.message);
                 } else {
-                    toast.error("Subscribe Unsuccessfully");
+                    toast.error(response.payload.message);
                 }
             });
         }

@@ -72,6 +72,16 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
     const handleToggleUnsubcribeCourse = () => {
         setIsOpenUnsubscribeModal(!isOpenUnsubscribeModal);
     };
+    const handleAfterVote = () => {
+        // @ts-ignore
+        dispatch(courseActions.getCourseDetail(slug));
+        const values: GetRating = {
+            slug: slug as string,
+            page_index: pageIndex,
+        };
+        //@ts-ignore
+        dispatch(courseActions.getListRatingsOfCourseBySlug(values));
+    };
     useEffect(() => {
         // @ts-ignore
         dispatch(courseActions.getCourseDetail(slug)).then((response) => {
@@ -79,7 +89,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                 setIsNotFound(true);
             }
         });
-    }, [dispatch, slug, isNotFound, isOpenPopupRating]);
+    }, [dispatch, slug, isNotFound]);
     useEffect(() => {
         if (courseDetail.id && isLogin) {
             //@ts-ignore
@@ -93,13 +103,19 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
         };
         //@ts-ignore
         dispatch(courseActions.getListRatingsOfCourseBySlug(values));
-    }, [dispatch, slug, pageIndex, isOpenPopupRating]);
+    }, [dispatch, slug, pageIndex]);
 
     if (isNotFound) return <NotFound />;
 
     return (
         <>
-            {isOpenPopupRating && <PopupRating handleCancel={handleTogglePopupRating} course_id={courseDetail.id} />}
+            {isOpenPopupRating && (
+                <PopupRating
+                    handleAfterVote={handleAfterVote}
+                    handleCancel={handleTogglePopupRating}
+                    course_id={courseDetail.id}
+                />
+            )}
             {isOpenDeleteModal && <DeleteModal handleDelete={handleDeleteCourse} handleCancel={handleCancelModal} />}
             {isOpenUnsubscribeModal && (
                 <UnsubscribeModal handleCancel={handleToggleUnsubcribeCourse} course_id={courseDetail.id} />

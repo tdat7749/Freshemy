@@ -214,7 +214,17 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const user_id = req.user_id;
         const { course_id } = req.body;
+
         if (user_id && course_id) {
+            const isAuthor = await db.course.findFirst({
+                where: {
+                    id: course_id,
+                    user_id,
+                },
+            });
+            if (isAuthor) {
+                return new ResponseError(400, i18n.t("errorMessages.authorSubscribeError"), false);
+            }
             const checkRegisted = await db.enrolled.findFirst({
                 where: {
                     user_id: user_id,
@@ -231,7 +241,7 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     },
                 });
                 if (register) {
-                    return new ResponseSuccess(200, i18n.t("successMessages.registerCourseSuccess"), true);
+                    return new ResponseSuccess(201, i18n.t("successMessages.registerCourseSuccess"), true);
                 } else {
                     return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
                 }
@@ -249,6 +259,15 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
         const user_id = req.user_id;
         const { course_id } = req.body;
         if (user_id && course_id) {
+            const isAuthor = await db.course.findFirst({
+                where: {
+                    id: course_id,
+                    user_id,
+                },
+            });
+            if (isAuthor) {
+                return new ResponseError(400, i18n.t("errorMessages.authorUnsubscribeError"), false);
+            }
             const checkRegisted = await db.enrolled.findFirst({
                 where: {
                     user_id: user_id,
@@ -554,7 +573,7 @@ const ratingCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
 
-        return new ResponseSuccess(200, i18n.t("successMessages.ratingSuccess"), true);
+        return new ResponseSuccess(201, i18n.t("successMessages.ratingSuccess"), true);
     } catch (error: any) {
         return new ResponseError(500, error.message, false);
     }

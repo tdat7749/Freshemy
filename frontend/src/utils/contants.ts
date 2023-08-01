@@ -48,6 +48,8 @@ export const errorMessages = {
 
     videoFileType: "Invalid file type, .mp4 .mkv .mov file only",
     videoFileSize: "Video too large, video size lower than 100MB only",
+
+    commentTooLong: "Comment is too long, maximum 100 characters only",
 };
 
 export const successMessages = {

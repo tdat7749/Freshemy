@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { RequestHasLogin } from "../types/request.type";
 import { createCourseSchema, updateCourseSchema, enrolledCourseSchema } from "../validations/course";
+import { ratingSchema } from "../validations/rating";
 import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
 import services from "../services";
@@ -105,6 +106,15 @@ class CourseController {
         return res.status(response.getStatusCode()).json(response);
     }
     async ratingCourse(req: Request, res: Response) {
+        const errorValidate: ValidationError | undefined = ratingSchema.validate(req.body).error;
+
+        if (errorValidate) {
+            return res.status(400).json({
+                status_code: 400,
+                message: convertJoiErrorToString(errorValidate),
+                success: false,
+            });
+        }
         const response = await services.CourseService.ratingCourse(req);
         return res.status(response.getStatusCode()).json(response);
     }
