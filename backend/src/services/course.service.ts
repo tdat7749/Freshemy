@@ -17,7 +17,6 @@ import { Section } from "../types/section.type";
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
     const user_id = req.user_id;
-    const status_convert = status === 0 ? false : true;
     try {
         const listCategoryId = categories.map((item: number) => ({
             category_id: item,
@@ -34,7 +33,7 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     summary: summary,
                     thumbnail: thumbnail,
                     user_id: user_id,
-                    status: status_convert,
+                    status: status,
                     courses_categories: {
                         create: listCategoryId,
                     },
