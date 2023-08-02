@@ -638,7 +638,7 @@ const getAllCourses = async (
         if (sortBy === "newest") {
             orderBy.created_at = "desc";
         } else if (sortBy === "attendees") {
-            orderBy.attendees = { _count: "desc" };
+            orderBy.enrolleds = { _count: "desc" };
         }
 
         const coursesQuery = db.course.findMany({
@@ -736,46 +736,52 @@ const getAllCourses = async (
             }
         });
 
-        const coursesData: AllCourseDetail[] = filteredCourses.map((course) => {
-            const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
-            const averageRating = (course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0).toFixed(1);
+        const coursesData: AllCourseDetail[] = filteredCourses
+            .map((course) => ({
+                ...course,
+                attendees: course.enrolleds.length, // Calculate number of attendees
+            }))
+            .filter((course) => course.attendees > 0) // Filter out courses with zero attendees
+            .map((course) => {
+                const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
+                const averageRating = (course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0).toFixed(1);
 
-            return {
-                id: course.id,
-                slug: course.slug,
-                thumbnail: course.thumbnail,
-                author: {
-                    id: course.user.id,
-                    first_name: course.user.first_name,
-                    last_name: course.user.last_name,
-                },
-                rate: averageRating,
-                categories: course.courses_categories.map((cc) => {
-                    return {
-                        id: cc.category.id,
-                        title: cc.category.title,
-                    };
-                }),
-                title: course.title,
-                summary: course.summary,
-                description: course.description,
-                status: course.status,
-                attendees: course.enrolleds.length,
-                created_at: course.created_at,
-                updated_at: course.updated_at,
-                ratings: course.ratings.map((rating) => ({
-                    id: rating.id,
-                    score: rating.score,
-                    content: rating.content,
-                    created_at: rating.created_at,
-                    user: {
-                        id: rating.user.id,
-                        first_name: rating.user.first_name,
-                        last_name: rating.user.last_name,
+                return {
+                    id: course.id,
+                    slug: course.slug,
+                    thumbnail: course.thumbnail,
+                    author: {
+                        id: course.user.id,
+                        first_name: course.user.first_name,
+                        last_name: course.user.last_name,
                     },
-                })),
-            };
-        });
+                    rate: averageRating,
+                    categories: course.courses_categories.map((cc) => {
+                        return {
+                            id: cc.category.id,
+                            title: cc.category.title,
+                        };
+                    }),
+                    title: course.title,
+                    summary: course.summary,
+                    description: course.description,
+                    status: course.status,
+                    attendees: course.enrolleds.length,
+                    created_at: course.created_at,
+                    updated_at: course.updated_at,
+                    ratings: course.ratings.map((rating) => ({
+                        id: rating.id,
+                        score: rating.score,
+                        content: rating.content,
+                        created_at: rating.created_at,
+                        user: {
+                            id: rating.user.id,
+                            first_name: rating.user.first_name,
+                            last_name: rating.user.last_name,
+                        },
+                    })),
+                };
+            });
 
         const responseData: FilteredCourseResult = {
             total_page: totalPage,

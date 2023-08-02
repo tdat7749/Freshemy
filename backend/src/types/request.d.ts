@@ -5,6 +5,7 @@ export interface RequestHasLogin extends Request {
 }
 
 export interface Course {
+    [x: string]: any;
     id: number;
     title: string;
     slug: string;
@@ -98,3 +99,39 @@ interface ResponseData {
     total_record: number;
     courses: CourseInfo[];
 }
+
+interface FilterAllCourseDetail {
+    [x: string]: any;
+    id: number;
+    slug: string;
+    thumbnail: string;
+    author: {
+        id: number;
+        first_name: string;
+        last_name: string;
+    };
+    rate: string;
+    categories: {
+        id: number;
+        title: string;
+    }[];
+    title: string;
+    summary: string;
+    description: string;
+    status: boolean;
+    attendees: number;
+    created_at: string; // Update this to be of type Date
+    updated_at: string; // Update this to be of type Date
+    ratings: {
+        id: number;
+        score: number;
+        content: string;
+        created_at: Date; // Update this to be of type Date
+        user: {
+            id: number;
+            first_name: string;
+            last_name: string;
+        };
+    }[];
+}
+
