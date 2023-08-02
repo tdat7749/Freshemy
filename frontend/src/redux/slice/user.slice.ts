@@ -25,7 +25,6 @@ const initialState: UserSlice = {
         last_name: "",
         email: "",
         description: "",
-        id: undefined,
     },
     course: [
         {
@@ -35,6 +34,7 @@ const initialState: UserSlice = {
             rating: 0,
             thumbnail: "",
             author: {
+                email: "",
                 first_name: "",
                 last_name: "",
                 id: 0,

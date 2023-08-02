@@ -4,7 +4,7 @@ import { db } from "../configs/db.config";
 import * as bcrypt from "bcrypt";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import configs from "../configs";
-import { Request } from "express"
+import { Request } from "express";
 import i18n from "../utils/i18next";
 import { OutstandingCourse } from "src/types/course.type";
 
@@ -161,7 +161,7 @@ const getAuthorInformation = async (req: Request): Promise<ResponseBase> => {
                 author: {
                     first_name: user.first_name,
                     last_name: user.last_name,
-                    id: user_id
+                    id: user_id,
                 },
                 created_at: course.created_at,
                 updated_at: course.updated_at,
