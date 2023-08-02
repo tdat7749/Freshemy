@@ -99,7 +99,8 @@ const Accordion: React.FC<AccordionType> = (props) => {
                         }}
                         key={index}
                     >
-                        <p className="max-w-[400px] truncate ...">{lesson.title}</p>
+                        <p>{lesson.title}</p>
+
                         {props.isDisplayBtn && (
                             <div className="flex gap-2">
                                 <div
