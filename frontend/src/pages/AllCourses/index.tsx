@@ -20,7 +20,6 @@ const AllCourses: React.FC = () => {
 
     let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
     let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
-    let totalRecord: number = useAppSelector((state) => state.courseSlice.totalRecord) ?? 1;
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
 
     const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>, categoryId: number) => {
@@ -34,7 +33,6 @@ const AllCourses: React.FC = () => {
 
     // HANDLE FILTER BTN CLICK
     const handleFilterCourse = () => {
-        console.log("filter");
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword as string,
@@ -47,7 +45,6 @@ const AllCourses: React.FC = () => {
 
     // HANDLE SORTING BTN CLICK
     const handleSortingCourse = (sortBy: string) => {
-        console.log("sorting");
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword as string,
@@ -59,8 +56,21 @@ const AllCourses: React.FC = () => {
         dispatch(courseActions.selectCourses(query));
     };
 
+    const handleChangePageIndex = (pageIndex: number) => {
+        // @ts-ignore
+        dispatch(courseActions.getCategories());
+
+        const query: SelectCourse = {
+            pageIndex: pageIndex,
+            keyword: keyword as string,
+            rating: evaluate,
+            category: categories,
+        };
+        // @ts-ignore
+        dispatch(courseActions.selectCourses(query));
+    };
+
     useEffect(() => {
-        console.log("effect");
         // @ts-ignore
         dispatch(courseActions.getCategories());
 
@@ -73,13 +83,16 @@ const AllCourses: React.FC = () => {
         setPageIndex(1);
     }, [dispatch, keyword, pageIndex]);
 
-    const handleChangePageIndex = () => {};
     return (
         <>
             <Navbar />
             <div className="container mx-auto p-4 mt-[100px] laptop:mt-0">
                 <div className="">
-                    {totalRecord > 0 && <h1 className="text-2xl">{totalRecord} results have been found </h1>}
+                    {courseList.length > 0 ? (
+                        <h1 className="text-2xl">{courseList.length} results have been found </h1>
+                    ) : (
+                        <></>
+                    )}
                     <div className="flex flex-col gap-4 laptop:flex-row">
                         <div className="w-full tablet:w-[250px] mt-4">
                             <div className="">
@@ -161,7 +174,10 @@ const AllCourses: React.FC = () => {
                                 <p className="text-error font-medium text-xl mt-4">Don't have any course yet!</p>
                             )}
                             {courseList.map((course) => (
-                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={course.id}>
+                                <div
+                                    className="w-full max-w-xs tablet:max-w-full place-self-center laptop:place-self-start  "
+                                    key={course.id}
+                                >
                                     <CourseCard
                                         key={course.id}
                                         id={course.id}
@@ -172,6 +188,7 @@ const AllCourses: React.FC = () => {
                                         numberOfSection={course.number_section}
                                         slug={course.slug}
                                         summary={course.summary}
+                                        attendees={course.attendees}
                                         author={course.author as User}
                                         isEditCourse={false}
                                     />

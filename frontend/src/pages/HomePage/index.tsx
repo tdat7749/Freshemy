@@ -44,6 +44,7 @@ const Home: React.FC = () => {
                             {top10Course.map((course: CourseType) => {
                                 return (
                                     <CardVideo
+                                        key={course.id}
                                         thumbnail={course.thumbnail}
                                         title={course.title}
                                         author={course.author as User}
