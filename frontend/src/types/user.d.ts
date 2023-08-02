@@ -2,8 +2,10 @@ import { Course } from "./course";
 
 export type User = {
     url_avatar?: string;
-    email?: string;
+    email: string;
     description?: string;
+    id?: number;
+    user_id?: number;
     first_name: string;
     last_name: string;
     id: number;
