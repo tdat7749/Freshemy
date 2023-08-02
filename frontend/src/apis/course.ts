@@ -99,8 +99,9 @@ const selectCourses = async (values: SelectCourse) => {
     }
 
     if (values.category) {
-        values.category.map((category) => (pathBase = pathBase + `&categories=${category}`));
+        values.category.map((cate) => (pathBase = pathBase + `&categories=${cate.id}`));
     }
+
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), pathBase);
     return response;
 };

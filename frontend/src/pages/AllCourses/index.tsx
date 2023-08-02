@@ -13,7 +13,7 @@ const AllCourses: React.FC = () => {
     const { keyword, rating } = useQueryParams();
 
     const [evaluate, setEvaluate] = useState<number | undefined>(Number(rating));
-    const [categories, setCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [pageIndex, setPageIndex] = useState<number>(1);
 
     const dispatch = useAppDispatch();
@@ -23,12 +23,12 @@ const AllCourses: React.FC = () => {
     let totalRecord: number = useAppSelector((state) => state.courseSlice.totalRecord) ?? 1;
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
 
-    const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>, categoryId: number) => {
         const { value, checked } = event.target;
         if (checked) {
-            setCategories((pre) => [...pre, value]);
+            setCategories((pre) => [...pre, { id: categoryId, title: value }]);
         } else {
-            setCategories((pre) => [...pre.filter((category) => category !== value)]);
+            setCategories((pre) => [...pre.filter((category) => category.title !== value)]);
         }
     };
 
@@ -145,7 +145,9 @@ const AllCourses: React.FC = () => {
                                                         className="checkbox checkbox-info"
                                                         name={category.title}
                                                         value={category.title}
-                                                        onChange={handleSingleCategoryChange}
+                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                                                            handleSingleCategoryChange(event, category.id)
+                                                        }
                                                     />
                                                     <span className="text-xl">{category.title}</span>
                                                 </div>
@@ -156,7 +158,7 @@ const AllCourses: React.FC = () => {
                         </div>
                         <div className="flex-1 grid grid-cols-1 gap-3">
                             {courseList.map((course) => (
-                                <div className="w-full max-w-xs tablet:max-w-full place-self-center">
+                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={course.id}>
                                     <CourseCard
                                         key={course.id}
                                         id={course.id}

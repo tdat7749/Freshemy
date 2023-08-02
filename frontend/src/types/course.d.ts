@@ -109,7 +109,7 @@ export type CourseChangeInformation = {
 export type SelectCourse = {
     pageIndex: nunber;
     keyword?: string;
-    category?: string[];
+    category?: Category[];
     rating?: number;
     sortBy?: string;
 };
