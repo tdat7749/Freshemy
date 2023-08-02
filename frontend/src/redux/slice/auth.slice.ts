@@ -78,9 +78,9 @@ export const verifyEmail = createAsyncThunk<Response<null>, string, { rejectValu
 
 const initialState: AuthSlice = {
     user: {
-        email: undefined,
-        first_name: undefined,
-        last_name: undefined,
+        email: "",
+        first_name: "",
+        last_name: "",
         id: undefined,
     },
     isLogin: false,
@@ -93,12 +93,16 @@ export const authSlice = createSlice({
     name: "auth",
     initialState: initialState,
     reducers: {
+        setUrlAvatar: (state, payload: PayloadAction<string>) => {
+            state.user.url_avatar = payload.payload;
+        },
         setUsers: (state, action: PayloadAction<UserType>) => {
             state.user.description = action.payload.description;
             state.user.email = action.payload.email;
             state.user.first_name = action.payload.first_name;
             state.user.last_name = action.payload.last_name;
-
+            state.user.id = action.payload.user_id;
+            state.user.url_avatar = action.payload.url_avatar;
             state.isLogin = true;
         },
         setLogout: (state) => {
@@ -169,7 +173,7 @@ export const authSlice = createSlice({
     },
 });
 
-export const { setUsers, setLogout } = authSlice.actions;
+export const { setUsers, setLogout, setUrlAvatar } = authSlice.actions;
 
 export default authSlice.reducer;
 
@@ -208,10 +212,10 @@ export const refreshToken = async () => {
 export const logout = () => async (dispatch: any) => {
     dispatch(
         setUsers({
-            description: undefined,
-            first_name: undefined,
-            last_name: undefined,
-            email: undefined,
+            description: "",
+            first_name: "",
+            last_name: "",
+            email: "",
         })
     );
     dispatch(setLogout());

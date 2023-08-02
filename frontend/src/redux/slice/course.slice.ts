@@ -148,6 +148,7 @@ const initialState: CourseSlice = {
         summary: "",
         author: {
             id: undefined,
+            email: "",
             first_name: "",
             last_name: "",
         },

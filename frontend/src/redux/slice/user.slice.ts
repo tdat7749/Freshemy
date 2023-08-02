@@ -24,6 +24,7 @@ const initialState: UserSlice = {
         last_name: "",
         email: "",
         description: "",
+        id: undefined,
     },
     course: [
         {
@@ -121,7 +122,7 @@ export const userSlice = createSlice({
         });
         builder.addCase(getAuthorInformation.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.user = action.payload.data as User;
+            state.user = action.payload.data?.user as User;
             state.course = action.payload.data?.courses as Course[];
         });
         builder.addCase(getAuthorInformation.rejected, (state) => {
@@ -129,5 +130,6 @@ export const userSlice = createSlice({
         });
     },
 });
+export const {} = userSlice.actions;
 
 export default userSlice.reducer;
