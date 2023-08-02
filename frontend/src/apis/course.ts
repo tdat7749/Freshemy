@@ -36,6 +36,14 @@ const getMyCourses = async (values: GetMyCoursesType) => {
     return response;
 };
 
+const getEnrolledCourses = async (values: GetMyCoursesType) => {
+    const path = `courses/search-enrolled-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
+
+    return response;
+};
+
 const deleteCourse = async (courseId: number) => {
     const path = `courses/${courseId}`;
 
@@ -153,4 +161,5 @@ export {
     unsubcribeCourse,
     getRightOfCourse,
     getListRatingsOfCourseBySlug,
+    getEnrolledCourses
 };

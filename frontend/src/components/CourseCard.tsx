@@ -41,7 +41,7 @@ const CourseCard: FC<Course> = (props: Course) => {
                         <p className="text-base italic">{props.summary}</p>
                         <p className="text-base font-bold">
                             <span>Author: </span>
-                            <Link to={`/profile/${props.id}`} className="text-blue-600 font-normal">
+                            <Link to={`/profile/${props.author.id}`} className="text-blue-600 font-normal">
                                 {props.author.first_name + " " + props.author.last_name}
                             </Link>
                         </p>

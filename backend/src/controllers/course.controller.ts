@@ -30,11 +30,13 @@ class CourseController {
 
         return res.status(result.getStatusCode()).json(result);
     }
-    // async getAllCourses(req: RequestHasLogin, res: Response): Promise<Response> {
-    //     const result = await services.CourseService.getAllCourses(req);
 
-    //     return res.status(result.getStatusCode()).json(result);
-    // }
+    async searchEnrolledCourses(req: RequestHasLogin, res: Response): Promise<Response> {
+        const result = await services.CourseService.searchEnrolledCourses(req);
+
+        return res.status(result.getStatusCode()).json(result);
+    }
+
     async deleteMyCourse(req: Request, res: Response): Promise<Response> {
         try {
             const { id } = req.params;
