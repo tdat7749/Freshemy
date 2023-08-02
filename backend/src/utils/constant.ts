@@ -79,6 +79,7 @@ export const errorMessages = {
     // Title
     courseTitleIsRequired: "Title is required",
     courseTitleMustBeString: "Title must be a string",
+    courseTitleIsTooLong: "Title is too long, maximum 100 characters only",
 
     // Status
     statusIsRequired: "Status is required",

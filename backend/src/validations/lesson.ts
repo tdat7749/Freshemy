@@ -10,9 +10,11 @@ type Lesson = {
 export const LessonSchema: ObjectSchema<Lesson> = Joi.object({
     title: Joi.string()
         .required()
+        .max(100)
         .messages({
             "any.required": i18n.t("errorMessages.courseTitleIsRequired"),
             "string.base": i18n.t("errorMessages.courseTitleMustBeString"),
+            "string.max": i18n.t("errorMessages.courseTitleIsTooLong"),
         }),
 
     section_id: Joi.number()
@@ -29,8 +31,10 @@ type UpdateLesson = {
 export const UpdateLessonSchema: ObjectSchema<UpdateLesson> = Joi.object({
     title: Joi.string()
         .required()
+        .max(100)
         .messages({
             "any.required": i18n.t("errorMessages.courseTitleIsRequired"),
             "string.base": i18n.t("errorMessages.courseTitleMustBeString"),
+            "string.max": i18n.t("errorMessages.courseTitleIsTooLong"),
         }),
 });

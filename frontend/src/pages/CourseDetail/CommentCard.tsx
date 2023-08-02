@@ -19,8 +19,7 @@ const CommentCard: React.FC<CommentCardProps> = (props) => {
                 >
                     <div className="">
                         <p className="comment-author mb-1 ">
-                            {props.rating.first_name}
-                            {props.rating.last_name}
+                            {props.rating.first_name} {props.rating.last_name}
                         </p>
                         <p className="comment w-full truncate line-height:1.5 max-height:1.5 ">
                             {props.rating.content}
