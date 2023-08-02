@@ -40,4 +40,12 @@ export const UpdateLessonSchema: ObjectSchema<UpdateLesson> = Joi.object({
             "string.base": i18n.t("errorMessages.courseTitleMustBeString"),
             "string.max": i18n.t("errorMessages.courseTitleIsTooLong"),
         }),
+    id: Joi.number()
+        .integer()
+        .required()
+        .messages({
+            "any.required": i18n.t("errorMessages.sectionIdIsRequired"),
+            "number.base": i18n.t("errorMessages.sectionIdMustBeNumber"),
+            "number.integer": i18n.t("errorMessages.sectionIdMustBeAnInt"),
+        }),
 });

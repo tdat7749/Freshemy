@@ -134,8 +134,10 @@ const updateLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
             if (!nameFolder) {
                 return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
             }
-            fs.unlinkSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder));
 
+            fs.rmSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder), {
+                recursive: true,
+            });
             const videoPath = await services.FileStorageService.createFileM3U8AndTS(
                 req.file as Express.Multer.File,
                 resolutions,
@@ -156,7 +158,7 @@ const updateLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
             if (lesson) {
                 return new ResponseSuccess(200, i18n.t("successMessages.createDataSuccess"), true);
             } else {
-                fs.unlinkSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder));
+                fs.rmSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder), { recursive: true });
                 fs.unlinkSync(req.file?.path as string);
             }
         } else {
