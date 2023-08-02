@@ -50,7 +50,9 @@ const getLessonOrderByCourseId = async (req: Request): Promise<ResponseBase> => 
         const orderLesson = await configs.db.lesson.findMany({
             select: {
                 id: true,
-                order: true,
+            },
+            orderBy: {
+                order: "asc",
             },
         });
         if (orderLesson) return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, orderLesson);
@@ -227,7 +229,7 @@ const reOrderLesson = async (req: Request): Promise<ResponseBase> => {
             console.log(newOrder);
             await configs.db.lesson.update({
                 where: {
-                    id: newOrder.id,
+                    id: newOrder.lessonId,
                 },
                 data: {
                     order: newOrder.order,
