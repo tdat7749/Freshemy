@@ -48,7 +48,19 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
 const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { title, section_id } = req.body;
-
+        const findCourse = await configs.db.section.findFirst({
+            include: {
+                course: true,
+            },
+            where: {
+                course: {
+                    user_id: req.user_id,
+                },
+            },
+        });
+        if (!findCourse) {
+            return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+        }
         const sectionIdConvert = parseInt(section_id);
         const uuid = uuidv4();
 
@@ -89,7 +101,7 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     }
 };
 
-const updateLesson = async (req: Request): Promise<ResponseBase> => {
+const updateLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
         const { title } = req.body;
@@ -99,10 +111,20 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
                 where: {
                     id: lesson_id,
                 },
+                include: {
+                    section: {
+                        include: {
+                            course: true,
+                        },
+                    },
+                },
             });
 
             if (!isFoundLesson) {
                 return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
+            }
+            if (isFoundLesson.section.course.user_id !== req.user_id) {
+                return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
             }
 
             const urlVideoSplit = isFoundLesson.url_video.split(`${configs.general.PUBLIC_URL_FOLDER_VIDEOS}`);
