@@ -54,7 +54,7 @@ function App() {
                         <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
                         <Route path="/my-profile" element={<MyProfile />}></Route>
                         <Route path="/profile/:id" element={<AuthorProfile />}></Route>
-                        <Route path="/course-detail/:slug" element={<CourseDetail />}></Route>
+                        <Route path="/course-detail/:slug" element={<CourseDetail isLogin={isLogin} />}></Route>
                         <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                         <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                         <Route path="/login" element={<Login />}></Route>

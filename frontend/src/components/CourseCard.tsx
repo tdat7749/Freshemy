@@ -26,16 +26,16 @@ const CourseCard: FC<Course> = (props: Course) => {
 
     return (
         <div className="py-4 border-b-[1px]">
-            <Link to={`/course-detail/${props.slug}`}>
-                <div className="flex flex-col gap-2 tablet:gap-4 tablet:flex-row rounded-2xl hover:bg-backgroundHover/10 transition ease-in-out hover:shadow-lg duration-200">
-                    <div className="h-48 bg-gray-400 rounded-lg tablet:w-64 laptop:w-80">
+            <div className="flex flex-col gap-2 tablet:gap-4 tablet:flex-row rounded-2xl hover:bg-backgroundHover/10 transition ease-in-out hover:shadow-lg duration-200">
+                <div className="h-48 bg-gray-400 rounded-lg tablet:w-64 laptop:w-80">
+                    <Link to={`/course-detail/${props.slug}`}>
                         <img src={props.thumbnail} alt={props.title} className="w-full h-full rounded-lg" />
-                    </div>
-                    <div className="flex gap-4 tablet:flex-1 px-2 pb-2 tablet:px-0">
+                    </Link>
+                </div>
+                <div className="flex gap-4 tablet:flex-1 px-2 pb-2 tablet:px-0">
+                    <Link to={`/course-detail/${props.slug}`}>
                         <div className="w-full">
-                            <Link to={`/course-detail/${props.slug}`}>
-                                <h2 className="text-xl font-bold text-title">{props.title}</h2>
-                            </Link>
+                            <h2 className="text-xl font-bold text-title">{props.title}</h2>
                             <p className="text-base italic">{props.summary}</p>
                             <p className="text-base font-bold">
                                 <span>Author: </span>
@@ -56,43 +56,43 @@ const CourseCard: FC<Course> = (props: Course) => {
                             </p>
                             <p className="text-base font-bold">Number of sections: {props.numberOfSection}</p>
                         </div>
-                        {props.isEditCourse ? (
+                    </Link>
+                    {props.isEditCourse ? (
+                        <div
+                            className="w-[33px] h-[33px] rounded-full bg-slate-200 hover:bg-slate-400 ml-auto flex justify-center items-center relative shrink-0 cursor-pointer tablet:m-1"
+                            onClick={() => setIsDisplayDropDown(!isDisplayDropDown)}
+                        >
+                            <ThreeDotIcon />
                             <div
-                                className="w-[33px] h-[33px] rounded-full bg-slate-200 hover:bg-slate-400 ml-auto flex justify-center items-center relative shrink-0 cursor-pointer tablet:m-1"
-                                onClick={() => setIsDisplayDropDown(!isDisplayDropDown)}
+                                className={`shadow-lg p-2 rounded-lg absolute top-10 right-0 bg-white ${
+                                    isDisplayDropDown ? "block" : "hidden"
+                                }`}
                             >
-                                <ThreeDotIcon />
                                 <div
-                                    className={`shadow-lg p-2 rounded-lg absolute top-10 right-0 bg-white ${
-                                        isDisplayDropDown ? "block" : "hidden"
-                                    }`}
+                                    className="flex items-center p-2 rounded-lg hover:bg-backgroundHover cursor-pointer"
+                                    onClick={() => {
+                                        if (props.handleEditCourse) props.handleEditCourse(props.id);
+                                    }}
                                 >
-                                    <div
-                                        className="flex items-center p-2 rounded-lg hover:bg-backgroundHover cursor-pointer"
-                                        onClick={() => {
-                                            if (props.handleEditCourse) props.handleEditCourse(props.id);
-                                        }}
-                                    >
-                                        <EditIcon />
-                                        <span className="ml-2">Edit</span>
-                                    </div>
-                                    <div
-                                        className="flex items-center p-2 rounded-lg hover:bg-backgroundHover cursor-pointer"
-                                        onClick={() => {
-                                            if (props.handleDeleteCourse) props.handleDeleteCourse(props.id);
-                                        }}
-                                    >
-                                        <DeleteIcon />
-                                        <span className="ml-2">Delete</span>
-                                    </div>
+                                    <EditIcon />
+                                    <span className="ml-2">Edit</span>
+                                </div>
+                                <div
+                                    className="flex items-center p-2 rounded-lg hover:bg-backgroundHover cursor-pointer"
+                                    onClick={() => {
+                                        if (props.handleDeleteCourse) props.handleDeleteCourse(props.id);
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                    <span className="ml-2">Delete</span>
                                 </div>
                             </div>
-                        ) : (
-                            <></>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        <></>
+                    )}
                 </div>
-            </Link>
+            </div>
         </div>
     );
 };

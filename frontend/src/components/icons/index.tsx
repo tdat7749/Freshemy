@@ -13,6 +13,7 @@ import ThreedotIcon from "./ThreedotIcon";
 import UserIcon from "./UserIcon";
 import WarningIcon from "./WarningIcon";
 import CompleteIcon from "./CompleteIcon";
+import RatingIcon from "./RatingIcon";
 
 const icons = {
     AddIcon,
@@ -30,5 +31,6 @@ const icons = {
     UserIcon,
     WarningIcon,
     CompleteIcon,
+    RatingIcon,
 };
 export default icons;
