@@ -53,6 +53,7 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 course: true,
             },
             where: {
+                id: Number(section_id),
                 course: {
                     user_id: req.user_id,
                 },
@@ -186,10 +187,30 @@ const updateLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     }
 };
 
-const deleteLesson = async (req: Request): Promise<ResponseBase> => {
+const deleteLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
         const lesson_id = +id;
+        const isAuthor = await configs.db.lesson.findFirst({
+            include: {
+                section: {
+                    include: {
+                        course: true,
+                    },
+                },
+            },
+            where: {
+                id: lesson_id,
+                section: {
+                    course: {
+                        user_id: req.user_id,
+                    },
+                },
+            },
+        });
+        if (!isAuthor) {
+            return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+        }
         const isDelete = await configs.db.lesson.update({
             where: {
                 id: lesson_id,
