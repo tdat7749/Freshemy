@@ -46,7 +46,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                                     d="M9 5 5 1 1 5"
                                 />
                             </svg>
-                            <span>{props.section.title}</span>
+                            <span className="max-w-[400px] truncate ...">{props.section.title}</span>
                         </div>
                         {props.isDisplayBtn && (
                             <div className="flex gap-2">
@@ -101,8 +101,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                     >
                         <p>{lesson.title}</p>
 
-                        {/* TODO: IMPLEMENT IN NEXT SPRINT */}
-                        {/* {props.isDisplayBtn && (
+                        {props.isDisplayBtn && (
                             <div className="flex gap-2">
                                 <div
                                     className="cursor-pointer"
@@ -125,7 +124,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                                     <DeleteIcon />
                                 </div>
                             </div>
-                        )} */}
+                        )}
                     </div>
                 ))}
         </>
