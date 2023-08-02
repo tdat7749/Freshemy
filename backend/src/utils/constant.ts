@@ -50,10 +50,12 @@ export const errorMessages = {
     // Firstname
     firstNameMustBeString: "First Name must be a string",
     firstNameIsRequired: "First Name is required",
+    tooLongFirstName: "First name is too long",
 
     // Lastname
     lastNameMustBeString: "Last Name must be a string",
     lastNameIsRequired: "Last Name is required",
+    tooLongLastName: "Last name is too long",
 
     // Course
     courseIdIsRequired: "Course id is required",
@@ -84,6 +86,8 @@ export const errorMessages = {
     // Description
     descriptionIsRequired: "Description is required",
     descriptionMustBeString: "Description must be a string",
+    tooLongDescription: "Description is too long",
+    tooshortDescription: "Description is too short",
 
     // Summary
     summaryIsRequired: "Summary is required",
@@ -100,6 +104,22 @@ export const errorMessages = {
 
     // Upload Image
     imageUploadError: "Upload Image Error",
+
+    //Rating
+    ratingError: "You have already rated",
+    contentRatingTooLong: "Content rating is too long, maxium 100 characters only",
+    contentRatingType: "Content rating must be string",
+    ratingScoreRequired: "Rating score is required",
+    ratingScoreType: "Rating score must be a number",
+    ratingScoreMinError: "Rating score must be in 1-5",
+    ratingScoareMaxError: "Rating score must be in 1-5",
+
+    //Subscribe course
+    authorSubscribeError: "You can't subscribe your own course",
+    authorUnsubscribeError: "You can't unsubscribe your own course",
+
+    //Auth
+    loginAgain: "Please login again",
 };
 
 export const successMessages = {
@@ -153,4 +173,7 @@ export const successMessages = {
 
     // Upload Image
     imageUploadSuccess: "Upload Image Successfully",
+
+    //Rating
+    ratingSuccess: "Rate successfully",
 };

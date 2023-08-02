@@ -3,3 +3,5 @@ dist
 .env
 prisma/data
 public
+
+pakage-lock.json

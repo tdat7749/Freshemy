@@ -7,6 +7,7 @@ import { courseActions } from "@redux/slice";
 import { Course } from "../../types/course";
 import toast from "react-hot-toast";
 import { Spin, DeleteModal, Navbar, Pagination, CourseCard } from "@src/components";
+import { User } from "../../types/user";
 
 const MyCourses: React.FC = () => {
     const [userInput, setUserInput] = useState<string>("");
@@ -77,7 +78,7 @@ const MyCourses: React.FC = () => {
         <>
             {isGetLoading && <Spin />}
             <Navbar />
-            <div className="container mx-auto">
+            <div className="container mx-auto mt-[100px] laptop:mt-0">
                 <div className="px-4 tablet:px-[60px]">
                     <h1 className="text-center text-[32px] py-4 font-bold text-title">MY COURSE</h1>
                     <div className="w-full flex flex-col gap-4 justify-between shrink-0 tablet:flex-row">
@@ -104,21 +105,25 @@ const MyCourses: React.FC = () => {
                             <Link to={"/create-course"}>Create New</Link>
                         </div>
                     </div>
-                    {courseList.map((course) => {
-                        return (
-                            <CourseCard
-                                key={course.id}
-                                id={course.id}
-                                thumbnail={course.thumbnail}
-                                slug={course.slug}
-                                title={course.title}
-                                summary={course.summary}
-                                author={course.author}
-                                handleDeleteCourse={handleDiplayDeleteModal}
-                                handleEditCourse={handleEditCourse}
-                            />
-                        );
-                    })}
+                    <div className="flex-1 grid grid-cols-1">
+                        {courseList.map((course) => {
+                            return (
+                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={course.id}>
+                                    <CourseCard
+                                        id={course.id}
+                                        thumbnail={course.thumbnail}
+                                        slug={course.slug}
+                                        title={course.title}
+                                        summary={course.summary}
+                                        author={course.author as User}
+                                        isEditCourse={true}
+                                        handleDeleteCourse={handleDiplayDeleteModal}
+                                        handleEditCourse={handleEditCourse}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
                     {courseList.length > 0 ? (
                         <div className="flex justify-end my-4">
                             <Pagination

@@ -14,6 +14,7 @@ import UserDropDown from "./UserDropDown";
 import VideoPlayer from "./VideoPlayer";
 import CategoryIcon from "./icons/CategoryIcon";
 import Icon from "./icons";
+import TotalRating from "./TotalRating";
 
 export {
     Accordion,
@@ -32,4 +33,5 @@ export {
     VideoPlayer,
     CategoryIcon,
     Icon,
+    TotalRating,
 };

@@ -7,6 +7,12 @@ export const HTTP_CALL = {
     HTTP_DELETE: "DELETE",
 };
 
+export const ROLE = {
+    AUTHOR: "Author",
+    ENROLLED: "Enrolled",
+    UNENROLLED: "Unenrolled",
+};
+
 export const errorMessages = {
     wrongPassword: "Wrong password",
     weakPassword: "Weak password",
@@ -23,12 +29,17 @@ export const errorMessages = {
 
     titleIsRequired: "Title is required",
     titleTooLong: "Title is too long, under 100 characters only",
+    summaryTooLong: "Summary is too long, under 200 characters only",
+    descriptionTooWeak: "Description is too short, minimum 8 characters",
+    descriptionTooLong: "Description is too long, under 200 characters only",
     summaryIsRequired: "Summary is required",
     descriptionIsRequired: "Description is required",
     currentPasswordIsRequired: "Current password is required",
     newPasswordIsRequired: "New password is required",
     firstNameIsRequired: "First Name is required",
     lastNameIsRequired: "Last Name is required",
+    firstNameIsTooLong: "First Name is maximum 32 character",
+    lastNameIsTooLong: "Last Name is maximum 32 character",
     newPasswordDiiferentOldPassword: "Confirm password must be the same with new password",
 
     categoriesIsRequired: "Category is required",
@@ -40,6 +51,11 @@ export const errorMessages = {
 
     videoFileType: "Invalid file type, .mp4 .mkv .mov file only",
     videoFileSize: "Video too large, video size lower than 100MB only",
+
+    commentTooLong: "Comment is too long, maximum 100 characters only",
+
+    //Auth
+    loginAgain: "Please login again",
 };
 
 export const successMessages = {
@@ -47,9 +63,9 @@ export const successMessages = {
 };
 
 export const fileType = {
-    mp4: "mp4",
-    mkv: "mkv",
-    mov: "mov",
+    mp4: "video/mp4",
+    mkv: "video/x-matroska",
+    mov: "video/quicktime",
     png: "png",
     jpg: "jpg",
     jpeg: "jpeg",

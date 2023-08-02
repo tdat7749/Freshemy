@@ -12,6 +12,8 @@ type AuthSlice = {
     user: User;
     isLogin: boolean;
     isLoading: boolean;
+    error: string;
+    success: string;
 };
 
 export const login = createAsyncThunk<Response<TokenType>, LoginType, { rejectValue: Response<null> }>(
@@ -77,12 +79,14 @@ export const verifyEmail = createAsyncThunk<Response<null>, string, { rejectValu
 const initialState: AuthSlice = {
     user: {
         email: undefined,
-        first_name: undefined,
-        last_name: undefined,
-        id: undefined,
+        first_name: "",
+        last_name: "",
+        id: 0,
     },
     isLogin: false,
     isLoading: false,
+    error: "",
+    success: "",
 };
 
 export const authSlice = createSlice({
@@ -150,12 +154,16 @@ export const authSlice = createSlice({
 
         //
         builder.addCase(verifyEmail.pending, (state) => {
+            state.error = "";
+            state.success = "";
             state.isLoading = true;
         });
-        builder.addCase(verifyEmail.fulfilled, (state) => {
+        builder.addCase(verifyEmail.fulfilled, (state, action) => {
+            state.success = action.payload.message;
             state.isLoading = false;
         });
-        builder.addCase(verifyEmail.rejected, (state) => {
+        builder.addCase(verifyEmail.rejected, (state, action) => {
+            state.error = action.payload?.message as string;
             state.isLoading = false;
         });
     },
@@ -194,17 +202,16 @@ export const refreshToken = async () => {
                 window.location.href = "/login";
             }
         }
-    } catch (error: any) {
-        console.log(error);
-    }
+    } catch (error: any) {}
 };
 
 export const logout = () => async (dispatch: any) => {
     dispatch(
         setUsers({
             description: undefined,
-            first_name: undefined,
-            last_name: undefined,
+            id: 0,
+            first_name: "",
+            last_name: "",
             email: undefined,
         })
     );

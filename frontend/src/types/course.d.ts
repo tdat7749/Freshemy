@@ -8,7 +8,7 @@ export type Category = {
 export type NewCourse = {
     title: string;
     categories: number[];
-    status: number;
+    status: boolean;
     summary: string;
     description: string;
     thumbnail: string;
@@ -18,12 +18,15 @@ export type Course = {
     id: number;
     title: string;
     summary: string;
-    rate: number;
+    rating: number;
     thumbnail: string;
-    author: string;
+    author?: User;
     categories: Category[];
     number_section: number;
+    status: boolean;
+    attendees: number;
     slug: string;
+    author?: User;
 };
 
 export type GetMyCourses = {
@@ -46,7 +49,7 @@ export type DeleteCourse = {
 export type PagingCourse = {
     total_page: number;
     total_record: number;
-    courses: Course[];
+    data: Course[];
 };
 
 export type CourseDetail = {
@@ -56,7 +59,7 @@ export type CourseDetail = {
     categories: Category[];
     summary: string;
     author: User;
-    ratings: number | undefined;
+    rating: number | undefined;
     description: string;
     sections: SectionRender[];
     created_at: string;
@@ -65,13 +68,35 @@ export type CourseDetail = {
     status: boolean;
 };
 
+export type RatingResponse = {
+    id: number;
+    ratings: number;
+    content: string;
+    created_at: string;
+    url_avatar: string | null;
+    first_name: string;
+    last_name: string;
+    user_id: number;
+};
+
+export type PagingRating = {
+    total_page: number;
+    total_record: number;
+    data: RatingResponse[];
+};
+
+export type GetRating = {
+    slug: string;
+    page_index: number;
+};
+
 export type ChangeThumbnail = {
     course_id: number;
     thumbnail: File;
 };
 
 export type CourseChangeInformation = {
-    id: number | undefined;
+    course_id: number | undefined;
     title: string;
     summary: string;
     status: boolean;
@@ -79,4 +104,32 @@ export type CourseChangeInformation = {
     categories: Category[];
     slug: string;
     thumbnail?: string;
+};
+
+export type SelectCourse = {
+    pageIndex: nunber;
+    keyword?: string;
+    category?: string[];
+    rating?: number;
+    sortBy?: string;
+};
+
+export type FilterCourse = {
+    total_page: number;
+    total_record: number;
+    courses: Course[];
+}
+
+export type RatingCourse = {
+    ratings: number;
+    content: string;
+    course_id: number;
+};
+
+export type EnrollCourse = {
+    course_id: number;
+};
+
+export type GetRight = {
+    role: string;
 };

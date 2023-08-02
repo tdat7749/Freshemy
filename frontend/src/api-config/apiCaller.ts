@@ -1,6 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { AuthApis } from "@src/apis";
+import i18n from "../utils/i18next";
 
 const axiosPublic = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
@@ -41,6 +42,11 @@ axiosPublic.interceptors.response.use(
             }
         }
         if (error) {
+            if (error.response.data.message === i18n.t("errorMessages.loginAgain")) {
+                Cookies.remove("refreshToken");
+                Cookies.remove("accessToken");
+                window.location.href = "/";
+            }
             return Promise.reject(error.response);
         }
         // return error;

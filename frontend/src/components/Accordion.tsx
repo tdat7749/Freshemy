@@ -26,7 +26,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
             <div>
                 <h2 id="accordion-collapse-heading-1">
                     <div
-                        className={`flex items-center justify-between w-full p-4  bg-primary rounded-lg my-1 ${
+                        className={`flex items-center justify-between w-full p-4  bg-primary rounded-lg my-1 flex-wrap ${
                             show ? " shadow-xl" : ""
                         }`}
                     >
@@ -89,7 +89,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                 props.section.lessons &&
                 props.section?.lessons.map((lesson, index) => (
                     <div
-                        className={`py-4 pl-8 pr-4 border rounded-lg my-2 hover:cursor-pointer flex justify-between${
+                        className={`py-4 pl-8 pr-4 border rounded-lg my-2 hover:cursor-pointer flex justify-between  ${
                             lesson.url_video === props.source ? "bg-backgroundHover" : ""
                         }`}
                         onClick={() => {
@@ -100,7 +100,9 @@ const Accordion: React.FC<AccordionType> = (props) => {
                         key={index}
                     >
                         <p>{lesson.title}</p>
-                        {props.isDisplayBtn && (
+
+                        {/* TODO: IMPLEMENT IN NEXT SPRINT */}
+                        {/* {props.isDisplayBtn && (
                             <div className="flex gap-2">
                                 <div
                                     className="cursor-pointer"
@@ -123,7 +125,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                                     <DeleteIcon />
                                 </div>
                             </div>
-                        )}
+                        )} */}
                     </div>
                 ))}
         </>
