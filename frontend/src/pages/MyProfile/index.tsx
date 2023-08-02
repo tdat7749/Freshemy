@@ -21,7 +21,6 @@ const MyProfile: React.FC = () => {
         email: user.email,
         description: user.description,
     };
-    console.log(initialValue);
     useEffect(() => {
         // @ts-ignore
         dispatch(authActions.getMe());
@@ -34,7 +33,6 @@ const MyProfile: React.FC = () => {
         };
         // @ts-ignore
         dispatch(userActions.updateInformation(data)).then((response) => {
-            console.log(response);
             if (response.payload.status_code === 200) {
                 toast.success(response.payload.message);
             } else {
