@@ -53,6 +53,9 @@ export const errorMessages = {
     videoFileSize: "Video too large, video size lower than 100MB only",
 
     commentTooLong: "Comment is too long, maximum 100 characters only",
+
+    //Auth
+    loginAgain: "Please login again",
 };
 
 export const successMessages = {
