@@ -75,7 +75,7 @@ export const getMyCourses = createAsyncThunk<Response<PagingCourse>, GetMyCourse
 );
 
 export const getEnrolledCourses = createAsyncThunk<Response<PagingCourse>, GetMyCoursesType, { rejectValue: Response<null> }>(
-    "course/getMyCourses",
+    "course/getEnrolledCourses",
     async (body, ThunkAPI) => {
         try {
             const response = await CourseApis.getEnrolledCourses(body);
@@ -321,6 +321,20 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getMyCourses.rejected, (state, action) => {
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(getEnrolledCourses.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(getEnrolledCourses.fulfilled, (state, action) => {
+            state.courses = action.payload.data?.data as Course[];
+            state.totalPage = action.payload.data?.total_page as number;
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(getEnrolledCourses.rejected, (state, action) => {
             state.isGetLoading = false;
         });
 

@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { courseActions } from "@redux/slice";
 import { Course } from "../../types/course";
 import { Spin, Navbar, Pagination, CourseCard } from "@src/components";
+import { User } from "../../types/user";
 
 const MyEnrolledCourses: React.FC = () => {
     const [userInput, setUserInput] = useState<string>("");
@@ -78,7 +79,8 @@ const MyEnrolledCourses: React.FC = () => {
                                 slug={course.slug}
                                 title={course.title}
                                 summary={course.summary}
-                                author={course.author as string}
+                                author={course.author as User}
+                                isEditCourse={false}
                             />
                         );
                     })}

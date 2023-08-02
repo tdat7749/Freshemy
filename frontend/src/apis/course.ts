@@ -37,7 +37,7 @@ const getMyCourses = async (values: GetMyCoursesType) => {
 };
 
 const getEnrolledCourses = async (values: GetMyCoursesType) => {
-    const path = `courses/search-enrolled?pageIndex=${values.pageIndex}&keyword=${values.keyword}`;
+    const path = `courses/search-enrolled-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
 
