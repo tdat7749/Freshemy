@@ -562,7 +562,11 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
                 title: course.title,
                 slug: course.slug,
                 categories: course.courses_categories.map((cate) => cate.category),
-                author: course.user,
+                author: {
+                    first_name: course.user.first_name,
+                    last_name: course.user.last_name,
+                    id: course.user_id,
+                },
                 created_at: course.created_at,
                 updated_at: course.updated_at,
             };

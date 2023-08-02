@@ -1,20 +1,14 @@
 import multer from "multer";
 import configs from ".";
 
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, configs.general.UPLOAD_PATH);
-//     },
-//     filename: (req, file: Express.Multer.File, cb) => {
-//         const extension = file.originalname.split(".").pop();
-//         const uniqueFileNameRandom = `${Date.now()}-${file.fieldname}.${extension}`;
-//         cb(null, uniqueFileNameRandom);
-//     },
-// });
-
 const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, configs.general.UPLOAD_PATH);
+    },
     filename: (req, file: Express.Multer.File, cb) => {
-        cb(null, "/tmp/");
+        const extension = file.originalname.split(".").pop();
+        const uniqueFileNameRandom = `${Date.now()}-${file.fieldname}.${extension}`;
+        cb(null, uniqueFileNameRandom);
     },
 });
 
