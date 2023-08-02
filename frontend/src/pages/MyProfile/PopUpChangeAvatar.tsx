@@ -15,7 +15,7 @@ const PopUpChangeAvatar: React.FC<props> = (props) => {
     const avatarRef = useRef<HTMLImageElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const isLoading: boolean = useAppSelector((state) => state.fileStorageSlice.isLoading);
-    const [errorImage, setErrorImage] = useState<number>(0);
+    const [errorImage, setErrorImage] = useState<number>(FILE_IS_EMPTY);
     const dispatch = useAppDispatch();
     const openModal = () => {
         if (dialogRef.current) {
@@ -26,8 +26,8 @@ const PopUpChangeAvatar: React.FC<props> = (props) => {
 
     const closeModal = () => {
         if (dialogRef.current) {
-            dialogRef.current.close();
             setErrorImage(0);
+            dialogRef.current.close();
             if (avatarRef.current!.src) {
                 avatarRef.current!.src = props.urlAvatar;
             }
@@ -44,9 +44,10 @@ const PopUpChangeAvatar: React.FC<props> = (props) => {
                 avatarRef.current!.src = URL.createObjectURL(file);
                 if (file.size >= 1024 * 1024 * 4) {
                     setErrorImage(FILE_TOO_BIG);
-                }
-                if (!FILE_SUPPORT.includes(file.type)) {
+                } else if (!FILE_SUPPORT.includes(file.type)) {
                     setErrorImage(FILE_IS_NOT_SUPPORT);
+                } else {
+                    setErrorImage(0);
                 }
             }
         } else {
@@ -57,11 +58,11 @@ const PopUpChangeAvatar: React.FC<props> = (props) => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData = new FormData();
-        formData.set("thumbnail", inputRef.current?.files?.[0] as File);
-        formData.set("upload_preset", "Freshemy");
-        formData.set("user_id", `${props.userId}`);
-        if (!errorImage) {
+        if (inputRef.current!.value) {
+            const formData = new FormData();
+            formData.set("thumbnail", inputRef.current?.files?.[0] as File);
+            formData.set("upload_preset", "Freshemy");
+            formData.set("user_id", `${props.userId}`);
             //@ts-ignore
             dispatch(fileStorageActions.uploadAvatar(formData)).then((response) => {
                 if (response.payload.status_code === 201) {
@@ -73,6 +74,8 @@ const PopUpChangeAvatar: React.FC<props> = (props) => {
                     toast.error(response.payload.message);
                 }
             });
+        } else {
+            setErrorImage(FILE_IS_EMPTY);
         }
     };
     return (
@@ -81,52 +84,49 @@ const PopUpChangeAvatar: React.FC<props> = (props) => {
                 ref={avatarRef}
                 src={props.urlAvatar}
                 alt="Avatar"
-                className="w-full h-full object-cover rounded-full"
+                className="w-full h-full object-cover rounded-full cursor-pointer"
                 onClick={openModal}
             />
-            <dialog ref={dialogRef} className="modal">
+            <dialog ref={dialogRef} className="modal text-center">
                 <form className="modal-box" onSubmit={handleSubmit}>
                     <img
                         ref={avatarRef}
                         src={props.urlAvatar}
                         alt="Avatar"
-                        className="w-full h-full object-cover rounded-full"
-                        onClick={openModal}
+                        className="w-52 h-52 my-2 object-cover rounded-full mx-auto"
                     />
 
                     <input
                         ref={inputRef}
                         accept=".jpg, .png"
                         type="file"
-                        className="file-input file-input-bordered file-input-success w-full max-w-xs"
+                        className="file-input file-input-bordered file-input-primary w-full max-w-xs"
                         onChange={handleFileInputChange}
                     />
                     {errorImage === FILE_TOO_BIG ? (
-                        <div className="text-center tablet:text-start">
-                            <p className={`"text-red-500  italic`}>Size of the image is less than 4MB</p>
-                        </div>
+                        <p className={`text-error italic font-medium mt-1`}>Size of the image is less than 4MB</p>
                     ) : (
                         <></>
                     )}
                     {errorImage === FILE_IS_NOT_SUPPORT ? (
-                        <div className="text-center tablet:text-start">
-                            <p className={`"text-red-500  italic`}>File is not support</p>
-                        </div>
+                        <p className={`text-error italic font-medium mt-1`}>File is not support</p>
                     ) : (
                         <></>
                     )}
                     {errorImage === FILE_IS_EMPTY ? (
-                        <div className="text-center tablet:text-start">
-                            <p className={`"text-red-500  italic`}>File is Empty</p>
-                        </div>
+                        <p className={`text-error italic font-medium mt-1`}>File is Empty</p>
                     ) : (
                         <></>
                     )}
-                    <div className="modal-action">
-                        <button className="btn" type="submit">
-                            {isLoading ? "Loading" : "Save"}
+                    <div className="modal-action flex justify-center">
+                        <button className={`btn btn-primary text-lg ${isLoading ? "btn-disabled" : ""}`} type="submit">
+                            {isLoading ? "Loading..." : "Save"}
                         </button>
-                        <button className="btn" type="button" onClick={closeModal}>
+                        <button
+                            className={`btn text-lg ${isLoading ? "btn-disabled" : ""}`}
+                            type="button"
+                            onClick={closeModal}
+                        >
                             Close
                         </button>
                     </div>

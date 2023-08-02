@@ -8,6 +8,7 @@ import { Toaster } from "react-hot-toast";
 import { Category } from "../types/course";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { courseActions } from "@redux/slice";
+import { User } from "../types/user";
 interface HeaderProps {
     isLogin: boolean;
 }
@@ -20,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
+    const user: User = useAppSelector((state) => state.authSlice.user);
 
     const handleKeyWordSearch = () => {
         navigate(`/all-courses?keyword=${keyword}`);
@@ -124,7 +126,7 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                             className="w-[60px] h-[60px] rounded-full flex items-center justify-center relative border-[1px] hover:cursor-pointer"
                                         >
                                             <img
-                                                src={DefaultAvatar}
+                                                src={user.url_avatar || DefaultAvatar}
                                                 alt="A"
                                                 className="w-full h-full object-cover rounded-full"
                                             />

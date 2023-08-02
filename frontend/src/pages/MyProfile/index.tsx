@@ -69,7 +69,7 @@ const MyProfile: React.FC = () => {
                             >
                                 {(formik) => (
                                     <Form
-                                        className="p-4 flex items-center justify-center flex-col"
+                                        className="flex items-center justify-center flex-col"
                                         onSubmit={formik.handleSubmit}
                                     >
                                         <div className="bg-primary m-4 rounded-xl shadow-lg p-4">
