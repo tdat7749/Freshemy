@@ -19,7 +19,7 @@ const MyEnrolledCourses: React.FC = () => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(courseActions.getMyCourses({ pageIndex, keyword }));
+        dispatch(courseActions.getEnrolledCourses({ pageIndex, keyword }));
     }, [dispatch, keyword, pageIndex]);
 
     // handle pagination

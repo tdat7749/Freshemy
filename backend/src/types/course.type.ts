@@ -23,7 +23,7 @@ export type CourseInfo = {
     summary: string;
     thumbnail: string;
     rate: number;
-    author: string;
+    author: Author;
     category: string[];
     number_section: number;
     slug: string;

@@ -431,7 +431,7 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 summary: course.summary,
                 thumbnail: course.thumbnail,
                 rate: averageRating,
-                author: `${course.user?.first_name} ${course.user?.last_name}`,
+                author: course.user,
                 category: course.courses_categories.map((cc) => cc.category.title),
                 number_section: course.sections.length,
                 slug: course.slug,
@@ -444,6 +444,92 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
             data: myCoursesData,
         };
 
+        return new ResponseSuccess(200, i18n.t("successMessages.searchMyCourseSuccess"), true, responseData);
+    } catch (error: any) {
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+};
+
+const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
+    try {
+        const { page_index: pageIndex, keyword } = req.query;
+        const { user_id: userId } = req;
+        const parsedPageIndex = Number(pageIndex);
+        const parsedKeyword = keyword as string;
+
+        const skip = (parsedPageIndex - 1) * 10;
+        const take = 10;
+        const enrolled = await db.enrolled.findMany({
+            where: {
+                course: {
+                    title: {
+                        contains: parsedKeyword,
+                    },
+                },
+                user_id: userId
+            },
+            include: {
+                course: {
+                    include: {
+                        user: true,
+                        courses_categories: {
+                            include: {
+                                category: true,
+                            },
+                        },
+                        ratings: {
+                            include: {
+                                user: true,
+                            },
+                        },
+                        sections: true,
+                    }
+                },
+            },
+        });
+
+
+        const totalRecord = await db.enrolled.count({
+            where: {
+                course: {
+                    title: {
+                        contains: parsedKeyword,
+                    },
+                },
+                user_id: userId
+            },
+        });
+
+
+
+        const totalPage = Math.ceil(totalRecord / take);
+        
+        const myCoursesData: CourseInfo[] = enrolled?.map((enroll) => {
+            let averageRating: number = 0;
+            if (enroll.course.ratings.length > 0) {
+                const ratingsSum = enroll.course.ratings.reduce((total, rating) => total + rating.score, 0);
+                averageRating = Number((ratingsSum / enroll.course.ratings.length).toFixed(1));
+            }
+
+            return {
+                id: enroll.course.id,
+                title: enroll.course.title,
+                summary: enroll.course.summary,
+                thumbnail: enroll.course.thumbnail,
+                rate: averageRating,
+                author:  enroll.course.user,
+                category: enroll.course.courses_categories.map((cc) => cc.category.title),
+                number_section: enroll.course.sections.length,
+                slug: enroll.course.slug,
+            };
+        });
+
+        const responseData: PagingResponse<CourseInfo[]> = {
+            total_page: totalPage,
+            total_record: totalRecord,
+            data: myCoursesData,
+        };
+        
         return new ResponseSuccess(200, i18n.t("successMessages.searchMyCourseSuccess"), true, responseData);
     } catch (error: any) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
@@ -690,5 +776,6 @@ const CourseService = {
     getTop10Courses,
     ratingCourse,
     getListRatingsOfCourseBySlug,
+    searchEnrolledCourses,
 };
 export default CourseService;
