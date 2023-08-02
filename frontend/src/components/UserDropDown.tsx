@@ -2,6 +2,7 @@ import React from "react";
 import UserIcon from "./icons/UserIcon";
 import ChangePasswordIcon from "./icons/ChangePasswordIcon";
 import MyEnrollCourseIcon from "./icons/MyEnrollCourseIcon";
+import AllcoursesIcon from "./icons/AllcourseIcon";
 import MyCourseIcon from "./icons/MyCourseIcon";
 import LogoutIcon from "./icons/LogoutIcon";
 import { Link, useNavigate } from "react-router-dom";
@@ -29,6 +30,12 @@ const UserDropDown: React.FC = () => {
                 <div className="flex justify-start items-center px-4 py-4">
                     <ChangePasswordIcon />
                     <span className="ml-3 font-medium text-lg">Change Password</span>
+                </div>
+            </Link>
+            <Link to={"all-courses"} className="w-full rounded-lg hover:bg-backgroundHover tablet:hidden">
+                <div className="flex justify-start items-center px-4 py-4">
+                    <AllcoursesIcon />
+                    <span className="ml-3 font-medium text-lg">All courses</span>
                 </div>
             </Link>
             <Link to={"my-enroll-courses"} className="w-full rounded-lg hover:bg-backgroundHover tablet:hidden">

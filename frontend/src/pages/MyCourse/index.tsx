@@ -105,22 +105,25 @@ const MyCourses: React.FC = () => {
                             <Link to={"/create-course"}>Create New</Link>
                         </div>
                     </div>
-                    {courseList.map((course) => {
-                        return (
-                            <CourseCard
-                                key={course.id}
-                                id={course.id}
-                                thumbnail={course.thumbnail}
-                                slug={course.slug}
-                                title={course.title}
-                                summary={course.summary}
-                                author={course.author as User}
-                                isEditCourse={true}
-                                handleDeleteCourse={handleDiplayDeleteModal}
-                                handleEditCourse={handleEditCourse}
-                            />
-                        );
-                    })}
+                    <div className="flex-1 grid grid-cols-1">
+                        {courseList.map((course) => {
+                            return (
+                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={course.id}>
+                                    <CourseCard
+                                        id={course.id}
+                                        thumbnail={course.thumbnail}
+                                        slug={course.slug}
+                                        title={course.title}
+                                        summary={course.summary}
+                                        author={course.author as User}
+                                        isEditCourse={true}
+                                        handleDeleteCourse={handleDiplayDeleteModal}
+                                        handleEditCourse={handleEditCourse}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
                     {courseList.length > 0 ? (
                         <div className="flex justify-end my-4">
                             <Pagination

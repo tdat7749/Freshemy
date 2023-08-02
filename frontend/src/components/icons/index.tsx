@@ -14,6 +14,7 @@ import UserIcon from "./UserIcon";
 import WarningIcon from "./WarningIcon";
 import CompleteIcon from "./CompleteIcon";
 import RatingIcon from "./RatingIcon";
+import AllcourseIcon from "./AllcourseIcon";
 
 const icons = {
     AddIcon,
@@ -32,5 +33,6 @@ const icons = {
     WarningIcon,
     CompleteIcon,
     RatingIcon,
+    AllcourseIcon,
 };
 export default icons;

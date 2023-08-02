@@ -81,7 +81,7 @@ const AllCourses: React.FC = () => {
                 <div className="">
                     <h1 className="text-2xl">{totalRecord} results have been found </h1>
                     <div className="flex flex-col gap-4 laptop:flex-row">
-                        <div className="w-full tablet:w-[300px] mt-4">
+                        <div className="w-full tablet:w-[250px] mt-4">
                             <div className="">
                                 <button className="btn btn-secondary text-lg mr-4" onClick={handleFilterCourse}>
                                     Filter
