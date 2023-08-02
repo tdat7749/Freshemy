@@ -56,13 +56,35 @@ export type CourseDetail = {
     categories: Category[];
     summary: string;
     author: User;
-    ratings: number | undefined;
+    rating: number | undefined;
     description: string;
     sections: SectionRender[];
     created_at: string;
     updated_at: string;
     thumbnail: string;
     status: boolean;
+};
+
+export type RatingResponse = {
+    id: number;
+    ratings: number;
+    content: string;
+    created_at: string;
+    url_avatar: string | null;
+    first_name: string;
+    last_name: string;
+    user_id: number;
+};
+
+export type PagingRating = {
+    total_page: number;
+    total_record: number;
+    data: RatingResponse[];
+};
+
+export type GetRating = {
+    slug: string;
+    page_index: number;
 };
 
 export type ChangeThumbnail = {
@@ -79,4 +101,18 @@ export type CourseChangeInformation = {
     categories: Category[];
     slug: string;
     thumbnail?: string;
+};
+
+export type RatingCourse = {
+    ratings: number;
+    content: string;
+    course_id: number;
+};
+
+export type EnrollCourse = {
+    course_id: number;
+};
+
+export type GetRight = {
+    role: string;
 };

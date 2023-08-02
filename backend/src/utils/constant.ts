@@ -104,6 +104,19 @@ export const errorMessages = {
 
     // Upload Image
     imageUploadError: "Upload Image Error",
+
+    //Rating
+    ratingError: "You have already rated",
+    contentRatingTooLong: "Content rating is too long, maxium 100 characters only",
+    contentRatingType: "Content rating must be string",
+    ratingScoreRequired: "Rating score is required",
+    ratingScoreType: "Rating score must be a number",
+    ratingScoreMinError: "Rating score must be in 1-5",
+    ratingScoareMaxError: "Rating score must be in 1-5",
+
+    //Subscribe course
+    authorSubscribeError: "You can't subscribe your own course",
+    authorUnsubscribeError: "You can't unsubscribe your own course",
 };
 
 export const successMessages = {
@@ -157,4 +170,7 @@ export const successMessages = {
 
     // Upload Image
     imageUploadSuccess: "Upload Image Successfully",
+
+    //Rating
+    ratingSuccess: "Rate successfully",
 };

@@ -52,7 +52,7 @@ function App() {
                         <Route path="/my-profile" element={<MyProfile />}></Route>
                         <Route path="/my-enrolled-courses" element={<EnrolledCourse />}></Route>
                         <Route path="/profile/:id" element={<AuthorProfile />}></Route>
-                        <Route path="/course-detail/:slug" element={<CourseDetail />}></Route>
+                        <Route path="/course-detail/:slug" element={<CourseDetail isLogin={isLogin} />}></Route>
                         <Route path="/forgot-password" element={<ForgotPassword />}></Route>
                         <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
                         <Route path="/login" element={<Login />}></Route>
