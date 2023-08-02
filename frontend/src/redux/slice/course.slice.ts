@@ -229,6 +229,7 @@ const initialState: CourseSlice = {
         categories: [],
         summary: "",
         author: {
+            email: "",
             id: 0,
             first_name: "",
             last_name: "",

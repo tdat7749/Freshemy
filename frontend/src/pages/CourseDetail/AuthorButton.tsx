@@ -11,33 +11,31 @@ type AuthorButtonProps = {
 
 const AuthorButton: React.FC<AuthorButtonProps> = (props) => {
     return (
-        <div>
-            <div className="flex gap-2">
-                {props.courseDetail.sections.length > 0 && (
-                    <button className="text-white btn btn-primary text-lg">
-                        <WatchVideoIcon />
-                        <Link to={`/course-detail/${props.courseDetail.slug}/watch`}>
-                            <span>Learn Now</span>
-                        </Link>
-                    </button>
-                )}
-                <button className="btn btn-primary text-white text-lg">
-                    <EditIcon color="#ffffff" />
-                    <Link to={`/my-courses/edit/${props.courseDetail.id}`}>
-                        <span>Edit</span>
+        <>
+            {props.courseDetail.sections.length > 0 && (
+                <button className="text-white btn btn-primary text-lg">
+                    <WatchVideoIcon />
+                    <Link to={`/course-detail/${props.courseDetail.slug}/watch`}>
+                        <span>Learn Now</span>
                     </Link>
                 </button>
-                <button
-                    className="btn btn-error text-lg"
-                    onClick={() => {
-                        props.handleDelete();
-                    }}
-                >
-                    <DeleteIcon color="#000000" />
-                    <span>Delete</span>
-                </button>
-            </div>
-        </div>
+            )}
+            <button className="btn btn-primary text-white text-lg">
+                <EditIcon color="#ffffff" />
+                <Link to={`/my-courses/edit/${props.courseDetail.id}`}>
+                    <span>Edit</span>
+                </Link>
+            </button>
+            <button
+                className="btn btn-error text-lg"
+                onClick={() => {
+                    props.handleDelete();
+                }}
+            >
+                <DeleteIcon color="#000000" />
+                <span>Delete</span>
+            </button>
+        </>
     );
 };
 
