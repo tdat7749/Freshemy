@@ -84,7 +84,7 @@ const MyEnrolledCourses: React.FC = () => {
                             />
                         );
                     })}
-                    {courseList.length > 0 ? (
+                    {totalPage > 1 ? (
                         <div className="flex justify-end my-4">
                             <Pagination
                                 handleChangePageIndex={handleChangePageIndex}
@@ -93,6 +93,9 @@ const MyEnrolledCourses: React.FC = () => {
                             />
                         </div>
                     ) : (
+                        <></>
+                    )}
+                    {totalPage === 0 && (
                         <p className="mt-4 text-2xl text-error text-center font-bold">
                             You don't have any enrolled courses!
                         </p>
