@@ -47,12 +47,12 @@ const MyEnrolledCourses: React.FC = () => {
         <>
             {isGetLoading && <Spin />}
             <Navbar />
-            <div className="container mx-auto">
+            <div className="container mx-auto mt-[100px] laptop:mt-0">
                 <div className="px-4 tablet:px-[60px]">
                     <h1 className="text-center text-[32px] py-4 font-bold text-title">MY ENROLLED COURSE</h1>
 
-                    <div className="flex justify-center items-center shrink-0">
-                        <div className="relative w-1/2">
+                    <div className="w-full flex flex-col gap-4 justify-between shrink-0 tablet:flex-row">
+                        <div className="relative">
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -69,21 +69,24 @@ const MyEnrolledCourses: React.FC = () => {
                             </div>
                         </div>
                     </div>
-
+                    <div className="flex-1 grid grid-cols-1">
                     {courseList.map((course) => {
-                        return (
-                            <CourseCard
-                                key={course.id}
-                                id={course.id}
-                                thumbnail={course.thumbnail}
-                                slug={course.slug}
-                                title={course.title}
-                                summary={course.summary}
-                                author={course.author as User}
-                                isEditCourse={false}
-                            />
+                        return ( 
+                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={course.id}>
+                                    <CourseCard
+                                        key={course.id}
+                                        id={course.id}
+                                        thumbnail={course.thumbnail}
+                                        slug={course.slug}
+                                        title={course.title}
+                                        summary={course.summary}
+                                        author={course.author as User}
+                                        isEditCourse={false}
+                                    />
+                                </div>
                         );
                     })}
+                    </div>
                     {totalPage > 1 ? (
                         <div className="flex justify-end my-4">
                             <Pagination
