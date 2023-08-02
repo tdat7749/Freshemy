@@ -117,6 +117,9 @@ export const errorMessages = {
     //Subscribe course
     authorSubscribeError: "You can't subscribe your own course",
     authorUnsubscribeError: "You can't unsubscribe your own course",
+
+    //Auth
+    loginAgain: "Please login again",
 };
 
 export const successMessages = {
