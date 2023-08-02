@@ -18,6 +18,7 @@ type UserSlice = {
 const initialState: UserSlice = {
     isLoading: false,
     user: {
+        id: 0,
         url_avatar: "",
         password: "",
         first_name: "",
@@ -33,9 +34,15 @@ const initialState: UserSlice = {
             summary: "",
             rating: 0,
             thumbnail: "",
-            author: "",
+            author: {
+                first_name: "",
+                last_name: "",
+                id: 0,
+            },
             categories: [],
             number_section: 0,
+            status: false,
+            attendees: 0,
             slug: "",
         },
     ],
@@ -121,6 +128,7 @@ export const userSlice = createSlice({
             state.isLoading = true;
         });
         builder.addCase(getAuthorInformation.fulfilled, (state, action) => {
+            console.log(action.payload.data);
             state.isLoading = false;
             state.user = action.payload.data?.user as User;
             state.course = action.payload.data?.courses as Course[];

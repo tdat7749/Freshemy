@@ -16,3 +16,34 @@ export const previewImage = (image: File | null, imageRef: React.RefObject<HTMLI
         }
     }
 };
+
+export const eveluateList = [
+    {
+        title: "5 stars",
+        value: 5,
+    },
+    {
+        title: "4 stars",
+        value: 4,
+    },
+    {
+        title: "3 stars",
+        value: 3,
+    },
+    {
+        title: "2 stars",
+        value: 2,
+    },
+    {
+        title: "1 star",
+        value: 1,
+    },
+];
+
+export const sortingBy = [
+    {
+        value: "newest",
+        title: "Newest",
+    },
+    { value: "mostAttendees", title: "Most Attendees" },
+];

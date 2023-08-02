@@ -233,11 +233,11 @@ const refreshToken = async (res: Request): Promise<ResponseBase> => {
         });
     } catch (error: any) {
         if (error instanceof TokenExpiredError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.loginAgain"), false);
         } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.loginAgain"), false);
         } else if (error instanceof NotBeforeError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.loginAgain"), false);
         }
 
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
@@ -324,9 +324,9 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
         if (error instanceof TokenExpiredError) {
             return new ResponseError(400, error.message, false);
         } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(401, error.message, false);
+            return new ResponseError(400, error.message, false);
         } else if (error instanceof NotBeforeError) {
-            return new ResponseError(401, error.message, false);
+            return new ResponseError(400, error.message, false);
         }
 
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
@@ -367,9 +367,9 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
         if (error instanceof TokenExpiredError) {
             return new ResponseError(400, error.message, false);
         } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(401, error.message, false);
+            return new ResponseError(400, error.message, false);
         } else if (error instanceof NotBeforeError) {
-            return new ResponseError(401, error.message, false);
+            return new ResponseError(400, error.message, false);
         }
 
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);

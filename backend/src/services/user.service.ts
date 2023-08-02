@@ -4,9 +4,10 @@ import { db } from "../configs/db.config";
 import * as bcrypt from "bcrypt";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import configs from "../configs";
-import { OutstandingCourse } from "../types/courseDetail";
-import i18n from "../utils/i18next";
 import { Request } from "express"
+import i18n from "../utils/i18next";
+import { OutstandingCourse } from "src/types/course.type";
+
 const changePassword = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { current_password, new_password, confirm_password } = req.body;
@@ -89,6 +90,7 @@ const changeUserInformation = async (req: RequestHasLogin): Promise<ResponseBase
         if (avatar) {
             user.url_avatar = avatar;
         }
+
         const isUpdate = await db.user.update({
             where: {
                 id: req.user_id,
@@ -156,7 +158,11 @@ const getAuthorInformation = async (req: Request): Promise<ResponseBase> => {
                 title: course.title,
                 slug: course.slug,
                 categories: course.courses_categories.map((cate) => cate.category),
-                author: user.last_name + " " + user.first_name,
+                author: {
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    id: user_id
+                },
                 created_at: course.created_at,
                 updated_at: course.updated_at,
             };
@@ -164,10 +170,12 @@ const getAuthorInformation = async (req: Request): Promise<ResponseBase> => {
         });
 
         const data = {
-            first_name: user.first_name,
-            last_name: user.last_name,
-            url_avatar: user.url_avatar,
-            description: user.description,
+            user: {
+                first_name: user.first_name,
+                last_name: user.last_name,
+                url_avatar: user.url_avatar,
+                description: user.description,
+            },
             courses: courses,
         };
         return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccessfully"), true, data);
