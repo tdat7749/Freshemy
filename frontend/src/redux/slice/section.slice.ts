@@ -3,8 +3,14 @@ import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { EditSection as EditSectionType, Section as SectionType } from "../../types/section";
 import { Response } from "../../types/response";
 import SectionApis from "@src/apis/section";
-
+import { orderLesson } from "../../types/lesson";
+type reOrder = {
+    id: number;
+    newOrder: number;
+    oldOrder: number;
+};
 type SectionSlice = {
+    orderLesson: orderLesson[];
     title: string;
     sectionList: SectionType[];
     isLoading: boolean;
@@ -59,7 +65,20 @@ export const getSectionByCourseId = createAsyncThunk<Response<SectionType[]>, nu
     }
 );
 
+export const reOrderquest = createAsyncThunk<Response<any>, orderLesson[], { rejectValue: Response<null> }>(
+    "section/reOrderquest",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await SectionApis.reOrderLesson(body);
+            return response.data as Response<orderLesson[]>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 const initialState: SectionSlice = {
+    orderLesson: [],
     title: "",
     sectionList: [],
     isLoading: false,
@@ -81,23 +100,12 @@ export const sectionSlice = createSlice({
                 return section;
             });
         },
-        reOderLesson: (state, action: PayloadAction<any>) => {
-            const min = Math.min(action.payload[1], action.payload[2]);
-            const max = Math.max(action.payload[1], action.payload[2]);
-            state.sectionList = state.sectionList.map((section) => {
-                section.lessons?.map((lesson: any) => {
-                    if (lesson.order <= max && lesson.order >= min) {
-                        if (lesson.id === action.payload[0]) {
-                            lesson.order = action.payload[1];
-                        } else {
-                            lesson.order = lesson.order + action.payload[3];
-                        }
-                    }
-                    return lesson;
-                });
-                return section;
-            });
-            console.log(state.sectionList);
+        reOrder: (state, action: PayloadAction<reOrder>) => {
+            console.log(action.payload);
+            const reOrderItem = state.orderLesson.splice(action.payload.oldOrder, 1)[0];
+            state.orderLesson.splice(action.payload.newOrder, 0, reOrderItem);
+            state.orderLesson = [...state.orderLesson];
+            console.log(state.orderLesson);
         },
     },
     extraReducers: (builder) => {
@@ -147,6 +155,13 @@ export const sectionSlice = createSlice({
 
         builder.addCase(getSectionByCourseId.fulfilled, (state, action) => {
             state.sectionList = action.payload.data as SectionType[];
+            let temp: any = [];
+            state.sectionList.forEach((section: any) => {
+                section.lessons.forEach((lesson: any) => {
+                    temp.push({ lessonId: lesson.id });
+                });
+            });
+            state.orderLesson = temp;
         });
 
         builder.addCase(getSectionByCourseId.rejected, (state) => {
@@ -155,6 +170,6 @@ export const sectionSlice = createSlice({
     },
 });
 
-export const { setDeleteSection, setEditSection, reOderLesson } = sectionSlice.actions;
+export const { setDeleteSection, setEditSection, reOrder } = sectionSlice.actions;
 
 export default sectionSlice.reducer;

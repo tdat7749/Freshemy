@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
-import { useAppDispatch } from "../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+// import { lessonActions } from "@redux/slice";
+import { orderLesson } from "../types/lesson";
 import { sectionActions } from "@redux/slice";
 
 type DragProps = {
@@ -10,18 +12,25 @@ type DragProps = {
 
 const DragDrop: React.FC<DragProps> = (props) => {
     const [items, setItems] = useState<JSX.Element[]>(props.initialItems);
+    const lessonOrderSelector = useAppSelector((state) => state.sectionSlice.orderLesson);
     const dispatch = useAppDispatch();
     const onDragEnd = (result: DropResult) => {
         const actionOrder = result.draggableId.split("-");
-        if (result.destination?.index !== parseInt(actionOrder[2])) {
+        if (result.destination?.index !== result.source.index) {
             const lesson_id: number = parseInt(actionOrder[0]);
-            const oldOrder: number = parseInt(actionOrder[1]);
-            const oldIndex: number = parseInt(actionOrder[2]);
+            const indexInSelector: number = lessonOrderSelector.findIndex((item: orderLesson) => item.lessonId === lesson_id);
+            const oldOrder: number = indexInSelector;
+            const oldIndex: number = result.source.index;
             const newIndex: number = result.destination?.index ? result.destination?.index : 0;
             const step = newIndex - oldIndex;
-            const isIncrement = step > 0 ? -1 : 1;
             const newOrder = oldOrder + step;
-            dispatch(sectionActions.reOderLesson([lesson_id, newOrder, oldOrder, isIncrement]));
+            const reOrder = {
+                oldOrder: oldOrder,
+                id: lesson_id,
+                newOrder: newOrder,
+            };
+            console.log(reOrder);
+            dispatch(sectionActions.reOrder(reOrder));
         }
         if (!result.destination) {
             return;
@@ -40,7 +49,11 @@ const DragDrop: React.FC<DragProps> = (props) => {
                         <div {...provided.droppableProps} ref={provided.innerRef}>
                             {items.map((item, index) => {
                                 return (
-                                    <Draggable key={`item-${index}`} draggableId={`${item.key}-${index}`} index={index}>
+                                    <Draggable
+                                        key={`items-${index}`}
+                                        draggableId={`${item.key}-${index}`}
+                                        index={index}
+                                    >
                                         {(provided) => (
                                             <div
                                                 {...provided.draggableProps}

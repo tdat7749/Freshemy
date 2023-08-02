@@ -1,16 +1,14 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { AddLesson as AddLessonType, Lesson, orderLesson } from "../../types/lesson";
+import { AddLesson as AddLessonType, Lesson } from "../../types/lesson";
 import { Response } from "../../types/response";
 import LessonApis from "@src/apis/lesson";
 
 type LessonSlice = {
-    order: orderLesson[];
     isLoading: boolean;
     lessonList: Lesson[];
 };
 
 const initialState: LessonSlice = {
-    order: [],
     isLoading: false,
     lessonList: [],
 };
@@ -32,18 +30,6 @@ export const deleteLesson = createAsyncThunk<Response<null>, number, { rejectVal
     async (body, ThunkAPI) => {
         try {
             const response = await LessonApis.deleteLesson(body);
-            return response.data as Response<null>;
-        } catch (error: any) {
-            return ThunkAPI.rejectWithValue(error.data as Response<null>);
-        }
-    }
-);
-
-export const reOrderLesson = createAsyncThunk<Response<null>, any, { rejectValue: Response<null> }>(
-    "lesson/reOrderLesson",
-    async (body, ThunkAPI) => {
-        try {
-            const response = await LessonApis.reOrderLesson(body);
             return response.data as Response<null>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);

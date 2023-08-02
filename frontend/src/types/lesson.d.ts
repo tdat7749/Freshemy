@@ -6,8 +6,7 @@ export type Lesson = {
 };
 
 export type orderLesson = {
-    id: number;
-    order: number;
+    lessonId: number;
 };
 
 export type AddLesson = {

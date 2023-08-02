@@ -97,7 +97,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                                     props.handleChangeSourceVideo(lesson.url_video);
                                 }
                             }}
-                            key={`${lesson.id}-${lesson.order}`}
+                            key={`${lesson.id}`}
                         >
                             <p>{lesson.title}</p>
 

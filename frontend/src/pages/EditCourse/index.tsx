@@ -51,7 +51,7 @@ const EditCourse: React.FC = () => {
     const [thumbnail, setThumbnail] = useState<File | null>(null);
 
     const categoriesSelector = useAppSelector((state) => state.courseSlice.categories);
-    const sectionSelector = useAppSelector((state) => state.sectionSlice.sectionList);
+    const orderLessonSelector = useAppSelector((state) => state.sectionSlice.orderLesson);
 
     const [categoriesOptions, setcategoriesOptions] = useState<Options[]>(categoriesSelector);
     const createCategoriesSelector = useAppSelector((state) => state.courseSlice.selectCategories);
@@ -314,17 +314,8 @@ const EditCourse: React.FC = () => {
     };
 
     const handleReOrderLesson = () => {
-        const newOrder: any = [];
-        sectionSelector.forEach((section: SectionType) => {
-            section.lessons?.forEach((lesson: any) => {
-                newOrder.push({
-                    id: lesson.id,
-                    order: lesson.order,
-                });
-            });
-        });
         //@ts-ignore
-        dispatch(lessonActions.reOrderLesson(newOrder));
+        dispatch(sectionActions.reOrderquest(orderLessonSelector));
     };
 
     return (
