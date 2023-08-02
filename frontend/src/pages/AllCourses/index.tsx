@@ -157,6 +157,9 @@ const AllCourses: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex-1 grid grid-cols-1 gap-3">
+                            {courseList.length === 0 && (
+                                <p className="text-error font-medium text-xl mt-4">Don't have any course yet!</p>
+                            )}
                             {courseList.map((course) => (
                                 <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={course.id}>
                                     <CourseCard
