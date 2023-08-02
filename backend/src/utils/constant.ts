@@ -59,6 +59,7 @@ export const errorMessages = {
 
     // Course
     courseIdIsRequired: "Course id is required",
+    courseIdMustBeAnInt: "Course id must be an integer",
     courseIdMustBeNumber: "Course id must be a number",
     createCourseFailed: "Create a new failed course",
     courseNotFound: "Course Not Found",
@@ -111,6 +112,7 @@ export const errorMessages = {
     contentRatingType: "Content rating must be string",
     ratingScoreRequired: "Rating score is required",
     ratingScoreType: "Rating score must be a number",
+    ratingScoreMustBeAnInt: "Rating score must be an integer",
     ratingScoreMinError: "Rating score must be in 1-5",
     ratingScoareMaxError: "Rating score must be in 1-5",
 
