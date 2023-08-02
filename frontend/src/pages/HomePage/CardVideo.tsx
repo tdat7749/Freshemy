@@ -1,11 +1,12 @@
 import React from "react";
 import { Category } from "../../types/course";
 import { useNavigate } from "react-router";
+import { User } from "../../types/user";
 
 interface CardVideoProps {
     thumbnail: string;
     title: string;
-    author: string;
+    author: User;
     rating: number;
     categories: Category[];
     slug?: string;
@@ -28,7 +29,7 @@ const CardVideo: React.FC<CardVideoProps> = (props) => {
                     {props.title}
                 </h2>
                 <div className="items-end">
-                    <div className="font-medium mt-1">{props.author}</div>
+                    <div className="font-medium mt-1">{props.author.first_name + " " + props.author.last_name}</div>
                     <div className="font-medium mt-1">{props.rating}</div>
                     <div className="categori flex flex-wrap gap-1">
                         {props.categories &&

@@ -11,6 +11,8 @@ import {
     CourseDetail as CourseDetailType,
     ChangeThumbnail as ChangeThumbnailType,
     CourseChangeInformation as CourseChangeInformationType,
+    SelectCourse,
+    FilterCourse,
     RatingCourse as RatingCourseType,
     RatingResponse as RatingResponseType,
     EnrollCourse as EnrollCourseType,
@@ -28,6 +30,7 @@ type CourseSlice = {
     isLoading: boolean;
     isGetLoading: boolean;
     totalPage: number;
+    totalRecord: number;
     courseDetail: CourseDetailType;
     courseChangeDetail: CourseChangeInformationType;
     ratings: RatingResponseType[];
@@ -114,6 +117,18 @@ export const changeThumbnail = createAsyncThunk<Response<null>, ChangeThumbnailT
         try {
             const response = await CourseApis.changeThumbnail(body);
             return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const selectCourses = createAsyncThunk<Response<FilterCourse>, SelectCourse, { rejectValue: Response<null> }>(
+    "course/selectCourses",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.selectCourses(body);
+            return response.data as Response<FilterCourse>;
         } catch (error: any) {
             return ThunkAPI.rejectWithValue(error.data as Response<null>);
         }
@@ -214,7 +229,7 @@ const initialState: CourseSlice = {
         categories: [],
         summary: "",
         author: {
-            id: undefined,
+            id: 0,
             first_name: "",
             last_name: "",
         },
@@ -238,6 +253,7 @@ const initialState: CourseSlice = {
     },
     isLoading: false,
     totalPage: 1,
+    totalRecord: 0,
     isGetLoading: false,
     ratings: [],
     totalRatingPage: 1,
@@ -286,7 +302,7 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getMyCourses.fulfilled, (state, action) => {
-            state.courses = action.payload.data?.courses as Course[];
+            state.courses = action.payload.data?.data as Course[];
             state.totalPage = action.payload.data?.total_page as number;
             state.isGetLoading = false;
         });
@@ -370,6 +386,22 @@ export const courseSlice = createSlice({
         builder.addCase(getTop10Courses.rejected, (state) => {
             state.isGetLoading = false;
         });
+
+        builder.addCase(selectCourses.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(selectCourses.fulfilled, (state, action) => {
+            console.log(action.payload.data);
+            state.courses = action.payload.data?.courses as Course[];
+            state.totalPage = action.payload.data?.total_page as number;
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(selectCourses.rejected, (state) => {
+            state.isLoading = false;
+        });
+
         builder.addCase(getRightOfCourse.pending, (state) => {
             state.isGetLoading = true;
         });

@@ -20,10 +20,13 @@ export type Course = {
     summary: string;
     rating: number;
     thumbnail: string;
-    author?: string;
+    author?: User;
     categories: Category[];
     number_section: number;
+    status: boolean;
+    attendees: number;
     slug: string;
+    author?: User;
 };
 
 export type GetMyCourses = {
@@ -46,7 +49,7 @@ export type DeleteCourse = {
 export type PagingCourse = {
     total_page: number;
     total_record: number;
-    courses: Course[];
+    data: Course[];
 };
 
 export type CourseDetail = {
@@ -102,6 +105,20 @@ export type CourseChangeInformation = {
     slug: string;
     thumbnail?: string;
 };
+
+export type SelectCourse = {
+    pageIndex: nunber;
+    keyword?: string;
+    category?: string[];
+    rating?: number;
+    sortBy?: string;
+};
+
+export type FilterCourse = {
+    total_page: number;
+    total_record: number;
+    courses: Course[];
+}
 
 export type RatingCourse = {
     ratings: number;

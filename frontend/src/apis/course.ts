@@ -4,6 +4,7 @@ import {
     NewCourse as CreateCourseType,
     GetMyCourses as GetMyCoursesType,
     CourseChangeInformation as CourseChangeInformationType,
+    SelectCourse,
     RatingCourse as RatingCourseType,
     EnrollCourse as EnrollCourseType,
     GetRating as GetRatingType,
@@ -28,7 +29,7 @@ const getCategories = async () => {
 };
 
 const getMyCourses = async (values: GetMyCoursesType) => {
-    const path = `courses/search-my-courses?pageIndex=${values.pageIndex}&keyword=${values.keyword}`;
+    const path = `courses/search-my-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
 
@@ -83,6 +84,27 @@ const getTop10Courses = async () => {
     return response;
 };
 
+const selectCourses = async (values: SelectCourse) => {
+    let pathBase = `/courses/get-all-courses?pageIndex=${values.pageIndex}`;
+    if (values.rating) {
+        pathBase = pathBase + `&ratings=${values.rating}`;
+    }
+
+    if (values.keyword) {
+        pathBase = pathBase + `&keyword=${values.keyword}`;
+    }
+
+    if (values.sortBy) {
+        pathBase = pathBase + `&sortBy=${values.sortBy}`;
+    }
+
+    if (values.category) {
+        values.category.map((category) => (pathBase = pathBase + `&categories=${category}`));
+    }
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), pathBase);
+    return response;
+};
+
 const ratingCourse = async (values: RatingCourseType) => {
     const path = `courses/rating`;
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, values);
@@ -124,6 +146,7 @@ export {
     changeThumbnail,
     changeInformation,
     getTop10Courses,
+    selectCourses,
     ratingCourse,
     subscribeCourse,
     unsubcribeCourse,
