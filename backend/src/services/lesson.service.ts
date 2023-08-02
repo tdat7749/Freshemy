@@ -52,8 +52,13 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
             include: {
                 course: true,
             },
+            where: {
+                course: {
+                    user_id: req.user_id,
+                },
+            },
         });
-        if (findCourse?.course.user_id !== req.user_id) {
+        if (!findCourse) {
             return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
         }
         const sectionIdConvert = parseInt(section_id);

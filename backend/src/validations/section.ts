@@ -10,15 +10,17 @@ type Section = {
 export const SectionSchema: ObjectSchema<Section> = Joi.object({
     title: Joi.string()
         .required()
+        .max(100)
         .messages({
             "any.required": i18n.t("errorMessages.courseTitleIsRequired"),
             "string.base": i18n.t("errorMessages.courseTitleMustBeString"),
+            "string.max": i18n.t("errorMessages.courseTitleIsTooLong"),
         }),
 
     course_id: Joi.number()
         .required()
         .messages({
-            "any.required": i18n.t("errorMessages.courseTitleIsRequired"),
+            "any.required": i18n.t("errorMessages.courseIdIsRequired"),
         }),
 });
 
@@ -29,9 +31,11 @@ type UpdateSection = {
 export const UpdateSectionSchema: ObjectSchema<UpdateSection> = Joi.object({
     title: Joi.string()
         .required()
+        .max(100)
         .messages({
             "any.required": i18n.t("errorMessages.courseTitleIsRequired"),
             "string.base": i18n.t("errorMessages.courseTitleMustBeString"),
+            "string.max": i18n.t("errorMessages.courseTitleIsTooLong"),
         }),
     course_id: Joi.number(),
 });
