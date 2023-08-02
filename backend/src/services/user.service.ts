@@ -87,9 +87,6 @@ const changeUserInformation = async (req: RequestHasLogin): Promise<ResponseBase
         });
 
         if (!user) return new ResponseError(404, i18n.t("errorMessages.userNotFound"), false);
-        if (avatar) {
-            user.url_avatar = avatar;
-        }
 
         const isUpdate = await db.user.update({
             where: {
