@@ -17,8 +17,12 @@ courseRouter.get("/:slug/ratings", controllers.courseController.getListRatingsOf
 courseRouter.get("/top-10", controllers.courseController.getTop10Courses);
 courseRouter.get("/search-my-courses", isLogin, controllers.courseController.searchMyCourses);
 courseRouter.get("/search-enrolled-courses", isLogin, controllers.courseController.searchEnrolledCourses);
+courseRouter.get("/get-all-courses", isLogin, controllers.courseController.getAllCourses);
+
 courseRouter.get("/:course_id/section", isLogin, controllers.sectionController.getAllSectionByCourseId);
 courseRouter.get("/:slug", controllers.courseController.getCourseDetail);
+
+
 courseRouter.get("/detail/:id", isLogin, controllers.courseController.getCourseDetailById);
 courseRouter.delete("/:id", isLogin, isAuthor, controllers.courseController.deleteMyCourse);
 

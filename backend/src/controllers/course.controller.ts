@@ -125,6 +125,44 @@ class CourseController {
         return res.status(response.getStatusCode()).json(response);
     }
 
+    async getAllCourses(req: Request, res: Response): Promise<Response> {
+        try {
+            const pageIndex: number | undefined = req.query.pageIndex
+                ? parseInt(req.query.pageIndex as string, 10)
+                : undefined;
+            const keyword: string | undefined = req.query.keyword ? (req.query.keyword as string) : undefined;
+            const categories: string[] | undefined = req.query.categories
+                ? Array.isArray(req.query.categories)
+                    ? (req.query.categories as string[])
+                    : [req.query.categories as string]
+                : undefined;
+            const sortBy: string | undefined = req.query.sortBy ? (req.query.sortBy as string) : undefined;
+            const filterByRatings: "asc" | "desc" | undefined = req.query.filterByRatings as "asc" | "desc" | undefined;
+            const ratings: number | undefined = req.query.ratings ? parseFloat(req.query.ratings as string) : undefined;
+
+            const response = await services.CourseService.getAllCourses(
+                pageIndex,
+                keyword,
+                categories,
+                sortBy,
+                filterByRatings,
+                ratings,
+            ); 
+
+            console.log("response:", pageIndex, keyword, categories, sortBy);
+
+            if (response instanceof ResponseSuccess) {
+                return res.json(response);
+            } else if (response instanceof ResponseError) {
+                return res.status(response.getStatusCode()).json(response);
+            } else {
+                return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
+            }
+        } catch (error: any) {
+            return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
+        }
+    }
+    
     async getRightOfCourse(req: Request, res: Response): Promise<Response> {
         const response = await services.CourseService.getRightOfCourse(req);
         return res.status(response.getStatusCode()).json(response);
@@ -135,4 +173,5 @@ class CourseController {
         return res.status(response.getStatusCode()).json(response);
     }
 }
+
 export default CourseController;

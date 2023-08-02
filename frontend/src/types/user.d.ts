@@ -4,9 +4,9 @@ export type User = {
     url_avatar?: string;
     email?: string;
     description?: string;
-    first_name?: string;
-    last_name?: string;
-    id?: number;
+    first_name: string;
+    last_name: string;
+    id: number;
     password?: string;
 };
 

@@ -79,9 +79,9 @@ export const verifyEmail = createAsyncThunk<Response<null>, string, { rejectValu
 const initialState: AuthSlice = {
     user: {
         email: undefined,
-        first_name: undefined,
-        last_name: undefined,
-        id: undefined,
+        first_name: "",
+        last_name: "",
+        id: 0,
     },
     isLogin: false,
     isLoading: false,
@@ -209,8 +209,9 @@ export const logout = () => async (dispatch: any) => {
     dispatch(
         setUsers({
             description: undefined,
-            first_name: undefined,
-            last_name: undefined,
+            id: 0,
+            first_name: "",
+            last_name: "",
             email: undefined,
         })
     );
