@@ -34,6 +34,7 @@ const initialState: UserSlice = {
             rating: 0,
             thumbnail: "",
             author: {
+                email: "",
                 first_name: "",
                 last_name: "",
                 id: 0,
@@ -137,5 +138,6 @@ export const userSlice = createSlice({
         });
     },
 });
+export const {} = userSlice.actions;
 
 export default userSlice.reducer;

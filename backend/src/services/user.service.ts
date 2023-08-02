@@ -4,6 +4,7 @@ import { db } from "../configs/db.config";
 import * as bcrypt from "bcrypt";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import configs from "../configs";
+import { Request } from "express";
 import i18n from "../utils/i18next";
 import { OutstandingCourse } from "src/types/course.type";
 
@@ -77,7 +78,7 @@ const getInformation = async (req: RequestHasLogin): Promise<ResponseBase> => {
 
 const changeUserInformation = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const { last_name, first_name, description } = req.body;
+        const { last_name, first_name, description, avatar } = req.body;
         const user = await db.user.findFirst({
             where: {
                 id: req.user_id,
@@ -108,7 +109,7 @@ const changeUserInformation = async (req: RequestHasLogin): Promise<ResponseBase
     }
 };
 
-const getAuthorInformation = async (req: RequestHasLogin): Promise<ResponseBase> => {
+const getAuthorInformation = async (req: Request): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
         const user_id = +id;
@@ -156,7 +157,7 @@ const getAuthorInformation = async (req: RequestHasLogin): Promise<ResponseBase>
                 author: {
                     first_name: user.first_name,
                     last_name: user.last_name,
-                    id: user_id
+                    id: user_id,
                 },
                 created_at: course.created_at,
                 updated_at: course.updated_at,

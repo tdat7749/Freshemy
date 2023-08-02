@@ -200,7 +200,7 @@ const EditForm: React.FC<props> = (props) => {
         <>
             {isGetLoading !== true && (
                 <>
-                    <div className="min-h-screen h-full px-4 tablet:px-[60px]">
+                    <div className="px-4 tablet:px-[60px]">
                         <div className="flex-1 p-4 laptop:flex laptop:gap-4">
                             <div className="flex flex-col justify-center items-center gap-4 laptop:items-start laptop:justify-start">
                                 <div className="">

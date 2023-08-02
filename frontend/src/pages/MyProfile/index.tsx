@@ -8,12 +8,12 @@ import { authActions, userActions } from "@redux/slice";
 import { updateProfileValidationSchema } from "../../validations/user";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
+import PopUpChangeAvatar from "./PopUpChangeAvatar";
 
 const MyProfile: React.FC = () => {
-    const user: UserType = useAppSelector((state) => state.userSlice.user);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-
+    const user: UserType = useAppSelector((state) => state.authSlice.user);
     const initialValue: UserType = {
         id: user.id,
         first_name: user.first_name,
@@ -21,12 +21,10 @@ const MyProfile: React.FC = () => {
         email: user.email,
         description: user.description,
     };
-
     useEffect(() => {
         // @ts-ignore
-        dispatch(userActions.getInformation());
+        dispatch(authActions.getMe());
     }, [dispatch]);
-
     const handleOnSubmit = (values: UserType) => {
         const data: UpdateInformationType = {
             first_name: values.first_name,
@@ -60,23 +58,20 @@ const MyProfile: React.FC = () => {
                             <img src={Skeleton} alt="Freshemy" />
                         </div>
                         <div className="flex flex-col items-center justify-center">
+                            <div className="w-32 h-32 rounded-full border">
+                                <PopUpChangeAvatar urlAvatar={user.url_avatar || DefaultAvatar} userId={user.id} />
+                            </div>
                             <Formik
                                 initialValues={initialValue}
                                 validationSchema={updateProfileValidationSchema}
                                 onSubmit={handleOnSubmit}
+                                enableReinitialize={true}
                             >
                                 {(formik) => (
                                     <Form
-                                        className="p-4 flex items-center justify-center flex-col"
+                                        className="flex items-center justify-center flex-col"
                                         onSubmit={formik.handleSubmit}
                                     >
-                                        <div className="w-32 h-32 rounded-full border">
-                                            <img
-                                                src={DefaultAvatar}
-                                                alt="Avatar"
-                                                className="w-full h-full object-cover rounded-full"
-                                            />
-                                        </div>
                                         <div className="bg-primary m-4 rounded-xl shadow-lg p-4">
                                             <div className="flex flex-col mobile:flex-row gap-2">
                                                 <div className="flex flex-col mb-3">
@@ -84,7 +79,6 @@ const MyProfile: React.FC = () => {
                                                         First name
                                                     </label>
                                                     <Field
-                                                        id="first_name"
                                                         name="first_name"
                                                         type="text"
                                                         className={`px-2 py-4 rounded-lg border-[1px] outline-none max-w-sm ${
@@ -104,7 +98,6 @@ const MyProfile: React.FC = () => {
                                                         Last name
                                                     </label>
                                                     <Field
-                                                        id="last_name"
                                                         name="last_name"
                                                         type="text"
                                                         className={`px-2 py-4 rounded-lg border-[1px] outline-none max-w-sm ${
@@ -125,7 +118,6 @@ const MyProfile: React.FC = () => {
                                                     Email
                                                 </label>
                                                 <Field
-                                                    id="email"
                                                     name="email"
                                                     disabled={true}
                                                     type="text"

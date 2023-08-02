@@ -122,7 +122,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
             )}
             <Navbar />
             {isGetLoading && <Spin />}
-            <div className="container mx-auto mt-[100px]">
+            <div className="container mx-auto mt-[100px] laptop:mt-0">
                 <div className="min-h-screen h-full px-4 tablet:px-[60px]">
                     <div className="mt-4 container mx-auto p-4">
                         <div className="flex flex-col gap-4 laptop:flex-row shadow-xl bg-primary rounded-lg">
@@ -135,7 +135,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                             </div>
                             <div className=" flex-1 object-right flex flex-col gap-4 px-3 pb-3 laptop:pt-3">
                                 <div className="flex-1">
-                                    <h2 className="text-2xl laptop:text-3xl font-bold text-title mb-3">
+                                    <h2 className="text-2xl laptop:text-3xl font-bold text-title mb-3 tablet:w-[300px] xl:w-[600px] truncate ...">
                                         {courseDetail.title}
                                     </h2>
                                     <p className="text-xl laptop:text-2xl font-medium italic mb-3">
@@ -145,7 +145,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                                     <div className=" mb-3">
                                         <span className="text-xl laptop:text-2xl font-bold">Author: </span>
                                         <Link
-                                            to={"/profile/:userID"}
+                                            to={`/profile/${courseDetail.author.id}`}
                                             className="text-xl laptop:text-2xl underline font-medium text-blue-600"
                                         >
                                             {courseDetail.author?.first_name}
@@ -168,25 +168,27 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                                         </p>
                                     </div>
                                 </div>
-                                {isLogin && role === i18n.t("ROLE.AUTHOR") && (
-                                    <AuthorButton
-                                        handleDelete={() => {
-                                            setIsOpenDeleteModal(!isOpenDeleteModal);
-                                            setIdItem(courseDetail.id as number);
-                                        }}
-                                        courseDetail={courseDetail}
-                                    />
-                                )}
-                                {isLogin && role === i18n.t("ROLE.ENROLLED") && (
-                                    <SubscribeUserButton
-                                        handleTogglePopupRating={handleTogglePopupRating}
-                                        handleToggleUnsubscribeCourse={handleToggleUnsubcribeCourse}
-                                        courseDetail={courseDetail}
-                                    />
-                                )}
-                                {(!isLogin || role === i18n.t("ROLE.UNENROLLED")) && (
-                                    <GuestButton isLogin={isLogin} course_id={courseDetail.id} />
-                                )}
+                                <div className="flex-1 flex items-end gap-2 flex-wrap">
+                                    {isLogin && role === i18n.t("ROLE.AUTHOR") && (
+                                        <AuthorButton
+                                            handleDelete={() => {
+                                                setIsOpenDeleteModal(!isOpenDeleteModal);
+                                                setIdItem(courseDetail.id as number);
+                                            }}
+                                            courseDetail={courseDetail}
+                                        />
+                                    )}
+                                    {isLogin && role === i18n.t("ROLE.ENROLLED") && (
+                                        <SubscribeUserButton
+                                            handleTogglePopupRating={handleTogglePopupRating}
+                                            handleToggleUnsubscribeCourse={handleToggleUnsubcribeCourse}
+                                            courseDetail={courseDetail}
+                                        />
+                                    )}
+                                    {(!isLogin || role === i18n.t("ROLE.UNENROLLED")) && (
+                                        <GuestButton isLogin={isLogin} course_id={courseDetail.id} />
+                                    )}
+                                </div>
                             </div>
                         </div>
                         <div>
