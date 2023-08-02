@@ -21,7 +21,7 @@ const customStyles = {
         ...styles,
         position: "static",
         transform: "none",
-        borderRadius: "0.25rem",
+        borderRadius: "0.375rem",
         padding: "10px",
         boxShadow: "",
     }),
@@ -30,8 +30,8 @@ const customStyles = {
     }),
     menu: (styles: any) => ({
         ...styles,
-        borderRadius: "0.25rem",
-        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1)",
+        borderRadius: "0.375rem",
+        boxShadow: "0 1px 2px, 0 2px 4px",
     }),
 };
 
@@ -47,11 +47,11 @@ const CreateCourse: FC = () => {
     const categoriesOptions: CategoriesOptions[] = [];
     const statusOptions = [
         {
-            value: 1,
+            value: true,
             label: "Completed",
         },
         {
-            value: 0,
+            value: false,
             label: "Uncomplete",
         },
     ];
@@ -75,7 +75,7 @@ const CreateCourse: FC = () => {
     const initialValues: CreateCourseType = {
         title: "",
         categories: [],
-        status: 0,
+        status: false,
         summary: "",
         description: "",
         thumbnail: "",
@@ -133,7 +133,7 @@ const CreateCourse: FC = () => {
     return (
         <>
             <Navbar />
-            <div className="min-h-screen h-full px-4 tablet:px-[60px]">
+            <div className="min-h-screen h-full px-4 tablet:px-[60px] mt-[100px] laptop:mt-0">
                 <h1 className="text-center text-[32px] py-4 font-bold text-title">CREATE COURSE</h1>
                 <div className="w-full flex justify-center items-center shrink-0">
                     <div className="m-4 rounded-xl border border-black w-full max-w-[982px] bg-background">
@@ -215,7 +215,7 @@ const CreateCourse: FC = () => {
                                                         formik.errors.categories && formik.touched.categories
                                                             ? "border-error"
                                                             : ""
-                                                    } border-[1px]`}
+                                                    } border-[1px] rounded-md`}
                                                 >
                                                     <Field
                                                         name="categories"

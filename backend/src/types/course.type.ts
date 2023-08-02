@@ -1,3 +1,6 @@
+import { Author } from "./user.type";
+import { Section } from "./section.type";
+
 export type CourseDetail = {
     id: number;
     slug: string;
@@ -12,6 +15,18 @@ export type CourseDetail = {
     created_at: Date;
     updated_at: Date;
     status: boolean;
+};
+
+export type CourseInfo = {
+    id: number;
+    title: string;
+    summary: string;
+    thumbnail: string;
+    rate: number;
+    author: Author;
+    category: string[];
+    number_section: number;
+    slug: string;
 };
 
 export type CourseEdit = {
@@ -31,22 +46,6 @@ export type Category = {
     id: number;
     title?: string;
 };
-export type Author = {
-    first_name: string;
-    last_name: string;
-    id: number;
-};
-export type Lesson = {
-    id: number;
-    title: string;
-    url_video: string;
-};
-export type Section = {
-    title: string;
-    updated_at: Date;
-    id: number;
-    lessons: Lesson[];
-};
 
 export type OutstandingCourse = {
     id: number;
@@ -54,7 +53,7 @@ export type OutstandingCourse = {
     title: string;
     slug: string;
     categories: Category[];
-    author: string;
+    author: Author;
     created_at: Date;
     updated_at: Date;
 };

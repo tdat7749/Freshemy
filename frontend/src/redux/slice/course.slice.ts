@@ -11,6 +11,14 @@ import {
     CourseDetail as CourseDetailType,
     ChangeThumbnail as ChangeThumbnailType,
     CourseChangeInformation as CourseChangeInformationType,
+    SelectCourse,
+    FilterCourse,
+    RatingCourse as RatingCourseType,
+    RatingResponse as RatingResponseType,
+    EnrollCourse as EnrollCourseType,
+    GetRating as GetRatingType,
+    PagingRating,
+    GetRight as GetRightType,
 } from "../../types/course";
 
 import { CourseApis } from "@src/apis";
@@ -22,8 +30,12 @@ type CourseSlice = {
     isLoading: boolean;
     isGetLoading: boolean;
     totalPage: number;
+    totalRecord: number;
     courseDetail: CourseDetailType;
     courseChangeDetail: CourseChangeInformationType;
+    ratings: RatingResponseType[];
+    totalRatingPage: number;
+    role: string;
 };
 
 export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejectValue: Response<null> }>(
@@ -111,6 +123,18 @@ export const changeThumbnail = createAsyncThunk<Response<null>, ChangeThumbnailT
     }
 );
 
+export const selectCourses = createAsyncThunk<Response<FilterCourse>, SelectCourse, { rejectValue: Response<null> }>(
+    "course/selectCourses",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.selectCourses(body);
+            return response.data as Response<FilterCourse>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 export const changeInformation = createAsyncThunk<
     Response<null>,
     CourseChangeInformationType,
@@ -136,6 +160,64 @@ export const getTop10Courses = createAsyncThunk<Response<CourseType[]>, string, 
     }
 );
 
+export const ratingCourse = createAsyncThunk<Response<null>, RatingCourseType, { rejectValue: Response<null> }>(
+    "course/rating",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.ratingCourse(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+export const subscribeCourse = createAsyncThunk<Response<null>, EnrollCourseType, { rejectValue: Response<null> }>(
+    "course/registration",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.subscribeCourse(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+export const unsubcribeCourse = createAsyncThunk<Response<null>, EnrollCourseType, { rejectValue: Response<null> }>(
+    "course/unsubscribe",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.unsubcribeCourse(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+export const getRightOfCourse = createAsyncThunk<Response<GetRightType>, number, { rejectValue: Response<null> }>(
+    "course/right",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await CourseApis.getRightOfCourse(body);
+            return response.data as Response<GetRightType>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const getListRatingsOfCourseBySlug = createAsyncThunk<
+    Response<PagingRating>,
+    GetRatingType,
+    { rejectValue: Response<null> }
+>("course/getListRatingsOfCourseBySlug", async (body, ThunkAPI) => {
+    try {
+        const response = await CourseApis.getListRatingsOfCourseBySlug(body);
+        return response.data as Response<PagingRating>;
+    } catch (error: any) {
+        return ThunkAPI.rejectWithValue(error.data as Response<null>);
+    }
+});
+
 const initialState: CourseSlice = {
     selectCategories: [],
     categories: [],
@@ -147,11 +229,11 @@ const initialState: CourseSlice = {
         categories: [],
         summary: "",
         author: {
-            id: undefined,
+            id: 0,
             first_name: "",
             last_name: "",
         },
-        ratings: undefined,
+        rating: undefined,
         description: "",
         sections: [],
         created_at: "",
@@ -160,7 +242,7 @@ const initialState: CourseSlice = {
         status: false,
     },
     courseChangeDetail: {
-        id: undefined,
+        course_id: undefined,
         slug: "",
         title: "",
         categories: [],
@@ -171,7 +253,11 @@ const initialState: CourseSlice = {
     },
     isLoading: false,
     totalPage: 1,
+    totalRecord: 0,
     isGetLoading: false,
+    ratings: [],
+    totalRatingPage: 1,
+    role: "",
 };
 
 export const courseSlice = createSlice({
@@ -216,7 +302,7 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getMyCourses.fulfilled, (state, action) => {
-            state.courses = action.payload.data?.courses as Course[];
+            state.courses = action.payload.data?.data as Course[];
             state.totalPage = action.payload.data?.total_page as number;
             state.isGetLoading = false;
         });
@@ -298,6 +384,83 @@ export const courseSlice = createSlice({
         });
 
         builder.addCase(getTop10Courses.rejected, (state) => {
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(selectCourses.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(selectCourses.fulfilled, (state, action) => {
+            console.log(action.payload.data);
+            state.courses = action.payload.data?.courses as Course[];
+            state.totalPage = action.payload.data?.total_page as number;
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(selectCourses.rejected, (state) => {
+            state.isLoading = false;
+        });
+
+        builder.addCase(getRightOfCourse.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(getRightOfCourse.fulfilled, (state, action) => {
+            state.role = action.payload.data?.role as string;
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(getRightOfCourse.rejected, (state) => {
+            state.isGetLoading = false;
+        });
+        builder.addCase(ratingCourse.pending, (state) => {
+            state.isLoading = true;
+        });
+
+        builder.addCase(ratingCourse.fulfilled, (state, action) => {
+            state.isLoading = false;
+        });
+
+        builder.addCase(ratingCourse.rejected, (state) => {
+            state.isLoading = false;
+        });
+        builder.addCase(subscribeCourse.pending, (state) => {
+            state.isLoading = true;
+        });
+
+        builder.addCase(subscribeCourse.fulfilled, (state) => {
+            state.role = "Enrolled";
+            state.isLoading = false;
+        });
+
+        builder.addCase(subscribeCourse.rejected, (state) => {
+            state.isLoading = false;
+        });
+        builder.addCase(unsubcribeCourse.pending, (state) => {
+            state.isLoading = true;
+        });
+
+        builder.addCase(unsubcribeCourse.fulfilled, (state) => {
+            state.role = "Unenrolled";
+            state.isLoading = false;
+        });
+
+        builder.addCase(unsubcribeCourse.rejected, (state) => {
+            state.isLoading = false;
+        });
+        builder.addCase(getListRatingsOfCourseBySlug.pending, (state) => {
+            state.isGetLoading = true;
+        });
+
+        builder.addCase(getListRatingsOfCourseBySlug.fulfilled, (state, action) => {
+            state.ratings = action.payload.data?.data as RatingResponseType[];
+
+            state.totalRatingPage = action.payload.data?.total_page as number;
+            state.isGetLoading = false;
+        });
+
+        builder.addCase(getListRatingsOfCourseBySlug.rejected, (state) => {
             state.isGetLoading = false;
         });
     },

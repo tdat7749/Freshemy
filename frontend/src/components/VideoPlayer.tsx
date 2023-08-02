@@ -31,7 +31,6 @@ export const VideoJS: React.FC<VideoJSType> = (props) => {
                 hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
                     window.hls = hls;
                     const availableQuanlities = hls.levels.map((l) => l.height);
-                    console.log(availableQuanlities);
                     const defaultOptions: Plyr.Options = {
                         controls: [
                             "restart", // Restart playback
