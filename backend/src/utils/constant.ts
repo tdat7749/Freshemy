@@ -66,6 +66,8 @@ export const errorMessages = {
 
     // Section
     sectionIdIsRequired: "Section id is required",
+    sectionIdMustBeAnInt: "Section id must be an integer",
+    sectionIdMustBeNumber: "Section id must be a number",
 
     // Reset password
     UnAuthorized: "You don't have authorize",

@@ -18,9 +18,12 @@ export const LessonSchema: ObjectSchema<Lesson> = Joi.object({
         }),
 
     section_id: Joi.number()
+        .integer()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.sectionIdIsRequired"),
+            "number.base": i18n.t("errorMessages.sectionIdMustBeNumber"),
+            "number.integer": i18n.t("errorMessages.sectionIdMustBeAnInt"),
         }),
 });
 
