@@ -153,4 +153,7 @@ export const successMessages = {
 
     // Upload Image
     imageUploadSuccess: "Upload Image Successfully",
+
+    //Section
+    sectionReorderSuccess: "Upload reOrder section Successfully",
 };

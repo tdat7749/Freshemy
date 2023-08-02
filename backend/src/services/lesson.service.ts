@@ -226,18 +226,16 @@ const reOrderLesson = async (req: Request): Promise<ResponseBase> => {
     try {
         const newOrers = req.body;
         for (const newOrder of newOrers) {
-            console.log(newOrder);
             await configs.db.lesson.update({
                 where: {
                     id: newOrder.lessonId,
                 },
                 data: {
-                    order: newOrder.order,
+                    order: newOrder.newOrder,
                 },
             });
         }
-        return new ResponseSuccess(200, i18n.t("successMessages.deleteDataSuccess"), true, req.body);
-        // return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
+        return new ResponseSuccess(200, i18n.t("successMessages.sectionReorderSuccess"), true, newOrers);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
