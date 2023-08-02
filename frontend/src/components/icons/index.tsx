@@ -12,6 +12,7 @@ import SearchIcon from "./SearchIcon";
 import ThreedotIcon from "./ThreedotIcon";
 import UserIcon from "./UserIcon";
 import WarningIcon from "./WarningIcon";
+import RatingIcon from "./RatingIcon";
 
 const icons = {
     AddIcon,
@@ -28,5 +29,6 @@ const icons = {
     ThreedotIcon,
     UserIcon,
     WarningIcon,
+    RatingIcon,
 };
 export default icons;

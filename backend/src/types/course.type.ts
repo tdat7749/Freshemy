@@ -8,7 +8,7 @@ export type CourseDetail = {
     categories: Category[];
     summary: string;
     author: Author;
-    ratings: number;
+    rating: number;
     thumbnail: string;
     description: string;
     sections: Section[];

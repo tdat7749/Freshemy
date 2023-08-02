@@ -7,6 +7,12 @@ export const HTTP_CALL = {
     HTTP_DELETE: "DELETE",
 };
 
+export const ROLE = {
+    AUTHOR: "Author",
+    ENROLLED: "Enrolled",
+    UNENROLLED: "Unenrolled",
+};
+
 export const errorMessages = {
     wrongPassword: "Wrong password",
     weakPassword: "Weak password",
@@ -45,6 +51,8 @@ export const errorMessages = {
 
     videoFileType: "Invalid file type, .mp4 .mkv .mov file only",
     videoFileSize: "Video too large, video size lower than 100MB only",
+
+    commentTooLong: "Comment is too long, maximum 100 characters only",
 };
 
 export const successMessages = {
@@ -52,9 +60,9 @@ export const successMessages = {
 };
 
 export const fileType = {
-    mp4: "mp4",
-    mkv: "mkv",
-    mov: "mov",
+    mp4: "video/mp4",
+    mkv: "video/x-matroska",
+    mov: "video/quicktime",
     png: "png",
     jpg: "jpg",
     jpeg: "jpeg",

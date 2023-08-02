@@ -4,6 +4,9 @@ import {
     NewCourse as CreateCourseType,
     GetMyCourses as GetMyCoursesType,
     CourseChangeInformation as CourseChangeInformationType,
+    RatingCourse as RatingCourseType,
+    EnrollCourse as EnrollCourseType,
+    GetRating as GetRatingType,
 } from "../types/course";
 
 import i18n from "../utils/i18next";
@@ -80,6 +83,37 @@ const getTop10Courses = async () => {
     return response;
 };
 
+const ratingCourse = async (values: RatingCourseType) => {
+    const path = `courses/rating`;
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, values);
+    return response;
+};
+
+const subscribeCourse = async (values: EnrollCourseType) => {
+    const path = `courses/registration`;
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, values);
+    return response;
+};
+const unsubcribeCourse = async (values: EnrollCourseType) => {
+    const path = `courses/unsubcribe`;
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_DELETE"), path, values);
+    return response;
+};
+const getRightOfCourse = async (courseId: number) => {
+    const path = `courses/right/${courseId}`;
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
+
+    return response;
+};
+const getListRatingsOfCourseBySlug = async (values: GetRatingType) => {
+    const path = `courses/${values.slug}/ratings?page_index=${values.page_index}`;
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
+
+    return response;
+};
+
 export {
     createCourse,
     getCategories,
@@ -90,4 +124,9 @@ export {
     changeThumbnail,
     changeInformation,
     getTop10Courses,
+    ratingCourse,
+    subscribeCourse,
+    unsubcribeCourse,
+    getRightOfCourse,
+    getListRatingsOfCourseBySlug,
 };
