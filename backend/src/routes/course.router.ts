@@ -6,6 +6,7 @@ import { isAuthor } from "../middlewares/isAuthor";
 const courseRouter: Router = Router();
 
 courseRouter.get("/right/:course_id", isLogin, controllers.courseController.getRightOfCourse);
+courseRouter.get("/get-all-courses", controllers.courseController.getAllCourses);
 
 courseRouter.put("/change-information", isLogin, isAuthor, controllers.courseController.editCourse);
 courseRouter.post("/", isLogin, uploadFileMdw, controllers.courseController.createCourse);

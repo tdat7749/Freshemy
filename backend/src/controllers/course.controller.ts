@@ -30,7 +30,11 @@ class CourseController {
 
         return res.status(result.getStatusCode()).json(result);
     }
+    // async getAllCourses(req: RequestHasLogin, res: Response): Promise<Response> {
+    //     const result = await services.CourseService.getAllCourses(req);
 
+    //     return res.status(result.getStatusCode()).json(result);
+    // }
     async deleteMyCourse(req: Request, res: Response): Promise<Response> {
         try {
             const { id } = req.params;
@@ -119,6 +123,16 @@ class CourseController {
         return res.status(response.getStatusCode()).json(response);
     }
 
+    async getRightOfCourse(req: Request, res: Response): Promise<Response> {
+        const response = await services.CourseService.getRightOfCourse(req);
+        return res.status(response.getStatusCode()).json(response);
+    }
+
+    async getListRatingsOfCourseBySlug(req: Request, res: Response): Promise<Response> {
+        const response = await services.CourseService.getListRatingsOfCourseBySlug(req);
+        return res.status(response.getStatusCode()).json(response);
+    }
+
     async getAllCourses(req: Request, res: Response): Promise<Response> {
         try {
             const pageIndex: number | undefined = req.query.pageIndex
@@ -141,7 +155,7 @@ class CourseController {
                 sortBy,
                 filterByRatings,
                 ratings,
-            ); 
+            );
 
             if (response instanceof ResponseSuccess) {
                 return res.json(response);
@@ -153,16 +167,6 @@ class CourseController {
         } catch (error: any) {
             return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
         }
-    }
-    
-    async getRightOfCourse(req: Request, res: Response): Promise<Response> {
-        const response = await services.CourseService.getRightOfCourse(req);
-        return res.status(response.getStatusCode()).json(response);
-    }
-
-    async getListRatingsOfCourseBySlug(req: Request, res: Response): Promise<Response> {
-        const response = await services.CourseService.getListRatingsOfCourseBySlug(req);
-        return res.status(response.getStatusCode()).json(response);
     }
 }
 
