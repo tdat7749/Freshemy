@@ -115,6 +115,7 @@ const MyCourses: React.FC = () => {
                                 title={course.title}
                                 summary={course.summary}
                                 author={course.author as User}
+                                isEditCourse={true}
                                 handleDeleteCourse={handleDiplayDeleteModal}
                                 handleEditCourse={handleEditCourse}
                             />

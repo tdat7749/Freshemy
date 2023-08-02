@@ -23,8 +23,6 @@ const AllCourses: React.FC = () => {
     let totalRecord: number = useAppSelector((state) => state.courseSlice.totalRecord) ?? 1;
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
 
-    console.log(courseList);
-
     const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value, checked } = event.target;
         if (checked) {
@@ -36,7 +34,7 @@ const AllCourses: React.FC = () => {
 
     // HANDLE FILTER BTN CLICK
     const handleFilterCourse = () => {
-        console.log("filter")
+        console.log("filter");
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword as string,
@@ -49,7 +47,7 @@ const AllCourses: React.FC = () => {
 
     // HANDLE SORTING BTN CLICK
     const handleSortingCourse = (sortBy: string) => {
-        console.log("sorting")
+        console.log("sorting");
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword as string,
@@ -62,7 +60,7 @@ const AllCourses: React.FC = () => {
     };
 
     useEffect(() => {
-        console.log("effect")
+        console.log("effect");
         // @ts-ignore
         dispatch(courseActions.getCategories());
 
@@ -134,41 +132,45 @@ const AllCourses: React.FC = () => {
                                     );
                                 })}
                             </div>
-                            <div className="divider"></div>
+                            <div className="hidden tablet:flex divider"></div>
                             <div className="mt-3">
                                 <h2 className="text-2xl font-bold mb-2">Category</h2>
-                                {categoriesList.length > 0 &&
-                                    categoriesList.map((category) => {
-                                        return (
-                                            <div className="flex items-center gap-2 mb-1" key={category.id}>
-                                                <input
-                                                    type="checkbox"
-                                                    className="checkbox checkbox-info"
-                                                    name={category.title}
-                                                    value={category.title}
-                                                    onChange={handleSingleCategoryChange}
-                                                />
-                                                <span className="text-xl">{category.title}</span>
-                                            </div>
-                                        );
-                                    })}
+                                <div className="grid grid-cols-2 laptop:grid-cols-1">
+                                    {categoriesList.length > 0 &&
+                                        categoriesList.map((category) => {
+                                            return (
+                                                <div className="flex items-center gap-2 mb-1" key={category.id}>
+                                                    <input
+                                                        type="checkbox"
+                                                        className="checkbox checkbox-info"
+                                                        name={category.title}
+                                                        value={category.title}
+                                                        onChange={handleSingleCategoryChange}
+                                                    />
+                                                    <span className="text-xl">{category.title}</span>
+                                                </div>
+                                            );
+                                        })}
+                                </div>
                             </div>
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 grid grid-cols-1 gap-3">
                             {courseList.map((course) => (
-                                <CourseCard
-                                    key={course.id}
-                                    id={course.id}
-                                    title={course.title}
-                                    thumbnail={course.thumbnail}
-                                    rating={course.rating}
-                                    status={course.status}
-                                    numberOfSection={course.number_section}
-                                    slug={course.slug}
-                                    summary={course.summary}
-                                    author={course.author as User}
-                                    // handleGetCourse={handleGetCourse}
-                                />
+                                <div className="w-full max-w-xs tablet:max-w-full place-self-center">
+                                    <CourseCard
+                                        key={course.id}
+                                        id={course.id}
+                                        title={course.title}
+                                        thumbnail={course.thumbnail}
+                                        rating={course.rating}
+                                        status={course.status}
+                                        numberOfSection={course.number_section}
+                                        slug={course.slug}
+                                        summary={course.summary}
+                                        author={course.author as User}
+                                        isEditCourse={false}
+                                    />
+                                </div>
                             ))}
                         </div>
                     </div>
