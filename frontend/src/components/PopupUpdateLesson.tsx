@@ -36,11 +36,11 @@ const PopupUpdateLesson: React.FC<UpdateLessonModalProps> = (props) => {
             if (video_file.size > 1024 * 1024 * 100) {
                 setError(i18n.t(errorMessages.videoFileSize));
             } else {
-                const videoExtension = video_file?.name.split(".").pop();
+                const video_extension = video_file.type;
                 if (
-                    videoExtension === i18n.t(fileType.mp4) ||
-                    videoExtension === i18n.t(fileType.mkv) ||
-                    videoExtension === i18n.t(fileType.mov)
+                    video_extension === i18n.t(fileType.mp4) ||
+                    video_extension === i18n.t(fileType.mkv) ||
+                    video_extension === i18n.t(fileType.mov)
                 ) {
                     setVideo(video_file);
                 } else {

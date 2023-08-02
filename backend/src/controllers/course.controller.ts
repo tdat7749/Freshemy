@@ -143,8 +143,6 @@ class CourseController {
                 ratings,
             ); 
 
-            console.log("response:", pageIndex, keyword, categories, sortBy);
-
             if (response instanceof ResponseSuccess) {
                 return res.json(response);
             } else if (response instanceof ResponseError) {
