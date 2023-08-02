@@ -93,7 +93,6 @@ const changeUserInformation = async (req: RequestHasLogin): Promise<ResponseBase
                 id: req.user_id,
             },
             data: {
-                url_avatar: user.url_avatar,
                 last_name: last_name,
                 first_name: first_name,
                 description: description,
