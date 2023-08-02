@@ -53,7 +53,7 @@ function App() {
                             <Route path="/my-profile" element={<MyProfile />}></Route>
                             <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
                             <Route path="/course-detail/:slug/watch" element={<WatchVideo />}></Route>
-                        <Route path="/my-enrolled-courses" element={<EnrolledCourse />}></Route>
+                            <Route path="/my-enrolled-courses" element={<EnrolledCourse />}></Route>
                         </Route>
                        
                         <Route path="/all-courses" element={<AllCourses />}></Route>
