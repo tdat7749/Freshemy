@@ -79,7 +79,7 @@ const AllCourses: React.FC = () => {
             <Navbar />
             <div className="container mx-auto p-4 mt-[100px] laptop:mt-0">
                 <div className="">
-                    <h1 className="text-2xl">{totalRecord} results have been found </h1>
+                    {totalRecord > 0 && <h1 className="text-2xl">{totalRecord} results have been found </h1>}
                     <div className="flex flex-col gap-4 laptop:flex-row">
                         <div className="w-full tablet:w-[250px] mt-4">
                             <div className="">
@@ -175,7 +175,7 @@ const AllCourses: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                {courseList.length > 0 ? (
+                {totalPage > 1 ? (
                     <div className="flex justify-end my-4">
                         <Pagination
                             handleChangePageIndex={handleChangePageIndex}
