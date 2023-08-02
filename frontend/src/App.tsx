@@ -22,6 +22,7 @@ import AllCourses from "./pages/AllCourses";
 import WatchVideo from "./pages/WatchVideo";
 import MyProfile from "./pages/MyProfile";
 import AuthorProfile from "./pages/AuthorProfile";
+import EnrolledCourse from "./pages/MyEnrolledCourse";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -52,7 +53,9 @@ function App() {
                             <Route path="/my-profile" element={<MyProfile />}></Route>
                             <Route path="/my-courses/edit/:course_id" element={<EditCourse />}></Route>
                             <Route path="/course-detail/:slug/watch" element={<WatchVideo />}></Route>
+                            <Route path="/my-enrolled-courses" element={<EnrolledCourse />}></Route>
                         </Route>
+                       
                         <Route path="/all-courses" element={<AllCourses />}></Route>
                         <Route path="/profile/:id" element={<AuthorProfile />}></Route>
                         <Route path="/course-detail/:slug" element={<CourseDetail isLogin={isLogin} />}></Route>
