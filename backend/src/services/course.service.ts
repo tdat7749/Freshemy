@@ -763,8 +763,6 @@ const getAllCourses = async (
             };
         });
 
-        console.log(categoriesFilter);
-
         const baseFilter = {
             title: keyword
                 ? {
