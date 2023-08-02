@@ -52,7 +52,7 @@ const WatchVideo: React.FC = () => {
                     </div>
                 </div>
                 <div className="mt-[32px]">
-                    <div className="laptop:flex justify-center space-x-2">
+                    <div className="flex flex-col laptop:flex-row justify-center gap-4">
                         <VideoPlayer sourse={source} />
                         <div className="flex-2 w-full mt-[-8px] laptop:w-[540px] laptop:max-h-[480px] laptop:mt-0 laptop:overflow-y-auto">
                             {courseDetail.sections.map((section: Section) => {

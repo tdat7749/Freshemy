@@ -7,6 +7,7 @@ import Navbar from "./Navbar";
 import Overlay from "./Overlay";
 import Pagination from "./Pagination";
 import PopupAddLesson from "./PopupAddLesson";
+import PopupUpdateLesson from "./PopupUpdateLesson";
 import CustomeSelect from "./Select";
 import Spin from "./Spin";
 import UserDropDown from "./UserDropDown";
@@ -25,6 +26,7 @@ export {
     Overlay,
     Pagination,
     PopupAddLesson,
+    PopupUpdateLesson,
     CustomeSelect,
     Spin,
     UserDropDown,
