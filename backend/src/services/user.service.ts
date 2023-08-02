@@ -1,5 +1,5 @@
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import { db } from "../configs/db.config";
 import * as bcrypt from "bcrypt";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";

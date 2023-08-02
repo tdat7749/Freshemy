@@ -1,22 +1,22 @@
-import { CourseInfo, RequestHasLogin, ResponseData } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import { Request } from "express";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import { db } from "../configs/db.config";
-import { CourseDetail, Section, Category, CourseEdit, OutstandingCourse } from "../types/courseDetail";
+import { CourseDetail, Category, CourseEdit, OutstandingCourse, CourseInfo } from "../types/course.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
-import cloudinary from "../configs/cloudinary.config";
-import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
+import { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 import configs from "../configs";
 import { CourseCategory } from "@prisma/client";
 import i18n from "../utils/i18next";
 import { generateUniqueSlug } from "../utils/helper";
 import services from ".";
+import { RatingResponse } from "../types/ratings.type";
+import { PagingResponse } from "../types/response.type";
+import { Section } from "../types/section.type";
 
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
     const user_id = req.user_id;
-
     try {
         const listCategoryId = categories.map((item: number) => ({
             category_id: item,
@@ -101,6 +101,17 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                         id: true,
                     },
                 },
+                ratings: {
+                    include: {
+                        user: {
+                            select: {
+                                first_name: true,
+                                last_name: true,
+                                url_avatar: true,
+                            },
+                        },
+                    },
+                },
             },
         });
 
@@ -113,6 +124,11 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories.push(category.category);
                 });
                 const sections: Section[] = course.sections;
+                let averageRating: number = 0;
+                if (course.ratings.length > 0) {
+                    const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
+                    averageRating = Number((ratingsSum / course.ratings.length).toFixed(1));
+                }
                 const courseData: CourseDetail = {
                     id: course.id,
                     slug: course.slug,
@@ -120,7 +136,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories: categories,
                     summary: course.summary,
                     author: course.user,
-                    ratings: 5,
+                    rating: averageRating,
                     thumbnail: course.thumbnail,
                     description: course.description,
                     sections: sections,
@@ -133,7 +149,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
         }
         return new ResponseError(404, i18n.t("errorMessages.getDataFailed"), false);
     } catch (error) {
-        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+        return new ResponseError(500, error as string, false);
     }
 };
 
@@ -198,7 +214,17 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const user_id = req.user_id;
         const { course_id } = req.body;
+
         if (user_id && course_id) {
+            const isAuthor = await db.course.findFirst({
+                where: {
+                    id: course_id,
+                    user_id,
+                },
+            });
+            if (isAuthor) {
+                return new ResponseError(400, i18n.t("errorMessages.authorSubscribeError"), false);
+            }
             const checkRegisted = await db.enrolled.findFirst({
                 where: {
                     user_id: user_id,
@@ -215,7 +241,7 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     },
                 });
                 if (register) {
-                    return new ResponseSuccess(200, i18n.t("successMessages.registerCourseSuccess"), true);
+                    return new ResponseSuccess(201, i18n.t("successMessages.registerCourseSuccess"), true);
                 } else {
                     return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
                 }
@@ -233,6 +259,15 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
         const user_id = req.user_id;
         const { course_id } = req.body;
         if (user_id && course_id) {
+            const isAuthor = await db.course.findFirst({
+                where: {
+                    id: course_id,
+                    user_id,
+                },
+            });
+            if (isAuthor) {
+                return new ResponseError(400, i18n.t("errorMessages.authorUnsubscribeError"), false);
+            }
             const checkRegisted = await db.enrolled.findFirst({
                 where: {
                     user_id: user_id,
@@ -273,7 +308,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
         });
 
         if (!isFoundCourseById) {
-            return new ResponseError(400, i18n.t("errorMessages.courseNotFound"), false);
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
         }
 
         const course: any = {
@@ -334,10 +369,13 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const searchMyCourses = async (pageIndex: number, keyword: string, userId: number): Promise<ResponseBase> => {
+const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const parsedPageIndex = parseInt(pageIndex.toString(), 10);
-        const parsedKeyword = keyword;
+        const { page_index: pageIndex, keyword } = req.query;
+        const { user_id: userId } = req;
+
+        const parsedPageIndex = Number(pageIndex);
+        const parsedKeyword = keyword as string;
 
         const skip = (parsedPageIndex - 1) * 10;
         const take = 10;
@@ -381,8 +419,11 @@ const searchMyCourses = async (pageIndex: number, keyword: string, userId: numbe
         const totalPage = Math.ceil(totalRecord / take);
 
         const myCoursesData: CourseInfo[] = courses.map((course) => {
-            const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
-            const averageRating = course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0;
+            let averageRating: number = 0;
+            if (course.ratings.length > 0) {
+                const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
+                averageRating = Number((ratingsSum / course.ratings.length).toFixed(1));
+            }
 
             return {
                 id: course.id,
@@ -397,18 +438,13 @@ const searchMyCourses = async (pageIndex: number, keyword: string, userId: numbe
             };
         });
 
-        const responseData: ResponseData = {
+        const responseData: PagingResponse<CourseInfo[]> = {
             total_page: totalPage,
             total_record: totalRecord,
-            courses: myCoursesData,
+            data: myCoursesData,
         };
 
-        return new ResponseSuccess<ResponseData>(
-            200,
-            i18n.t("successMessages.searchMyCourseSuccess"),
-            true,
-            responseData,
-        );
+        return new ResponseSuccess(200, i18n.t("successMessages.searchMyCourseSuccess"), true, responseData);
     } catch (error: any) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
@@ -437,7 +473,7 @@ const deleteMyCourse = async (courseId: number): Promise<ResponseBase> => {
             },
         });
 
-        return new ResponseSuccess<ResponseData>(200, i18n.t("successMessages.deleteCourseSuccess"), true);
+        return new ResponseSuccess(200, i18n.t("successMessages.deleteCourseSuccess"), true);
     } catch (error: any) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
@@ -507,9 +543,44 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const getRightOfCourse = async (req: Request): Promise<ResponseBase> => {
+const ratingCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const user_id = parseInt(req.params.user_id);
+        const { content, course_id, ratings } = req.body;
+        const user_id = req.user_id;
+        const isFindCourse = await db.course.findFirst({
+            where: {
+                id: course_id,
+            },
+        });
+        if (!isFindCourse) {
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+        }
+        const isAlreadyRated = await db.rating.findFirst({
+            where: {
+                user_id: user_id,
+                course_id: course_id,
+            },
+        });
+        if (isAlreadyRated) {
+            return new ResponseError(400, i18n.t("errorMessages.ratingError"), false);
+        }
+        const create_rating = await db.rating.create({
+            data: {
+                content: content,
+                user_id: Number(user_id),
+                course_id: course_id,
+                score: ratings,
+            },
+        });
+
+        return new ResponseSuccess(201, i18n.t("successMessages.ratingSuccess"), true);
+    } catch (error: any) {
+        return new ResponseError(500, error.message, false);
+    }
+};
+const getRightOfCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
+    try {
+        const user_id = req.user_id;
         const course_id = parseInt(req.params.course_id);
         const isAuthor = await configs.db.course.findFirst({
             where: {
@@ -518,7 +589,7 @@ const getRightOfCourse = async (req: Request): Promise<ResponseBase> => {
             },
         });
         if (isAuthor) {
-            return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, "Author");
+            return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, { role: "Author" });
         }
         const isEnrolled = await configs.db.enrolled.findFirst({
             where: {
@@ -527,12 +598,83 @@ const getRightOfCourse = async (req: Request): Promise<ResponseBase> => {
             },
         });
         if (isEnrolled) {
-            return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, "Enrolled");
+            return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, { role: "Enrolled" });
         }
-        return new ResponseSuccess(200, i18n.t("successMessages.Get data successfully"), true, "Unregister");
+        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, { role: "Unenrolled" });
     } catch (error) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
+};
+
+const getListRatingsOfCourseBySlug = async (req: Request): Promise<ResponseBase> => {
+    const { slug } = req.params;
+    const { page_index: pageIndex } = req.query;
+    const pageSize = configs.general.PAGE_SIZE;
+
+    const isFoundCourse = await configs.db.course.findUnique({
+        where: {
+            slug: slug,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!isFoundCourse) {
+        return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+    }
+
+    const listRatings = await configs.db.rating.findMany({
+        skip: pageSize * (Number(pageIndex) - 1),
+        take: pageSize,
+        where: {
+            course_id: isFoundCourse.id,
+        },
+        include: {
+            user: {
+                select: {
+                    url_avatar: true,
+                    first_name: true,
+                    last_name: true,
+                },
+            },
+        },
+        orderBy: {
+            created_at: "desc",
+        },
+    });
+
+    const totalRecord = await configs.db.rating.count({
+        where: {
+            course_id: isFoundCourse.id,
+        },
+    });
+
+    const totalPage = Math.ceil(totalRecord / configs.general.PAGE_SIZE);
+
+    const formatListRatings: RatingResponse[] = [];
+
+    listRatings.map((item) => {
+        let rating: RatingResponse = {
+            id: item.id,
+            content: item.content,
+            created_at: item.created_at.toString(),
+            ratings: item.score,
+            url_avatar: item.user.url_avatar,
+            first_name: item.user.first_name,
+            last_name: item.user.last_name,
+            user_id: item.user_id,
+        };
+        return formatListRatings.push(rating);
+    });
+
+    const responseData: PagingResponse<RatingResponse[]> = {
+        total_record: totalRecord,
+        total_page: totalPage,
+        data: formatListRatings,
+    };
+
+    return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, responseData);
 };
 
 const CourseService = {
@@ -546,5 +688,7 @@ const CourseService = {
     deleteMyCourse,
     getCourseDetailById,
     getTop10Courses,
+    ratingCourse,
+    getListRatingsOfCourseBySlug,
 };
 export default CourseService;
