@@ -12,6 +12,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
 import i18n from "../utils/i18next";
+import { date } from "joi";
 
 const getLesson = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -75,7 +76,7 @@ const getLessonOrderByCourseId = async (req: Request): Promise<ResponseBase> => 
 
 const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const { title, section_id } = req.body;
+        const { title, section_id, order } = req.body;
 
         const sectionIdConvert = parseInt(section_id);
         const uuid = uuidv4();
@@ -86,14 +87,27 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
             configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS,
             uuid,
         );
-
+        const updateOrder = await configs.db.lesson.updateMany({
+            where: {
+                order: {
+                    gte: parseInt(order),
+                },
+            },
+            data: {
+                order: {
+                    increment: 1,
+                },
+            },
+        });
         const lesson = await configs.db.lesson.create({
             data: {
+                order: parseInt(order),
                 title: title,
                 section_id: sectionIdConvert,
                 url_video: videoPath,
             },
         });
+
         if (lesson) {
             return new ResponseSuccess(200, i18n.t("successMessages.createDataSuccess"), true);
         } else {

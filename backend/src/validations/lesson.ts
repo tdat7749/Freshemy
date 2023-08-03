@@ -3,11 +3,13 @@ import Joi, { ObjectSchema } from "joi";
 import i18n from "../utils/i18next";
 
 type Lesson = {
+    order: number;
     title: string;
     section_id: number;
 };
 
 export const LessonSchema: ObjectSchema<Lesson> = Joi.object({
+    order: Joi.number().required(),
     title: Joi.string()
         .required()
         .messages({
