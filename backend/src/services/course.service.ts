@@ -499,6 +499,9 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                 },
                 user_id: userId
             },
+            orderBy: {
+                created_at: "desc"
+            },
             include: {
                 course: {
                     include: {
@@ -535,13 +538,24 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
 
         const totalPage = Math.ceil(totalRecord / take);
         
-        const myCoursesData: CourseInfo[] = enrolled?.map((enroll) => {
+        const enrolledCoursesData: CourseInfo[] =await Promise.all(enrolled?.map(async(enroll) => {
             let averageRating: number = 0;
             if (enroll.course.ratings.length > 0) {
                 const ratingsSum = enroll.course.ratings.reduce((total, rating) => total + rating.score, 0);
                 averageRating = Number((ratingsSum / enroll.course.ratings.length).toFixed(1));
             }
+            const attendees = await db.enrolled.count({
+                where: {
+                    course_id: enroll.course_id
+                }
+            })
 
+            const numberSection = await db.section.count({
+                where: {
+                    course_id: enroll.course_id
+                }
+            })
+            
             return {
                 id: enroll.course.id,
                 title: enroll.course.title,
@@ -552,13 +566,15 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                 category: enroll.course.courses_categories.map((cc) => cc.category.title),
                 number_section: enroll.course.sections.length,
                 slug: enroll.course.slug,
+                attendees: attendees,
+                number_of_section: numberSection
             };
-        });
+        }));
 
         const responseData: PagingResponse<CourseInfo[]> = {
             total_page: totalPage,
             total_record: totalRecord,
-            data: myCoursesData,
+            data: enrolledCoursesData,
         };
         
         return new ResponseSuccess(200, i18n.t("successMessages.searchMyCourseSuccess"), true, responseData);

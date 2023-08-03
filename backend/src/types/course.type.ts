@@ -27,6 +27,8 @@ export type CourseInfo = {
     category: string[];
     number_section: number;
     slug: string;
+    attendees: number;
+    number_of_section: number;
 };
 
 export type CourseEdit = {
