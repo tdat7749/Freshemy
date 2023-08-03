@@ -156,7 +156,7 @@ const updateLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
             });
 
             if (lesson) {
-                return new ResponseSuccess(200, i18n.t("successMessages.createDataSuccess"), true);
+                return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
             } else {
                 fs.rmSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder), { recursive: true });
                 fs.unlinkSync(req.file?.path as string);
