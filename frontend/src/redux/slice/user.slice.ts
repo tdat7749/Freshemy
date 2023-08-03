@@ -128,7 +128,6 @@ export const userSlice = createSlice({
             state.isLoading = true;
         });
         builder.addCase(getAuthorInformation.fulfilled, (state, action) => {
-            console.log(action.payload.data);
             state.isLoading = false;
             state.user = action.payload.data?.user as User;
             state.course = action.payload.data?.courses as Course[];

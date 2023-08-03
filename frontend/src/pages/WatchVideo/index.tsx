@@ -21,7 +21,6 @@ const WatchVideo: React.FC = () => {
 
     const { slug } = useParams();
     useEffect(() => {
-        console.log(1);
         //@ts-ignore
         dispatch(courseActions.getCourseDetail(slug)).then((response) => {
             const firstUrlVideo = response.payload.data.sections[0]?.lessons;
