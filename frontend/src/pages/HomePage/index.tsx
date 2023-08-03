@@ -41,10 +41,10 @@ const Home: React.FC = () => {
                     <span className="w-[60px] h-1 bg-black block"></span>
                     <div className="w-full flex overflow-x-scroll">
                         <div className="mt-3 flex shrink-0 gap-3 py-2">
-                            {top10Course.map((course: CourseType) => {
+                            {top10Course.map((course: CourseType, index) => {
                                 return (
                                     <CardVideo
-                                        key={course.id}
+                                        key={index}
                                         thumbnail={course.thumbnail}
                                         title={course.title}
                                         author={course.author as User}

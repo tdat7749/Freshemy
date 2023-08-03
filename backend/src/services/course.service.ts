@@ -66,9 +66,8 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     },
                 },
             });
-       
-            if (isCreateCourse) {
 
+            if (isCreateCourse) {
                 return new ResponseSuccess(201, i18n.t("successMessages.createDataSuccess"), true);
             } else {
                 return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
@@ -411,8 +410,8 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
         const courses = await db.course.findMany({
             skip,
             take,
-            orderBy:{
-                created_at:"desc"
+            orderBy: {
+                created_at: "desc",
             },
             where: {
                 title: {
@@ -507,7 +506,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                         contains: parsedKeyword,
                     },
                 },
-                user_id: userId
+                user_id: userId,
             },
             include: {
                 course: {
@@ -524,11 +523,10 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                             },
                         },
                         sections: true,
-                    }
+                    },
                 },
             },
         });
-
 
         const totalRecord = await db.enrolled.count({
             where: {
@@ -537,14 +535,12 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                         contains: parsedKeyword,
                     },
                 },
-                user_id: userId
+                user_id: userId,
             },
         });
 
-
-
         const totalPage = Math.ceil(totalRecord / take);
-        
+
         const myCoursesData: CourseInfo[] = enrolled?.map((enroll) => {
             let averageRating: number = 0;
             if (enroll.course.ratings.length > 0) {
@@ -558,7 +554,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                 summary: enroll.course.summary,
                 thumbnail: enroll.course.thumbnail,
                 rate: averageRating,
-                author:  enroll.course.user,
+                author: enroll.course.user,
                 category: enroll.course.courses_categories.map((cc) => cc.category.title),
                 number_section: enroll.course.sections.length,
                 slug: enroll.course.slug,
@@ -570,7 +566,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
             total_record: totalRecord,
             data: myCoursesData,
         };
-        
+
         return new ResponseSuccess(200, i18n.t("successMessages.searchMyCourseSuccess"), true, responseData);
     } catch (error: any) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
@@ -934,9 +930,8 @@ const getAllCourses = async (
             .map((course) => ({
                 ...course,
                 attendees: course.enrolleds.length, // Calculate number of attendees
-                number_of_sections: course.sections.length,
+                number_section: course.sections.length, 
             }))
-            .filter((course) => course.attendees > 0) // Filter out courses with zero attendees
             .map((course) => {
                 const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
                 const averageRating = (course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0).toFixed(1);
@@ -963,8 +958,8 @@ const getAllCourses = async (
                     status: course.status,
                     attendees: course.enrolleds.length,
                     created_at: course.created_at,
-                    updated_at: course.updated_at,                 
-                    number_of_sections: course.number_of_sections,
+                    updated_at: course.updated_at,
+                    number_section: course.number_section,
                 };
             });
 

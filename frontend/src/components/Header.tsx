@@ -3,7 +3,7 @@ import Logo from "../assets/images/logo.png";
 import UserDropDown from "./UserDropDown";
 import SearchIcon from "./icons/SearchIcon";
 import DefaultAvatar from "../assets/images/default-avatar.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Category } from "../types/course";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
@@ -61,17 +61,16 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                     {categoriesList.length > 0 &&
                                         categoriesList.map((category) => {
                                             return (
-                                                <Link to={`/all-courses?category=${category.id}`}>
+                                                <NavLink to={`/all-courses?category=${category.id}`} key={category.id}>
                                                     <li
                                                         onClick={() =>
                                                             setIsDisplayCategoryDrawer(!isDisplayCategoryDrawer)
                                                         }
-                                                        key={category.id}
                                                         className="hover:bg-backgroundHover text-lg font-medium text-center cursor-pointer px-6 py-4 laptop:py-[26px] min-w-fit rounded-lg"
                                                     >
                                                         {category.title}
                                                     </li>
-                                                </Link>
+                                                </NavLink>
                                             );
                                         })}
                                 </ul>

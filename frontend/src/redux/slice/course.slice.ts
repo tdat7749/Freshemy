@@ -81,7 +81,6 @@ export const getEnrolledCourses = createAsyncThunk<
 >("course/getEnrolledCourses", async (body, ThunkAPI) => {
     try {
         const response = await CourseApis.getEnrolledCourses(body);
-        console.log(response);
         return response.data as Response<PagingCourse>;
     } catch (error: any) {
         return ThunkAPI.rejectWithValue(error.data as Response<null>);

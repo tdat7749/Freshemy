@@ -14,6 +14,7 @@ const AllCourses: React.FC = () => {
     const [evaluate, setEvaluate] = useState<number | undefined>(Number(rating));
     const [categories, setCategories] = useState<number[]>([]);
     const [pageIndex, setPageIndex] = useState<number>(1);
+    const [sortBy, setSortBy] = useState<string>("");
 
     const dispatch = useAppDispatch();
 
@@ -52,6 +53,7 @@ const AllCourses: React.FC = () => {
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword as string,
+            sortBy: sortBy,
             rating: evaluate,
             category: categories,
         };
@@ -61,15 +63,7 @@ const AllCourses: React.FC = () => {
 
     // HANDLE SORTING BTN CLICK
     const handleSortingCourse = (sortBy: string) => {
-        const query: SelectCourse = {
-            pageIndex: pageIndex,
-            keyword: keyword as string,
-            rating: evaluate,
-            sortBy: sortBy,
-            category: categories,
-        };
-        // @ts-ignore
-        dispatch(courseActions.selectCourses(query));
+        setSortBy(sortBy);
     };
 
     // HANDLE RESET BTN CLICK
@@ -110,12 +104,14 @@ const AllCourses: React.FC = () => {
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword,
+            sortBy: sortBy,
+            rating: evaluate,
             category: categoryQuery,
         };
 
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
-    }, [dispatch, keyword, pageIndex]);
+    }, [dispatch, keyword, pageIndex, sortBy, evaluate, category]);
 
     return (
         <>
@@ -215,7 +211,7 @@ const AllCourses: React.FC = () => {
                             {courseList.length > 0 &&
                                 courseList.map((course, index) => (
                                     <div
-                                        className="w-full max-w-xs tablet:max-w-full place-self-center laptop:place-self-start  "
+                                        className="w-full max-w-xs tablet:max-w-full place-self-center laptop:place-self-start"
                                         key={index}
                                     >
                                         <CourseCard
@@ -227,6 +223,7 @@ const AllCourses: React.FC = () => {
                                             slug={course.slug}
                                             summary={course.summary}
                                             attendees={course.attendees}
+                                            numberOfSection={course.number_section}
                                             author={course.author as User}
                                             isEditCourse={false}
                                         />

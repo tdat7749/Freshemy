@@ -57,7 +57,7 @@ const CourseCard: FC<Course> = (props: Course) => {
                                 <span className="font-normal">Uncomplete</span>
                             )}
                         </p>
-                        {props.attendees && (
+                        {props.attendees !== undefined && (
                             <p className="text-base font-bold">
                                 Attendees: <span className="font-normal">{props.attendees}</span>
                             </p>

@@ -45,5 +45,5 @@ export const sortingBy = [
         value: "newest",
         title: "Newest",
     },
-    { value: "mostAttendees", title: "Most Attendees" },
+    { value: "attendees", title: "Most Attendees" },
 ];

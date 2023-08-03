@@ -67,7 +67,7 @@ export type AllCourseDetail = {
     author: Author;
    
     attendees: number;
-    number_of_sections: number;
+    number_section: number;
     thumbnail: string;
     description: string;
     created_at: Date;
