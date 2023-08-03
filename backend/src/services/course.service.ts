@@ -526,6 +526,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                             },
                         },
                         sections: true,
+                        enrolleds: true
                     },
                 },
             },
@@ -544,17 +545,12 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
 
         const totalPage = Math.ceil(totalRecord / take);
         
-        const enrolledCoursesData: CourseInfo[] =await Promise.all(enrolled?.map(async(enroll) => {
+        const enrolledCoursesData: CourseInfo[] = (enrolled?.map((enroll) => {
             let averageRating: number = 0;
             if (enroll.course.ratings.length > 0) {
                 const ratingsSum = enroll.course.ratings.reduce((total, rating) => total + rating.score, 0);
                 averageRating = Number((ratingsSum / enroll.course.ratings.length).toFixed(1));
             }
-            const attendees = await db.enrolled.count({
-                where: {
-                    course_id: enroll.course_id
-                }
-            })
             
             return {
                 id: enroll.course.id,
@@ -566,7 +562,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                 category: enroll.course.courses_categories.map((cc) => cc.category.title),
                 number_section: enroll.course.sections.length,
                 slug: enroll.course.slug,
-                attendees: attendees,
+                attendees: enroll.course.enrolleds.length,
             };
         }));
 
