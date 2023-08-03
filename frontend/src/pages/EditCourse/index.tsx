@@ -11,6 +11,7 @@ import { Category as CategoryType, CourseChangeInformation as CourseChangeInform
 import slugify from "slugify";
 import toast from "react-hot-toast";
 import { previewImage } from "../../utils/helper";
+import { orderLesson } from "../../types/lesson";
 
 type Options = {
     value: number;
@@ -314,8 +315,17 @@ const EditCourse: React.FC = () => {
     };
 
     const handleReOrderLesson = () => {
+        const newOrder: orderLesson[] = orderLessonSelector.map((item: orderLesson, index: number) => {
+            return { ...item, newOrder: index };
+        });
         //@ts-ignore
-        dispatch(sectionActions.reOrderquest(orderLessonSelector));
+        dispatch(sectionActions.reOrderquest(newOrder)).then((response) => {
+            if (response.payload.status_code === 200) {
+                toast.success(response.payload.message);
+            } else {
+                toast.error(response.payload?.message as string);
+            }
+        });
     };
 
     return (
