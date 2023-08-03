@@ -49,7 +49,20 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
 const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { title, section_id } = req.body;
-
+        const findCourse = await configs.db.section.findFirst({
+            include: {
+                course: true,
+            },
+            where: {
+                id: Number(section_id),
+                course: {
+                    user_id: req.user_id,
+                },
+            },
+        });
+        if (!findCourse) {
+            return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+        }
         const sectionIdConvert = parseInt(section_id);
         const uuid = uuidv4();
 
@@ -90,7 +103,7 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     }
 };
 
-const updateLesson = async (req: Request): Promise<ResponseBase> => {
+const updateLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
         const { title } = req.body;
@@ -100,10 +113,20 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
                 where: {
                     id: lesson_id,
                 },
+                include: {
+                    section: {
+                        include: {
+                            course: true,
+                        },
+                    },
+                },
             });
 
             if (!isFoundLesson) {
                 return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
+            }
+            if (isFoundLesson.section.course.user_id !== req.user_id) {
+                return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
             }
 
             const urlVideoSplit = isFoundLesson.url_video.split(`${configs.general.PUBLIC_URL_FOLDER_VIDEOS}`);
@@ -111,8 +134,10 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
             if (!nameFolder) {
                 return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
             }
-            fs.unlinkSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder));
 
+            fs.rmSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder), {
+                recursive: true,
+            });
             const videoPath = await services.FileStorageService.createFileM3U8AndTS(
                 req.file as Express.Multer.File,
                 resolutions,
@@ -131,9 +156,9 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
             });
 
             if (lesson) {
-                return new ResponseSuccess(200, i18n.t("successMessages.createDataSuccess"), true);
+                return new ResponseSuccess(200, i18n.t("successMessages.updateDataSuccess"), true);
             } else {
-                fs.unlinkSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder));
+                fs.rmSync(path.join(configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS, nameFolder), { recursive: true });
                 fs.unlinkSync(req.file?.path as string);
             }
         } else {
@@ -165,10 +190,30 @@ const updateLesson = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const deleteLesson = async (req: Request): Promise<ResponseBase> => {
+const deleteLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
         const lesson_id = +id;
+        const isAuthor = await configs.db.lesson.findFirst({
+            include: {
+                section: {
+                    include: {
+                        course: true,
+                    },
+                },
+            },
+            where: {
+                id: lesson_id,
+                section: {
+                    course: {
+                        user_id: req.user_id,
+                    },
+                },
+            },
+        });
+        if (!isAuthor) {
+            return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+        }
         const isDelete = await configs.db.lesson.update({
             where: {
                 id: lesson_id,
