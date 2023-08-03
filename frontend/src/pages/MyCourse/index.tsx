@@ -116,6 +116,8 @@ const MyCourses: React.FC = () => {
                                         title={course.title}
                                         summary={course.summary}
                                         author={course.author as User}
+                                        attendees={course.attendees}
+                                        numberOfSection={course.number_section}
                                         isEditCourse={true}
                                         handleDeleteCourse={handleDiplayDeleteModal}
                                         handleEditCourse={handleEditCourse}

@@ -18,6 +18,7 @@ type Course = {
     numberOfSection?: number;
     attendees?: number;
     isEditCourse: boolean;
+    createdAt?: string;
     handleDeleteCourse?: (courseId: number) => void;
     handleEditCourse?: (id: number) => void;
 };
@@ -56,9 +57,21 @@ const CourseCard: FC<Course> = (props: Course) => {
                                 <span className="font-normal">Uncomplete</span>
                             )}
                         </p>
-                        <p className="text-base font-bold">
-                            Attendees: <span className="font-normal">{props.attendees}</span>
-                        </p>
+                        {props.attendees && (
+                            <p className="text-base font-bold">
+                                Attendees: <span className="font-normal">{props.attendees}</span>
+                            </p>
+                        )}
+                        {props.numberOfSection !== undefined && (
+                            <p className="text-base font-bold">
+                                Number of sections: <span className="font-normal">{props.numberOfSection}</span>
+                            </p>
+                        )}
+                        {props.createdAt && (
+                            <p className="text-base font-bold">
+                                Created at: <span className="font-normal">{props.createdAt}</span>
+                            </p>
+                        )}
                     </div>
 
                     {props.isEditCourse ? (

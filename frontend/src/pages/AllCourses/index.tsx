@@ -22,6 +22,16 @@ const AllCourses: React.FC = () => {
     let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
 
+    const initialCheckedStatus: Record<number, boolean> = categoriesList.reduce(
+        (acc, category) => ({
+            ...acc,
+            [category.id]: false,
+        }),
+        {}
+    );
+
+    const [checkedStatus, setCheckedStatus] = useState<Record<number, boolean>>(initialCheckedStatus);
+
     const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>, categoryId: number) => {
         const { value, checked } = event.target;
         if (checked) {
@@ -29,6 +39,12 @@ const AllCourses: React.FC = () => {
         } else {
             setCategories((pre) => [...pre.filter((category) => category.title !== value)]);
         }
+
+        const updatedCheckedStatus = {
+            ...checkedStatus,
+            [categoryId]: event.target.checked,
+        };
+        setCheckedStatus(updatedCheckedStatus);
     };
 
     // HANDLE FILTER BTN CLICK
@@ -51,6 +67,18 @@ const AllCourses: React.FC = () => {
             rating: evaluate,
             sortBy: sortBy,
             category: categories,
+        };
+        // @ts-ignore
+        dispatch(courseActions.selectCourses(query));
+    };
+
+    // HANDLE RESET BTN CLICK
+    const handleResetFilter = () => {
+        setEvaluate(undefined);
+        setCategories([]);
+        setCheckedStatus(initialCheckedStatus);
+        const query: SelectCourse = {
+            pageIndex: 1,
         };
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
@@ -88,23 +116,21 @@ const AllCourses: React.FC = () => {
             <Navbar />
             <div className="container mx-auto p-4 mt-[100px] laptop:mt-0">
                 <div className="">
-                    {courseList.length > 0 ? (
-                        <h1 className="text-2xl">{courseList.length} results have been found </h1>
-                    ) : (
-                        <></>
-                    )}
+                    {courseList.length === 0 && <p className="text-error text-2xl">Don't have any course yet!</p>}
+                    {courseList.length === 1 && <p className="text-2xl">{courseList.length} result have been found </p>}
+                    {courseList.length > 1 && <p className="text-2xl">{courseList.length} results have been found </p>}
                     <div className="flex flex-col gap-4 laptop:flex-row">
-                        <div className="w-full tablet:w-[250px] mt-4">
+                        <div className="w-full laptop:w-[250px] mt-4">
                             <div className="">
-                                <button className="btn btn-secondary text-lg mr-4" onClick={handleFilterCourse}>
+                                <button className="btn btn-secondary text-lg mr-1" onClick={handleFilterCourse}>
                                     Filter
                                 </button>
-                                <div className="dropdown dropdown-bottom">
+                                <div className="dropdown dropdown-bottom mr-1">
                                     <label
                                         tabIndex={0}
-                                        className="btn btn-outline hover:bg-backgroundHover hover:text-black text-lg m-1"
+                                        className="btn btn-secondary hover:bg-backgroundHover hover:text-black text-lg m-1"
                                     >
-                                        Sorting by
+                                        Sort by
                                     </label>
                                     <ul
                                         tabIndex={0}
@@ -123,6 +149,9 @@ const AllCourses: React.FC = () => {
                                         })}
                                     </ul>
                                 </div>
+                                <button className="btn btn-outline text-lg" onClick={handleResetFilter}>
+                                    Reset
+                                </button>
                             </div>
                             <div className="mt-3">
                                 <h2 className="text-2xl font-bold mb-2">Evaluate</h2>
@@ -158,6 +187,7 @@ const AllCourses: React.FC = () => {
                                                         className="checkbox checkbox-info"
                                                         name={category.title}
                                                         value={category.title}
+                                                        checked={checkedStatus[category.id]}
                                                         onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                                                             handleSingleCategoryChange(event, category.id)
                                                         }
@@ -170,9 +200,6 @@ const AllCourses: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex-1 grid grid-cols-1 gap-3">
-                            {courseList.length === 0 && (
-                                <p className="text-error font-medium text-xl mt-4">Don't have any course yet!</p>
-                            )}
                             {courseList.map((course) => (
                                 <div
                                     className="w-full max-w-xs tablet:max-w-full place-self-center laptop:place-self-start  "
@@ -185,7 +212,6 @@ const AllCourses: React.FC = () => {
                                         thumbnail={course.thumbnail}
                                         rating={course.rating}
                                         status={course.status}
-                                        numberOfSection={course.number_section}
                                         slug={course.slug}
                                         summary={course.summary}
                                         attendees={course.attendees}
