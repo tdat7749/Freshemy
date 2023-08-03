@@ -30,11 +30,7 @@ class CourseController {
 
         return res.status(result.getStatusCode()).json(result);
     }
-    // async getAllCourses(req: RequestHasLogin, res: Response): Promise<Response> {
-    //     const result = await services.CourseService.getAllCourses(req);
 
-    //     return res.status(result.getStatusCode()).json(result);
-    // }
     async deleteMyCourse(req: Request, res: Response): Promise<Response> {
         try {
             const { id } = req.params;
@@ -109,6 +105,7 @@ class CourseController {
         const response = await services.CourseService.getTop10Courses(req);
         return res.status(response.getStatusCode()).json(response);
     }
+    
     async ratingCourse(req: Request, res: Response) {
         const errorValidate: ValidationError | undefined = ratingSchema.validate(req.body).error;
 
