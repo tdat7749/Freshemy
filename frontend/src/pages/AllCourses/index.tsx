@@ -7,6 +7,7 @@ import { courseActions } from "@redux/slice";
 import { eveluateList, sortingBy } from "../../utils/helper";
 import useQueryParams from "../../hooks/useQueryParams";
 import { User } from "../../types/user";
+import { useNavigate } from "react-router-dom";
 
 const AllCourses: React.FC = () => {
     const { keyword, rating, category } = useQueryParams();
@@ -17,6 +18,7 @@ const AllCourses: React.FC = () => {
     const [sortBy, setSortBy] = useState<string>("");
 
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
     let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
@@ -25,7 +27,7 @@ const AllCourses: React.FC = () => {
     const initialCheckedStatus: Record<number, boolean> = categoriesList.reduce(
         (acc, categoryItem) => ({
             ...acc,
-            [categoryItem.id]: false,
+            [categoryItem.id]: categoryItem.id === Number(category),
         }),
         {}
     );
@@ -71,6 +73,7 @@ const AllCourses: React.FC = () => {
         setEvaluate(undefined);
         setCategories([]);
         setCheckedStatus(initialCheckedStatus);
+        navigate("/all-courses", { replace: true });
         const query: SelectCourse = {
             pageIndex: 1,
         };
@@ -88,6 +91,7 @@ const AllCourses: React.FC = () => {
     };
 
     useEffect(() => {
+        setCheckedStatus(initialCheckedStatus);
         // @ts-ignore
         dispatch(courseActions.getCategories());
 
