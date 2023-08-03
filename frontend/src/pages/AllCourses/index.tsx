@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
-// import CourseCard from "./CourseCard";
 import { CourseCard, Pagination } from "@src/components";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { Category, Course, SelectCourse } from "../../types/course";
@@ -8,28 +7,47 @@ import { courseActions } from "@redux/slice";
 import { eveluateList, sortingBy } from "../../utils/helper";
 import useQueryParams from "../../hooks/useQueryParams";
 import { User } from "../../types/user";
+import { useNavigate } from "react-router-dom";
 
 const AllCourses: React.FC = () => {
-    const { keyword, rating } = useQueryParams();
+    const { keyword, rating, category } = useQueryParams();
 
     const [evaluate, setEvaluate] = useState<number | undefined>(Number(rating));
-    const [categories, setCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<number[]>([]);
     const [pageIndex, setPageIndex] = useState<number>(1);
+    const [sortBy, setSortBy] = useState<string>("");
 
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
     let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
-    let totalRecord: number = useAppSelector((state) => state.courseSlice.totalRecord) ?? 1;
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
 
-    const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const initialCheckedStatus: Record<number, boolean> = categoriesList.reduce(
+        (acc, categoryItem) => ({
+            ...acc,
+            [categoryItem.id]: categoryItem.id === Number(category),
+        }),
+        {}
+    );
+
+    const [checkedStatus, setCheckedStatus] = useState<Record<number, boolean>>(initialCheckedStatus);
+
+    const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>, categoryId: number) => {
         const { value, checked } = event.target;
+
         if (checked) {
-            setCategories((pre) => [...pre, value]);
+            setCategories((pre) => [...pre, categoryId]);
         } else {
-            setCategories((pre) => [...pre.filter((category) => category !== value)]);
+            setCategories((pre) => [...pre.filter((cate) => cate !== Number(value))]);
         }
+
+        const updatedCheckedStatus = {
+            ...checkedStatus,
+            [categoryId]: event.target.checked,
+        };
+        setCheckedStatus(updatedCheckedStatus);
     };
 
     // HANDLE FILTER BTN CLICK
@@ -37,6 +55,7 @@ const AllCourses: React.FC = () => {
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword as string,
+            sortBy: sortBy,
             rating: evaluate,
             category: categories,
         };
@@ -46,49 +65,75 @@ const AllCourses: React.FC = () => {
 
     // HANDLE SORTING BTN CLICK
     const handleSortingCourse = (sortBy: string) => {
+        setSortBy(sortBy);
+    };
+
+    // HANDLE RESET BTN CLICK
+    const handleResetFilter = () => {
+        setEvaluate(undefined);
+        setCategories([]);
+        setCheckedStatus(initialCheckedStatus);
+        navigate("/all-courses", { replace: true });
         const query: SelectCourse = {
-            pageIndex: pageIndex,
-            keyword: keyword as string,
-            rating: evaluate,
-            sortBy: sortBy,
-            category: categories,
+            pageIndex: 1,
         };
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
     };
 
+    const handleChangePageIndex = (pageIndex: number) => {
+        if (pageIndex < 1) {
+            setPageIndex(totalPage);
+        } else if (pageIndex > totalPage) setPageIndex(1);
+        else {
+            setPageIndex(pageIndex);
+        }
+    };
+
     useEffect(() => {
+        setCheckedStatus(initialCheckedStatus);
         // @ts-ignore
         dispatch(courseActions.getCategories());
+
+        let categoryQuery = category;
+
+        if (typeof categoryQuery === "string") {
+            categoryQuery = [Number(category)];
+        } else if (typeof categoryQuery === "object") {
+            categoryQuery = category.map((cate: string) => Number(cate));
+        } else {
+            categoryQuery = [];
+        }
 
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword,
+            sortBy: sortBy,
+            rating: evaluate,
+            category: categoryQuery,
         };
+
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
-        setPageIndex(1);
-    }, [dispatch, keyword, pageIndex]);
+    }, [dispatch, keyword, pageIndex, sortBy, evaluate, category]);
 
-    const handleChangePageIndex = () => {};
     return (
         <>
             <Navbar />
             <div className="container mx-auto p-4 mt-[100px] laptop:mt-0">
                 <div className="">
-                    <h1 className="text-2xl">{totalRecord} results have been found </h1>
                     <div className="flex flex-col gap-4 laptop:flex-row">
-                        <div className="w-full tablet:w-[250px] mt-4">
+                        <div className="w-full laptop:w-[250px]">
                             <div className="">
-                                <button className="btn btn-secondary text-lg mr-4" onClick={handleFilterCourse}>
+                                <button className="btn btn-secondary text-lg mr-1" onClick={handleFilterCourse}>
                                     Filter
                                 </button>
-                                <div className="dropdown dropdown-bottom">
+                                <div className="dropdown dropdown-bottom mr-1">
                                     <label
                                         tabIndex={0}
-                                        className="btn btn-outline hover:bg-backgroundHover hover:text-black text-lg m-1"
+                                        className="btn btn-secondary hover:bg-backgroundHover hover:text-black text-lg m-1"
                                     >
-                                        Sorting by
+                                        Sort by
                                     </label>
                                     <ul
                                         tabIndex={0}
@@ -107,6 +152,9 @@ const AllCourses: React.FC = () => {
                                         })}
                                     </ul>
                                 </div>
+                                <button className="btn btn-outline text-lg" onClick={handleResetFilter}>
+                                    Reset
+                                </button>
                             </div>
                             <div className="mt-3">
                                 <h2 className="text-2xl font-bold mb-2">Evaluate</h2>
@@ -129,8 +177,8 @@ const AllCourses: React.FC = () => {
                                     );
                                 })}
                             </div>
-                            <div className="hidden tablet:flex divider"></div>
-                            <div className="mt-3">
+                            <div className="hidden tablet:flex divider my-1"></div>
+                            <div className="">
                                 <h2 className="text-2xl font-bold mb-2">Category</h2>
                                 <div className="grid grid-cols-2 laptop:grid-cols-1">
                                     {categoriesList.length > 0 &&
@@ -141,8 +189,11 @@ const AllCourses: React.FC = () => {
                                                         type="checkbox"
                                                         className="checkbox checkbox-info"
                                                         name={category.title}
-                                                        value={category.title}
-                                                        onChange={handleSingleCategoryChange}
+                                                        value={category.id}
+                                                        checked={checkedStatus[category.id]}
+                                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                                                            handleSingleCategoryChange(event, category.id)
+                                                        }
                                                     />
                                                     <span className="text-xl">{category.title}</span>
                                                 </div>
@@ -151,28 +202,41 @@ const AllCourses: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex-1 grid grid-cols-1 gap-3">
-                            {courseList.map((course) => (
-                                <div className="w-full max-w-xs tablet:max-w-full place-self-center">
-                                    <CourseCard
-                                        key={course.id}
-                                        id={course.id}
-                                        title={course.title}
-                                        thumbnail={course.thumbnail}
-                                        rating={course.rating}
-                                        status={course.status}
-                                        numberOfSection={course.number_section}
-                                        slug={course.slug}
-                                        summary={course.summary}
-                                        author={course.author as User}
-                                        isEditCourse={false}
-                                    />
-                                </div>
-                            ))}
+                        <div className="flex-1 grid grid-cols-1 border-t-[1px] laptop:border-l-[1px] laptop:border-t-0 pl-3">
+                            {courseList.length === 0 && (
+                                <p className="text-error text-2xl">Don't have any course yet!</p>
+                            )}
+                            {courseList.length === 1 && (
+                                <p className="text-2xl font-medium">{courseList.length} result have been found </p>
+                            )}
+                            {courseList.length > 1 && (
+                                <p className="text-2xl font-medium">{courseList.length} results have been found </p>
+                            )}
+                            {courseList.length > 0 &&
+                                courseList.map((course, index) => (
+                                    <div
+                                        className="w-full max-w-xs tablet:max-w-full place-self-center laptop:place-self-start"
+                                        key={index}
+                                    >
+                                        <CourseCard
+                                            id={course.id}
+                                            title={course.title}
+                                            thumbnail={course.thumbnail}
+                                            rating={course.rating}
+                                            status={course.status}
+                                            slug={course.slug}
+                                            summary={course.summary}
+                                            attendees={course.attendees}
+                                            numberOfSection={course.number_section}
+                                            author={course.author as User}
+                                            isEditCourse={false}
+                                        />
+                                    </div>
+                                ))}
                         </div>
                     </div>
                 </div>
-                {courseList.length > 0 ? (
+                {totalPage > 1 ? (
                     <div className="flex justify-end my-4">
                         <Pagination
                             handleChangePageIndex={handleChangePageIndex}

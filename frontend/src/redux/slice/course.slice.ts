@@ -422,6 +422,7 @@ export const courseSlice = createSlice({
         builder.addCase(selectCourses.fulfilled, (state, action) => {
             state.courses = action.payload.data?.courses as Course[];
             state.totalPage = action.payload.data?.total_page as number;
+            state.totalRecord = action.payload.data?.total_record as number;
             state.isGetLoading = false;
         });
 

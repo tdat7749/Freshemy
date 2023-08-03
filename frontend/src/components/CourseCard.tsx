@@ -16,16 +16,20 @@ type Course = {
     rating?: number;
     status?: boolean;
     numberOfSection?: number;
+    attendees?: number;
     isEditCourse: boolean;
+    createdAt?: string;
     handleDeleteCourse?: (courseId: number) => void;
     handleEditCourse?: (id: number) => void;
 };
 
 const CourseCard: FC<Course> = (props: Course) => {
     const [isDisplayDropDown, setIsDisplayDropDown] = useState<boolean>(false);
+    const hasSection = props.numberOfSection !== undefined;
+    const hasAttendee = props.attendees !== undefined;
 
     return (
-        <div className="py-4 border-b-[1px]">
+        <div className="py-2">
             <div className="flex flex-col gap-2 tablet:gap-4 tablet:flex-row rounded-2xl hover:bg-backgroundHover/10 transition ease-in-out hover:shadow-lg duration-200 shadow-lg">
                 <div className="h-48 bg-gray-400 rounded-lg tablet:w-64 shrink-0">
                     <Link to={`/course-detail/${props.slug}`}>
@@ -34,7 +38,9 @@ const CourseCard: FC<Course> = (props: Course) => {
                 </div>
                 <div className="flex justify-between tablet:flex-1 px-2 pb-2 tablet:px-0">
                     <div className="w-[90%] tablet:w-full">
-                        <h2 className="tablet:w-[300px] xl:w-[600px] text-xl font-bold text-title truncate ...">{props.title}</h2>
+                        <h2 className="tablet:w-[300px] xl:w-[600px] text-xl font-bold text-title truncate ...">
+                            {props.title}
+                        </h2>
                         <p className="text-base italic">{props.summary}</p>
                         <p className="text-base font-bold">
                             <span>Author: </span>
@@ -53,7 +59,21 @@ const CourseCard: FC<Course> = (props: Course) => {
                                 <span className="font-normal">Uncomplete</span>
                             )}
                         </p>
-                        <p className="text-base font-bold">Number of sections: {props.numberOfSection}</p>
+                        {hasAttendee && (
+                            <p className="text-base font-bold">
+                                Attendees: <span className="font-normal">{props.attendees}</span>
+                            </p>
+                        )}
+                        {hasSection && (
+                            <p className="text-base font-bold">
+                                Number of sections: <span className="font-normal">{props.numberOfSection}</span>
+                            </p>
+                        )}
+                        {props.createdAt && (
+                            <p className="text-base font-bold">
+                                Created at: <span className="font-normal">{props.createdAt}</span>
+                            </p>
+                        )}
                     </div>
 
                     {props.isEditCourse ? (

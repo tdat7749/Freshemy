@@ -44,6 +44,7 @@ const initialState: UserSlice = {
             status: false,
             attendees: 0,
             slug: "",
+            created_at: "",
         },
     ],
 };

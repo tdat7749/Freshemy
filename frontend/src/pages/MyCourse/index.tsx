@@ -108,9 +108,9 @@ const MyCourses: React.FC = () => {
                         </Link>
                     </div>
                     <div className="flex-1 grid grid-cols-1">
-                        {courseList.map((course) => {
+                        {courseList.map((course, index) => {
                             return (
-                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={course.id}>
+                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={index}>
                                     <CourseCard
                                         id={course.id}
                                         thumbnail={course.thumbnail}
@@ -118,6 +118,8 @@ const MyCourses: React.FC = () => {
                                         title={course.title}
                                         summary={course.summary}
                                         author={course.author as User}
+                                        attendees={course.attendees}
+                                        numberOfSection={course.number_section}
                                         isEditCourse={true}
                                         handleDeleteCourse={handleDiplayDeleteModal}
                                         handleEditCourse={handleEditCourse}

@@ -70,11 +70,10 @@ const MyEnrolledCourses: React.FC = () => {
                         </div>
                     </div>
                     <div className="flex-1 grid grid-cols-1">
-                    {courseList.map((course) => {
-                        return ( 
-                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={course.id}>
+                        {courseList.map((course, index) => {
+                            return (
+                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={index}>
                                     <CourseCard
-                                        key={course.id}
                                         id={course.id}
                                         thumbnail={course.thumbnail}
                                         slug={course.slug}
@@ -84,8 +83,8 @@ const MyEnrolledCourses: React.FC = () => {
                                         isEditCourse={false}
                                     />
                                 </div>
-                        );
-                    })}
+                            );
+                        })}
                     </div>
                     {totalPage > 1 ? (
                         <div className="flex justify-end my-4">
