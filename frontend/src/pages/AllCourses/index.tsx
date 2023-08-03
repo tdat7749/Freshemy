@@ -34,7 +34,6 @@ const AllCourses: React.FC = () => {
 
     // HANDLE FILTER BTN CLICK
     const handleFilterCourse = () => {
-        console.log("filter");
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword as string,
@@ -47,7 +46,6 @@ const AllCourses: React.FC = () => {
 
     // HANDLE SORTING BTN CLICK
     const handleSortingCourse = (sortBy: string) => {
-        console.log("sorting");
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword as string,
@@ -60,7 +58,6 @@ const AllCourses: React.FC = () => {
     };
 
     useEffect(() => {
-        console.log("effect");
         // @ts-ignore
         dispatch(courseActions.getCategories());
 

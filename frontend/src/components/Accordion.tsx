@@ -3,6 +3,11 @@ import { Section } from "../types/section";
 import AddIcon from "./icons/AddIcon";
 import DeleteIcon from "./icons/DeleteIcon";
 import EditSectionIcon from "./icons/EditSectionIcon";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+
+import { CourseDetail as CourseDetailType } from "../types/course";
+import { lessonActions } from "@redux/slice";
 // import { useAppSelector } from "../hooks/hooks";
 // import { Lesson } from "../types/lesson";
 
@@ -15,11 +20,15 @@ type AccordionType = {
     handleDisplayEditModal?: (id: number, title: string) => void;
     handleDisplayEditLesson?: (id: number, title: string, video: string) => void;
     handleChangeSourceVideo?: (source: string) => void;
+    redirectToWatchVideo?: boolean;
     source?: string;
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
     const [show, setShow] = useState<boolean>(false);
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
 
     return (
         <>
@@ -95,6 +104,10 @@ const Accordion: React.FC<AccordionType> = (props) => {
                         onClick={() => {
                             if (props.handleChangeSourceVideo) {
                                 props.handleChangeSourceVideo(lesson.url_video);
+                            }
+                            if (props.redirectToWatchVideo) {
+                                dispatch(lessonActions.setNowUrlVideo(lesson.url_video));
+                                navigate(`/course-detail/${courseDetail.slug}/watch`);
                             }
                         }}
                         key={index}

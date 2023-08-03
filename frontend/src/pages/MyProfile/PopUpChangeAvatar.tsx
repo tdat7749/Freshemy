@@ -120,6 +120,7 @@ const PopUpChangeAvatar: React.FC<props> = (props) => {
                     )}
                     <div className="modal-action flex justify-center">
                         <button className={`btn btn-primary text-lg ${isLoading ? "btn-disabled" : ""}`} type="submit">
+                            {isLoading && <span className="loading loading-spinner"></span>}
                             {isLoading ? "Loading..." : "Save"}
                         </button>
                         <button

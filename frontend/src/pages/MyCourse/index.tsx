@@ -100,10 +100,12 @@ const MyCourses: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="text-white flex-3 flex btn btn-primary text-lg">
-                            <CreateIcon />
-                            <Link to={"/create-course"}>Create New</Link>
-                        </div>
+                        <Link to={"/create-course"}>
+                            <div className="text-white flex-3 flex btn btn-primary text-lg">
+                                <CreateIcon />
+                                Create New
+                            </div>
+                        </Link>
                     </div>
                     <div className="flex-1 grid grid-cols-1">
                         {courseList.map((course) => {
