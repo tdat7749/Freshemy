@@ -34,7 +34,10 @@ const EditCourse: React.FC = () => {
         //@ts-ignore
         dispatch(sectionActions.getSectionByCourseId(course_id));
     }, [dispatch, course_id]);
-
+    const handleRerender = () => {
+        //@ts-ignore
+        dispatch(sectionActions.getSectionByCourseId(course_id));
+    };
     const handleAddSection = () => {
         const values: AddSectionType = {
             course_id: Number(course_id),
@@ -200,6 +203,7 @@ const EditCourse: React.FC = () => {
                                 <form className="flex flex-col gap-1 w-full">
                                     <div className="text-sm mb-1 tablet:text-xl font-medium">Section title</div>
                                     <input
+                                        maxLength={100}
                                         type="text"
                                         value={itemTitle}
                                         className="px-2 py-4 rounded-lg border-[1px] outline-none max-w-lg"
@@ -228,6 +232,7 @@ const EditCourse: React.FC = () => {
                         <PopupAddLesson
                             handleDelete={handleDeleteSection}
                             handleCancel={handleCancelModalAddLesson}
+                            handleRerender={handleRerender}
                             id={idItem}
                         />
                     )}

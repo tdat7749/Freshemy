@@ -10,11 +10,11 @@ generator client {
 model Course {
   id          Int      @id @default(autoincrement())
   title       String   @db.VarChar(100)
-  slug        String   @unique @db.VarChar(110)
+  slug        String   @unique @db.VarChar(150)
   status      Boolean  @default(false)
-  description String
-  thumbnail   String   @db.LongText
-  summary     String   @db.VarChar(255)
+  description String   @db.VarChar(210)
+  thumbnail   String   @db.Text
+  summary     String   @db.VarChar(210)
   is_delete   Boolean  @default(false)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
@@ -40,8 +40,8 @@ model User {
   last_name   String   @db.VarChar(25)
   email       String   @unique @db.VarChar(50)
   password    String   @db.LongText
-  description String?
-  url_avatar  String?  @db.MediumText
+  description String?  @db.VarChar(210)
+  url_avatar  String?  @db.Text
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   token       String?  @db.LongText
@@ -69,8 +69,8 @@ model Enrolled {
 
 model Rating {
   id         Int      @id @default(autoincrement())
-  score      Float // Add the rating value field
-  content    String   @db.LongText
+  score      Int // Add the rating value field
+  content    String   @db.VarChar(100)
   created_at DateTime @default(now())
 
   user_id Int
@@ -100,9 +100,8 @@ model Lesson {
   url_video  String   @db.MediumText
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
   section_id Int
-  section    Section @relation(fields: [section_id], references: [id], onDelete: Cascade)
+  section    Section  @relation(fields: [section_id], references: [id], onDelete: Cascade)
 }
 
 model Category {

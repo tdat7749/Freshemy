@@ -71,11 +71,10 @@ const MyEnrolledCourses: React.FC = () => {
                         </div>
                     </div>
                     <div className="flex-1 grid grid-cols-1">
-                        {courseList.map((course) => {
+                        {courseList.map((course, index) => {
                             return (
-                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={course.id}>
+                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={index}>
                                     <CourseCard
-                                        key={course.id}
                                         id={course.id}
                                         thumbnail={course.thumbnail}
                                         slug={course.slug}

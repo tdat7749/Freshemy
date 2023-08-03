@@ -410,6 +410,9 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
         const courses = await db.course.findMany({
             skip,
             take,
+            orderBy: {
+                created_at: "desc",
+            },
             where: {
                 title: {
                     contains: parsedKeyword,
@@ -430,6 +433,11 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     },
                 },
                 sections: true,
+                enrolleds: {
+                    include: {
+                        user: true,
+                    },
+                },
             },
         });
 
@@ -465,6 +473,7 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 },
                 category: course.courses_categories.map((cc) => cc.category.title),
                 number_section: course.sections.length,
+                attendees: course.enrolleds.length,
                 slug: course.slug,
             };
         });
@@ -497,7 +506,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                         contains: parsedKeyword,
                     },
                 },
-                user_id: userId
+                user_id: userId,
             },
             orderBy: {
                 created_at: "desc"
@@ -517,11 +526,10 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                             },
                         },
                         sections: true,
-                    }
+                    },
                 },
             },
         });
-
 
         const totalRecord = await db.enrolled.count({
             where: {
@@ -530,11 +538,9 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                         contains: parsedKeyword,
                     },
                 },
-                user_id: userId
+                user_id: userId,
             },
         });
-
-
 
         const totalPage = Math.ceil(totalRecord / take);
         
@@ -549,12 +555,6 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                     course_id: enroll.course_id
                 }
             })
-
-            const numberSection = await db.section.count({
-                where: {
-                    course_id: enroll.course_id
-                }
-            })
             
             return {
                 id: enroll.course.id,
@@ -562,12 +562,11 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                 summary: enroll.course.summary,
                 thumbnail: enroll.course.thumbnail,
                 rate: averageRating,
-                author:  enroll.course.user,
+                author: enroll.course.user,
                 category: enroll.course.courses_categories.map((cc) => cc.category.title),
                 number_section: enroll.course.sections.length,
                 slug: enroll.course.slug,
                 attendees: attendees,
-                number_of_section: numberSection
             };
         }));
 
@@ -576,7 +575,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
             total_record: totalRecord,
             data: enrolledCoursesData,
         };
-        
+
         return new ResponseSuccess(200, i18n.t("successMessages.searchMyCourseSuccess"), true, responseData);
     } catch (error: any) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
@@ -675,180 +674,6 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
             result.push(data);
         });
         return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccessfully"), true, result);
-    } catch (error) {
-        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
-    }
-};
-
-const getAllCourses = async (
-    pageIndex?: number,
-    keyword?: string,
-    categories?: string[],
-    sortBy?: string,
-    filterByRatings?: "asc" | "desc" | undefined,
-    ratings?: number,
-): Promise<ResponseBase> => {
-    try {
-        const take = 10;
-        const skip = ((pageIndex ?? 1) - 1) * take;
-
-        const categoryIDs = await getCategoryIDs(categories ?? []);
-        const orderBy: CourseOrderByWithRelationInput = {};
-
-        if (sortBy === "newest") {
-            orderBy.created_at = "desc";
-        } else if (sortBy === "attendees") {
-            orderBy.attendees = { _count: "desc" };
-        }
-
-        const coursesQuery = db.course.findMany({
-            where: {
-                title: keyword
-                    ? {
-                          contains: keyword.toLowerCase(),
-                      }
-                    : undefined,
-                is_delete: false,
-
-                ratings: ratings
-                    ? {
-                          some: {
-                              score: ratings,
-                          },
-                      }
-                    : undefined,
-
-                courses_categories:
-                    categories && categories.length > 0
-                        ? {
-                              some: {
-                                  category: {
-                                      title: {
-                                          in: categories,
-                                      },
-                                  },
-                              },
-                          }
-                        : undefined,
-            },
-            include: {
-                user: true,
-                courses_categories: {
-                    include: {
-                        category: true,
-                    },
-                },
-                ratings: {
-                    include: {
-                        user: true,
-                    },
-                },
-                sections: {
-                    include: {
-                        lessons: true,
-                    },
-                },
-                enrolleds: {
-                    include: {
-                        user: true,
-                    },
-                },
-            },
-            skip,
-            take,
-            orderBy,
-        });
-
-        const [courses, totalRecord] = await Promise.all([
-            coursesQuery,
-            db.course.count({
-                where: {
-                    title: keyword ? { contains: keyword.toLowerCase() } : undefined,
-                    is_delete: false,
-                    courses_categories: {
-                        some: {
-                            category: {
-                                id: {
-                                    in: categoryIDs,
-                                },
-                            },
-                        },
-                    },
-                },
-            }),
-        ]);
-
-        const totalPage = Math.ceil(totalRecord / take);
-
-        // Filter courses based on the ratings
-        const filteredCourses = courses.filter((course) => {
-            const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
-            const averageRating = course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0;
-
-            if (ratings === undefined) {
-                return true; // No rating filter, include all courses
-            }
-
-            if (filterByRatings === "asc") {
-                return averageRating >= ratings;
-            } else {
-                return averageRating <= ratings;
-            }
-        });
-
-        const coursesData: AllCourseDetail[] = filteredCourses.map((course) => {
-            const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
-            const averageRating = (course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0).toFixed(1);
-
-            return {
-                id: course.id,
-                slug: course.slug,
-                thumbnail: course.thumbnail,
-                author: {
-                    id: course.user.id,
-                    first_name: course.user.first_name,
-                    last_name: course.user.last_name,
-                },
-                rate: averageRating,
-                categories: course.courses_categories.map((cc) => {
-                    return {
-                        id: cc.category.id,
-                        title: cc.category.title,
-                    };
-                }),
-                title: course.title,
-                summary: course.summary,
-                description: course.description,
-                status: course.status,
-                attendees: course.enrolleds.length,
-                created_at: course.created_at,
-                updated_at: course.updated_at,
-                ratings: course.ratings.map((rating) => ({
-                    id: rating.id,
-                    score: rating.score,
-                    content: rating.content,
-                    created_at: rating.created_at,
-                    user: {
-                        id: rating.user.id,
-                        first_name: rating.user.first_name,
-                        last_name: rating.user.last_name,
-                    },
-                })),
-            };
-        });
-
-        const responseData: FilteredCourseResult = {
-            total_page: totalPage,
-            total_record: totalRecord,
-            courses: coursesData,
-        };
-
-        return new ResponseSuccess<FilteredCourseResult>(
-            200,
-            i18n.t("successMessages.getDataSuccess"),
-            true,
-            responseData,
-        );
     } catch (error) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
@@ -1007,7 +832,165 @@ const getListRatingsOfCourseBySlug = async (req: Request): Promise<ResponseBase>
     return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, responseData);
 };
 
+const getAllCourses = async (
+    pageIndex?: number,
+    keyword?: string,
+    categories?: string[],
+    sortBy?: string,
+    filterByRatings?: "asc" | "desc" | undefined,
+    ratings?: number,
+): Promise<ResponseBase> => {
+    try {
+        const take = 10;
+        const skip = ((pageIndex ?? 1) - 1) * take;
+        const categoriesConvert = categories?.map((item: string) => Number(item));
+        const orderBy: CourseOrderByWithRelationInput = {};
+
+        if (sortBy === "newest") {
+            orderBy.created_at = "desc";
+        } else if (sortBy === "attendees") {
+            orderBy.enrolleds = { _count: filterByRatings || "desc" };
+        }
+
+        const categoriesFilter = categoriesConvert?.map((item: number) => {
+            return {
+                courses_categories: {
+                    some: {
+                        category: {
+                            id: item,
+                        },
+                    },
+                },
+            };
+        });
+
+        const baseFilter = {
+            title: keyword
+                ? {
+                      contains: keyword.toLowerCase(),
+                  }
+                : undefined,
+            is_delete: false,
+
+            ratings: ratings
+                ? {
+                      some: {
+                          score: ratings,
+                      },
+                  }
+                : undefined,
+
+            AND: categoriesFilter,
+        };
+
+        const totalRecord = await db.course.count({
+            where: baseFilter,
+        });
+
+        const coursesQuery = await db.course.findMany({
+            where: baseFilter,
+            include: {
+                user: true,
+                courses_categories: {
+                    include: {
+                        category: true,
+                    },
+                },
+                ratings: {
+                    include: {
+                        user: true,
+                    },
+                },
+                sections: {
+                    include: {
+                        lessons: true,
+                    },
+                },
+                enrolleds: {
+                    include: {
+                        user: true,
+                    },
+                },
+            },
+            skip,
+            take,
+            orderBy,
+        });
+
+        const totalPage = Math.ceil(totalRecord / take);
+
+        // Filter courses based on the ratings
+        const filteredCourses = coursesQuery.filter((course) => {
+            const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
+            const averageRating = course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0;
+
+            if (ratings === undefined) {
+                return true; // No rating filter, include all courses
+            }
+
+            if (filterByRatings === "asc") {
+                return averageRating >= ratings;
+            } else {
+                return averageRating <= ratings;
+            }
+        });
+
+        const coursesData: AllCourseDetail[] = filteredCourses
+            .map((course) => ({
+                ...course,
+                attendees: course.enrolleds.length, // Calculate number of attendees
+                number_section: course.sections.length, 
+            }))
+            .map((course) => {
+                const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
+                const averageRating = (course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0).toFixed(1);
+
+                return {
+                    id: course.id,
+                    slug: course.slug,
+                    thumbnail: course.thumbnail,
+                    author: {
+                        id: course.user.id,
+                        first_name: course.user.first_name,
+                        last_name: course.user.last_name,
+                    },
+                    rate: averageRating,
+                    categories: course.courses_categories.map((cc) => {
+                        return {
+                            id: cc.category.id,
+                            title: cc.category.title,
+                        };
+                    }),
+                    title: course.title,
+                    summary: course.summary,
+                    description: course.description,
+                    status: course.status,
+                    attendees: course.enrolleds.length,
+                    created_at: course.created_at,
+                    updated_at: course.updated_at,
+                    number_section: course.number_section,
+                };
+            });
+
+        const responseData: FilteredCourseResult = {
+            total_page: totalPage,
+            total_record: totalRecord,
+            courses: coursesData,
+        };
+
+        return new ResponseSuccess<FilteredCourseResult>(
+            200,
+            i18n.t("successMessages.getDataSuccess"),
+            true,
+            responseData,
+        );
+    } catch (error) {
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+};
+
 const CourseService = {
+    getAllCourses,
     getRightOfCourse,
     getCourseDetail,
     registerCourse,
@@ -1018,7 +1001,6 @@ const CourseService = {
     deleteMyCourse,
     getCourseDetailById,
     getTop10Courses,
-    getAllCourses,
     getCategoryIDs,
     ratingCourse,
     getListRatingsOfCourseBySlug,

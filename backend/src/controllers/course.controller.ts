@@ -111,6 +111,7 @@ class CourseController {
         const response = await services.CourseService.getTop10Courses(req);
         return res.status(response.getStatusCode()).json(response);
     }
+    
     async ratingCourse(req: Request, res: Response) {
         const errorValidate: ValidationError | undefined = ratingSchema.validate(req.body).error;
 
@@ -122,6 +123,16 @@ class CourseController {
             });
         }
         const response = await services.CourseService.ratingCourse(req);
+        return res.status(response.getStatusCode()).json(response);
+    }
+
+    async getRightOfCourse(req: Request, res: Response): Promise<Response> {
+        const response = await services.CourseService.getRightOfCourse(req);
+        return res.status(response.getStatusCode()).json(response);
+    }
+
+    async getListRatingsOfCourseBySlug(req: Request, res: Response): Promise<Response> {
+        const response = await services.CourseService.getListRatingsOfCourseBySlug(req);
         return res.status(response.getStatusCode()).json(response);
     }
 
@@ -147,7 +158,7 @@ class CourseController {
                 sortBy,
                 filterByRatings,
                 ratings,
-            ); 
+            );
 
             if (response instanceof ResponseSuccess) {
                 return res.json(response);
@@ -159,16 +170,6 @@ class CourseController {
         } catch (error: any) {
             return res.status(500).json(new ResponseError(500, i18n.t("errorMessages.internalServer"), false));
         }
-    }
-    
-    async getRightOfCourse(req: Request, res: Response): Promise<Response> {
-        const response = await services.CourseService.getRightOfCourse(req);
-        return res.status(response.getStatusCode()).json(response);
-    }
-
-    async getListRatingsOfCourseBySlug(req: Request, res: Response): Promise<Response> {
-        const response = await services.CourseService.getListRatingsOfCourseBySlug(req);
-        return res.status(response.getStatusCode()).json(response);
     }
 }
 

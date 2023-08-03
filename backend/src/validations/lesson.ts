@@ -48,4 +48,5 @@ export const UpdateLessonSchema: ObjectSchema<UpdateLesson> = Joi.object({
             "number.base": i18n.t("errorMessages.sectionIdMustBeNumber"),
             "number.integer": i18n.t("errorMessages.sectionIdMustBeAnInt"),
         }),
+    video: Joi.string().strip(),
 });

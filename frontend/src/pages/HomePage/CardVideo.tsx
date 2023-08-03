@@ -16,7 +16,7 @@ const CardVideo: React.FC<CardVideoProps> = (props) => {
     const navigate = useNavigate();
     return (
         <div
-            className="rounded-lg bg-primary shadow-lg flex flex-col hover:scale-95 hover:duration-300 cursor-pointer max-w-[200px]"
+            className="rounded-lg bg-primary shadow-lg flex flex-col hover:scale-95 hover:duration-300 cursor-pointer w-[200px]"
             onClick={() => navigate(`/course-detail/${props.slug}`)}
         >
             <img
@@ -25,9 +25,7 @@ const CardVideo: React.FC<CardVideoProps> = (props) => {
                 className="w-full h-[140px] rounded-t-lg bg-black object-cover"
             />
             <div className="p-4 flex-1 flex flex-col justify-between">
-                <h2 className="font-bold text-title text-lg text-ellipsis overflow-hidden whitespace-wrap">
-                    {props.title}
-                </h2>
+                <h2 className="font-bold text-title text-lg  whitespace-wrap line-clamp-2">{props.title}</h2>
                 <div className="items-end">
                     <div className="font-medium mt-1">{props.author.first_name + " " + props.author.last_name}</div>
                     <div className="font-medium mt-1">{props.rating}</div>

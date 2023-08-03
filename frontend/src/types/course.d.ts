@@ -27,6 +27,7 @@ export type Course = {
     attendees: number;
     slug: string;
     author?: User;
+    created_at: string;
 };
 
 export type GetMyCourses = {
@@ -109,7 +110,7 @@ export type CourseChangeInformation = {
 export type SelectCourse = {
     pageIndex: nunber;
     keyword?: string;
-    category?: string[];
+    category?: number[];
     rating?: number;
     sortBy?: string;
 };
@@ -118,7 +119,7 @@ export type FilterCourse = {
     total_page: number;
     total_record: number;
     courses: Course[];
-}
+};
 
 export type RatingCourse = {
     ratings: number;
