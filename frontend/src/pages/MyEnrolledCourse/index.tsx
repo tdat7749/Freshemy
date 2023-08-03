@@ -50,22 +50,23 @@ const MyEnrolledCourses: React.FC = () => {
             <div className="container mx-auto mt-[100px] laptop:mt-0">
                 <div className="px-4 tablet:px-[60px]">
                     <h1 className="text-center text-[32px] py-4 font-bold text-title">MY ENROLLED COURSE</h1>
-
                     <div className="w-full flex flex-col gap-4 justify-between shrink-0 tablet:flex-row">
-                        <div className="relative">
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                placeholder="Search your enrolled course"
-                                className="rounded-full py-4 px-10 w-full border-[1px] border-black"
-                                value={userInput}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserInput(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") handleKeyWordSearch();
-                                }}
-                            />
-                            <div className="cursor-pointer" onClick={handleKeyWordSearch}>
-                                <SearchIcon />
+                        <div className="w-3/4 tablet:w-1/2 mx-auto">
+                            <div className="relative">
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    placeholder="Search your enrolled course"
+                                    className="rounded-full py-4 px-10 w-full border-[1px] border-black"
+                                    value={userInput}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") handleKeyWordSearch();
+                                    }}
+                                />
+                                <div className="cursor-pointer" onClick={handleKeyWordSearch}>
+                                    <SearchIcon />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -81,6 +82,8 @@ const MyEnrolledCourses: React.FC = () => {
                                         summary={course.summary}
                                         author={course.author as User}
                                         isEditCourse={false}
+                                        attendees={course.attendees}
+                                        numberOfSection={course.number_section}
                                     />
                                 </div>
                             );
