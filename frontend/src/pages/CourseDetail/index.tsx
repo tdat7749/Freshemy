@@ -202,7 +202,14 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                                 <h2 className="text-xl tablet:text-3xl font-bold mb-3">Table of Content</h2>
                                 <span className="w-[60px] h-1 bg-black block mb-4"></span>
                                 {courseDetail.sections.map((section: Section, index: number) => {
-                                    return <Accordion key={index} isDisplayBtn={false} section={section} />;
+                                    return (
+                                        <Accordion
+                                            key={index}
+                                            isDisplayBtn={false}
+                                            section={section}
+                                            redirectToWatchVideo={isLogin && !(role === i18n.t("ROLE.UNENROLLED"))}
+                                        />
+                                    );
                                 })}
                             </div>
                             {isGetLoading ? (

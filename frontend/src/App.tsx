@@ -55,7 +55,7 @@ function App() {
                             <Route path="/course-detail/:slug/watch" element={<WatchVideo />}></Route>
                             <Route path="/my-enrolled-courses" element={<EnrolledCourse />}></Route>
                         </Route>
-                       
+
                         <Route path="/all-courses" element={<AllCourses />}></Route>
                         <Route path="/profile/:id" element={<AuthorProfile />}></Route>
                         <Route path="/course-detail/:slug" element={<CourseDetail isLogin={isLogin} />}></Route>

@@ -4,12 +4,14 @@ import { Response } from "../../types/response";
 import LessonApis from "@src/apis/lesson";
 
 type LessonSlice = {
+    nowUrlVideo: string;
     isLoading: boolean;
     lessonList: Lesson[];
     lesson: Lesson;
 };
 
 const initialState: LessonSlice = {
+    nowUrlVideo: "",
     isLoading: false,
     lessonList: [],
     lesson: {
@@ -82,6 +84,9 @@ export const lessonSlice = createSlice({
         setDeleteLesson: (state, action: PayloadAction<number>) => {
             state.lessonList = state.lessonList.filter((lesson: Lesson) => lesson.id !== action.payload);
         },
+        setNowUrlVideo: (state, action: PayloadAction<string>) => {
+            state.nowUrlVideo = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(addLesson.pending, (state) => {
@@ -118,6 +123,6 @@ export const lessonSlice = createSlice({
     },
 });
 
-export const { setAddLesson, setDeleteLesson } = lessonSlice.actions;
+export const { setAddLesson, setDeleteLesson, setNowUrlVideo } = lessonSlice.actions;
 
 export default lessonSlice.reducer;

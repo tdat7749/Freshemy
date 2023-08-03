@@ -75,6 +75,7 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
         }
         return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
+        console.log(error)
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
         }
