@@ -65,18 +65,9 @@ export type AllCourseDetail = {
     categories: Category[];
     summary: string;
     author: Author;
-    ratings: {
-        id: number;
-        score: number;
-        content: string;
-        created_at: Date;
-        user: {
-            id: number;
-            first_name: string;
-            last_name: string;
-        };
-    }[];
+   
     attendees: number;
+    number_of_sections: number;
     thumbnail: string;
     description: string;
     created_at: Date;
@@ -91,9 +82,9 @@ export type FilteredCourseResult = {
 };
 
 export type CourseOrderByWithRelationInput = {
-    [x: string]: { _count: string; };
-    created_at?: "asc" | "desc";
-    ratings?: {
-        _count?: "asc" | "desc";
-    };
+    [x: string]: "asc" | "desc" | { _count?: "asc" | "desc" } | undefined;
+    created_at?: "asc" | "desc" | undefined;
+    ratings?: { _count?: "asc" | "desc" } | undefined;
+    enrolleds?: { _count?: "asc" | "desc" } | undefined;
+    sections?: { _count?: "asc" | "desc" } | undefined;
 };

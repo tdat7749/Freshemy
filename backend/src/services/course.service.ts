@@ -66,8 +66,9 @@ const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     },
                 },
             });
-
+       
             if (isCreateCourse) {
+
                 return new ResponseSuccess(201, i18n.t("successMessages.createDataSuccess"), true);
             } else {
                 return new ResponseError(400, i18n.t("errorMessages.createCourseFailed"), false);
@@ -410,6 +411,9 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
         const courses = await db.course.findMany({
             skip,
             take,
+            orderBy:{
+                created_at:"desc"
+            },
             where: {
                 title: {
                     contains: parsedKeyword,
@@ -430,6 +434,11 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
                     },
                 },
                 sections: true,
+                enrolleds: {
+                    include: {
+                        user: true,
+                    },
+                },
             },
         });
 
@@ -465,6 +474,7 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 },
                 category: course.courses_categories.map((cc) => cc.category.title),
                 number_section: course.sections.length,
+                attendees: course.enrolleds.length,
                 slug: course.slug,
             };
         });
@@ -834,7 +844,7 @@ const getAllCourses = async (
         if (sortBy === "newest") {
             orderBy.created_at = "desc";
         } else if (sortBy === "attendees") {
-            orderBy.enrolleds = { _count: "desc" };
+            orderBy.enrolleds = { _count: filterByRatings || "desc" };
         }
 
         const categoriesFilter = categoriesConvert?.map((item: number) => {
@@ -924,6 +934,7 @@ const getAllCourses = async (
             .map((course) => ({
                 ...course,
                 attendees: course.enrolleds.length, // Calculate number of attendees
+                number_of_sections: course.sections.length,
             }))
             .filter((course) => course.attendees > 0) // Filter out courses with zero attendees
             .map((course) => {
@@ -952,18 +963,8 @@ const getAllCourses = async (
                     status: course.status,
                     attendees: course.enrolleds.length,
                     created_at: course.created_at,
-                    updated_at: course.updated_at,
-                    ratings: course.ratings.map((rating) => ({
-                        id: rating.id,
-                        score: rating.score,
-                        content: rating.content,
-                        created_at: rating.created_at,
-                        user: {
-                            id: rating.user.id,
-                            first_name: rating.user.first_name,
-                            last_name: rating.user.last_name,
-                        },
-                    })),
+                    updated_at: course.updated_at,                 
+                    number_of_sections: course.number_of_sections,
                 };
             });
 
