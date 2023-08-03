@@ -11,6 +11,7 @@ import { errorMessages, fileType } from "../utils/contants";
 type AddLessonModalProps = {
     handleDelete: () => void;
     handleCancel: () => void;
+    handleRerender: () => void;
     id: number;
 };
 
@@ -61,6 +62,7 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
                         toast.error(response.payload.message);
                     } else {
                         toast.success(response.payload.message);
+                        props.handleRerender();
                         props.handleCancel();
                     }
                 }
