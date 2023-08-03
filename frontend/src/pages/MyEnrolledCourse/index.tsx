@@ -82,6 +82,8 @@ const MyEnrolledCourses: React.FC = () => {
                                         summary={course.summary}
                                         author={course.author as User}
                                         isEditCourse={false}
+                                        attendees={course.attendees}
+                                        numberOfSection={course.number_section}
                                     />
                                 </div>
                             );
