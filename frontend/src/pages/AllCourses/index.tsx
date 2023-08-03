@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
-// import CourseCard from "./CourseCard";
 import { CourseCard, Pagination } from "@src/components";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { Category, Course, SelectCourse } from "../../types/course";
@@ -10,10 +9,10 @@ import useQueryParams from "../../hooks/useQueryParams";
 import { User } from "../../types/user";
 
 const AllCourses: React.FC = () => {
-    const { keyword, rating } = useQueryParams();
+    const { keyword, rating, category } = useQueryParams();
 
     const [evaluate, setEvaluate] = useState<number | undefined>(Number(rating));
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<number[]>([]);
     const [pageIndex, setPageIndex] = useState<number>(1);
 
     const dispatch = useAppDispatch();
@@ -23,9 +22,9 @@ const AllCourses: React.FC = () => {
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
 
     const initialCheckedStatus: Record<number, boolean> = categoriesList.reduce(
-        (acc, category) => ({
+        (acc, categoryItem) => ({
             ...acc,
-            [category.id]: false,
+            [categoryItem.id]: false,
         }),
         {}
     );
@@ -34,10 +33,11 @@ const AllCourses: React.FC = () => {
 
     const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>, categoryId: number) => {
         const { value, checked } = event.target;
+
         if (checked) {
-            setCategories((pre) => [...pre, { id: categoryId, title: value }]);
+            setCategories((pre) => [...pre, categoryId]);
         } else {
-            setCategories((pre) => [...pre.filter((category) => category.title !== value)]);
+            setCategories((pre) => [...pre.filter((cate) => cate !== Number(value))]);
         }
 
         const updatedCheckedStatus = {
@@ -85,30 +85,36 @@ const AllCourses: React.FC = () => {
     };
 
     const handleChangePageIndex = (pageIndex: number) => {
-        // @ts-ignore
-        dispatch(courseActions.getCategories());
-
-        const query: SelectCourse = {
-            pageIndex: pageIndex,
-            keyword: keyword as string,
-            rating: evaluate,
-            category: categories,
-        };
-        // @ts-ignore
-        dispatch(courseActions.selectCourses(query));
+        if (pageIndex < 1) {
+            setPageIndex(totalPage);
+        } else if (pageIndex > totalPage) setPageIndex(1);
+        else {
+            setPageIndex(pageIndex);
+        }
     };
 
     useEffect(() => {
         // @ts-ignore
         dispatch(courseActions.getCategories());
 
+        let categoryQuery = category;
+
+        if (typeof categoryQuery === "string") {
+            categoryQuery = [Number(category)];
+        } else if (typeof categoryQuery === "object") {
+            categoryQuery = category.map((cate: string) => Number(cate));
+        } else {
+            categoryQuery = [];
+        }
+
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword,
+            category: categoryQuery,
         };
+
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
-        setPageIndex(1);
     }, [dispatch, keyword, pageIndex]);
 
     return (
@@ -116,11 +122,8 @@ const AllCourses: React.FC = () => {
             <Navbar />
             <div className="container mx-auto p-4 mt-[100px] laptop:mt-0">
                 <div className="">
-                    {courseList.length === 0 && <p className="text-error text-2xl">Don't have any course yet!</p>}
-                    {courseList.length === 1 && <p className="text-2xl">{courseList.length} result have been found </p>}
-                    {courseList.length > 1 && <p className="text-2xl">{courseList.length} results have been found </p>}
                     <div className="flex flex-col gap-4 laptop:flex-row">
-                        <div className="w-full laptop:w-[250px] mt-4">
+                        <div className="w-full laptop:w-[250px]">
                             <div className="">
                                 <button className="btn btn-secondary text-lg mr-1" onClick={handleFilterCourse}>
                                     Filter
@@ -174,8 +177,8 @@ const AllCourses: React.FC = () => {
                                     );
                                 })}
                             </div>
-                            <div className="hidden tablet:flex divider"></div>
-                            <div className="mt-3">
+                            <div className="hidden tablet:flex divider my-1"></div>
+                            <div className="">
                                 <h2 className="text-2xl font-bold mb-2">Category</h2>
                                 <div className="grid grid-cols-2 laptop:grid-cols-1">
                                     {categoriesList.length > 0 &&
@@ -186,7 +189,7 @@ const AllCourses: React.FC = () => {
                                                         type="checkbox"
                                                         className="checkbox checkbox-info"
                                                         name={category.title}
-                                                        value={category.title}
+                                                        value={category.id}
                                                         checked={checkedStatus[category.id]}
                                                         onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                                                             handleSingleCategoryChange(event, category.id)
@@ -199,27 +202,36 @@ const AllCourses: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex-1 grid grid-cols-1 gap-3">
-                            {courseList.map((course) => (
-                                <div
-                                    className="w-full max-w-xs tablet:max-w-full place-self-center laptop:place-self-start  "
-                                    key={course.id}
-                                >
-                                    <CourseCard
-                                        key={course.id}
-                                        id={course.id}
-                                        title={course.title}
-                                        thumbnail={course.thumbnail}
-                                        rating={course.rating}
-                                        status={course.status}
-                                        slug={course.slug}
-                                        summary={course.summary}
-                                        attendees={course.attendees}
-                                        author={course.author as User}
-                                        isEditCourse={false}
-                                    />
-                                </div>
-                            ))}
+                        <div className="flex-1 grid grid-cols-1 border-t-[1px] laptop:border-l-[1px] laptop:border-t-0 pl-3">
+                            {courseList.length === 0 && (
+                                <p className="text-error text-2xl">Don't have any course yet!</p>
+                            )}
+                            {courseList.length === 1 && (
+                                <p className="text-2xl font-medium">{courseList.length} result have been found </p>
+                            )}
+                            {courseList.length > 1 && (
+                                <p className="text-2xl font-medium">{courseList.length} results have been found </p>
+                            )}
+                            {courseList.length > 0 &&
+                                courseList.map((course, index) => (
+                                    <div
+                                        className="w-full max-w-xs tablet:max-w-full place-self-center laptop:place-self-start  "
+                                        key={index}
+                                    >
+                                        <CourseCard
+                                            id={course.id}
+                                            title={course.title}
+                                            thumbnail={course.thumbnail}
+                                            rating={course.rating}
+                                            status={course.status}
+                                            slug={course.slug}
+                                            summary={course.summary}
+                                            attendees={course.attendees}
+                                            author={course.author as User}
+                                            isEditCourse={false}
+                                        />
+                                    </div>
+                                ))}
                         </div>
                     </div>
                 </div>

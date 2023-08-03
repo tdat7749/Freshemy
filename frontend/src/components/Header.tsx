@@ -61,13 +61,17 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                                     {categoriesList.length > 0 &&
                                         categoriesList.map((category) => {
                                             return (
-                                                <li
-                                                    onClick={() => setIsDisplayCategoryDrawer(!isDisplayCategoryDrawer)}
-                                                    key={category.id}
-                                                    className="hover:bg-backgroundHover text-lg font-medium text-center cursor-pointer px-6 py-4 laptop:py-[26px] min-w-fit rounded-lg"
-                                                >
-                                                    {category.title}
-                                                </li>
+                                                <Link to={`/all-courses?category=${category.id}`}>
+                                                    <li
+                                                        onClick={() =>
+                                                            setIsDisplayCategoryDrawer(!isDisplayCategoryDrawer)
+                                                        }
+                                                        key={category.id}
+                                                        className="hover:bg-backgroundHover text-lg font-medium text-center cursor-pointer px-6 py-4 laptop:py-[26px] min-w-fit rounded-lg"
+                                                    >
+                                                        {category.title}
+                                                    </li>
+                                                </Link>
                                             );
                                         })}
                                 </ul>

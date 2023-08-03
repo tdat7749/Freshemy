@@ -27,7 +27,7 @@ const CourseCard: FC<Course> = (props: Course) => {
     const [isDisplayDropDown, setIsDisplayDropDown] = useState<boolean>(false);
 
     return (
-        <div className="py-4 border-b-[1px]">
+        <div className="py-2">
             <div className="flex flex-col gap-2 tablet:gap-4 tablet:flex-row rounded-2xl hover:bg-backgroundHover/10 transition ease-in-out hover:shadow-lg duration-200 shadow-lg">
                 <div className="h-48 bg-gray-400 rounded-lg tablet:w-64 shrink-0">
                     <Link to={`/course-detail/${props.slug}`}>
