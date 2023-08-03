@@ -25,6 +25,8 @@ type Course = {
 
 const CourseCard: FC<Course> = (props: Course) => {
     const [isDisplayDropDown, setIsDisplayDropDown] = useState<boolean>(false);
+    const hasSection = props.numberOfSection !== undefined;
+    const hasAttendee = props.attendees !== undefined;
 
     return (
         <div className="py-2">
@@ -57,12 +59,12 @@ const CourseCard: FC<Course> = (props: Course) => {
                                 <span className="font-normal">Uncomplete</span>
                             )}
                         </p>
-                        {props.attendees !== undefined && (
+                        {hasAttendee && (
                             <p className="text-base font-bold">
                                 Attendees: <span className="font-normal">{props.attendees}</span>
                             </p>
                         )}
-                        {props.numberOfSection !== undefined && (
+                        {hasSection && (
                             <p className="text-base font-bold">
                                 Number of sections: <span className="font-normal">{props.numberOfSection}</span>
                             </p>

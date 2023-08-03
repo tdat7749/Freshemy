@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
 
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
+    const categories: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
     const user: User = useAppSelector((state) => state.authSlice.user);
 
     const handleKeyWordSearch = () => {
@@ -58,8 +58,8 @@ const Header: React.FC<HeaderProps> = ({ isLogin }) => {
                             <div className="drawer-side">
                                 <label htmlFor="my-drawer" className="drawer-overlay"></label>
                                 <ul className="menu p-4 w-80 h-full bg-white text-base-content">
-                                    {categoriesList.length > 0 &&
-                                        categoriesList.map((category) => {
+                                    {categories.length > 0 &&
+                                        categories.map((category) => {
                                             return (
                                                 <NavLink to={`/all-courses?category=${category.id}`} key={category.id}>
                                                     <li

@@ -88,3 +88,4 @@ export type CourseOrderByWithRelationInput = {
     enrolleds?: { _count?: "asc" | "desc" } | undefined;
     sections?: { _count?: "asc" | "desc" } | undefined;
 };
+
