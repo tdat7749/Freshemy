@@ -12,12 +12,14 @@ export const ratingSchema: ObjectSchema<enrolledCourse> = Joi.object({
         .min(1)
         .max(5)
         .messages({
+            "number.integer": i18n.t("errorMessages.ratingScoreMustBeAnInt"),
             "number.base": i18n.t("errorMessages.ratingScoreType"),
             "any.required": i18n.t("errorMessages.ratingScoreRequired"),
             "number.min": i18n.t("errorMessages.ratingScoreMinError"),
             "number.max": i18n.t("errorMessages.ratingScoareMaxError"),
         }),
     content: Joi.string()
+        .min(0)
         .max(100)
         .messages({
             "string.base": i18n.t("errorMessages.contentRatingType"),
@@ -25,7 +27,9 @@ export const ratingSchema: ObjectSchema<enrolledCourse> = Joi.object({
         }),
     course_id: Joi.number()
         .required()
+        .integer()
         .messages({
+            "number.integer": i18n.t("errorMessages.courseIdMustBeAnInt"),
             "number.base": i18n.t("errorMessages.courseIdMustBeNumber"),
             "any.required": i18n.t("errorMessages.courseIdIsRequired"),
         }),

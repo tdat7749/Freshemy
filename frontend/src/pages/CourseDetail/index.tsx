@@ -210,7 +210,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                             ) : (
                                 <CommentSection ratings={ratings} />
                             )}
-                            {ratings.length > 0 ? (
+                            {ratings.length > 10 ? (
                                 <div className="flex justify-end my-4">
                                     <Pagination
                                         handleChangePageIndex={handleChangePageIndex}
@@ -219,6 +219,9 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                                     />
                                 </div>
                             ) : (
+                                <></>
+                            )}
+                            {ratings.length === 0 && (
                                 <p className="mt-4 text-2xl text-error text-center font-bold">Such empty</p>
                             )}
                         </div>
