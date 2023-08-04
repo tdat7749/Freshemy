@@ -9,6 +9,7 @@ type Login = {
 
 export const loginSchema: ObjectSchema<Login> = Joi.object({
     email: Joi.string()
+        .trim()
         .regex(/^\S+@\S+\.\S+$/)
         .required()
         .messages({
@@ -18,6 +19,7 @@ export const loginSchema: ObjectSchema<Login> = Joi.object({
         }),
 
     password: Joi.string()
+        .trim()
         .required()
         .messages({
             "string.base": i18n.t("errorMessages.passwordMustBeString"),
@@ -35,6 +37,7 @@ type Registration = {
 
 export const registrationSchema: ObjectSchema<Registration> = Joi.object({
     email: Joi.string()
+        .trim()
         .regex(/^\S+@\S+\.\S+$/)
         .required()
         .messages({
@@ -44,6 +47,7 @@ export const registrationSchema: ObjectSchema<Registration> = Joi.object({
         }),
 
     password: Joi.string()
+        .trim()
         .required()
         .messages({
             "string.base": i18n.t("errorMessages.passwordMustBeString"),
@@ -51,6 +55,7 @@ export const registrationSchema: ObjectSchema<Registration> = Joi.object({
         }),
 
     first_name: Joi.string()
+        .trim()
         .required()
         .messages({
             "string.base": i18n.t("errorMessages.firstNameMustBeString"),
@@ -58,6 +63,7 @@ export const registrationSchema: ObjectSchema<Registration> = Joi.object({
         }),
 
     last_name: Joi.string()
+        .trim()
         .required()
         .messages({
             "string.base": i18n.t("errorMessages.lastNameMustBeString"),
@@ -67,6 +73,7 @@ export const registrationSchema: ObjectSchema<Registration> = Joi.object({
     // confirmPassword: Joi.string().valid(Joi.ref("password")).required().strict(),
 
     confirm_password: Joi.string()
+        .trim()
         .valid(Joi.ref("password"))
         .required()
         .messages({
