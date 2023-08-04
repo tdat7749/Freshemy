@@ -8,6 +8,7 @@ import { courseActions } from "../../redux/slice";
 
 import toast from "react-hot-toast";
 import EditForm from "./EditForm";
+import NotFound from "../NotFound";
 
 const EditCourse: React.FC = () => {
     const [isDisplayDeleteModal, setIsDisplayDeleteModal] = useState<boolean>(false);
@@ -16,7 +17,7 @@ const EditCourse: React.FC = () => {
     const [isDisplayAddLessonModal, setIsDisplayAddLessonModal] = useState<boolean>(false);
     const [isDisplayEditLessonModal, setIsDisplayEditLessonModal] = useState<boolean>(false);
     const sectionOfCourse: SectionType[] = useAppSelector((state) => state.sectionSlice.sectionList);
-
+    const [isNotFound, setIsNotFound] = useState<boolean>(false);
     const [section, setSection] = useState<string>("");
     const [idItem, setIdItem] = useState<number>(-1);
     const [itemTitle, setItemTitle] = useState<string>("");
@@ -56,6 +57,15 @@ const EditCourse: React.FC = () => {
 
         setSection("");
     };
+
+    useEffect(() => {
+        // @ts-ignore
+        dispatch(courseActions.getCourseDetailById(course_id)).then((response) => {
+            if (response.payload && response.payload.status_code !== 200) {
+                setIsNotFound(true);
+            }
+        });
+    }, [dispatch, course_id, isNotFound]);
 
     const handleDisplayDeleteModal = (id: number, isDeleteSection: boolean) => {
         setIdItem(id);
@@ -138,6 +148,9 @@ const EditCourse: React.FC = () => {
         setItemTitle(title);
         setIsDisplayEditModal(!isDisplayEditModal);
     };
+
+    if (isNotFound) return <NotFound />;
+
     return (
         <>
             {isGetLoading !== true && (
