@@ -490,6 +490,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                     title: {
                         contains: parsedKeyword,
                     },
+                    is_delete: false
                 },
                 user_id: userId,
             },
@@ -503,11 +504,6 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                         courses_categories: {
                             include: {
                                 category: true,
-                            },
-                        },
-                        ratings: {
-                            include: {
-                                user: true,
                             },
                         },
                         sections: true,
