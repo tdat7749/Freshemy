@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { CourseCard, Navbar } from "@src/components";
 import { DefaultAvatar } from "@src/assets";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
@@ -6,9 +6,12 @@ import { userActions } from "@redux/slice";
 import { User } from "../../types/user";
 import { useParams } from "react-router-dom";
 import { Course } from "../../types/course";
+import NotFound from "../NotFound";
 import i18n from "../../utils/i18next";
 
 const AuthorProfile: React.FC = () => {
+    const [isNotFound, setIsNotFound] = useState<boolean>(false);
+
     const user: User = useAppSelector((state) => state.userSlice.user);
     const courseList: Course[] = useAppSelector((state) => state.userSlice.course) ?? [];
 
@@ -17,8 +20,14 @@ const AuthorProfile: React.FC = () => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(userActions.getAuthorInformation(id));
+        dispatch(userActions.getAuthorInformation(id)).then((response) => {
+            if (response && response.payload.status_code !== 200) {
+                setIsNotFound(true);
+            }
+        });
     }, [dispatch, id]);
+
+    if (isNotFound) return <NotFound />;
 
     return (
         <>
