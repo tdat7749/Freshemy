@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { Accordion, DeleteModal, PopupAddLesson, PopupUpdateLesson, Navbar } from "@src/components";
 import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";
 import { courseActions } from "../../redux/slice";
-import { orderLesson } from "../../types/lesson";
+import { deteleLessonType, orderLesson } from "../../types/lesson";
 import toast from "react-hot-toast";
 import EditForm from "./EditForm";
 
@@ -25,6 +25,7 @@ const EditCourse: React.FC = () => {
     const orderLessonSelector = useAppSelector((state) => state.sectionSlice.orderLesson);
 
     const sectionOfCourse: SectionType[] = useAppSelector((state) => state.sectionSlice.sectionList);
+
     // const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
     const isGetLoading = useAppSelector((state) => state.courseSlice.isGetLoading);
 
@@ -38,10 +39,13 @@ const EditCourse: React.FC = () => {
         //@ts-ignore
         dispatch(sectionActions.getSectionByCourseId(course_id));
     }, [dispatch, course_id]);
+
     const handleRerender = () => {
-        console.log("render")
+        console.log("render");
         //@ts-ignore
-        dispatch(sectionActions.getSectionByCourseId(course_id));
+        dispatch(sectionActions.getSectionByCourseId(course_id)).then((res) => {
+            console.log(res);
+        });
     };
     const handleAddSection = () => {
         if (section !== "") {
@@ -63,6 +67,9 @@ const EditCourse: React.FC = () => {
             setSection("");
         } else {
             setErrorSection(true);
+            setTimeout(() => {
+                setErrorSection(false);
+            }, 3000);
         }
     };
 
@@ -109,8 +116,12 @@ const EditCourse: React.FC = () => {
     };
 
     const handleDeleteLesson = () => {
+        const deleteLesson: deteleLessonType = {
+            id: idItem,
+            course_id: Number(course_id),
+        };
         //@ts-ignore
-        dispatch(lessonActions.deleteLesson(idItem)).then((response) => {
+        dispatch(lessonActions.deleteLesson(deleteLesson)).then((response) => {
             if (response.payload.status_code === 200) {
                 toast.success(response.payload.message);
                 // @ts-ignore

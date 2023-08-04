@@ -22,3 +22,8 @@ export type UpdateLesson = {
     title: string;
     video: File | null;
 };
+
+export type deteleLessonType = {
+    id: number;
+    course_id: number;
+};

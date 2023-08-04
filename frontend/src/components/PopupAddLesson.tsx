@@ -60,10 +60,12 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
 
     const handleOnSubmit = (values: AddLessonType) => {
         let formData = new FormData();
+        const course_id: number = sectionOfCourse[0].course_id || 0;
         formData.append("title", values.title);
         formData.append("section_id", props.id.toString());
         formData.append("video", video as File);
         formData.append("order", newOrder.toString());
+        formData.append("course_id", course_id.toString());
         //@ts-ignore
         dispatch(lessonActions.addLesson(formData))
             //@ts-ignore

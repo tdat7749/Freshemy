@@ -153,6 +153,7 @@ export const sectionSlice = createSlice({
 
         builder.addCase(getSectionByCourseId.fulfilled, (state, action) => {
             state.sectionList = action.payload.data as SectionType[];
+
             let temp: any = [];
             state.sectionList.forEach((section: any) => {
                 section.lessons.forEach((lesson: any) => {
@@ -160,6 +161,7 @@ export const sectionSlice = createSlice({
                 });
             });
             state.orderLesson = temp;
+            state.isGetLoading = false;
         });
 
         builder.addCase(getSectionByCourseId.rejected, (state) => {

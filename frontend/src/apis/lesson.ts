@@ -1,5 +1,5 @@
 import { apiCaller } from "@src/api-config";
-import { AddLesson as AddLessonType } from "../types/lesson";
+import { AddLesson as AddLessonType, deteleLessonType } from "../types/lesson";
 
 import i18n from "../utils/i18next";
 
@@ -27,8 +27,8 @@ const updateLesson = async (values: FormData) => {
     return response;
 };
 
-const deleteLesson = async (id: number) => {
-    const path = `/lessons/${id}`;
+const deleteLesson = async (values: deteleLessonType) => {
+    const path = `/lessons/${values.id}/${values.course_id}`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_DELETE"), path);
 

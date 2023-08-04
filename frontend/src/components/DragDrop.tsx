@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 // import { lessonActions } from "@redux/slice";
@@ -14,44 +14,54 @@ const DragDrop: React.FC<DragProps> = (props) => {
     const [items, setItems] = useState<JSX.Element[]>(props.initialItems);
     const lessonOrderSelector = useAppSelector((state) => state.sectionSlice.orderLesson);
     const dispatch = useAppDispatch();
-    const onDragEnd = (result: DropResult) => {
-        if (props.role) {
-            const actionOrder = result.draggableId.split("-");
-            if (result.destination?.index !== result.source.index) {
-                const lesson_id: number = parseInt(actionOrder[0]);
-                const indexInSelector: number = lessonOrderSelector.findIndex(
-                    (item: orderLesson) => item?.lessonId === lesson_id
-                );
-                const oldOrder: number = indexInSelector;
-                const oldIndex: number = result.source.index;
-                const newIndex: number = result.destination?.index ? result.destination?.index : 0;
-                const step = newIndex - oldIndex;
-                const newOrder = oldOrder + step;
-                const reOrder = {
-                    oldOrder: oldOrder,
-                    id: lesson_id,
-                    newOrder: newOrder,
-                };
-                console.log(reOrder);
-                dispatch(sectionActions.reOrder(reOrder));
-            }
-            if (!result.destination) {
-                return;
-            }
-            const newItems = [...items];
-            const [removed] = newItems.splice(result.source.index, 1);
-            newItems.splice(result.destination.index, 0, removed);
-            setItems(newItems);
+    let orderItems: JSX.Element[] = [];
+    lessonOrderSelector.forEach((orderId: any) => {
+        console.log(orderId);
+        let temp = items.filter((item) => orderId.lessonId == item.key)[0];
+        if (temp) {
+            orderItems.push(temp);
         }
+    });
+    useEffect(() => {
+        setItems(props.initialItems);
+    }, [props.initialItems]);
+
+    const onDragEnd = (result: DropResult) => {
+        const actionOrder = result.draggableId.split("-");
+        if (result.destination?.index !== result.source.index) {
+            const lesson_id: number = parseInt(actionOrder[0]);
+            const indexInSelector: number = lessonOrderSelector.findIndex(
+                (item: orderLesson) => item?.lessonId === lesson_id
+            );
+            const oldOrder: number = indexInSelector;
+            const oldIndex: number = result.source.index;
+            const newIndex: number = result.destination?.index ? result.destination?.index : 0;
+            const step = newIndex - oldIndex;
+            const newOrder = oldOrder + step;
+            const reOrder = {
+                oldOrder: oldOrder,
+                id: lesson_id,
+                newOrder: newOrder,
+            };
+            console.log(reOrder);
+            dispatch(sectionActions.reOrder(reOrder));
+        }
+        if (!result.destination) {
+            return;
+        }
+        const newItems = [...items];
+        const [removed] = newItems.splice(result.source.index, 1);
+        newItems.splice(result.destination.index, 0, removed);
+        setItems(newItems);
     };
-    console.log(props.role);
+
     return (
         <div>
             <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId="items">
                     {(provided) => (
                         <div {...provided.droppableProps} ref={provided.innerRef}>
-                            {items.map((item, index) => {
+                            {orderItems.map((item, index) => {
                                 return (
                                     <Draggable
                                         isDragDisabled={props.role}
