@@ -77,7 +77,7 @@ const changeThumbnail = async (values: ChangeThumbnailType) => {
 };
 
 const changeInformation = async (values: CourseChangeInformationType) => {
-    const path = `courses/information`;
+    const path = `courses/change-information`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_PUT"), path, values);
 
@@ -93,7 +93,7 @@ const getTop10Courses = async () => {
 };
 
 const selectCourses = async (values: SelectCourse) => {
-    let pathBase = `/courses/all-courses?pageIndex=${values.pageIndex}`;
+    let pathBase = `/courses/all?pageIndex=${values.pageIndex}`;
     if (values.rating) {
         pathBase = pathBase + `&ratings=${values.rating}`;
     }

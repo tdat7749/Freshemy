@@ -4,7 +4,7 @@ import { ChangePassword as ChangePasswordType, UpdateInformation as UpdateInform
 import i18n from "../utils/i18next";
 
 const changePassword = async (values: ChangePasswordType) => {
-    const path = "/users/password";
+    const path = "/users/change-password";
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_PATCH"), path, values);
 
@@ -20,7 +20,7 @@ const getInformation = async () => {
 };
 
 const updateInformation = async (values: UpdateInformationType) => {
-    const path = "/users/information";
+    const path = "/users/change-information";
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_PUT"), path, values);
 
