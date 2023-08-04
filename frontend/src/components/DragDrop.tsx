@@ -7,6 +7,7 @@ import { sectionActions } from "@redux/slice";
 
 type DragProps = {
     initialItems: JSX.Element[];
+    role: boolean;
 };
 
 const DragDrop: React.FC<DragProps> = (props) => {
@@ -14,34 +15,36 @@ const DragDrop: React.FC<DragProps> = (props) => {
     const lessonOrderSelector = useAppSelector((state) => state.sectionSlice.orderLesson);
     const dispatch = useAppDispatch();
     const onDragEnd = (result: DropResult) => {
-        const actionOrder = result.draggableId.split("-");
-        if (result.destination?.index !== result.source.index) {
-            const lesson_id: number = parseInt(actionOrder[0]);
-            const indexInSelector: number = lessonOrderSelector.findIndex(
-                (item: orderLesson) => item?.lessonId === lesson_id
-            );
-            const oldOrder: number = indexInSelector;
-            const oldIndex: number = result.source.index;
-            const newIndex: number = result.destination?.index ? result.destination?.index : 0;
-            const step = newIndex - oldIndex;
-            const newOrder = oldOrder + step;
-            const reOrder = {
-                oldOrder: oldOrder,
-                id: lesson_id,
-                newOrder: newOrder,
-            };
-            console.log(reOrder);
-            dispatch(sectionActions.reOrder(reOrder));
+        if (props.role) {
+            const actionOrder = result.draggableId.split("-");
+            if (result.destination?.index !== result.source.index) {
+                const lesson_id: number = parseInt(actionOrder[0]);
+                const indexInSelector: number = lessonOrderSelector.findIndex(
+                    (item: orderLesson) => item?.lessonId === lesson_id
+                );
+                const oldOrder: number = indexInSelector;
+                const oldIndex: number = result.source.index;
+                const newIndex: number = result.destination?.index ? result.destination?.index : 0;
+                const step = newIndex - oldIndex;
+                const newOrder = oldOrder + step;
+                const reOrder = {
+                    oldOrder: oldOrder,
+                    id: lesson_id,
+                    newOrder: newOrder,
+                };
+                console.log(reOrder);
+                dispatch(sectionActions.reOrder(reOrder));
+            }
+            if (!result.destination) {
+                return;
+            }
+            const newItems = [...items];
+            const [removed] = newItems.splice(result.source.index, 1);
+            newItems.splice(result.destination.index, 0, removed);
+            setItems(newItems);
         }
-        if (!result.destination) {
-            return;
-        }
-        const newItems = [...items];
-        const [removed] = newItems.splice(result.source.index, 1);
-        newItems.splice(result.destination.index, 0, removed);
-        setItems(newItems);
     };
-
+    console.log(props.role);
     return (
         <div>
             <DragDropContext onDragEnd={onDragEnd}>
@@ -51,6 +54,7 @@ const DragDrop: React.FC<DragProps> = (props) => {
                             {items.map((item, index) => {
                                 return (
                                     <Draggable
+                                        isDragDisabled={props.role}
                                         key={`items-${index}`}
                                         draggableId={`${item.key}-${index}`}
                                         index={index}

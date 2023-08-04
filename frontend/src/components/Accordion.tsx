@@ -23,6 +23,7 @@ type AccordionType = {
     handleChangeSourceVideo?: (source: string) => void;
     redirectToWatchVideo?: boolean;
     source?: string;
+    disable: boolean;
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
@@ -145,6 +146,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                             )}
                         </div>
                     ))}
+                    role={props.disable}
                 />
             )}
         </>

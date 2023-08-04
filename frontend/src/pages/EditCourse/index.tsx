@@ -17,6 +17,7 @@ const EditCourse: React.FC = () => {
     const [isDisplayEditLessonModal, setIsDisplayEditLessonModal] = useState<boolean>(false);
 
     const [section, setSection] = useState<string>("");
+    const [errorSection, setErrorSection] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
     const [itemTitle, setItemTitle] = useState<string>("");
     const [itemVideo, setItemVideo] = useState<string>("");
@@ -38,26 +39,31 @@ const EditCourse: React.FC = () => {
         dispatch(sectionActions.getSectionByCourseId(course_id));
     }, [dispatch, course_id]);
     const handleRerender = () => {
+        console.log("render")
         //@ts-ignore
         dispatch(sectionActions.getSectionByCourseId(course_id));
     };
     const handleAddSection = () => {
-        const values: AddSectionType = {
-            course_id: Number(course_id),
-            title: section,
-        };
-        // @ts-ignore
-        dispatch(sectionActions.addSection(values)).then((response) => {
-            if (response.payload.status_code === 201) {
-                toast.success(response.payload.message);
-                // @ts-ignore
-                dispatch(sectionActions.getSectionByCourseId(course_id));
-            } else {
-                toast.error(response.payload.message);
-            }
-        });
-
-        setSection("");
+        if (section !== "") {
+            setErrorSection(false);
+            const values: AddSectionType = {
+                course_id: Number(course_id),
+                title: section,
+            };
+            // @ts-ignore
+            dispatch(sectionActions.addSection(values)).then((response) => {
+                if (response.payload.status_code === 201) {
+                    toast.success(response.payload.message);
+                    // @ts-ignore
+                    dispatch(sectionActions.getSectionByCourseId(course_id));
+                } else {
+                    toast.error(response.payload.message);
+                }
+            });
+            setSection("");
+        } else {
+            setErrorSection(true);
+        }
     };
 
     const handleDisplayDeleteModal = (id: number, isDeleteSection: boolean) => {
@@ -182,6 +188,9 @@ const EditCourse: React.FC = () => {
                                     Add section
                                 </button>
                             </div>
+                            {errorSection && (
+                                <p className={`text-error italic font-medium mt-1`}>Section title is required</p>
+                            )}
                             {/* handle list lesson */}
                             <div className="mt-2">
                                 {sectionOfCourse.length <= 0 ? (
@@ -189,6 +198,7 @@ const EditCourse: React.FC = () => {
                                 ) : (
                                     sectionOfCourse.map((section, index) => (
                                         <Accordion
+                                            disable={false}
                                             key={index}
                                             section={section}
                                             handleDeleteSection={handleDeleteSection}
