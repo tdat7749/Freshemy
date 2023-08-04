@@ -15,7 +15,8 @@ const MyEnrolledCourses: React.FC = () => {
     const dispatch = useAppDispatch();
 
     let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
-    let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? Number(i18n.t("PAGE_INDEX.FIRST_PAGE"));
+    let totalPage: number =
+        useAppSelector((state) => state.courseSlice.totalPage) ?? Number(i18n.t("PAGE_INDEX.FIRST_PAGE"));
 
     const isGetLoading = useAppSelector((state) => state.courseSlice.isGetLoading);
 
@@ -80,6 +81,7 @@ const MyEnrolledCourses: React.FC = () => {
                                         thumbnail={course.thumbnail}
                                         slug={course.slug}
                                         title={course.title}
+                                        rating={course.rating}
                                         summary={course.summary}
                                         author={course.author as User}
                                         isEditCourse={false}
