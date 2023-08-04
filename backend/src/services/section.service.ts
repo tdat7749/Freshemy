@@ -7,6 +7,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 
 import i18n from "../utils/i18next";
+import { RequestHasLogin } from "src/types/request.type";
 
 const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -82,11 +83,25 @@ const createSection = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const updateSection = async (req: Request): Promise<ResponseBase> => {
+const updateSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
         const { title } = req.body;
         const section_id = +id;
+        const isAuthor = await configs.db.section.findFirst({
+            include: {
+                course: true,
+            },
+            where: {
+                id: section_id,
+                course: {
+                    user_id: req.user_id,
+                },
+            },
+        });
+        if (!isAuthor) {
+            return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+        }
         const section = await configs.db.section.update({
             where: {
                 id: section_id,
@@ -113,10 +128,24 @@ const updateSection = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const deleteSection = async (req: Request): Promise<ResponseBase> => {
+const deleteSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
         const section_id = +id;
+        const isAuthor = await configs.db.section.findFirst({
+            include: {
+                course: true,
+            },
+            where: {
+                id: section_id,
+                course: {
+                    user_id: req.user_id,
+                },
+            },
+        });
+        if (!isAuthor) {
+            return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+        }
         const isDelete = await configs.db.section.update({
             where: {
                 id: section_id,

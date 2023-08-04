@@ -3,7 +3,11 @@ import { Section } from "../types/section";
 import AddIcon from "./icons/AddIcon";
 import DeleteIcon from "./icons/DeleteIcon";
 import EditSectionIcon from "./icons/EditSectionIcon";
-import DragDrop from "./DragDrop";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+
+import { CourseDetail as CourseDetailType } from "../types/course";
+import { lessonActions } from "@redux/slice";
 // import { useAppSelector } from "../hooks/hooks";
 // import { Lesson } from "../types/lesson";
 
@@ -16,11 +20,16 @@ type AccordionType = {
     handleDisplayEditModal?: (id: number, title: string) => void;
     handleDisplayEditLesson?: (id: number, title: string, video: string) => void;
     handleChangeSourceVideo?: (source: string) => void;
+    redirectToWatchVideo?: boolean;
     source?: string;
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
     const [show, setShow] = useState<boolean>(false);
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
+
     return (
         <>
             <div>
@@ -46,7 +55,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                                     d="M9 5 5 1 1 5"
                                 />
                             </svg>
-                            <span>{props.section.title}</span>
+                            <span className="max-w-[400px] truncate ...">{props.section.title}</span>
                         </div>
                         {props.isDisplayBtn && (
                             <div className="flex gap-2">
@@ -85,24 +94,27 @@ const Accordion: React.FC<AccordionType> = (props) => {
                     </div>
                 </h2>
             </div>
-            {show && props.section.lessons && (
-                <DragDrop
-                    initialItems={props.section?.lessons.map((lesson, index) => (
-                        <div
-                            className={`py-4 pl-8 pr-4 border rounded-lg my-2 hover:cursor-pointer flex justify-between  ${
-                                lesson.url_video === props.source ? "bg-backgroundHover" : ""
-                            }`}
-                            onClick={() => {
-                                if (props.handleChangeSourceVideo) {
-                                    props.handleChangeSourceVideo(lesson.url_video);
-                                }
-                            }}
-                            key={`${lesson.id}`}
-                        >
-                            <p>{lesson.title}</p>
+            {show &&
+                props.section.lessons &&
+                props.section?.lessons.map((lesson, index) => (
+                    <div
+                        className={`py-4 pl-8 pr-4 border rounded-lg my-2 hover:cursor-pointer flex justify-between  ${
+                            lesson.url_video === props.source ? "bg-backgroundHover" : ""
+                        }`}
+                        onClick={() => {
+                            if (props.handleChangeSourceVideo) {
+                                props.handleChangeSourceVideo(lesson.url_video);
+                            }
+                            if (props.redirectToWatchVideo) {
+                                dispatch(lessonActions.setNowUrlVideo(lesson.url_video));
+                                navigate(`/course-detail/${courseDetail.slug}/watch`);
+                            }
+                        }}
+                        key={index}
+                    >
+                        <p>{lesson.title}</p>
 
-                            {/* TODO: IMPLEMENT IN NEXT SPRINT */}
-                            {/* {props.isDisplayBtn && (
+                        {props.isDisplayBtn && (
                             <div className="flex gap-2">
                                 <div
                                     className="cursor-pointer"
@@ -125,12 +137,9 @@ const Accordion: React.FC<AccordionType> = (props) => {
                                     <DeleteIcon />
                                 </div>
                             </div>
-                        )} */}
-                        </div>
-                    ))}
-                    status={2}
-                />
-            )}
+                        )}
+                    </div>
+                ))}
         </>
     );
 };

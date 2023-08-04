@@ -50,19 +50,24 @@ export const errorMessages = {
     // Firstname
     firstNameMustBeString: "First Name must be a string",
     firstNameIsRequired: "First Name is required",
+    tooLongFirstName: "First name is too long",
 
     // Lastname
     lastNameMustBeString: "Last Name must be a string",
     lastNameIsRequired: "Last Name is required",
+    tooLongLastName: "Last name is too long",
 
     // Course
     courseIdIsRequired: "Course id is required",
+    courseIdMustBeAnInt: "Course id must be an integer",
     courseIdMustBeNumber: "Course id must be a number",
     createCourseFailed: "Create a new failed course",
     courseNotFound: "Course Not Found",
 
     // Section
     sectionIdIsRequired: "Section id is required",
+    sectionIdMustBeAnInt: "Section id must be an integer",
+    sectionIdMustBeNumber: "Section id must be a number",
 
     // Reset password
     UnAuthorized: "You don't have authorize",
@@ -76,6 +81,7 @@ export const errorMessages = {
     // Title
     courseTitleIsRequired: "Title is required",
     courseTitleMustBeString: "Title must be a string",
+    courseTitleIsTooLong: "Title is too long, maximum 100 characters only",
 
     // Status
     statusIsRequired: "Status is required",
@@ -84,6 +90,8 @@ export const errorMessages = {
     // Description
     descriptionIsRequired: "Description is required",
     descriptionMustBeString: "Description must be a string",
+    tooLongDescription: "Description is too long",
+    tooshortDescription: "Description is too short",
 
     // Summary
     summaryIsRequired: "Summary is required",
@@ -100,6 +108,23 @@ export const errorMessages = {
 
     // Upload Image
     imageUploadError: "Upload Image Error",
+
+    //Rating
+    ratingError: "You have already rated",
+    contentRatingTooLong: "Content rating is too long, maxium 100 characters only",
+    contentRatingType: "Content rating must be string",
+    ratingScoreRequired: "Rating score is required",
+    ratingScoreType: "Rating score must be a number",
+    ratingScoreMustBeAnInt: "Rating score must be an integer",
+    ratingScoreMinError: "Rating score must be in 1-5",
+    ratingScoareMaxError: "Rating score must be in 1-5",
+
+    //Subscribe course
+    authorSubscribeError: "You can't subscribe your own course",
+    authorUnsubscribeError: "You can't unsubscribe your own course",
+
+    //Auth
+    loginAgain: "Please login again",
 };
 
 export const successMessages = {
@@ -153,7 +178,4 @@ export const successMessages = {
 
     // Upload Image
     imageUploadSuccess: "Upload Image Successfully",
-
-    //Section
-    sectionReorderSuccess: "Upload reOrder section Successfully",
 };

@@ -12,15 +12,20 @@ export const LessonSchema: ObjectSchema<Lesson> = Joi.object({
     order: Joi.number().required(),
     title: Joi.string()
         .required()
+        .max(100)
         .messages({
             "any.required": i18n.t("errorMessages.courseTitleIsRequired"),
             "string.base": i18n.t("errorMessages.courseTitleMustBeString"),
+            "string.max": i18n.t("errorMessages.courseTitleIsTooLong"),
         }),
 
     section_id: Joi.number()
+        .integer()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.sectionIdIsRequired"),
+            "number.base": i18n.t("errorMessages.sectionIdMustBeNumber"),
+            "number.integer": i18n.t("errorMessages.sectionIdMustBeAnInt"),
         }),
 });
 
@@ -31,8 +36,19 @@ type UpdateLesson = {
 export const UpdateLessonSchema: ObjectSchema<UpdateLesson> = Joi.object({
     title: Joi.string()
         .required()
+        .max(100)
         .messages({
             "any.required": i18n.t("errorMessages.courseTitleIsRequired"),
             "string.base": i18n.t("errorMessages.courseTitleMustBeString"),
+            "string.max": i18n.t("errorMessages.courseTitleIsTooLong"),
         }),
+    id: Joi.number()
+        .integer()
+        .required()
+        .messages({
+            "any.required": i18n.t("errorMessages.sectionIdIsRequired"),
+            "number.base": i18n.t("errorMessages.sectionIdMustBeNumber"),
+            "number.integer": i18n.t("errorMessages.sectionIdMustBeAnInt"),
+        }),
+    video: Joi.string().strip(),
 });

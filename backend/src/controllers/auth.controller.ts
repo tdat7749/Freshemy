@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { loginSchema, registrationSchema } from "../validations/auth";
 import { ValidationError } from "joi";
 import { convertJoiErrorToString } from "../commons/index";
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import service from "../services/index";
 
 class AuthController {

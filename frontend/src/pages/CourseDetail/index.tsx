@@ -1,28 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { Navbar, Accordion, DeleteModal } from "@src/components";
+import { Navbar, Accordion, DeleteModal, Spin } from "@src/components";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { Section } from "../../types/section";
-import { CourseDetail as CourseDetailType } from "../../types/course";
+import { CourseDetail as CourseDetailType, GetRating, RatingResponse as RatingResponseType } from "../../types/course";
 import { Link } from "react-router-dom";
-import EditIcon from "@src/components/icons/EditIcon";
-import DeleteIcon from "../../components/icons/DeleteIcon";
 import NotFound from "../NotFound";
 import { courseActions } from "@redux/slice";
+import PopupRating from "./PopupRating";
 
+import { TotalRating, Pagination } from "@src/components";
 import toast from "react-hot-toast";
-import WatchVideoIcon from "@src/components/icons/WatchVideoIcon";
+import AuthorButton from "./AuthorButton";
+import GuestButton from "./GuestButton";
+import SubscribeUserButton from "./SubscribeUserButton";
+import UnsubscribeModal from "./UnsubcribeModal";
+import CommentSection from "./CommentSection";
+import i18n from "../../utils/i18next";
 
-const CourseDetail: React.FC = () => {
+type CourseDetailProps = {
+    isLogin: boolean;
+};
+
+const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
     let { slug } = useParams();
     const dispatch = useAppDispatch();
     const [isOpenDeleteModal, setIsOpenDeleteModal] = useState<boolean>(false);
+    const [isOpenPopupRating, setIsOpenPopupRating] = useState<boolean>(false);
+    const [isOpenUnsubscribeModal, setIsOpenUnsubscribeModal] = useState<boolean>(false);
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
+    const [pageIndex, setPageIndex] = useState<number>(1);
     const navigate = useNavigate();
 
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
-    // const isLoading:boolean = useAppSelector((state => state.courseSlice.isLoading))
+    const ratings: RatingResponseType[] = useAppSelector((state) => state.courseSlice.ratings) ?? [];
+    const totalRatingPage: number = useAppSelector((state) => state.courseSlice.totalRatingPage) ?? 1;
+    const role: string = useAppSelector((state) => state.courseSlice.role) ?? "";
+    const isGetLoading: boolean = useAppSelector((state) => state.courseSlice.isGetLoading) ?? false;
+    const handleChangePageIndex = (pageIndex: number) => {
+        if (pageIndex < 1) {
+            setPageIndex(totalRatingPage);
+        } else if (pageIndex > totalRatingPage) setPageIndex(1);
+        else {
+            setPageIndex(pageIndex);
+        }
+        return;
+    };
 
     const handleDeleteCourse = () => {
         //@ts-ignore
@@ -42,7 +66,22 @@ const CourseDetail: React.FC = () => {
     const handleCancelModal = () => {
         setIsOpenDeleteModal(!isOpenDeleteModal);
     };
-
+    const handleTogglePopupRating = () => {
+        setIsOpenPopupRating(!isOpenPopupRating);
+    };
+    const handleToggleUnsubcribeCourse = () => {
+        setIsOpenUnsubscribeModal(!isOpenUnsubscribeModal);
+    };
+    const handleAfterVote = () => {
+        // @ts-ignore
+        dispatch(courseActions.getCourseDetail(slug));
+        const values: GetRating = {
+            slug: slug as string,
+            page_index: pageIndex,
+        };
+        //@ts-ignore
+        dispatch(courseActions.getListRatingsOfCourseBySlug(values));
+    };
     useEffect(() => {
         // @ts-ignore
         dispatch(courseActions.getCourseDetail(slug)).then((response) => {
@@ -51,16 +90,39 @@ const CourseDetail: React.FC = () => {
             }
         });
     }, [dispatch, slug, isNotFound]);
-
-    // if(isLoading) return <Spin/>;
+    useEffect(() => {
+        if (courseDetail.id && isLogin) {
+            //@ts-ignore
+            dispatch(courseActions.getRightOfCourse(courseDetail.id));
+        }
+    }, [dispatch, courseDetail.id, isLogin]);
+    useEffect(() => {
+        const values: GetRating = {
+            slug: slug as string,
+            page_index: pageIndex,
+        };
+        //@ts-ignore
+        dispatch(courseActions.getListRatingsOfCourseBySlug(values));
+    }, [dispatch, slug, pageIndex]);
 
     if (isNotFound) return <NotFound />;
 
     return (
         <>
+            {isOpenPopupRating && (
+                <PopupRating
+                    handleAfterVote={handleAfterVote}
+                    handleCancel={handleTogglePopupRating}
+                    course_id={courseDetail.id}
+                />
+            )}
             {isOpenDeleteModal && <DeleteModal handleDelete={handleDeleteCourse} handleCancel={handleCancelModal} />}
+            {isOpenUnsubscribeModal && (
+                <UnsubscribeModal handleCancel={handleToggleUnsubcribeCourse} course_id={courseDetail.id} />
+            )}
             <Navbar />
-            <div className="container mx-auto">
+            {isGetLoading && <Spin />}
+            <div className="container mx-auto mt-[100px] laptop:mt-0">
                 <div className="min-h-screen h-full px-4 tablet:px-[60px]">
                     <div className="mt-4 container mx-auto p-4">
                         <div className="flex flex-col gap-4 laptop:flex-row shadow-xl bg-primary rounded-lg">
@@ -73,7 +135,7 @@ const CourseDetail: React.FC = () => {
                             </div>
                             <div className=" flex-1 object-right flex flex-col gap-4 px-3 pb-3 laptop:pt-3">
                                 <div className="flex-1">
-                                    <h2 className="text-2xl laptop:text-3xl font-bold text-title mb-3">
+                                    <h2 className="text-2xl laptop:text-3xl font-bold text-title mb-3 tablet:w-[300px] xl:w-[600px] truncate ...">
                                         {courseDetail.title}
                                     </h2>
                                     <p className="text-xl laptop:text-2xl font-medium italic mb-3">
@@ -92,105 +154,40 @@ const CourseDetail: React.FC = () => {
                                     </div>
                                     <div className="flex items-center text-xl laptop:text-3xl font-medium mb-3">
                                         <span className="text-xl laptop:text-2xl font-bold mr-2">Ratings:</span>
-                                        <div className="rating rating-lg rating-half">
-                                            <input type="radio" name="rating-10" className="rating-hidden" />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-1"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-2"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-1"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-2"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-1"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-2"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-1"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-2"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-1"
-                                            />
-                                            <input
-                                                type="radio"
-                                                name="rating-10"
-                                                disabled
-                                                className="bg-yellow-300 mask-star-2 mask-half-2"
-                                                checked
-                                            />
-                                        </div>
-                                        <p className="italic text-xl laptop:text-2xl ml-2 ">{courseDetail.ratings}</p>
+                                        <TotalRating
+                                            ratingId={0}
+                                            totalScore={Number(courseDetail.rating)}
+                                            isForCourse={true}
+                                        />
+                                        <p className="italic text-xl laptop:text-2xl ml-2 ">{courseDetail.rating}</p>
                                     </div>
                                     <div className="flex items-center text-xl laptop:text-2xl font-bold">
                                         <span className="mr-2">Status:</span>
                                         <p className="font-normal">
-                                            {courseDetail.status === false ? "Uncomplete" : " Completed"}
+                                            {courseDetail.status === false ? "Incompleted" : " Completed"}
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex gap-2">
-                                    {(courseDetail.sections.length > 0) && (
-                                        <button className="text-white btn btn-primary text-lg">
-                                            <WatchVideoIcon />
-                                            <Link to={`/course-detail/${courseDetail.slug}/watch`}>
-                                                <span>Learn Now</span>
-                                            </Link>
-                                        </button>
+                                <div className="flex-1 flex items-end gap-2 flex-wrap">
+                                    {isLogin && role === i18n.t("ROLE.AUTHOR") && (
+                                        <AuthorButton
+                                            handleDelete={() => {
+                                                setIsOpenDeleteModal(!isOpenDeleteModal);
+                                                setIdItem(courseDetail.id as number);
+                                            }}
+                                            courseDetail={courseDetail}
+                                        />
                                     )}
-
-                                    <button className="text-white btn btn-primary text-lg">
-                                        <EditIcon color="#ffffff" />
-                                        <Link to={`/my-courses/edit/${courseDetail.id}`}>
-                                            <span>Edit</span>
-                                        </Link>
-                                    </button>
-                                    <button
-                                        className="btn btn-error text-lg"
-                                        onClick={() => {
-                                            setIsOpenDeleteModal(!isOpenDeleteModal);
-                                            setIdItem(courseDetail.id as number);
-                                        }}
-                                    >
-                                        <DeleteIcon color="#000000" />
-                                        <span>Delete</span>
-                                    </button>
+                                    {isLogin && role === i18n.t("ROLE.ENROLLED") && (
+                                        <SubscribeUserButton
+                                            handleTogglePopupRating={handleTogglePopupRating}
+                                            handleToggleUnsubscribeCourse={handleToggleUnsubcribeCourse}
+                                            courseDetail={courseDetail}
+                                        />
+                                    )}
+                                    {(!isLogin || role === i18n.t("ROLE.UNENROLLED")) && (
+                                        <GuestButton isLogin={isLogin} course_id={courseDetail.id} />
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -205,9 +202,35 @@ const CourseDetail: React.FC = () => {
                                 <h2 className="text-xl tablet:text-3xl font-bold mb-3">Table of Content</h2>
                                 <span className="w-[60px] h-1 bg-black block mb-4"></span>
                                 {courseDetail.sections.map((section: Section, index: number) => {
-                                    return <Accordion key={index} isDisplayBtn={false} section={section} />;
+                                    return (
+                                        <Accordion
+                                            key={index}
+                                            isDisplayBtn={false}
+                                            section={section}
+                                            redirectToWatchVideo={isLogin && !(role === i18n.t("ROLE.UNENROLLED"))}
+                                        />
+                                    );
                                 })}
                             </div>
+                            {isGetLoading ? (
+                                <p className="mt-4 text-2x text-center font-bold">Loading</p>
+                            ) : (
+                                <CommentSection ratings={ratings} />
+                            )}
+                            {ratings.length > 10 ? (
+                                <div className="flex justify-end my-4">
+                                    <Pagination
+                                        handleChangePageIndex={handleChangePageIndex}
+                                        totalPage={totalRatingPage}
+                                        currentPage={pageIndex}
+                                    />
+                                </div>
+                            ) : (
+                                <></>
+                            )}
+                            {ratings.length === 0 && (
+                                <p className="mt-4 text-2xl text-error text-center font-bold">Such empty</p>
+                            )}
                         </div>
                     </div>
                 </div>

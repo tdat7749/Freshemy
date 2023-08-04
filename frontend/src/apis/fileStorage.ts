@@ -9,8 +9,16 @@ const uploadFile = async (values: UploadFileType) => {
     return response;
 };
 
+const uploadAvatar = async (values: UploadFileType) => {
+    const path = "fileStorage/change-avatar";
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, values);
+    return response;
+};
+
 const FileStorageApis = {
     uploadFile,
+    uploadAvatar,
 };
 
 export default FileStorageApis;

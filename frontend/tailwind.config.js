@@ -29,7 +29,7 @@ module.exports = {
             {
                 mytheme: {
                     primary: "#087930",
-                    secondary: "#ff0000",
+                    secondary: "#FFCF90",
                     "base-100": "#fff",
                     "base-content": "#5c5c5c",
                     accent: "#FAFAFA",

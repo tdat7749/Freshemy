@@ -7,6 +7,7 @@ import CardVideo from "./CardVideo";
 import CategoryCard from "./CategoryCard";
 import { Category as CategoryType } from "../../types/course";
 import CategoryIcon from "@src/components/icons/CategoryIcon";
+import { User } from "../../types/user";
 
 const Home: React.FC = () => {
     const thumbnail: React.FC[] = CategoryIcon;
@@ -28,7 +29,7 @@ const Home: React.FC = () => {
         <>
             <Navbar />
             {isLoading && <Spin />}
-            <div className="h-[200px] tablet:h-[400px] flex items-center bg-hero-pattern bg-cover">
+            <div className="h-[200px] tablet:h-[400px] flex items-center bg-hero-pattern bg-cover mt-[100px] laptop:mt-0">
                 <div className="px-24">
                     <h1 className="text-title text-2xl tablet:text-[40px] font-bold min-w-fit">LEARN NEW SKILLS</h1>
                     <p className="text-xl font-medium">Learn as hard as you can</p>
@@ -40,13 +41,14 @@ const Home: React.FC = () => {
                     <span className="w-[60px] h-1 bg-black block"></span>
                     <div className="w-full flex overflow-x-scroll">
                         <div className="mt-3 flex shrink-0 gap-3 py-2">
-                            {top10Course.map((course: CourseType) => {
+                            {top10Course.map((course: CourseType, index) => {
                                 return (
                                     <CardVideo
+                                        key={index}
                                         thumbnail={course.thumbnail}
                                         title={course.title}
-                                        author={course.author}
-                                        rating={course.rate}
+                                        author={course.author as User}
+                                        rating={course.rating}
                                         categories={course.categories}
                                         slug={course.slug}
                                     />

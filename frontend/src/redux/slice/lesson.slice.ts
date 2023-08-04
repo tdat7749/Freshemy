@@ -4,13 +4,21 @@ import { Response } from "../../types/response";
 import LessonApis from "@src/apis/lesson";
 
 type LessonSlice = {
+    nowUrlVideo: string;
     isLoading: boolean;
     lessonList: Lesson[];
+    lesson: Lesson;
 };
 
 const initialState: LessonSlice = {
+    nowUrlVideo: "",
     isLoading: false,
     lessonList: [],
+    lesson: {
+        id: -1,
+        title: "",
+        url_video: "",
+    },
 };
 
 export const addLesson = createAsyncThunk<Response<null>, AddLessonType, { rejectValue: Response<null> }>(
@@ -37,6 +45,30 @@ export const deleteLesson = createAsyncThunk<Response<null>, number, { rejectVal
     }
 );
 
+export const getLessonById = createAsyncThunk<Response<Lesson>, number, { rejectValue: Response<null> }>(
+    "lesson/getLessonById",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await LessonApis.getLessonById(body);
+            return response.data as Response<Lesson>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
+export const updateLesson = createAsyncThunk<Response<null>, FormData, { rejectValue: Response<null> }>(
+    "lesson/updateLesson",
+    async (body, ThunkAPI) => {
+        try {
+            const response = await LessonApis.updateLesson(body);
+            return response.data as Response<null>;
+        } catch (error: any) {
+            return ThunkAPI.rejectWithValue(error.data as Response<null>);
+        }
+    }
+);
+
 export const lessonSlice = createSlice({
     name: "lesson",
     initialState: initialState,
@@ -51,6 +83,9 @@ export const lessonSlice = createSlice({
         },
         setDeleteLesson: (state, action: PayloadAction<number>) => {
             state.lessonList = state.lessonList.filter((lesson: Lesson) => lesson.id !== action.payload);
+        },
+        setNowUrlVideo: (state, action: PayloadAction<string>) => {
+            state.nowUrlVideo = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -74,9 +109,20 @@ export const lessonSlice = createSlice({
         builder.addCase(deleteLesson.rejected, (state, action) => {
             state.isLoading = false;
         });
+
+        builder.addCase(getLessonById.pending, (state) => {
+            state.isLoading = true;
+        });
+        builder.addCase(getLessonById.fulfilled, (state, action) => {
+            state.lesson = action.payload.data as Lesson;
+            state.isLoading = false;
+        });
+        builder.addCase(getLessonById.rejected, (state) => {
+            state.isLoading = false;
+        });
     },
 });
 
-export const { setAddLesson, setDeleteLesson } = lessonSlice.actions;
+export const { setAddLesson, setDeleteLesson, setNowUrlVideo } = lessonSlice.actions;
 
 export default lessonSlice.reducer;
