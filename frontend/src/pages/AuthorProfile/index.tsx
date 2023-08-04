@@ -7,6 +7,7 @@ import { User } from "../../types/user";
 import { useParams } from "react-router-dom";
 import { Course } from "../../types/course";
 import NotFound from "../NotFound";
+import i18n from "../../utils/i18next";
 
 const AuthorProfile: React.FC = () => {
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
@@ -51,8 +52,8 @@ const AuthorProfile: React.FC = () => {
                     </div>
                 </div>
                 <div className="grid grid-cols-1 gap-3 place-self-center my-3">
-                    {courseList.length > 0 &&
-                        courseList.map((course, index) => {
+                    {courseList.length > Number(i18n.t("COURSES_LENGTH.EMPTY")) &&
+                        courseList.map((course) => {
                             return (
                                 <div className="laptop:w-3/4 max-w-xs tablet:max-w-full place-self-center">
                                     <CourseCard
