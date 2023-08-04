@@ -8,10 +8,8 @@ import cloudinary from "../configs/cloudinary.config";
 import { UploadApiErrorResponse, UploadApiResponse, DeleteApiResponse } from "cloudinary";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
 import i18n from "../utils/i18next";
-
 import { RequestHasLogin } from "../types/request.type";
 import { getPublicIdFromUrl } from "../utils/helper";
-import services from ".";
 
 ffmpeg.setFfmpegPath(ffmpegPath.path);
 ffmpeg.setFfprobePath(ffprobePath.path);
@@ -82,8 +80,8 @@ const createFileM3U8AndTS = async (
             .on("error", (error) => console.log(error))
             .run();
     });
-
-    return createMainM3U8(inputVideo, resolutions, outputFolderPath, uuid);
+    const urlMainM3U8 = createMainM3U8(inputVideo, resolutions, outputFolderPath, uuid);
+    return urlMainM3U8;
 };
 
 const uploadImageToCloudinary = async (req: RequestHasLogin): Promise<ResponseBase> => {
@@ -93,8 +91,10 @@ const uploadImageToCloudinary = async (req: RequestHasLogin): Promise<ResponseBa
                 req.file?.path as string,
                 (error: UploadApiErrorResponse, result: UploadApiResponse) => {
                     if (error) {
+                        destroyFileAlterUpload(req.file?.path);
                         rejects(error);
                     } else {
+                        destroyFileAlterUpload(req.file?.path);
                         resolve(result);
                     }
                 },
@@ -127,8 +127,10 @@ const uploadAvatarToCloudinary = async (req: RequestHasLogin): Promise<ResponseB
                 req.file?.path as string,
                 (error: UploadApiErrorResponse, result: UploadApiResponse) => {
                     if (error) {
+                        destroyFileAlterUpload(req.file?.path);
                         rejects(error);
                     } else {
+                        destroyFileAlterUpload(req.file?.path);
                         resolve(result);
                     }
                 },
@@ -177,11 +179,24 @@ const destroyImageInCloudinary = async (url: string): Promise<boolean> => {
     }
 };
 
+const destroyFileAlterUpload = async (path: string | undefined): Promise<boolean> => {
+    try {
+        if (path) {
+            fs.unlinkSync(path);
+            return true;
+        }
+        return false;
+    } catch (error: any) {
+        return false;
+    }
+};
+
 const FileStorageService = {
     uploadAvatarToCloudinary,
     createFileM3U8AndTS,
     uploadImageToCloudinary,
     destroyImageInCloudinary,
+    destroyFileAlterUpload,
 };
 
 export default FileStorageService;
