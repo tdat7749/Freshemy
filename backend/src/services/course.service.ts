@@ -450,7 +450,7 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 title: course.title,
                 summary: course.summary,
                 thumbnail: course.thumbnail,
-                rating: averageRating,
+                rating: course.average_rating,
                 author: {
                     first_name: course.user.first_name,
                     last_name: course.user.last_name,
@@ -542,7 +542,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                 title: enroll.course.title,
                 summary: enroll.course.summary,
                 thumbnail: enroll.course.thumbnail,
-                rating: averageRating,
+                rating: enroll.course.average_rating,
                 author: enroll.course.user,
                 category: enroll.course.courses_categories.map((cc) => cc.category.title),
                 number_section: enroll.course.sections.length,
