@@ -5,16 +5,17 @@ import { courseActions } from "@redux/slice";
 import { Course } from "../../types/course";
 import { Spin, Navbar, Pagination, CourseCard } from "@src/components";
 import { User } from "../../types/user";
+import i18n from "../../utils/i18next";
 
 const MyEnrolledCourses: React.FC = () => {
     const [userInput, setUserInput] = useState<string>("");
     const [keyword, setKeyword] = useState<string>("");
-    const [pageIndex, setPageIndex] = useState<number>(1);
+    const [pageIndex, setPageIndex] = useState<number>(Number(i18n.t("PAGE_INDEX.FIRST_PAGE")));
     const inputRef = React.useRef<HTMLInputElement>(null);
     const dispatch = useAppDispatch();
 
     let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
-    let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
+    let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? Number(i18n.t("PAGE_INDEX.FIRST_PAGE"));
 
     const isGetLoading = useAppSelector((state) => state.courseSlice.isGetLoading);
 
@@ -25,9 +26,9 @@ const MyEnrolledCourses: React.FC = () => {
 
     // handle pagination
     const handleChangePageIndex = (pageIndex: number) => {
-        if (pageIndex < 1) {
+        if (pageIndex < Number(i18n.t("PAGE_INDEX.FIRST_PAGE"))) {
             setPageIndex(totalPage);
-        } else if (pageIndex > totalPage) setPageIndex(1);
+        } else if (pageIndex > totalPage) setPageIndex(Number(i18n.t("PAGE_INDEX.FIRST_PAGE")));
         else {
             setPageIndex(pageIndex);
         }
@@ -89,7 +90,12 @@ const MyEnrolledCourses: React.FC = () => {
                             );
                         })}
                     </div>
-                    {totalPage > 1 ? (
+                    {courseList.length === Number(i18n.t("PAGE_INDEX.UNDEFINED_PAGE")) && (
+                        <p className="mt-4 text-2xl text-error text-center font-bold">
+                            You don't have any enrolled courses!
+                        </p>
+                    )}
+                    {totalPage > Number(i18n.t("PAGE_INDEX.FIRST_PAGE")) && (
                         <div className="flex justify-end my-4">
                             <Pagination
                                 handleChangePageIndex={handleChangePageIndex}
@@ -97,13 +103,6 @@ const MyEnrolledCourses: React.FC = () => {
                                 currentPage={pageIndex}
                             />
                         </div>
-                    ) : (
-                        <></>
-                    )}
-                    {totalPage === 0 && (
-                        <p className="mt-4 text-2xl text-error text-center font-bold">
-                            You don't have any enrolled courses!
-                        </p>
                     )}
                 </div>
             </div>

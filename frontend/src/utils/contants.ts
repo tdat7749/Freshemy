@@ -13,6 +13,16 @@ export const ROLE = {
     UNENROLLED: "Unenrolled",
 };
 
+export const PAGE_INDEX = {
+    FIRST_PAGE: "1",
+    UNDEFINED_PAGE: "0"
+}
+
+export const COURSES_LENGTH = {
+    EMPTY: "0",
+    ONLY_ONE: "1"
+}
+
 export const errorMessages = {
     wrongPassword: "Wrong password",
     weakPassword: "Weak password",
