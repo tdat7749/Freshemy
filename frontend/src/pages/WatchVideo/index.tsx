@@ -6,6 +6,7 @@ import NotFound from "../NotFound";
 import { CourseDetail as CourseDetailType } from "../../types/course";
 import { VideoPlayer, Accordion, Spin } from "@src/components";
 import { Section } from "../../types/section";
+import i18n from "../../utils/i18next";
 
 const WatchVideo: React.FC = () => {
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
@@ -16,6 +17,7 @@ const WatchVideo: React.FC = () => {
     const handleChangeSourceVideo = (source: string) => {
         dispatch(lessonActions.setNowUrlVideo(source));
     };
+    const role: string = useAppSelector((state) => state.courseSlice.role) ?? "";
 
     const dispatch = useAppDispatch();
 
@@ -26,13 +28,16 @@ const WatchVideo: React.FC = () => {
             const firstUrlVideo = response.payload.data.sections[0]?.lessons;
             if (response.payload.status_code !== 200) {
                 setIsNotFound(true);
+            } else {
+                //@ts-ignore
+                dispatch(courseActions.getRightOfCourse(response.payload?.data.id));
             }
             if (firstUrlVideo && nowUrlVideoSelector === "") {
                 dispatch(lessonActions.setNowUrlVideo(firstUrlVideo[0].url_video as string));
             }
         });
     }, [dispatch, slug, nowUrlVideoSelector]);
-
+    if (role !== i18n.t("ROLE.AUTHOR") && role !== i18n.t("ROLE.ENROLLED")) return <NotFound />;
     if (isNotFound) return <NotFound />;
 
     return (
