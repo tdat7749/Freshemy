@@ -6,6 +6,7 @@ import NotFound from "../NotFound";
 import { CourseDetail as CourseDetailType } from "../../types/course";
 import { VideoPlayer, Accordion, Spin } from "@src/components";
 import { Section } from "../../types/section";
+import i18n from "../../utils/i18next";
 
 const WatchVideo: React.FC = () => {
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
@@ -18,6 +19,7 @@ const WatchVideo: React.FC = () => {
 
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail);
+    const role: string = useAppSelector((state) => state.courseSlice.role) ?? "";
 
     const dispatch = useAppDispatch();
 
@@ -31,7 +33,11 @@ const WatchVideo: React.FC = () => {
             }
         });
     }, [dispatch, slug]);
-
+    useEffect(() => {
+        //@ts-ignore
+        dispatch(courseActions.getRightOfCourse(courseDetail.id));
+    }, [dispatch, courseDetail]);
+    if (role !== i18n.t("ROLE.AUTHOR") && role !== i18n.t("ROLE.ENROLLED")) return <NotFound />;
     if (isNotFound) return <NotFound />;
 
     return (
