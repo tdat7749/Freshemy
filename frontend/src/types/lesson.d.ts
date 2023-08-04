@@ -11,6 +11,7 @@ export type orderLesson = {
 };
 
 export type AddLesson = {
+    order: number;
     section_id: string;
     title: string;
     video: File | null;

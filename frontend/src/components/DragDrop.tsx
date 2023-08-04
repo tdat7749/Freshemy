@@ -18,7 +18,9 @@ const DragDrop: React.FC<DragProps> = (props) => {
         const actionOrder = result.draggableId.split("-");
         if (result.destination?.index !== result.source.index) {
             const lesson_id: number = parseInt(actionOrder[0]);
-            const indexInSelector: number = lessonOrderSelector.findIndex((item: orderLesson) => item.lessonId === lesson_id);
+            const indexInSelector: number = lessonOrderSelector.findIndex(
+                (item: orderLesson) => item?.lessonId === lesson_id
+            );
             const oldOrder: number = indexInSelector;
             const oldIndex: number = result.source.index;
             const newIndex: number = result.destination?.index ? result.destination?.index : 0;

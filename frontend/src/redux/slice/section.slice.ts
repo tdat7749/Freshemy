@@ -101,11 +101,9 @@ export const sectionSlice = createSlice({
             });
         },
         reOrder: (state, action: PayloadAction<reOrder>) => {
-            console.log(action.payload);
             const reOrderItem = state.orderLesson.splice(action.payload.oldOrder, 1)[0];
             state.orderLesson.splice(action.payload.newOrder, 0, reOrderItem);
             state.orderLesson = [...state.orderLesson];
-            console.log(state.orderLesson);
         },
     },
     extraReducers: (builder) => {
