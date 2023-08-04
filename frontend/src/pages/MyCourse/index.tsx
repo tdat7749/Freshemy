@@ -8,6 +8,7 @@ import { Course } from "../../types/course";
 import toast from "react-hot-toast";
 import { Spin, DeleteModal, Navbar, Pagination, CourseCard } from "@src/components";
 import { User } from "../../types/user";
+import i18n from "../../utils/i18next";
 
 const MyCourses: React.FC = () => {
     const [userInput, setUserInput] = useState<string>("");
@@ -128,7 +129,10 @@ const MyCourses: React.FC = () => {
                             );
                         })}
                     </div>
-                    {courseList.length > 0 ? (
+                    {courseList.length === Number(i18n.t("COURSES_LENGTH.EMPTY")) && (
+                        <p className="mt-4 text-2xl text-error text-center font-bold">You don't have any courses!</p>
+                    )}
+                    {totalPage > Number(i18n.t("PAGE_INDEX.FIRST_PAGE")) && (
                         <div className="flex justify-end my-4">
                             <Pagination
                                 handleChangePageIndex={handleChangePageIndex}
@@ -136,8 +140,6 @@ const MyCourses: React.FC = () => {
                                 currentPage={pageIndex}
                             />
                         </div>
-                    ) : (
-                        <p className="mt-4 text-2xl text-error text-center font-bold">You don't have any courses!</p>
                     )}
                 </div>
             </div>
