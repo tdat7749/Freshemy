@@ -8,20 +8,22 @@ import { eveluateList, sortingBy } from "../../utils/helper";
 import useQueryParams from "../../hooks/useQueryParams";
 import { User } from "../../types/user";
 import { useNavigate } from "react-router-dom";
+import i18n from "../../utils/i18next";
 
 const AllCourses: React.FC = () => {
     const { keyword, rating, category } = useQueryParams();
 
     const [evaluate, setEvaluate] = useState<number | undefined>(Number(rating));
     const [categories, setCategories] = useState<number[]>([]);
-    const [pageIndex, setPageIndex] = useState<number>(1);
+    const [pageIndex, setPageIndex] = useState<number>(Number(i18n.t("PAGE_INDEX.FIRST_PAGE")));
     const [sortBy, setSortBy] = useState<string>("");
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     let courseList: Course[] = useAppSelector((state) => state.courseSlice.courses) ?? [];
-    let totalPage: number = useAppSelector((state) => state.courseSlice.totalPage) ?? 1;
+    let totalPage: number =
+        useAppSelector((state) => state.courseSlice.totalPage) ?? Number(i18n.t("PAGE_INDEX.FIRST_PAGE"));
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
 
     const initialCheckedStatus: Record<number, boolean> = categoriesList.reduce(
@@ -75,16 +77,16 @@ const AllCourses: React.FC = () => {
         setCheckedStatus(initialCheckedStatus);
         navigate("/all-courses", { replace: true });
         const query: SelectCourse = {
-            pageIndex: 1,
+            pageIndex: Number(i18n.t("PAGE_INDEX.FIRST_PAGE")),
         };
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
     };
 
     const handleChangePageIndex = (pageIndex: number) => {
-        if (pageIndex < 1) {
+        if (pageIndex < Number(i18n.t("PAGE_INDEX.FIRST_PAGE"))) {
             setPageIndex(totalPage);
-        } else if (pageIndex > totalPage) setPageIndex(1);
+        } else if (pageIndex > totalPage) setPageIndex(Number(i18n.t("PAGE_INDEX.FIRST_PAGE")));
         else {
             setPageIndex(pageIndex);
         }
@@ -115,7 +117,7 @@ const AllCourses: React.FC = () => {
 
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
-    }, [dispatch, keyword, pageIndex, sortBy, evaluate, category]);
+    }, [dispatch, keyword, pageIndex, sortBy, category]);
 
     return (
         <>
@@ -202,41 +204,42 @@ const AllCourses: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex-1 grid grid-cols-1 border-t-[1px] laptop:border-l-[1px] laptop:border-t-0 pl-3">
-                            {courseList.length === 0 && (
-                                <p className="text-error text-2xl">Don't have any course yet!</p>
+                        <div className="border-t-[1px] laptop:border-l-[1px] laptop:border-t-0">
+                            {courseList.length === Number(i18n.t("COURSES_LENGTH.EMPTY")) && (
+                                <p className="text-error text-2xl ml-3">Don't have any course yet!</p>
                             )}
-                            {courseList.length === 1 && (
-                                <p className="text-2xl font-medium">{courseList.length} result have been found </p>
+                            {courseList.length >= Number(i18n.t("COURSES_LENGTH.ONLY_ONE")) && (
+                                <p className="text-2xl ml-3 font-medium">
+                                    {courseList.length} result(s) have been found
+                                </p>
                             )}
-                            {courseList.length > 1 && (
-                                <p className="text-2xl font-medium">{courseList.length} results have been found </p>
-                            )}
-                            {courseList.length > 0 &&
-                                courseList.map((course, index) => (
-                                    <div
-                                        className="w-full max-w-xs tablet:max-w-full place-self-center laptop:place-self-start"
-                                        key={index}
-                                    >
-                                        <CourseCard
-                                            id={course.id}
-                                            title={course.title}
-                                            thumbnail={course.thumbnail}
-                                            rating={course.rating}
-                                            status={course.status}
-                                            slug={course.slug}
-                                            summary={course.summary}
-                                            attendees={course.attendees}
-                                            numberOfSection={course.number_section}
-                                            author={course.author as User}
-                                            isEditCourse={false}
-                                        />
-                                    </div>
-                                ))}
+                            <div className="flex-1 grid grid-cols-1 pl-3">
+                                {courseList.length > Number(i18n.t("COURSES_LENGTH.EMPTY")) &&
+                                    courseList.map((course, index) => (
+                                        <div
+                                            className="w-full max-w-xs tablet:max-w-full place-self-center laptop:place-self-start"
+                                            key={index}
+                                        >
+                                            <CourseCard
+                                                id={course.id}
+                                                title={course.title}
+                                                thumbnail={course.thumbnail}
+                                                rating={course.rating}
+                                                status={course.status}
+                                                slug={course.slug}
+                                                summary={course.summary}
+                                                attendees={course.attendees}
+                                                numberOfSection={course.number_section}
+                                                author={course.author as User}
+                                                isEditCourse={false}
+                                            />
+                                        </div>
+                                    ))}
+                            </div>
                         </div>
                     </div>
                 </div>
-                {totalPage > 1 ? (
+                {totalPage > Number(i18n.t("PAGE_INDEX.FIRST_PAGE")) && (
                     <div className="flex justify-end my-4">
                         <Pagination
                             handleChangePageIndex={handleChangePageIndex}
@@ -244,8 +247,6 @@ const AllCourses: React.FC = () => {
                             currentPage={pageIndex}
                         />
                     </div>
-                ) : (
-                    <></>
                 )}
             </div>
         </>

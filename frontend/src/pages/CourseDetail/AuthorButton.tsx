@@ -6,6 +6,7 @@ import { CourseDetail as CourseDetailType } from "../../types/course";
 import WatchVideoIcon from "@src/components/icons/WatchVideoIcon";
 import { useAppDispatch } from "../../hooks/hooks";
 import { lessonActions } from "@redux/slice";
+import i18n from "../../utils/i18next";
 type AuthorButtonProps = {
     handleDelete(): void;
     courseDetail: CourseDetailType;
@@ -18,7 +19,7 @@ const AuthorButton: React.FC<AuthorButtonProps> = (props) => {
     };
     return (
         <>
-            {props.courseDetail.sections.length > 0 && (
+            {props.courseDetail.sections.length > Number(i18n.t("COURSES_LENGTH.EMPTY")) && (
                 <Link to={`/course-detail/${props.courseDetail.slug}/watch`} onClick={clearUrlVideo}>
                     <button className="text-white btn btn-primary text-lg">
                         <WatchVideoIcon />

@@ -95,19 +95,19 @@ const getTop10Courses = async () => {
 const selectCourses = async (values: SelectCourse) => {
     let pathBase = `/courses/all?pageIndex=${values.pageIndex}`;
     if (values.rating) {
-        pathBase = pathBase + `&ratings=${values.rating}`;
+        pathBase = pathBase + `&ratings=${encodeURIComponent(values.rating)}`;
     }
 
     if (values.keyword) {
-        pathBase = pathBase + `&keyword=${values.keyword}`;
+        pathBase = pathBase + `&keyword=${encodeURIComponent(values.keyword)}`;
     }
 
     if (values.sortBy) {
-        pathBase = pathBase + `&sortBy=${values.sortBy}`;
+        pathBase = pathBase + `&sortBy=${encodeURIComponent(values.sortBy)}`;
     }
 
     if (values.category) {
-        values.category.map((cate) => (pathBase = pathBase + `&categories=${cate}`));
+        values.category.map((cate) => (pathBase = pathBase + `&categories=${encodeURIComponent(cate)}`));
     }
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), pathBase);
