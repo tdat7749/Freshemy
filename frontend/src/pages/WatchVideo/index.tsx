@@ -28,17 +28,15 @@ const WatchVideo: React.FC = () => {
             const firstUrlVideo = response.payload.data.sections[0]?.lessons;
             if (response.payload.status_code !== 200) {
                 setIsNotFound(true);
+            } else {
+                //@ts-ignore
+                dispatch(courseActions.getRightOfCourse(response.payload?.data.id));
             }
             if (firstUrlVideo && nowUrlVideoSelector === "") {
                 dispatch(lessonActions.setNowUrlVideo(firstUrlVideo[0].url_video as string));
             }
         });
     }, [dispatch, slug, nowUrlVideoSelector]);
-
-    useEffect(() => {
-        //@ts-ignore
-        dispatch(courseActions.getRightOfCourse(courseDetail.id));
-    }, [dispatch, courseDetail]);
     if (role !== i18n.t("ROLE.AUTHOR") && role !== i18n.t("ROLE.ENROLLED")) return <NotFound />;
     if (isNotFound) return <NotFound />;
 
