@@ -26,6 +26,7 @@ import { Section } from "../types/section.type";
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
     const user_id = req.user_id;
+    console.log(req.body)
     try {
         const listCategoryId = categories.map((item: number) => ({
             category_id: item,
@@ -547,18 +548,12 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
         const totalPage = Math.ceil(totalRecord / take);
         
         const enrolledCoursesData: CourseInfo[] = (enrolled?.map((enroll) => {
-            let averageRating: number = 0;
-            if (enroll.course.ratings.length > 0) {
-                const ratingsSum = enroll.course.ratings.reduce((total, rating) => total + rating.score, 0);
-                averageRating = Number((ratingsSum / enroll.course.ratings.length).toFixed(1));
-            }
-            
             return {
                 id: enroll.course.id,
                 title: enroll.course.title,
                 summary: enroll.course.summary,
                 thumbnail: enroll.course.thumbnail,
-                rate: averageRating,
+                rate: enroll.course.average_rating,
                 author: enroll.course.user,
                 category: enroll.course.courses_categories.map((cc) => cc.category.title),
                 number_section: enroll.course.sections.length,
