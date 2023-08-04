@@ -9,6 +9,7 @@ type Lesson = {
 
 export const LessonSchema: ObjectSchema<Lesson> = Joi.object({
     title: Joi.string()
+        .trim()
         .required()
         .max(100)
         .messages({
@@ -33,6 +34,7 @@ type UpdateLesson = {
 
 export const UpdateLessonSchema: ObjectSchema<UpdateLesson> = Joi.object({
     title: Joi.string()
+        .trim()
         .required()
         .max(100)
         .messages({
