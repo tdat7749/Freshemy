@@ -127,17 +127,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                         id: true,
                     },
                 },
-                ratings: {
-                    include: {
-                        user: {
-                            select: {
-                                first_name: true,
-                                last_name: true,
-                                url_avatar: true,
-                            },
-                        },
-                    },
-                },
             },
         });
 
@@ -150,11 +139,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories.push(category.category);
                 });
                 const sections: Section[] = course.sections;
-                let averageRating: number = 0;
-                if (course.ratings.length > 0) {
-                    const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
-                    averageRating = Number((ratingsSum / course.ratings.length).toFixed(1));
-                }
                 const courseData: CourseDetail = {
                     id: course.id,
                     slug: course.slug,
@@ -162,7 +146,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories: categories,
                     summary: course.summary,
                     author: course.user,
-                    rating: averageRating,
+                    rating: course.average_rating,
                     thumbnail: course.thumbnail,
                     description: course.description,
                     sections: sections,
@@ -465,7 +449,7 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 title: course.title,
                 summary: course.summary,
                 thumbnail: course.thumbnail,
-                rate: averageRating,
+                rating: course.average_rating,
                 author: {
                     first_name: course.user.first_name,
                     last_name: course.user.last_name,
@@ -505,6 +489,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                     title: {
                         contains: parsedKeyword,
                     },
+                    is_delete: false,
                 },
                 user_id: userId,
             },
@@ -518,11 +503,6 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                         courses_categories: {
                             include: {
                                 category: true,
-                            },
-                        },
-                        ratings: {
-                            include: {
-                                user: true,
                             },
                         },
                         sections: true,
@@ -546,18 +526,12 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
         const totalPage = Math.ceil(totalRecord / take);
 
         const enrolledCoursesData: CourseInfo[] = enrolled?.map((enroll) => {
-            let averageRating: number = 0;
-            if (enroll.course.ratings.length > 0) {
-                const ratingsSum = enroll.course.ratings.reduce((total, rating) => total + rating.score, 0);
-                averageRating = Number((ratingsSum / enroll.course.ratings.length).toFixed(1));
-            }
-
             return {
                 id: enroll.course.id,
                 title: enroll.course.title,
                 summary: enroll.course.summary,
                 thumbnail: enroll.course.thumbnail,
-                rate: averageRating,
+                rating: enroll.course.average_rating,
                 author: enroll.course.user,
                 category: enroll.course.courses_categories.map((cc) => cc.category.title),
                 number_section: enroll.course.sections.length,
@@ -704,8 +678,33 @@ const ratingCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 score: ratings,
             },
         });
-
-        return new ResponseSuccess(201, i18n.t("successMessages.ratingSuccess"), true);
+        if (create_rating) {
+            const ratings = await db.rating.findMany({
+                where: {
+                    course_id,
+                },
+            });
+            let average_rating: number = 0;
+            if (ratings.length > 0) {
+                const ratingsSum = ratings.reduce((total, rating) => total + rating.score, 0);
+                average_rating = Number((ratingsSum / ratings.length).toFixed(1));
+            }
+            const update_avg_rating = await db.course.update({
+                where: {
+                    id: course_id,
+                },
+                data: {
+                    average_rating,
+                },
+            });
+            if (update_avg_rating) {
+                return new ResponseSuccess(201, i18n.t("successMessages.ratingSuccess"), true);
+            } else {
+                return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+            }
+        } else {
+            return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+        }
     } catch (error: any) {
         return new ResponseError(500, error.message, false);
     }
@@ -925,7 +924,7 @@ const getAllCourses = async (
                             title: cc.category.title,
                         };
                     }),
-                    average_rating: course.average_rating,
+                    rating: course.average_rating,
                     title: course.title,
                     summary: course.summary,
                     description: course.description,

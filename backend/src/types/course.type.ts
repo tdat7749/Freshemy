@@ -22,7 +22,7 @@ export type CourseInfo = {
     title: string;
     summary: string;
     thumbnail: string;
-    rate: number;
+    rating: number;
     author: Author;
     category: string[];
     number_section: number;
@@ -66,7 +66,7 @@ export type CourseCard = {
     categories: Category[];
     summary: string;
     author: Author;
-    average_rating: number;
+    rating: number;
     attendees: number;
     number_section: number;
     thumbnail: string;
