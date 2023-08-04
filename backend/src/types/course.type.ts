@@ -59,14 +59,14 @@ export type OutstandingCourse = {
     updated_at: Date;
 };
 
-export type AllCourseDetail = {
+export type CourseCard = {
     id: number;
     slug: string;
     title: string;
     categories: Category[];
     summary: string;
     author: Author;
-   
+    average_rating: number;
     attendees: number;
     number_section: number;
     thumbnail: string;
@@ -76,12 +76,6 @@ export type AllCourseDetail = {
     status: boolean;
 };
 
-export type FilteredCourseResult = {
-    courses: AllCourseDetail[];
-    total_page: number;
-    total_record: number;
-};
-
 export type CourseOrderByWithRelationInput = {
     [x: string]: "asc" | "desc" | { _count?: "asc" | "desc" } | undefined;
     created_at?: "asc" | "desc" | undefined;
@@ -89,4 +83,3 @@ export type CourseOrderByWithRelationInput = {
     enrolleds?: { _count?: "asc" | "desc" } | undefined;
     sections?: { _count?: "asc" | "desc" } | undefined;
 };
-

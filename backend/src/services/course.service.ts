@@ -8,8 +8,7 @@ import {
     CourseEdit,
     OutstandingCourse,
     CourseInfo,
-    FilteredCourseResult,
-    AllCourseDetail,
+    CourseCard,
     CourseOrderByWithRelationInput,
 } from "../types/course.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
@@ -331,7 +330,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
         const isFoundCourseById = await db.course.findFirst({
             where: {
                 id: courseId,
-                is_delete: false
+                is_delete: false,
             },
         });
 
@@ -510,7 +509,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                 user_id: userId,
             },
             orderBy: {
-                created_at: "desc"
+                created_at: "desc",
             },
             include: {
                 course: {
@@ -527,7 +526,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                             },
                         },
                         sections: true,
-                        enrolleds: true
+                        enrolleds: true,
                     },
                 },
             },
@@ -545,14 +544,14 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
         });
 
         const totalPage = Math.ceil(totalRecord / take);
-        
-        const enrolledCoursesData: CourseInfo[] = (enrolled?.map((enroll) => {
+
+        const enrolledCoursesData: CourseInfo[] = enrolled?.map((enroll) => {
             let averageRating: number = 0;
             if (enroll.course.ratings.length > 0) {
                 const ratingsSum = enroll.course.ratings.reduce((total, rating) => total + rating.score, 0);
                 averageRating = Number((ratingsSum / enroll.course.ratings.length).toFixed(1));
             }
-            
+
             return {
                 id: enroll.course.id,
                 title: enroll.course.title,
@@ -565,7 +564,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                 slug: enroll.course.slug,
                 attendees: enroll.course.enrolleds.length,
             };
-        }));
+        });
 
         const responseData: PagingResponse<CourseInfo[]> = {
             total_page: totalPage,
@@ -834,11 +833,10 @@ const getAllCourses = async (
     keyword?: string,
     categories?: string[],
     sortBy?: string,
-    filterByRatings?: "asc" | "desc" | undefined,
     ratings?: number,
 ): Promise<ResponseBase> => {
     try {
-        const take = 10;
+        const take = configs.general.PAGE_SIZE;
         const skip = ((pageIndex ?? 1) - 1) * take;
         const categoriesConvert = categories?.map((item: string) => Number(item));
         const orderBy: CourseOrderByWithRelationInput = {};
@@ -846,7 +844,7 @@ const getAllCourses = async (
         if (sortBy === "newest") {
             orderBy.created_at = "desc";
         } else if (sortBy === "attendees") {
-            orderBy.enrolleds = { _count: filterByRatings || "desc" };
+            orderBy.enrolleds = { _count: "desc" };
         }
 
         const categoriesFilter = categoriesConvert?.map((item: number) => {
@@ -861,24 +859,26 @@ const getAllCourses = async (
             };
         });
 
-        const baseFilter = {
-            title: keyword
-                ? {
-                      contains: keyword.toLowerCase(),
-                  }
-                : undefined,
+        let baseFilter: any = {
             is_delete: false,
-
-            ratings: ratings
-                ? {
-                      some: {
-                          score: ratings,
-                      },
-                  }
-                : undefined,
-
-            AND: categoriesFilter,
         };
+
+        if (keyword) {
+            baseFilter.title = {
+                contains: keyword.toLowerCase(),
+            };
+        }
+
+        if (categoriesConvert) {
+            baseFilter.AND = categoriesFilter;
+        }
+
+        if (ratings) {
+            baseFilter.average_rating = {
+                gte: ratings,
+                lt: (ratings as number) + 1, // nếu rating truyền vào là 3, thì login ở đây sẽ filter rating >=3 và bé hơn 4
+            };
+        }
 
         const totalRecord = await db.course.count({
             where: baseFilter,
@@ -893,21 +893,8 @@ const getAllCourses = async (
                         category: true,
                     },
                 },
-                ratings: {
-                    include: {
-                        user: true,
-                    },
-                },
-                sections: {
-                    include: {
-                        lessons: true,
-                    },
-                },
-                enrolleds: {
-                    include: {
-                        user: true,
-                    },
-                },
+                sections: true,
+                enrolleds: true,
             },
             skip,
             take,
@@ -916,32 +903,13 @@ const getAllCourses = async (
 
         const totalPage = Math.ceil(totalRecord / take);
 
-        // Filter courses based on the ratings
-        const filteredCourses = coursesQuery.filter((course) => {
-            const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
-            const averageRating = course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0;
-
-            if (ratings === undefined) {
-                return true; // No rating filter, include all courses
-            }
-
-            if (filterByRatings === "asc") {
-                return averageRating >= ratings;
-            } else {
-                return averageRating <= ratings;
-            }
-        });
-
-        const coursesData: AllCourseDetail[] = filteredCourses
+        const coursesData: CourseCard[] = coursesQuery
             .map((course) => ({
                 ...course,
                 attendees: course.enrolleds.length, // Calculate number of attendees
-                number_section: course.sections.length, 
+                number_section: course.sections.length,
             }))
             .map((course) => {
-                const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
-                const averageRating = (course.ratings.length > 0 ? ratingsSum / course.ratings.length : 0).toFixed(1);
-
                 return {
                     id: course.id,
                     slug: course.slug,
@@ -951,13 +919,13 @@ const getAllCourses = async (
                         first_name: course.user.first_name,
                         last_name: course.user.last_name,
                     },
-                    rate: averageRating,
                     categories: course.courses_categories.map((cc) => {
                         return {
                             id: cc.category.id,
                             title: cc.category.title,
                         };
                     }),
+                    average_rating: course.average_rating,
                     title: course.title,
                     summary: course.summary,
                     description: course.description,
@@ -969,18 +937,13 @@ const getAllCourses = async (
                 };
             });
 
-        const responseData: FilteredCourseResult = {
+        const responseData: PagingResponse<CourseCard[]> = {
             total_page: totalPage,
             total_record: totalRecord,
-            courses: coursesData,
+            data: coursesData,
         };
 
-        return new ResponseSuccess<FilteredCourseResult>(
-            200,
-            i18n.t("successMessages.getDataSuccess"),
-            true,
-            responseData,
-        );
+        return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, responseData);
     } catch (error) {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
