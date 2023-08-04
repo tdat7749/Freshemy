@@ -17,7 +17,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 className="rating-hidden hover:cursor-default"
-                checked
+                checked={score === 0}
             />
             <input
                 id="1"
@@ -26,7 +26,6 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 name={ratingName}
                 disabled
                 className="bg-yellow-300 mask-star-2 mask-half-1  hover:cursor-default"
-                checked
             />
             <input
                 id="2"
@@ -35,7 +34,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 name={ratingName}
                 disabled
                 className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
-                checked
+                checked={score === 1}
             />
             <input
                 id="3"
