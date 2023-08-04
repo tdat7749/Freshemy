@@ -527,12 +527,6 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
         const totalPage = Math.ceil(totalRecord / take);
 
         const enrolledCoursesData: CourseInfo[] = enrolled?.map((enroll) => {
-            let averageRating: number = 0;
-            if (enroll.course.ratings.length > 0) {
-                const ratingsSum = enroll.course.ratings.reduce((total, rating) => total + rating.score, 0);
-                averageRating = Number((ratingsSum / enroll.course.ratings.length).toFixed(1));
-            }
-
             return {
                 id: enroll.course.id,
                 title: enroll.course.title,
