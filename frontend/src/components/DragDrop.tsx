@@ -7,7 +7,6 @@ import { sectionActions } from "@redux/slice";
 
 type DragProps = {
     initialItems: JSX.Element[];
-    status: number;
 };
 
 const DragDrop: React.FC<DragProps> = (props) => {

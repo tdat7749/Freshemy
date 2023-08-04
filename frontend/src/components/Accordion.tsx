@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 
 import { CourseDetail as CourseDetailType } from "../types/course";
 import { lessonActions } from "@redux/slice";
+import DragDrop from "./DragDrop";
 // import { useAppSelector } from "../hooks/hooks";
 // import { Lesson } from "../types/lesson";
 
@@ -94,52 +95,58 @@ const Accordion: React.FC<AccordionType> = (props) => {
                     </div>
                 </h2>
             </div>
-            {show &&
-                props.section.lessons &&
-                props.section?.lessons.map((lesson, index) => (
-                    <div
-                        className={`py-4 pl-8 pr-4 border rounded-lg my-2 hover:cursor-pointer flex justify-between  ${
-                            lesson.url_video === props.source ? "bg-backgroundHover" : ""
-                        }`}
-                        onClick={() => {
-                            if (props.handleChangeSourceVideo) {
-                                props.handleChangeSourceVideo(lesson.url_video);
-                            }
-                            if (props.redirectToWatchVideo) {
-                                dispatch(lessonActions.setNowUrlVideo(lesson.url_video));
-                                navigate(`/course-detail/${courseDetail.slug}/watch`);
-                            }
-                        }}
-                        key={index}
-                    >
-                        <p>{lesson.title}</p>
+            {show && props.section.lessons && (
+                <DragDrop
+                    initialItems={props.section?.lessons.map((lesson, index) => (
+                        <div
+                            className={`py-4 pl-8 pr-4 border rounded-lg my-2 hover:cursor-pointer flex justify-between  ${
+                                lesson.url_video === props.source ? "bg-backgroundHover" : ""
+                            }`}
+                            onClick={() => {
+                                if (props.handleChangeSourceVideo) {
+                                    props.handleChangeSourceVideo(lesson.url_video);
+                                }
+                                if (props.redirectToWatchVideo) {
+                                    dispatch(lessonActions.setNowUrlVideo(lesson.url_video));
+                                    navigate(`/course-detail/${courseDetail.slug}/watch`);
+                                }
+                            }}
+                            key={`${lesson.id}`}
+                        >
+                            <p>{lesson.title}</p>
 
-                        {props.isDisplayBtn && (
-                            <div className="flex gap-2">
-                                <div
-                                    className="cursor-pointer"
-                                    onClick={() => {
-                                        if (props.handleDisplayEditLesson) {
-                                            props.handleDisplayEditLesson(lesson.id, lesson.title, lesson.url_video);
-                                        }
-                                    }}
-                                >
-                                    <EditSectionIcon />
+                            {props.isDisplayBtn && (
+                                <div className="flex gap-2">
+                                    <div
+                                        className="cursor-pointer"
+                                        onClick={() => {
+                                            if (props.handleDisplayEditLesson) {
+                                                props.handleDisplayEditLesson(
+                                                    lesson.id,
+                                                    lesson.title,
+                                                    lesson.url_video
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        <EditSectionIcon />
+                                    </div>
+                                    <div
+                                        className="cursor-pointer"
+                                        onClick={() => {
+                                            if (props.handleDisplayDeleteModal) {
+                                                props.handleDisplayDeleteModal(lesson.id, false);
+                                            }
+                                        }}
+                                    >
+                                        <DeleteIcon />
+                                    </div>
                                 </div>
-                                <div
-                                    className="cursor-pointer"
-                                    onClick={() => {
-                                        if (props.handleDisplayDeleteModal) {
-                                            props.handleDisplayDeleteModal(lesson.id, false);
-                                        }
-                                    }}
-                                >
-                                    <DeleteIcon />
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                ))}
+                            )}
+                        </div>
+                    ))}
+                />
+            )}
         </>
     );
 };
