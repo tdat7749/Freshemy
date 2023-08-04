@@ -26,7 +26,6 @@ import { Section } from "../types/section.type";
 const createCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
     const { title, slug, description, summary, categories, status, thumbnail } = req.body;
     const user_id = req.user_id;
-    console.log(req.body)
     try {
         const listCategoryId = categories.map((item: number) => ({
             category_id: item,
@@ -129,17 +128,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                         id: true,
                     },
                 },
-                ratings: {
-                    include: {
-                        user: {
-                            select: {
-                                first_name: true,
-                                last_name: true,
-                                url_avatar: true,
-                            },
-                        },
-                    },
-                },
             },
         });
 
@@ -152,11 +140,6 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories.push(category.category);
                 });
                 const sections: Section[] = course.sections;
-                let averageRating: number = 0;
-                if (course.ratings.length > 0) {
-                    const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
-                    averageRating = Number((ratingsSum / course.ratings.length).toFixed(1));
-                }
                 const courseData: CourseDetail = {
                     id: course.id,
                     slug: course.slug,
@@ -164,7 +147,7 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                     categories: categories,
                     summary: course.summary,
                     author: course.user,
-                    rating: averageRating,
+                    rating: course.average_rating,
                     thumbnail: course.thumbnail,
                     description: course.description,
                     sections: sections,
@@ -332,7 +315,7 @@ const editCourse = async (req: Request): Promise<ResponseBase> => {
         const isFoundCourseById = await db.course.findFirst({
             where: {
                 id: courseId,
-                is_delete: false
+                is_delete: false,
             },
         });
 
@@ -467,7 +450,7 @@ const searchMyCourses = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 title: course.title,
                 summary: course.summary,
                 thumbnail: course.thumbnail,
-                rate: averageRating,
+                rating: course.average_rating,
                 author: {
                     first_name: course.user.first_name,
                     last_name: course.user.last_name,
@@ -511,7 +494,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                 user_id: userId,
             },
             orderBy: {
-                created_at: "desc"
+                created_at: "desc",
             },
             include: {
                 course: {
@@ -528,7 +511,7 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
                             },
                         },
                         sections: true,
-                        enrolleds: true
+                        enrolleds: true,
                     },
                 },
             },
@@ -546,21 +529,27 @@ const searchEnrolledCourses = async (req: RequestHasLogin): Promise<ResponseBase
         });
 
         const totalPage = Math.ceil(totalRecord / take);
-        
-        const enrolledCoursesData: CourseInfo[] = (enrolled?.map((enroll) => {
+
+        const enrolledCoursesData: CourseInfo[] = enrolled?.map((enroll) => {
+            let averageRating: number = 0;
+            if (enroll.course.ratings.length > 0) {
+                const ratingsSum = enroll.course.ratings.reduce((total, rating) => total + rating.score, 0);
+                averageRating = Number((ratingsSum / enroll.course.ratings.length).toFixed(1));
+            }
+
             return {
                 id: enroll.course.id,
                 title: enroll.course.title,
                 summary: enroll.course.summary,
                 thumbnail: enroll.course.thumbnail,
-                rate: enroll.course.average_rating,
+                rating: enroll.course.average_rating,
                 author: enroll.course.user,
                 category: enroll.course.courses_categories.map((cc) => cc.category.title),
                 number_section: enroll.course.sections.length,
                 slug: enroll.course.slug,
                 attendees: enroll.course.enrolleds.length,
             };
-        }));
+        });
 
         const responseData: PagingResponse<CourseInfo[]> = {
             total_page: totalPage,
@@ -700,8 +689,33 @@ const ratingCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 score: ratings,
             },
         });
-
-        return new ResponseSuccess(201, i18n.t("successMessages.ratingSuccess"), true);
+        if (create_rating) {
+            const ratings = await db.rating.findMany({
+                where: {
+                    course_id,
+                },
+            });
+            let average_rating: number = 0;
+            if (ratings.length > 0) {
+                const ratingsSum = ratings.reduce((total, rating) => total + rating.score, 0);
+                average_rating = Number((ratingsSum / ratings.length).toFixed(1));
+            }
+            const update_avg_rating = await db.course.update({
+                where: {
+                    id: course_id,
+                },
+                data: {
+                    average_rating,
+                },
+            });
+            if (update_avg_rating) {
+                return new ResponseSuccess(201, i18n.t("successMessages.ratingSuccess"), true);
+            } else {
+                return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+            }
+        } else {
+            return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+        }
     } catch (error: any) {
         return new ResponseError(500, error.message, false);
     }
@@ -931,7 +945,7 @@ const getAllCourses = async (
             .map((course) => ({
                 ...course,
                 attendees: course.enrolleds.length, // Calculate number of attendees
-                number_section: course.sections.length, 
+                number_section: course.sections.length,
             }))
             .map((course) => {
                 const ratingsSum = course.ratings.reduce((total, rating) => total + rating.score, 0);
@@ -953,6 +967,7 @@ const getAllCourses = async (
                             title: cc.category.title,
                         };
                     }),
+                    rating: course.average_rating,
                     title: course.title,
                     summary: course.summary,
                     description: course.description,

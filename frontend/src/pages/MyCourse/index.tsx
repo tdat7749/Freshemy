@@ -118,6 +118,7 @@ const MyCourses: React.FC = () => {
                                         slug={course.slug}
                                         title={course.title}
                                         summary={course.summary}
+                                        rating={course.rating}
                                         author={course.author as User}
                                         attendees={course.attendees}
                                         numberOfSection={course.number_section}
