@@ -29,7 +29,7 @@ const getCategories = async () => {
 };
 
 const getMyCourses = async (values: GetMyCoursesType) => {
-    const path = `courses/search-my-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
+    const path = `courses/my-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
 
@@ -37,7 +37,7 @@ const getMyCourses = async (values: GetMyCoursesType) => {
 };
 
 const getEnrolledCourses = async (values: GetMyCoursesType) => {
-    const path = `courses/search-enrolled-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
+    const path = `courses/enrolled-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
 
@@ -77,7 +77,7 @@ const changeThumbnail = async (values: ChangeThumbnailType) => {
 };
 
 const changeInformation = async (values: CourseChangeInformationType) => {
-    const path = `courses/change-information`;
+    const path = `courses/information`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_PUT"), path, values);
 
@@ -93,7 +93,7 @@ const getTop10Courses = async () => {
 };
 
 const selectCourses = async (values: SelectCourse) => {
-    let pathBase = `/courses/get-all-courses?pageIndex=${values.pageIndex}`;
+    let pathBase = `/courses/all-courses?pageIndex=${values.pageIndex}`;
     if (values.rating) {
         pathBase = pathBase + `&ratings=${values.rating}`;
     }
@@ -161,5 +161,5 @@ export {
     unsubcribeCourse,
     getRightOfCourse,
     getListRatingsOfCourseBySlug,
-    getEnrolledCourses
+    getEnrolledCourses,
 };
