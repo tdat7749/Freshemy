@@ -16,7 +16,6 @@ const DragDrop: React.FC<DragProps> = (props) => {
     const dispatch = useAppDispatch();
     let orderItems: JSX.Element[] = [];
     lessonOrderSelector.forEach((orderId: any) => {
-        console.log(orderId);
         let temp = items.filter((item) => orderId.lessonId == item.key)[0];
         if (temp) {
             orderItems.push(temp);
@@ -43,7 +42,6 @@ const DragDrop: React.FC<DragProps> = (props) => {
                 id: lesson_id,
                 newOrder: newOrder,
             };
-            console.log(reOrder);
             dispatch(sectionActions.reOrder(reOrder));
         }
         if (!result.destination) {

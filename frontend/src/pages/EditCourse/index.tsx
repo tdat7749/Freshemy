@@ -15,7 +15,7 @@ const EditCourse: React.FC = () => {
     const [isDeleteSection, setIsDeleteSection] = useState<boolean>(false);
     const [isDisplayAddLessonModal, setIsDisplayAddLessonModal] = useState<boolean>(false);
     const [isDisplayEditLessonModal, setIsDisplayEditLessonModal] = useState<boolean>(false);
-
+    const [editOrder, setEditOrder] = useState<boolean>(false);
     const [section, setSection] = useState<string>("");
     const [errorSection, setErrorSection] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
@@ -49,6 +49,7 @@ const EditCourse: React.FC = () => {
     };
     const handleAddSection = () => {
         if (section !== "") {
+            setEditOrder(false);
             setErrorSection(false);
             const values: AddSectionType = {
                 course_id: Number(course_id),
@@ -160,17 +161,23 @@ const EditCourse: React.FC = () => {
     };
 
     const handleReOrderLesson = () => {
-        const newOrder: orderLesson[] = orderLessonSelector.map((item: orderLesson, index: number) => {
-            return { ...item, newOrder: index };
-        });
-        //@ts-ignore
-        dispatch(sectionActions.reOrderquest(newOrder)).then((response) => {
-            if (response.payload.status_code === 200) {
-                toast.success(response.payload.message);
-            } else {
-                toast.error(response.payload?.message as string);
-            }
-        });
+        if (editOrder) {
+            const newOrder: orderLesson[] = orderLessonSelector.map((item: orderLesson, index: number) => {
+                return { ...item, newOrder: index };
+            });
+            //@ts-ignore
+            dispatch(sectionActions.reOrderquest(newOrder)).then((response) => {
+                if (response.payload.status_code === 200) {
+                    toast.success(response.payload.message);
+                } else {
+                    toast.error(response.payload?.message as string);
+                }
+            });
+        }
+    };
+
+    const handleToggle = () => {
+        setEditOrder(!editOrder);
     };
     return (
         <>
@@ -209,7 +216,7 @@ const EditCourse: React.FC = () => {
                                 ) : (
                                     sectionOfCourse.map((section, index) => (
                                         <Accordion
-                                            disable={false}
+                                            disable={!editOrder}
                                             key={index}
                                             section={section}
                                             handleDeleteSection={handleDeleteSection}
@@ -222,6 +229,9 @@ const EditCourse: React.FC = () => {
                                     ))
                                 )}
                             </div>
+
+                            <input type="checkbox" className="toggle" checked={editOrder} onChange={handleToggle} />
+
                             <button onClick={handleReOrderLesson}>H!!!!!!!!!!!!!!!!!!!</button>
                         </div>
                     </div>
