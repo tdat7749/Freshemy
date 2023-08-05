@@ -9,6 +9,7 @@ type Section = {
 
 export const SectionSchema: ObjectSchema<Section> = Joi.object({
     title: Joi.string()
+        .trim()
         .required()
         .max(100)
         .messages({
@@ -33,6 +34,7 @@ type UpdateSection = {
 
 export const UpdateSectionSchema: ObjectSchema<UpdateSection> = Joi.object({
     title: Joi.string()
+        .trim()
         .required()
         .max(100)
         .messages({

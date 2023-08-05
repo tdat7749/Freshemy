@@ -8,16 +8,17 @@ generator client {
 }
 
 model Course {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(100)
-  slug        String   @unique @db.VarChar(150)
-  status      Boolean  @default(false)
-  description String   @db.VarChar(210)
-  thumbnail   String   @db.Text
-  summary     String   @db.VarChar(210)
-  is_delete   Boolean  @default(false)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  title          String   @db.VarChar(100)
+  slug           String   @unique @db.VarChar(150)
+  status         Boolean  @default(false)
+  description    String   @db.VarChar(210)
+  thumbnail      String   @db.Text
+  average_rating Float    @default(0) @db.Float
+  summary        String   @db.VarChar(210)
+  is_delete      Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
   user_id Int
   user    User @relation(fields: [user_id], references: [id])

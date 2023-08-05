@@ -4,6 +4,7 @@ import WatchVideoIcon from "@src/components/icons/WatchVideoIcon";
 import RatingIcon from "@src/components/icons/RatingIcon";
 import { CourseDetail } from "../../types/course";
 import DeleteIcon from "@src/components/icons/DeleteIcon";
+import i18n from "../../utils/i18next";
 type SubscribeUserButtonProps = {
     handleTogglePopupRating(): void;
     handleToggleUnsubscribeCourse(): void;
@@ -13,7 +14,7 @@ type SubscribeUserButtonProps = {
 const SubscribeUserButton: React.FC<SubscribeUserButtonProps> = (props) => {
     return (
         <>
-            {props.courseDetail.sections.length > 0 && (
+            {props.courseDetail.sections.length > Number(i18n.t("COURSES_LENGTH.EMPTY")) && (
                 <button className="text-white btn btn-primary text-lg">
                     <WatchVideoIcon />
                     <Link to={`/course-detail/${props.courseDetail.slug}/watch`}>

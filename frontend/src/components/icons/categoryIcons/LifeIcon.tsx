@@ -28,7 +28,7 @@ const LifeIcon: React.FC = () => {
                 />
                 <path
                     fill="#414141"
-                    fill-opacity=".5"
+                    fillOpacity=".5"
                     stroke="#414141"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -45,7 +45,7 @@ const LifeIcon: React.FC = () => {
                 />
                 <path
                     fill="#414141"
-                    fill-opacity=".5"
+                    fillOpacity=".5"
                     stroke="#414141"
                     strokeLinecap="round"
                     strokeLinejoin="round"

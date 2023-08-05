@@ -31,18 +31,19 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
     const [isOpenUnsubscribeModal, setIsOpenUnsubscribeModal] = useState<boolean>(false);
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
-    const [pageIndex, setPageIndex] = useState<number>(1);
+    const [pageIndex, setPageIndex] = useState<number>(Number(i18n.t("PAGE_INDEX.FIRST_PAGE")));
     const navigate = useNavigate();
     const sectionOfCourse: SectionType[] = useAppSelector((state) => state.sectionSlice.sectionList);
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
     const ratings: RatingResponseType[] = useAppSelector((state) => state.courseSlice.ratings) ?? [];
-    const totalRatingPage: number = useAppSelector((state) => state.courseSlice.totalRatingPage) ?? 1;
+    const totalRatingPage: number =
+        useAppSelector((state) => state.courseSlice.totalRatingPage) ?? Number(i18n.t("PAGE_INDEX.FIRST_PAGE"));
     const role: string = useAppSelector((state) => state.courseSlice.role) ?? "";
     const isGetLoading: boolean = useAppSelector((state) => state.courseSlice.isGetLoading) ?? false;
     const handleChangePageIndex = (pageIndex: number) => {
-        if (pageIndex < 1) {
+        if (pageIndex < Number(i18n.t("PAGE_INDEX.FIRST_PAGE"))) {
             setPageIndex(totalRatingPage);
-        } else if (pageIndex > totalRatingPage) setPageIndex(1);
+        } else if (pageIndex > totalRatingPage) setPageIndex(Number(i18n.t("PAGE_INDEX.FIRST_PAGE")));
         else {
             setPageIndex(pageIndex);
         }

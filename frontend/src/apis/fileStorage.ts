@@ -10,7 +10,7 @@ const uploadFile = async (values: UploadFileType) => {
 };
 
 const uploadAvatar = async (values: UploadFileType) => {
-    const path = "fileStorage/change-avatar";
+    const path = "fileStorage/avatar";
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_POST"), path, values);
     return response;
