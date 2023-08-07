@@ -341,6 +341,10 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
         var id = (<any>decoded).id;
         const hash = bcrypt.hashSync(password, salt);
 
+        const matchingPassword = password === confirmPassword;
+
+        if(!matchingPassword) return new ResponseError(403, i18n.t("errorMessages.errorMatchingPassword"), false);
+
         const isFoundUser = await configs.db.user.findUnique({
             where: {
                 id: id,
@@ -349,8 +353,11 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
                 token: true,
             },
         });
+
+        if (!isFoundUser) return new ResponseError(400, i18n.t("errorMessages.errorToken"), false);
+
         if (isFoundUser?.token !== token) {
-            return new ResponseError(404, i18n.t("errorMessages.UnAuthorized"), false);
+            return new ResponseError(400, i18n.t("errorMessages.expiredToken"), false);
         }
         const updateUser = await configs.db.user.update({
             where: {
@@ -364,12 +371,13 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
         if (updateUser) return new ResponseSuccess(200, i18n.t("successMessages.resetPasswordSuccess"), true);
         return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
+        console.log(error.message)
         if (error instanceof TokenExpiredError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.expiredToken"), false);
         } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.errorToken"), false);
         } else if (error instanceof NotBeforeError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.errorToken"), false);
         }
 
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);

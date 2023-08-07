@@ -11,7 +11,7 @@ const ResetPassword: React.FC<{}> = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { token } = useParams();
-
+    const isLoading: boolean = useAppSelector((state) => state.authSlice.isLoading);
     const isLogin = useAppSelector((state) => state.authSlice.isLogin);
     if (isLogin) navigate("/");
 
@@ -93,8 +93,13 @@ const ResetPassword: React.FC<{}> = () => {
                                             className="text-[14px] text-error font-medium"
                                         />
                                     </div>
-                                    <button type="submit" className="text-white btn btn-primary w-full text-lg">
-                                        Submit
+                                    <button 
+                                        className="text-white btn btn-primary w-full text-lg"
+                                        type="submit" 
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading && <span className="loading loading-spinner"></span>}
+                                        {isLoading ? "Loading..." : "Submit"}
                                     </button>
                                 </Form>
                             )}
