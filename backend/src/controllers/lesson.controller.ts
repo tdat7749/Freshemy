@@ -47,11 +47,7 @@ class LessonController {
 
         return res.status(response.getStatusCode()).json(response);
     }
-    async getLessonOrderByCourseId(req: Request, res: Response): Promise<Response> {
-        const response = await service.LessonService.getLessonOrderByCourseId(req);
 
-        return res.status(response.getStatusCode()).json(response);
-    }
     async reOrderLesson(req: Request, res: Response): Promise<Response> {
         const response = await service.LessonService.reOrderLesson(req);
 
