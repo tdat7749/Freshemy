@@ -6,6 +6,8 @@ import { Accordion, DeleteModal, PopupAddLesson, PopupUpdateLesson, Navbar } fro
 import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";
 import { courseActions } from "../../redux/slice";
 import { deteleLessonType, orderLesson } from "../../types/lesson";
+import i18n from "i18next";
+
 import toast from "react-hot-toast";
 import EditForm from "./EditForm";
 import NotFound from "../NotFound";
@@ -31,13 +33,22 @@ const EditCourse: React.FC = () => {
     // const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
     const isGetLoading = useAppSelector((state) => state.courseSlice.isGetLoading);
 
+    const role: string = useAppSelector((state) => state.courseSlice.role) ?? "";
+
     const { course_id } = useParams();
 
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         //@ts-ignore
-        dispatch(courseActions.getCourseDetailById(course_id));
+        dispatch(courseActions.getCourseDetailById(course_id)).then((response) => {
+            if (response && response.payload.status_code === 200) {
+                //@ts-ignore
+                dispatch(courseActions.getRightOfCourse(response.payload?.data.id));
+            } else {
+                setIsNotFound(true);
+            }
+        });
         //@ts-ignore
         dispatch(sectionActions.getSectionByCourseId(course_id));
     }, [dispatch, course_id]);
@@ -71,15 +82,6 @@ const EditCourse: React.FC = () => {
             }, 3000);
         }
     };
-
-    useEffect(() => {
-        // @ts-ignore
-        dispatch(courseActions.getCourseDetailById(course_id)).then((response) => {
-            if (response.payload && response.payload.status_code !== 200) {
-                setIsNotFound(true);
-            }
-        });
-    }, [dispatch, course_id, isNotFound]);
 
     const handleDisplayDeleteModal = (id: number, isDeleteSection: boolean) => {
         setIdItem(id);
@@ -191,6 +193,7 @@ const EditCourse: React.FC = () => {
     };
 
     if (isNotFound) return <NotFound />;
+    if (role !== i18n.t("ROLE.AUTHOR")) return <NotFound />;
 
     return (
         <>
