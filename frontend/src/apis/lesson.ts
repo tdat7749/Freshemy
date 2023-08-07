@@ -21,7 +21,7 @@ const addLesson = async (values: AddLessonType) => {
 
 const updateLesson = async (values: FormData) => {
     const path = `/lessons/${values.get("id")}`;
-
+    values.delete("id");
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_PUT"), path, values);
 
     return response;

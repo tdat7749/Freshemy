@@ -68,9 +68,15 @@ export const errorMessages = {
     sectionIdIsRequired: "Section id is required",
     sectionIdMustBeAnInt: "Section id must be an integer",
     sectionIdMustBeNumber: "Section id must be a number",
+    sectionNotFound: "Section Not Found",
+
+    // Lesson
+    lessonNotFound: "Lesson Not Found",
 
     // Reset password
-    UnAuthorized: "You don't have authorize",
+    expiredToken: "This link is expired",
+    errorToken: "This link is error",
+    errorMatchingPasssword: "Password ",
 
     // Slug
     slugIsUsed: "This slug is already in use",
