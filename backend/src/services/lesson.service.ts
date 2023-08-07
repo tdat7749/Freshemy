@@ -289,9 +289,11 @@ const deleteLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
 const reOrderLesson = async (req: Request): Promise<ResponseBase> => {
     try {
         const newOrders: orderLesson[] = req.body.new_orders;
+        const course_id: number = Number(req.body.course_id);
         if (newOrders.length === 0) {
             return new ResponseError(500, i18n.t("errorMessages.reOrderRequired"), false);
         }
+
         const isDuplicate: boolean = newOrders.some((order, index) => {
             return (
                 newOrders.findIndex((item, idx) => {
@@ -302,18 +304,26 @@ const reOrderLesson = async (req: Request): Promise<ResponseBase> => {
                 }) !== -1
             );
         });
+
         if (isDuplicate) {
             return new ResponseError(400, i18n.t("errorMessages.orderDuplicate"), false);
         }
         for (const newOrder of newOrders) {
-            await configs.db.lesson.update({
+            const updateLesson = await configs.db.lesson.updateMany({
                 where: {
                     id: newOrder.lesson_id,
+                    section: {
+                        course_id: course_id,
+                    },
+                    is_delete: false,
                 },
                 data: {
                     order: newOrder.new_order,
                 },
             });
+            if (!updateLesson) {
+                continue;
+            }
         }
         return new ResponseSuccess(200, i18n.t("successMessages.sectionReorderSuccess"), true, newOrders);
     } catch (error: any) {

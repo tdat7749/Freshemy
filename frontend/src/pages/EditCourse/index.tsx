@@ -177,7 +177,7 @@ const EditCourse: React.FC = () => {
             });
 
             if (orderList.length > 0) {
-                const newOrders = { new_orders: orderList };
+                const newOrders = { new_orders: orderList, course_id: course_id };
                 //@ts-ignore
                 dispatch(sectionActions.reOrderquest(newOrders)).then((response) => {
                     if (response.payload.status_code === 200) {
