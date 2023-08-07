@@ -49,11 +49,11 @@ const CourseCard: FC<Course> = (props: Course) => {
                             </Link>
                         </p>
 
-                        <p className="text-base flex items-center gap-1">
+                        <div className="text-base flex items-center gap-1">
                             <span className=" font-bold">Rating: </span>
                             <TotalRating ratingId={props.id} totalScore={props.rating as number} isForCourse={false} />
                             <span>{props.rating}</span>
-                        </p>
+                        </div>
 
                         <p className="text-base font-bold flex gap-1">
                             Status:{" "}

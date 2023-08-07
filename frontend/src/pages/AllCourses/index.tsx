@@ -24,10 +24,8 @@ const AllCourses: React.FC = () => {
     }
 
     const [evaluate, setEvaluate] = useState<number | undefined>(Number(rating));
-    const [categories, setCategories] = useState<number[]>([]);
     const [pageIndex, setPageIndex] = useState<number>(Number(i18n.t("PAGE_INDEX.FIRST_PAGE")));
     const [sortBy, setSortBy] = useState<string>("");
-
     const [categoryChecked, setCategoryChecked] = useState<number[]>(categoryQuery);
 
     const dispatch = useAppDispatch();
@@ -42,10 +40,8 @@ const AllCourses: React.FC = () => {
         const { value, checked } = event.target;
 
         if (checked) {
-            setCategories((pre) => [...pre, categoryId]);
             setCategoryChecked((pre) => [...pre, categoryId]);
         } else {
-            setCategories((pre) => [...pre.filter((cate) => cate !== Number(value))]);
             setCategoryChecked((pre) => [...pre.filter((cate) => cate !== Number(value))]);
         }
     };
@@ -57,7 +53,7 @@ const AllCourses: React.FC = () => {
             keyword: keyword as string,
             sortBy: sortBy,
             rating: evaluate,
-            category: categories,
+            category: categoryChecked,
         };
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
@@ -71,7 +67,6 @@ const AllCourses: React.FC = () => {
     // HANDLE RESET BTN CLICK
     const handleResetFilter = () => {
         setEvaluate(undefined);
-        setCategories([]);
         setCategoryChecked([]);
         navigate("/all-courses", { replace: true });
         const query: SelectCourse = {
@@ -103,12 +98,12 @@ const AllCourses: React.FC = () => {
             keyword: keyword,
             sortBy: sortBy,
             rating: evaluate,
-            category: categoryQuery,
+            category: categoryChecked,
         };
 
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
-    }, [dispatch, keyword, pageIndex, sortBy, evaluate]);
+    }, [dispatch, keyword, pageIndex, sortBy]);
 
     return (
         <>
