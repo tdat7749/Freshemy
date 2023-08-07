@@ -8,9 +8,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 
 import { CourseDetail as CourseDetailType } from "../types/course";
 import { lessonActions } from "@redux/slice";
-import DragDrop from "./DragDrop";
-// import { useAppSelector } from "../hooks/hooks";
-// import { Lesson } from "../types/lesson";
+import { DragDrop } from "@src/components";
 
 type AccordionType = {
     section: Section;

@@ -65,11 +65,6 @@ const AllCourses: React.FC = () => {
         dispatch(courseActions.selectCourses(query));
     };
 
-    useEffect(() => {
-        // setCheckedStatus(initialCheckedStatus);
-        console.log(category);
-    }, [category]);
-
     // HANDLE SORTING BTN CLICK
     const handleSortingCourse = (sortBy: string) => {
         setSortBy(sortBy);
