@@ -371,7 +371,6 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
         if (updateUser) return new ResponseSuccess(200, i18n.t("successMessages.resetPasswordSuccess"), true);
         return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
-        console.log(error.message)
         if (error instanceof TokenExpiredError) {
             return new ResponseError(400, i18n.t("errorMessages.expiredToken"), false);
         } else if (error instanceof JsonWebTokenError) {
