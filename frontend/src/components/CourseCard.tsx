@@ -5,6 +5,7 @@ import EditIcon from "../components/icons/EditIcon";
 import DeleteIcon from "../components/icons/DeleteIcon";
 import { User } from "../types/user";
 import CompleteIcon from "./icons/CompleteIcon";
+import TotalRating from "./TotalRating";
 
 type Course = {
     id: number;
@@ -27,7 +28,7 @@ const CourseCard: FC<Course> = (props: Course) => {
     const [isDisplayDropDown, setIsDisplayDropDown] = useState<boolean>(false);
     const hasSection = props.numberOfSection !== undefined;
     const hasAttendee = props.attendees !== undefined;
-
+    console.log(props.rating);
     return (
         <div className="py-2">
             <div className="flex flex-col gap-2 tablet:gap-4 tablet:flex-row rounded-2xl hover:bg-backgroundHover/10 transition ease-in-out hover:shadow-lg duration-200 shadow-lg">
@@ -48,7 +49,13 @@ const CourseCard: FC<Course> = (props: Course) => {
                                 {props.author.first_name + " " + props.author.last_name}
                             </Link>
                         </p>
-                        <p>{props.rating}</p>
+
+                        <p className="text-base flex items-center gap-1">
+                            <span className=" font-bold">Rating: </span>
+                            <TotalRating ratingId={props.id} totalScore={props.rating as number} isForCourse={false} />
+                            <span>{props.rating}</span>
+                        </p>
+
                         <p className="text-base font-bold flex gap-1">
                             Status:{" "}
                             {props.status === true ? (

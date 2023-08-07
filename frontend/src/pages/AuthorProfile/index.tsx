@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { CourseCard, Navbar } from "@src/components";
 import { DefaultAvatar } from "@src/assets";
 import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
@@ -6,8 +6,12 @@ import { userActions } from "@redux/slice";
 import { User } from "../../types/user";
 import { useParams } from "react-router-dom";
 import { Course } from "../../types/course";
+import NotFound from "../NotFound";
+import i18n from "../../utils/i18next";
 
 const AuthorProfile: React.FC = () => {
+    const [isNotFound, setIsNotFound] = useState<boolean>(false);
+
     const user: User = useAppSelector((state) => state.userSlice.user);
     const courseList: Course[] = useAppSelector((state) => state.userSlice.course) ?? [];
 
@@ -16,8 +20,14 @@ const AuthorProfile: React.FC = () => {
 
     useEffect(() => {
         // @ts-ignore
-        dispatch(userActions.getAuthorInformation(id));
+        dispatch(userActions.getAuthorInformation(id)).then((response) => {
+            if (response && response.payload.status_code !== 200) {
+                setIsNotFound(true);
+            }
+        });
     }, [dispatch, id]);
+
+    if (isNotFound) return <NotFound />;
 
     return (
         <>
@@ -42,8 +52,8 @@ const AuthorProfile: React.FC = () => {
                     </div>
                 </div>
                 <div className="grid grid-cols-1 gap-3 place-self-center my-3">
-                    {courseList.length > 0 &&
-                        courseList.map((course, index) => {
+                    {courseList.length > Number(i18n.t("COURSES_LENGTH.EMPTY")) &&
+                        courseList.map((course) => {
                             return (
                                 <div className="laptop:w-3/4 max-w-xs tablet:max-w-full place-self-center">
                                     <CourseCard

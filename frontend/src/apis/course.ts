@@ -29,7 +29,7 @@ const getCategories = async () => {
 };
 
 const getMyCourses = async (values: GetMyCoursesType) => {
-    const path = `courses/search-my-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
+    const path = `courses/my-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
 
@@ -37,7 +37,7 @@ const getMyCourses = async (values: GetMyCoursesType) => {
 };
 
 const getEnrolledCourses = async (values: GetMyCoursesType) => {
-    const path = `courses/search-enrolled-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
+    const path = `courses/enrolled-courses?page_index=${values.pageIndex}&keyword=${values.keyword}`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
 
@@ -93,21 +93,21 @@ const getTop10Courses = async () => {
 };
 
 const selectCourses = async (values: SelectCourse) => {
-    let pathBase = `/courses/get-all-courses?pageIndex=${values.pageIndex}`;
+    let pathBase = `/courses/all?pageIndex=${values.pageIndex}`;
     if (values.rating) {
-        pathBase = pathBase + `&ratings=${values.rating}`;
+        pathBase = pathBase + `&ratings=${encodeURIComponent(values.rating)}`;
     }
 
     if (values.keyword) {
-        pathBase = pathBase + `&keyword=${values.keyword}`;
+        pathBase = pathBase + `&keyword=${encodeURIComponent(values.keyword)}`;
     }
 
     if (values.sortBy) {
-        pathBase = pathBase + `&sortBy=${values.sortBy}`;
+        pathBase = pathBase + `&sortBy=${encodeURIComponent(values.sortBy)}`;
     }
 
     if (values.category) {
-        values.category.map((cate) => (pathBase = pathBase + `&categories=${cate}`));
+        values.category.map((cate) => (pathBase = pathBase + `&categories=${encodeURIComponent(cate)}`));
     }
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), pathBase);
@@ -161,5 +161,5 @@ export {
     unsubcribeCourse,
     getRightOfCourse,
     getListRatingsOfCourseBySlug,
-    getEnrolledCourses
+    getEnrolledCourses,
 };

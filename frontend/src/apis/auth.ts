@@ -35,7 +35,7 @@ const getMe = async () => {
 };
 
 const forgotPassword = async (email: string) => {
-    const path = "auth/forgot-password";
+    const path = "auth/forgot";
     const data = {
         email,
     };
@@ -44,7 +44,7 @@ const forgotPassword = async (email: string) => {
 };
 
 const resetPassword = async (values: ResetPasswordType) => {
-    const path = `auth/reset-password`;
+    const path = `auth/reset`;
     const data = {
         confirmPassword: values.confirmPassword,
         password: values.password,
@@ -65,7 +65,7 @@ const refreshToken = async () => {
 };
 
 const verifyEmail = async (token: string) => {
-    const path = `auth/verify-email/${token}`;
+    const path = `auth/verify/${token}`;
 
     const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_GET"), path);
 

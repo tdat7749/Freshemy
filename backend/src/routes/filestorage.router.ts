@@ -6,11 +6,6 @@ import { uploadFileMdw } from "../middlewares/multer";
 const fileStorageRouter: Router = Router();
 
 fileStorageRouter.post("/", isLogin, uploadFileMdw, controllers.fileStorageController.uploadImageToCloudinary);
-fileStorageRouter.post(
-    "/change-avatar",
-    isLogin,
-    uploadFileMdw,
-    controllers.fileStorageController.uploadAvatarToCloudinary,
-);
+fileStorageRouter.post("/avatar", isLogin, uploadFileMdw, controllers.fileStorageController.uploadAvatarToCloudinary);
 
 export default fileStorageRouter;
