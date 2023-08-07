@@ -16,6 +16,9 @@ const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
             where: {
                 course_id: parseInt(course_id),
                 is_delete: false,
+                course: {
+                    is_delete: false,
+                },
             },
             include: {
                 lessons: {
@@ -29,6 +32,7 @@ const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
                         updated_at: true,
                     },
                 },
+                course: true,
             },
         });
         if (isFoundSection)
@@ -53,6 +57,15 @@ const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
 const createSection = async (req: Request): Promise<ResponseBase> => {
     try {
         const { title, course_id } = req.body;
+        const isDeletedCourse = await configs.db.course.findFirst({
+            where: {
+                is_delete: true,
+                id: course_id,
+            },
+        });
+        if (isDeletedCourse) {
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+        }
         const section = await configs.db.section.create({
             data: {
                 title: title,
@@ -82,6 +95,7 @@ const updateSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
         const { id } = req.params;
         const { title } = req.body;
         const section_id = +id;
+
         const isAuthor = await configs.db.section.findFirst({
             include: {
                 course: true,
@@ -94,7 +108,13 @@ const updateSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
         if (!isAuthor) {
-            return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+            return new ResponseError(403, i18n.t("errorMessages.UnAuthorized"), false);
+        }
+        if (isAuthor.course.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+        }
+        if (isAuthor.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.sectionNotFound"), false);
         }
         const section = await configs.db.section.update({
             where: {
@@ -138,7 +158,13 @@ const deleteSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
         if (!isAuthor) {
-            return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+            return new ResponseError(403, i18n.t("errorMessages.UnAuthorized"), false);
+        }
+        if (isAuthor.course.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+        }
+        if (isAuthor.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.sectionNotFound"), false);
         }
         const isDelete = await configs.db.section.update({
             where: {
