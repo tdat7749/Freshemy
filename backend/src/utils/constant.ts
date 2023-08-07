@@ -125,6 +125,11 @@ export const errorMessages = {
 
     //Auth
     loginAgain: "Please login again",
+
+    //reOrder
+    reOrderRequired: "Your reOrder is missing",
+    orderExisted: "Order was Existed",
+    orderDuplicate: "Order item must be unique",
 };
 
 export const successMessages = {

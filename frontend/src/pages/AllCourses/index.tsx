@@ -26,15 +26,15 @@ const AllCourses: React.FC = () => {
         useAppSelector((state) => state.courseSlice.totalPage) ?? Number(i18n.t("PAGE_INDEX.FIRST_PAGE"));
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
 
-    const initialCheckedStatus: Record<number, boolean> = categoriesList.reduce(
-        (acc, categoryItem) => ({
-            ...acc,
-            [categoryItem.id]: categoryItem.id === Number(category),
-        }),
-        {}
+    const [checkedStatus, setCheckedStatus] = useState<Record<number, boolean>>(
+        categoriesList.reduce(
+            (acc, categoryItem) => ({
+                ...acc,
+                [categoryItem.id]: categoryItem.id === Number(category),
+            }),
+            {}
+        )
     );
-
-    const [checkedStatus, setCheckedStatus] = useState<Record<number, boolean>>(initialCheckedStatus);
 
     const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>, categoryId: number) => {
         const { value, checked } = event.target;
@@ -65,6 +65,11 @@ const AllCourses: React.FC = () => {
         dispatch(courseActions.selectCourses(query));
     };
 
+    useEffect(() => {
+        // setCheckedStatus(initialCheckedStatus);
+        console.log(category);
+    }, [category]);
+
     // HANDLE SORTING BTN CLICK
     const handleSortingCourse = (sortBy: string) => {
         setSortBy(sortBy);
@@ -74,7 +79,7 @@ const AllCourses: React.FC = () => {
     const handleResetFilter = () => {
         setEvaluate(undefined);
         setCategories([]);
-        setCheckedStatus(initialCheckedStatus);
+        setCheckedStatus([]);
         navigate("/all-courses", { replace: true });
         const query: SelectCourse = {
             pageIndex: Number(i18n.t("PAGE_INDEX.FIRST_PAGE")),
@@ -93,7 +98,6 @@ const AllCourses: React.FC = () => {
     };
 
     useEffect(() => {
-        setCheckedStatus(initialCheckedStatus);
         // @ts-ignore
         dispatch(courseActions.getCategories());
 
@@ -117,7 +121,7 @@ const AllCourses: React.FC = () => {
 
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
-    }, [dispatch, keyword, pageIndex, sortBy, category]);
+    }, [dispatch, keyword, pageIndex, sortBy]);
 
     return (
         <>

@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import i18n from "../utils/i18next";
 import { date } from "joi";
+import { orderLesson } from "src/types/lession.type";
 
 const getLesson = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -46,34 +47,6 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
-const getLessonOrderByCourseId = async (req: Request): Promise<ResponseBase> => {
-    try {
-        const { course_id } = req.params;
-        const orderLesson = await configs.db.lesson.findMany({
-            select: {
-                id: true,
-            },
-            orderBy: {
-                order: "asc",
-            },
-        });
-        if (orderLesson) return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, orderLesson);
-        return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
-    } catch (error: any) {
-        if (error instanceof PrismaClientKnownRequestError) {
-            return new ResponseError(400, error.toString(), false);
-        }
-        if (error instanceof TokenExpiredError) {
-            return new ResponseError(400, error.message, false);
-        } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(401, error.message, false);
-        } else if (error instanceof NotBeforeError) {
-            return new ResponseError(401, error.message, false);
-        }
-
-        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
-    }
-};
 
 const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
@@ -91,6 +64,15 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
         });
         if (!findCourse) {
             return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+        }
+        const findLessonOrder = await configs.db.lesson.findFirst({
+            where: {
+                id: Number(section_id),
+                order: order,
+            },
+        });
+        if (findLessonOrder) {
+            return new ResponseError(400, i18n.t("errorMessages.orderExisted"), false);
         }
         const sectionIdConvert = parseInt(section_id);
         const uuid = uuidv4();
@@ -239,7 +221,6 @@ const updateLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
 const deleteLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { id, course_id } = req.params;
-        console.log(course_id);
         const lesson_id = +id;
         const isAuthor = await configs.db.lesson.findFirst({
             include: {
@@ -307,18 +288,34 @@ const deleteLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
 
 const reOrderLesson = async (req: Request): Promise<ResponseBase> => {
     try {
-        const newOrers = req.body;
-        for (const newOrder of newOrers) {
+        const newOrders: orderLesson[] = req.body.new_orders;
+        if (newOrders.length === 0) {
+            return new ResponseError(500, i18n.t("errorMessages.reOrderRequired"), false);
+        }
+        const isDuplicate: boolean = newOrders.some((order, index) => {
+            return (
+                newOrders.findIndex((item, idx) => {
+                    return (
+                        (item.new_order === order.new_order && idx !== index) ||
+                        (item.lesson_id === order.lesson_id && idx !== index)
+                    );
+                }) !== -1
+            );
+        });
+        if (isDuplicate) {
+            return new ResponseError(400, i18n.t("errorMessages.orderDuplicate"), false);
+        }
+        for (const newOrder of newOrders) {
             await configs.db.lesson.update({
                 where: {
-                    id: newOrder.lessonId,
+                    id: newOrder.lesson_id,
                 },
                 data: {
-                    order: newOrder.newOrder,
+                    order: newOrder.new_order,
                 },
             });
         }
-        return new ResponseSuccess(200, i18n.t("successMessages.sectionReorderSuccess"), true, newOrers);
+        return new ResponseSuccess(200, i18n.t("successMessages.sectionReorderSuccess"), true, newOrders);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
             return new ResponseError(400, error.toString(), false);
@@ -336,7 +333,6 @@ const reOrderLesson = async (req: Request): Promise<ResponseBase> => {
 };
 const LessonService = {
     reOrderLesson,
-    getLessonOrderByCourseId,
     getLesson,
     createLesson,
     updateLesson,

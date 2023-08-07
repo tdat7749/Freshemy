@@ -157,7 +157,7 @@ export const sectionSlice = createSlice({
             let temp: any = [];
             state.sectionList.forEach((section: any) => {
                 section.lessons.forEach((lesson: any) => {
-                    temp.push({ lessonId: lesson.id });
+                    temp.push({ lesson_id: lesson.id });
                 });
             });
             state.orderLesson = temp;

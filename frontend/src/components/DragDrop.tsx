@@ -17,8 +17,8 @@ const DragDrop: React.FC<DragProps> = (props) => {
     const lessonOrderSelector = useAppSelector((state) => state.sectionSlice.orderLesson);
     const dispatch = useAppDispatch();
     let orderItems: JSX.Element[] = [];
-    lessonOrderSelector.forEach((orderId: any) => {
-        let temp = items.filter((item) => orderId.lessonId == item.key)[0];
+    lessonOrderSelector.forEach((orderId: orderLesson) => {
+        let temp = items.filter((item) => orderId.lesson_id == item.key)[0];
         if (temp) {
             orderItems.push(temp);
         }
@@ -32,7 +32,7 @@ const DragDrop: React.FC<DragProps> = (props) => {
         if (result.destination?.index !== result.source.index) {
             const lesson_id: number = parseInt(actionOrder[LESSON_ID]);
             const indexInSelector: number = lessonOrderSelector.findIndex(
-                (item: orderLesson) => item?.lessonId === lesson_id
+                (item: orderLesson) => item?.lesson_id === lesson_id
             );
             const oldOrder: number = indexInSelector;
             const oldIndex: number = result.source.index;

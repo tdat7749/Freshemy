@@ -170,13 +170,14 @@ const EditCourse: React.FC = () => {
     const handleReOrderLesson = () => {
         setEditOrder(!editOrder);
         if (editOrder) {
-            const newOrder: orderLesson[] = orderLessonSelector.map((item: orderLesson, index: number) => {
-                return { ...item, newOrder: index };
+            const orderList: orderLesson[] = orderLessonSelector.map((item: orderLesson, index: number) => {
+                return { ...item, new_order: index };
             });
 
-            if (newOrder.length > 0) {
+            if (orderList.length > 0) {
+                const newOrders = { new_orders: orderList };
                 //@ts-ignore
-                dispatch(sectionActions.reOrderquest(newOrder)).then((response) => {
+                dispatch(sectionActions.reOrderquest(newOrders)).then((response) => {
                     if (response.payload.status_code === 200) {
                         toast.success(response.payload.message);
                     } else {
