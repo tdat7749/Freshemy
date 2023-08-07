@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { Accordion, DeleteModal, PopupAddLesson, PopupUpdateLesson, Navbar } from "@src/components";
 import { AddSection as AddSectionType, Section as SectionType } from "../../types/section";
 import { courseActions } from "../../redux/slice";
+import { deteleLessonType, orderLesson } from "../../types/lesson";
 import i18n from "i18next";
 
 import toast from "react-hot-toast";
@@ -17,13 +18,19 @@ const EditCourse: React.FC = () => {
     const [isDeleteSection, setIsDeleteSection] = useState<boolean>(false);
     const [isDisplayAddLessonModal, setIsDisplayAddLessonModal] = useState<boolean>(false);
     const [isDisplayEditLessonModal, setIsDisplayEditLessonModal] = useState<boolean>(false);
+
+    const [editOrder, setEditOrder] = useState<boolean>(false);
     const sectionOfCourse: SectionType[] = useAppSelector((state) => state.sectionSlice.sectionList);
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
     const [section, setSection] = useState<string>("");
+    const [errorSection, setErrorSection] = useState<boolean>(false);
     const [idItem, setIdItem] = useState<number>(-1);
     const [itemTitle, setItemTitle] = useState<string>("");
     const [itemVideo, setItemVideo] = useState<string>("");
 
+    const orderLessonSelector = useAppSelector((state) => state.sectionSlice.orderLesson);
+
+    // const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
     const isGetLoading = useAppSelector((state) => state.courseSlice.isGetLoading);
 
     const role: string = useAppSelector((state) => state.courseSlice.role) ?? "";
@@ -45,27 +52,35 @@ const EditCourse: React.FC = () => {
         //@ts-ignore
         dispatch(sectionActions.getSectionByCourseId(course_id));
     }, [dispatch, course_id]);
+
     const handleRerender = () => {
         //@ts-ignore
         dispatch(sectionActions.getSectionByCourseId(course_id));
     };
     const handleAddSection = () => {
-        const values: AddSectionType = {
-            course_id: Number(course_id),
-            title: section,
-        };
-        // @ts-ignore
-        dispatch(sectionActions.addSection(values)).then((response) => {
-            if (response.payload.status_code === 201) {
-                toast.success(response.payload.message);
-                // @ts-ignore
-                dispatch(sectionActions.getSectionByCourseId(course_id));
-            } else {
-                toast.error(response.payload.message);
-            }
-        });
-
-        setSection("");
+        if (section !== "") {
+            setErrorSection(false);
+            const values: AddSectionType = {
+                course_id: Number(course_id),
+                title: section,
+            };
+            // @ts-ignore
+            dispatch(sectionActions.addSection(values)).then((response) => {
+                if (response.payload.status_code === 201) {
+                    toast.success(response.payload.message);
+                    // @ts-ignore
+                    dispatch(sectionActions.getSectionByCourseId(course_id));
+                } else {
+                    toast.error(response.payload.message);
+                }
+            });
+            setSection("");
+        } else {
+            setErrorSection(true);
+            setTimeout(() => {
+                setErrorSection(false);
+            }, 3000);
+        }
     };
 
     const handleDisplayDeleteModal = (id: number, isDeleteSection: boolean) => {
@@ -111,8 +126,12 @@ const EditCourse: React.FC = () => {
     };
 
     const handleDeleteLesson = () => {
+        const deleteLesson: deteleLessonType = {
+            id: idItem,
+            course_id: Number(course_id),
+        };
         //@ts-ignore
-        dispatch(lessonActions.deleteLesson(idItem)).then((response) => {
+        dispatch(lessonActions.deleteLesson(deleteLesson)).then((response) => {
             if (response.payload.status_code === 200) {
                 toast.success(response.payload.message);
                 // @ts-ignore
@@ -150,6 +169,29 @@ const EditCourse: React.FC = () => {
         setIsDisplayEditModal(!isDisplayEditModal);
     };
 
+    const handleReOrderLesson = () => {
+        setEditOrder(!editOrder);
+        if (editOrder) {
+            const orderList: orderLesson[] = orderLessonSelector.map((item: orderLesson, index: number) => {
+                return { ...item, new_order: index };
+            });
+
+            if (orderList.length > 0) {
+                const newOrders = { new_orders: orderList, course_id: course_id };
+                //@ts-ignore
+                dispatch(sectionActions.reOrderquest(newOrders)).then((response) => {
+                    if (response.payload.status_code === 200) {
+                        toast.success(response.payload.message);
+                    } else {
+                        toast.error(response.payload?.message as string);
+                    }
+                });
+            } else {
+                toast.error("Please add some lessons before reorder!");
+            }
+        }
+    };
+
     if (isNotFound) return <NotFound />;
     if (role !== i18n.t("ROLE.AUTHOR")) return <NotFound />;
 
@@ -173,13 +215,24 @@ const EditCourse: React.FC = () => {
                                         setSection(e.target.value);
                                     }}
                                 />
-                                <button
-                                    className="text-white btn btn-primary text-lg flex-2"
-                                    onClick={handleAddSection}
-                                >
-                                    Add section
-                                </button>
+                                <div className=" flex flex-col-reverse tablet:flex-row items-center justify-center gap-2">
+                                    {sectionOfCourse.length > 0 && (
+                                        <button className="btn btn-primary text-lg" onClick={handleReOrderLesson}>
+                                            {editOrder ? "Submit" : "Edit order lesson"}
+                                        </button>
+                                    )}
+
+                                    <button
+                                        className="text-white btn btn-primary text-lg flex-2 ml-2"
+                                        onClick={handleAddSection}
+                                    >
+                                        Add section
+                                    </button>
+                                </div>
                             </div>
+                            {errorSection && (
+                                <p className={`text-error italic font-medium mt-1`}>Section title is required</p>
+                            )}
                             {/* handle list lesson */}
                             <div className="mt-2">
                                 {sectionOfCourse.length <= 0 ? (
@@ -187,6 +240,7 @@ const EditCourse: React.FC = () => {
                                 ) : (
                                     sectionOfCourse.map((section, index) => (
                                         <Accordion
+                                            disable={!editOrder}
                                             key={index}
                                             section={section}
                                             handleDeleteSection={handleDeleteSection}
@@ -201,6 +255,7 @@ const EditCourse: React.FC = () => {
                             </div>
                         </div>
                     </div>
+
                     {/* POPUP DELETE SECTION*/}
                     {isDisplayDeleteModal && isDeleteSection && (
                         <DeleteModal handleDelete={handleDeleteSection} handleCancel={handleCancelModal} />

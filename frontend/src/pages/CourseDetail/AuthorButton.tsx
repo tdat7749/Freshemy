@@ -27,12 +27,13 @@ const AuthorButton: React.FC<AuthorButtonProps> = (props) => {
                     </button>
                 </Link>
             )}
-            <button className="btn btn-primary text-white text-lg">
-                <EditIcon color="#ffffff" />
-                <Link to={`/my-courses/edit/${props.courseDetail.id}`}>
+            <Link to={`/my-courses/edit/${props.courseDetail.id}`}>
+                <button className="btn btn-primary text-white text-lg">
+                    <EditIcon color="#ffffff" />
+
                     <span>Edit</span>
-                </Link>
-            </button>
+                </button>
+            </Link>
             <button
                 className="btn btn-error text-lg"
                 onClick={() => {

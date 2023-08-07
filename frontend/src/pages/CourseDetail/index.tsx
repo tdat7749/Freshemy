@@ -4,9 +4,10 @@ import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { Section } from "../../types/section";
 import { CourseDetail as CourseDetailType, GetRating, RatingResponse as RatingResponseType } from "../../types/course";
+import { Section as SectionType } from "../../types/section";
 import { Link } from "react-router-dom";
 import NotFound from "../NotFound";
-import { courseActions } from "@redux/slice";
+import { courseActions, sectionActions } from "@redux/slice";
 import PopupRating from "./PopupRating";
 
 import { TotalRating, Pagination } from "@src/components";
@@ -32,7 +33,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
     const [idItem, setIdItem] = useState<number>(-1);
     const [pageIndex, setPageIndex] = useState<number>(Number(i18n.t("PAGE_INDEX.FIRST_PAGE")));
     const navigate = useNavigate();
-
+    const sectionOfCourse: SectionType[] = useAppSelector((state) => state.sectionSlice.sectionList);
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
     const ratings: RatingResponseType[] = useAppSelector((state) => state.courseSlice.ratings) ?? [];
     const totalRatingPage: number =
@@ -96,6 +97,8 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
             //@ts-ignore
             dispatch(courseActions.getRightOfCourse(courseDetail.id));
         }
+        //@ts-ignore
+        dispatch(sectionActions.getSectionByCourseId(courseDetail.id));
     }, [dispatch, courseDetail.id, isLogin]);
     useEffect(() => {
         const values: GetRating = {
@@ -202,9 +205,10 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                             <div className="table-of-content my-4">
                                 <h2 className="text-xl tablet:text-3xl font-bold mb-3">Table of Content</h2>
                                 <span className="w-[60px] h-1 bg-black block mb-4"></span>
-                                {courseDetail.sections.map((section: Section, index: number) => {
+                                {sectionOfCourse.map((section: Section, index: number) => {
                                     return (
                                         <Accordion
+                                            disable={true}
                                             key={index}
                                             isDisplayBtn={false}
                                             section={section}

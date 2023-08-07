@@ -1,19 +1,17 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { AddLesson as AddLessonType, Lesson } from "../../types/lesson";
+import { AddLesson as AddLessonType, Lesson, deteleLessonType } from "../../types/lesson";
 import { Response } from "../../types/response";
 import LessonApis from "@src/apis/lesson";
 
 type LessonSlice = {
     nowUrlVideo: string;
     isLoading: boolean;
-    lessonList: Lesson[];
     lesson: Lesson;
 };
 
 const initialState: LessonSlice = {
     nowUrlVideo: "",
     isLoading: false,
-    lessonList: [],
     lesson: {
         id: -1,
         title: "",
@@ -33,7 +31,7 @@ export const addLesson = createAsyncThunk<Response<null>, AddLessonType, { rejec
     }
 );
 
-export const deleteLesson = createAsyncThunk<Response<null>, number, { rejectValue: Response<null> }>(
+export const deleteLesson = createAsyncThunk<Response<null>, deteleLessonType, { rejectValue: Response<null> }>(
     "lesson/deleteLesson",
     async (body, ThunkAPI) => {
         try {
@@ -73,17 +71,6 @@ export const lessonSlice = createSlice({
     name: "lesson",
     initialState: initialState,
     reducers: {
-        setAddLesson: (state, action: PayloadAction<Lesson>) => {
-            state.lessonList = state.lessonList.map((lesson: Lesson) => {
-                if (lesson.id === action.payload.id) {
-                    lesson.title = action.payload.title;
-                }
-                return lesson;
-            });
-        },
-        setDeleteLesson: (state, action: PayloadAction<number>) => {
-            state.lessonList = state.lessonList.filter((lesson: Lesson) => lesson.id !== action.payload);
-        },
         setNowUrlVideo: (state, action: PayloadAction<string>) => {
             state.nowUrlVideo = action.payload;
         },
@@ -93,7 +80,6 @@ export const lessonSlice = createSlice({
             state.isLoading = true;
         });
         builder.addCase(addLesson.fulfilled, (state, action) => {
-            state.lessonList = [...state.lessonList, action.payload.data] as Lesson[];
             state.isLoading = false;
         });
         builder.addCase(addLesson.rejected, (state, action) => {
@@ -123,6 +109,6 @@ export const lessonSlice = createSlice({
     },
 });
 
-export const { setAddLesson, setDeleteLesson, setNowUrlVideo } = lessonSlice.actions;
+export const { setNowUrlVideo } = lessonSlice.actions;
 
 export default lessonSlice.reducer;

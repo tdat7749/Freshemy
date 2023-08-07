@@ -12,6 +12,8 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
 import i18n from "../utils/i18next";
+import { date } from "joi";
+import { orderLesson } from "src/types/lession.type";
 
 const getLesson = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -64,7 +66,7 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
 
 const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const { title, section_id } = req.body;
+        const { title, section_id, order, course_id } = req.body;
         const isAuthor = await configs.db.section.findFirst({
             include: {
                 course: true,
@@ -85,6 +87,15 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
         if (isAuthor.is_delete) {
             return new ResponseError(404, i18n.t("errorMessages.sectionNotFound"), false);
         }
+        const findLessonOrder = await configs.db.lesson.findFirst({
+            where: {
+                id: Number(section_id),
+                order: order,
+            },
+        });
+        if (findLessonOrder) {
+            return new ResponseError(400, i18n.t("errorMessages.orderExisted"), false);
+        }
         const sectionIdConvert = parseInt(section_id);
         const uuid = uuidv4();
 
@@ -94,14 +105,31 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
             configs.general.PATH_TO_PUBLIC_FOLDER_VIDEOS,
             uuid,
         );
-
+        const updateOrder = await configs.db.lesson.updateMany({
+            where: {
+                is_delete: false,
+                order: {
+                    gte: parseInt(order),
+                },
+                section: {
+                    course_id: parseInt(course_id),
+                },
+            },
+            data: {
+                order: {
+                    increment: 1,
+                },
+            },
+        });
         const lesson = await configs.db.lesson.create({
             data: {
+                order: parseInt(order),
                 title: title,
                 section_id: sectionIdConvert,
                 url_video: videoPath,
             },
         });
+
         if (lesson) {
             return new ResponseSuccess(200, i18n.t("successMessages.createDataSuccess"), true);
         } else {
@@ -223,7 +251,7 @@ const updateLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
 
 const deleteLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
-        const { id } = req.params;
+        const { id, course_id } = req.params;
         const lesson_id = +id;
         const isAuthor = await configs.db.lesson.findFirst({
             include: {
@@ -262,7 +290,25 @@ const deleteLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 is_delete: true,
             },
         });
-        if (isDelete) return new ResponseSuccess(200, i18n.t("successMessages.deleteDataSuccess"), true);
+        if (isDelete) {
+            const updateOrder = await configs.db.lesson.updateMany({
+                where: {
+                    is_delete: false,
+                    order: {
+                        gt: isDelete.order,
+                    },
+                    section: {
+                        course_id: parseInt(course_id),
+                    },
+                },
+                data: {
+                    order: {
+                        decrement: 1,
+                    },
+                },
+            });
+            return new ResponseSuccess(200, i18n.t("successMessages.deleteDataSuccess"), true);
+        }
         return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -279,7 +325,64 @@ const deleteLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
     }
 };
+
+const reOrderLesson = async (req: Request): Promise<ResponseBase> => {
+    try {
+        const newOrders: orderLesson[] = req.body.new_orders;
+        const course_id: number = Number(req.body.course_id);
+        if (newOrders.length === 0) {
+            return new ResponseError(500, i18n.t("errorMessages.reOrderRequired"), false);
+        }
+
+        const isDuplicate: boolean = newOrders.some((order, index) => {
+            return (
+                newOrders.findIndex((item, idx) => {
+                    return (
+                        (item.new_order === order.new_order && idx !== index) ||
+                        (item.lesson_id === order.lesson_id && idx !== index)
+                    );
+                }) !== -1
+            );
+        });
+
+        if (isDuplicate) {
+            return new ResponseError(400, i18n.t("errorMessages.orderDuplicate"), false);
+        }
+        for (const newOrder of newOrders) {
+            const updateLesson = await configs.db.lesson.updateMany({
+                where: {
+                    id: newOrder.lesson_id,
+                    section: {
+                        course_id: course_id,
+                    },
+                    is_delete: false,
+                },
+                data: {
+                    order: newOrder.new_order,
+                },
+            });
+            if (!updateLesson) {
+                continue;
+            }
+        }
+        return new ResponseSuccess(200, i18n.t("successMessages.sectionReorderSuccess"), true, newOrders);
+    } catch (error: any) {
+        if (error instanceof PrismaClientKnownRequestError) {
+            return new ResponseError(400, error.toString(), false);
+        }
+        if (error instanceof TokenExpiredError) {
+            return new ResponseError(400, error.message, false);
+        } else if (error instanceof JsonWebTokenError) {
+            return new ResponseError(401, error.message, false);
+        } else if (error instanceof NotBeforeError) {
+            return new ResponseError(401, error.message, false);
+        }
+
+        return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
+    }
+};
 const LessonService = {
+    reOrderLesson,
     getLesson,
     createLesson,
     updateLesson,

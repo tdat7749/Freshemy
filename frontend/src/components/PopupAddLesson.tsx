@@ -7,6 +7,7 @@ import { addLessonValidationSchema } from "../validations/lesson";
 import toast, { Toaster } from "react-hot-toast";
 import i18n from "../utils/i18next";
 import { errorMessages, fileType } from "../utils/contants";
+import { Section as SectionType } from "../types/section";
 
 type AddLessonModalProps = {
     handleDelete: () => void;
@@ -18,14 +19,23 @@ type AddLessonModalProps = {
 const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
     const isLoading = useAppSelector((state) => state.lessonSlice.isLoading) ?? false;
     const [error, setError] = useState("");
+    const sectionOfCourse: SectionType[] = useAppSelector((state) => state.sectionSlice.sectionList);
     const [video, setVideo] = useState<File | null>(null);
     const dispatch = useAppDispatch();
     const formikRef = useRef(null);
     const initialValue: AddLessonType = {
+        order: 0,
         title: "",
         video: null,
         section_id: "",
     };
+
+    let newOrder: number = 0;
+    sectionOfCourse.forEach((section) => {
+        if (section.id <= props.id && section.lessons) {
+            newOrder += section.lessons?.length;
+        }
+    });
 
     const handleChangeVideo = (event: React.ChangeEvent<HTMLInputElement>) => {
         setError("");
@@ -50,9 +60,12 @@ const PopupAddLesson: React.FC<AddLessonModalProps> = (props) => {
 
     const handleOnSubmit = (values: AddLessonType) => {
         let formData = new FormData();
+        const course_id: number = sectionOfCourse[0].course_id || 0;
         formData.append("title", values.title);
         formData.append("section_id", props.id.toString());
         formData.append("video", video as File);
+        formData.append("order", newOrder.toString());
+        formData.append("course_id", course_id.toString());
         //@ts-ignore
         dispatch(lessonActions.addLesson(formData))
             //@ts-ignore

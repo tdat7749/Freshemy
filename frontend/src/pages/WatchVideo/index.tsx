@@ -64,6 +64,7 @@ const WatchVideo: React.FC = () => {
                             {courseDetail.sections.map((section: Section, index) => {
                                 return (
                                     <Accordion
+                                        disable={true}
                                         key={index}
                                         source={nowUrlVideoSelector}
                                         handleChangeSourceVideo={handleChangeSourceVideo}

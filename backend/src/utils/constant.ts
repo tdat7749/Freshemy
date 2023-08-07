@@ -131,6 +131,11 @@ export const errorMessages = {
 
     //Auth
     loginAgain: "Please login again",
+
+    //reOrder
+    reOrderRequired: "Your reOrder is missing",
+    orderExisted: "Order was Existed",
+    orderDuplicate: "Order item must be unique",
 };
 
 export const successMessages = {
@@ -184,7 +189,4 @@ export const successMessages = {
 
     // Upload Image
     imageUploadSuccess: "Upload Image Successfully",
-
-    //Rating
-    ratingSuccess: "Rate successfully",
 };

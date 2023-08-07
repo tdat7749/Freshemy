@@ -4,4 +4,7 @@ dist
 prisma/data
 public
 
-pakage-lock.json
+package-lock.json
+
+/public
+
