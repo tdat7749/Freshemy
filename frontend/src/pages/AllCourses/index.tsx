@@ -13,10 +13,20 @@ import i18n from "../../utils/i18next";
 const AllCourses: React.FC = () => {
     const { keyword, rating, category } = useQueryParams();
 
+    let categoryQuery = category;
+
+    if (typeof categoryQuery === "string") {
+        categoryQuery = [Number(category)];
+    } else if (typeof categoryQuery === "object") {
+        categoryQuery = category.map((cate: string) => Number(cate));
+    } else {
+        categoryQuery = [];
+    }
+
     const [evaluate, setEvaluate] = useState<number | undefined>(Number(rating));
-    const [categories, setCategories] = useState<number[]>([]);
     const [pageIndex, setPageIndex] = useState<number>(Number(i18n.t("PAGE_INDEX.FIRST_PAGE")));
     const [sortBy, setSortBy] = useState<string>("");
+    const [categoryChecked, setCategoryChecked] = useState<number[]>(categoryQuery);
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -26,30 +36,14 @@ const AllCourses: React.FC = () => {
         useAppSelector((state) => state.courseSlice.totalPage) ?? Number(i18n.t("PAGE_INDEX.FIRST_PAGE"));
     const categoriesList: Category[] = useAppSelector((state) => state.courseSlice.categories) ?? [];
 
-    const [checkedStatus, setCheckedStatus] = useState<Record<number, boolean>>(
-        categoriesList.reduce(
-            (acc, categoryItem) => ({
-                ...acc,
-                [categoryItem.id]: categoryItem.id === Number(category),
-            }),
-            {}
-        )
-    );
-
     const handleSingleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>, categoryId: number) => {
         const { value, checked } = event.target;
 
         if (checked) {
-            setCategories((pre) => [...pre, categoryId]);
+            setCategoryChecked((pre) => [...pre, categoryId]);
         } else {
-            setCategories((pre) => [...pre.filter((cate) => cate !== Number(value))]);
+            setCategoryChecked((pre) => [...pre.filter((cate) => cate !== Number(value))]);
         }
-
-        const updatedCheckedStatus = {
-            ...checkedStatus,
-            [categoryId]: event.target.checked,
-        };
-        setCheckedStatus(updatedCheckedStatus);
     };
 
     // HANDLE FILTER BTN CLICK
@@ -59,7 +53,7 @@ const AllCourses: React.FC = () => {
             keyword: keyword as string,
             sortBy: sortBy,
             rating: evaluate,
-            category: categories,
+            category: categoryChecked,
         };
         // @ts-ignore
         dispatch(courseActions.selectCourses(query));
@@ -73,8 +67,7 @@ const AllCourses: React.FC = () => {
     // HANDLE RESET BTN CLICK
     const handleResetFilter = () => {
         setEvaluate(undefined);
-        setCategories([]);
-        setCheckedStatus([]);
+        setCategoryChecked([]);
         navigate("/all-courses", { replace: true });
         const query: SelectCourse = {
             pageIndex: Number(i18n.t("PAGE_INDEX.FIRST_PAGE")),
@@ -93,25 +86,19 @@ const AllCourses: React.FC = () => {
     };
 
     useEffect(() => {
+        setCategoryChecked(categoryQuery);
+    }, [JSON.stringify(categoryQuery)]);
+
+    useEffect(() => {
         // @ts-ignore
         dispatch(courseActions.getCategories());
-
-        let categoryQuery = category;
-
-        if (typeof categoryQuery === "string") {
-            categoryQuery = [Number(category)];
-        } else if (typeof categoryQuery === "object") {
-            categoryQuery = category.map((cate: string) => Number(cate));
-        } else {
-            categoryQuery = [];
-        }
 
         const query: SelectCourse = {
             pageIndex: pageIndex,
             keyword: keyword,
             sortBy: sortBy,
             rating: evaluate,
-            category: categoryQuery,
+            category: categoryChecked,
         };
 
         // @ts-ignore
@@ -191,7 +178,7 @@ const AllCourses: React.FC = () => {
                                                         className="checkbox checkbox-info"
                                                         name={category.title}
                                                         value={category.id}
-                                                        checked={checkedStatus[category.id]}
+                                                        checked={categoryChecked.includes(category.id)}
                                                         onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                                                             handleSingleCategoryChange(event, category.id)
                                                         }
