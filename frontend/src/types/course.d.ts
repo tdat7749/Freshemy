@@ -118,7 +118,7 @@ export type SelectCourse = {
 export type FilterCourse = {
     total_page: number;
     total_record: number;
-    courses: Course[];
+    data: Course[];
 };
 
 export type RatingCourse = {

@@ -111,7 +111,7 @@ class CourseController {
         const response = await services.CourseService.getTop10Courses(req);
         return res.status(response.getStatusCode()).json(response);
     }
-    
+
     async ratingCourse(req: Request, res: Response) {
         const errorValidate: ValidationError | undefined = ratingSchema.validate(req.body).error;
 
@@ -148,7 +148,6 @@ class CourseController {
                     : [req.query.categories as string]
                 : undefined;
             const sortBy: string | undefined = req.query.sortBy ? (req.query.sortBy as string) : undefined;
-            const filterByRatings: "asc" | "desc" | undefined = req.query.filterByRatings as "asc" | "desc" | undefined;
             const ratings: number | undefined = req.query.ratings ? parseFloat(req.query.ratings as string) : undefined;
 
             const response = await services.CourseService.getAllCourses(
@@ -156,7 +155,6 @@ class CourseController {
                 keyword,
                 categories,
                 sortBy,
-                filterByRatings,
                 ratings,
             );
 
