@@ -4,7 +4,7 @@ import { AuthApis } from "@src/apis";
 import i18n from "../utils/i18next";
 
 const axiosPublic = axios.create({
-    baseURL: "http://localhost:3001/api",
+    baseURL: process.env.REACT_APP_BASE_URL,
 });
 
 const axiosInstance = axios.create();
