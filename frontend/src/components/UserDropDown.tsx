@@ -38,7 +38,7 @@ const UserDropDown: React.FC = () => {
                     <span className="ml-3 font-medium text-lg">All courses</span>
                 </div>
             </Link>
-            <Link to={"my-enroll-courses"} className="w-full rounded-lg hover:bg-backgroundHover tablet:hidden">
+            <Link to={"my-enrolled-courses"} className="w-full rounded-lg hover:bg-backgroundHover tablet:hidden">
                 <div className="flex justify-start items-center px-4 py-4">
                     <MyEnrollCourseIcon />
                     <span className="ml-3 font-medium text-lg">My enroll courses</span>
