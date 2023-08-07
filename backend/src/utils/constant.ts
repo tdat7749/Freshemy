@@ -74,7 +74,9 @@ export const errorMessages = {
     lessonNotFound: "Lesson Not Found",
 
     // Reset password
-    UnAuthorized: "You don't have authorize",
+    expiredToken: "This link is expired",
+    errorToken: "This link is error",
+    errorMatchingPasssword: "Password ",
 
     // Slug
     slugIsUsed: "This slug is already in use",
