@@ -7,7 +7,7 @@ import { CourseDetail as CourseDetailType, GetRating, RatingResponse as RatingRe
 import { Section as SectionType } from "../../types/section";
 import { Link } from "react-router-dom";
 import NotFound from "../NotFound";
-import { courseActions, sectionActions } from "@redux/slice";
+import { courseActions } from "@redux/slice";
 import PopupRating from "./PopupRating";
 
 import { TotalRating, Pagination } from "@src/components";
@@ -97,8 +97,6 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
             //@ts-ignore
             dispatch(courseActions.getRightOfCourse(courseDetail.id));
         }
-        //@ts-ignore
-        dispatch(sectionActions.getSectionByCourseId(courseDetail.id));
     }, [dispatch, courseDetail.id, isLogin]);
     useEffect(() => {
         const values: GetRating = {

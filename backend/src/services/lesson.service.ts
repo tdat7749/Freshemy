@@ -89,6 +89,7 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
         }
         const findLessonOrder = await configs.db.lesson.findFirst({
             where: {
+                is_delete: false,
                 section_id: Number(section_id),
                 order: Number(order),
             },
@@ -347,6 +348,18 @@ const reOrderLesson = async (req: Request): Promise<ResponseBase> => {
 
         if (isDuplicate) {
             return new ResponseError(400, i18n.t("errorMessages.orderDuplicate"), false);
+        }
+        const numberLessons = await configs.db.lesson.count({
+            where: {
+                is_delete: false,
+                section: {
+                    course_id: course_id,
+                },
+            },
+        });
+        const checkFullOrderList = numberLessons === newOrders.length;
+        if (!checkFullOrderList) {
+            return new ResponseError(400, i18n.t("errorMessages.orderNotValid"), false);
         }
         for (const newOrder of newOrders) {
             const updateLesson = await configs.db.lesson.updateMany({

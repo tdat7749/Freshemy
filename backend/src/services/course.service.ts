@@ -242,7 +242,7 @@ const registerCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 },
             });
             if (checkRegisted) {
-                return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
+                return new ResponseError(400, i18n.t("errorMessages.subscribeUser"), false);
             } else {
                 const register = await db.enrolled.create({
                     data: {
@@ -285,7 +285,7 @@ const unsubcribeCourse = async (req: RequestHasLogin): Promise<ResponseBase> => 
                 },
             });
             if (!checkRegisted) {
-                return new ResponseError(400, i18n.t("errorMessages.badRequest"), false);
+                return new ResponseError(400, i18n.t("errorMessages.unsubscribeUser"), false);
             } else {
                 const unsubcribe = await db.enrolled.delete({
                     where: {
@@ -640,6 +640,7 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
                 },
                 created_at: course.created_at,
                 updated_at: course.updated_at,
+                s,
             };
             result.push(data);
         });
@@ -660,6 +661,15 @@ const ratingCourse = async (req: RequestHasLogin): Promise<ResponseBase> => {
         });
         if (!isFindCourse) {
             return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+        }
+        const isEnrolled = await db.enrolled.findFirst({
+            where: {
+                course_id: course_id,
+                user_id: user_id,
+            },
+        });
+        if (!isEnrolled) {
+            return new ResponseError(404, i18n.t("errorMessages.unsubscribeUser"), false);
         }
         const isAlreadyRated = await db.rating.findFirst({
             where: {

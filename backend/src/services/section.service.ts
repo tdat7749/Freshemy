@@ -172,7 +172,7 @@ const deleteSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
         if (isAuthor.is_delete) {
             return new ResponseError(404, i18n.t("errorMessages.sectionNotFound"), false);
         }
-        const baseOrder = await configs.db.lesson.findFirst({
+        const lessonDeleteList = await configs.db.lesson.findMany({
             where: {
                 section_id: section_id,
             },
@@ -180,14 +180,8 @@ const deleteSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 order: "asc",
             },
         });
-        const topOrder = await configs.db.lesson.findFirst({
-            where: {
-                section_id: section_id,
-            },
-            orderBy: {
-                order: "desc",
-            },
-        });
+        const baseOrder = lessonDeleteList[0];
+        const topOrder = lessonDeleteList[lessonDeleteList.length - 1];
         const isDelete = await configs.db.section.update({
             where: {
                 id: section_id,
