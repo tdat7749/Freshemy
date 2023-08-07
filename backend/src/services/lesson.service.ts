@@ -89,7 +89,7 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
         }
         const findLessonOrder = await configs.db.lesson.findFirst({
             where: {
-                id: Number(section_id),
+                section_id: Number(section_id),
                 order: Number(order),
             },
         });

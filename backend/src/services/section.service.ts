@@ -172,6 +172,22 @@ const deleteSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
         if (isAuthor.is_delete) {
             return new ResponseError(404, i18n.t("errorMessages.sectionNotFound"), false);
         }
+        const baseOrder = await configs.db.lesson.findFirst({
+            where: {
+                section_id: section_id,
+            },
+            orderBy: {
+                order: "asc",
+            },
+        });
+        const topOrder = await configs.db.lesson.findFirst({
+            where: {
+                section_id: section_id,
+            },
+            orderBy: {
+                order: "desc",
+            },
+        });
         const isDelete = await configs.db.section.update({
             where: {
                 id: section_id,
@@ -180,7 +196,38 @@ const deleteSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 is_delete: true,
             },
         });
-        if (isDelete) return new ResponseSuccess(200, i18n.t("successMessages.deleteDataSuccess"), true);
+        if (isDelete) {
+            const isDeleteLesson = await configs.db.lesson.updateMany({
+                where: {
+                    section_id: section_id,
+                },
+                data: {
+                    is_delete: true,
+                },
+            });
+            if (isDeleteLesson && baseOrder && topOrder) {
+                const distanceOrder = topOrder.order - baseOrder.order + 1;
+                const updateOrder = await configs.db.lesson.updateMany({
+                    where: {
+                        is_delete: false,
+                        order: {
+                            gt: baseOrder.order,
+                        },
+                        section: {
+                            course_id: isDelete.course_id,
+                        },
+                    },
+                    data: {
+                        order: {
+                            decrement: distanceOrder,
+                        },
+                    },
+                });
+                if (updateOrder) {
+                    return new ResponseSuccess(200, i18n.t("successMessages.deleteDataSuccess"), true);
+                }
+            }
+        }
         return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {

@@ -136,6 +136,7 @@ export const errorMessages = {
     reOrderRequired: "Your reOrder is missing",
     orderExisted: "Order was Existed",
     orderDuplicate: "Order item must be unique",
+    sectionReorderSuccess: "Reorder lessons successfully",
 };
 
 export const successMessages = {

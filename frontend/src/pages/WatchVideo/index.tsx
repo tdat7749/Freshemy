@@ -49,7 +49,7 @@ const WatchVideo: React.FC = () => {
                         <h2 className="text-black text-[24px] laptop:text-[32px] ">{courseDetail.title}</h2>
                         <h3 className=" text-[16px] laptop:text-[26px]">
                             Author:{" "}
-                            <Link to={"/"}>
+                            <Link to={`/profile/${courseDetail.author.id}`}>
                                 <span className="underline">
                                     {courseDetail.author.first_name} {courseDetail.author.last_name}
                                 </span>
