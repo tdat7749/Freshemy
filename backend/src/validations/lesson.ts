@@ -13,6 +13,7 @@ export const LessonSchema: ObjectSchema<Lesson> = Joi.object({
     course_id: Joi.number().required(),
     order: Joi.number().required(),
     title: Joi.string()
+        .trim()
         .required()
         .max(100)
         .messages({
@@ -37,6 +38,7 @@ type UpdateLesson = {
 
 export const UpdateLessonSchema: ObjectSchema<UpdateLesson> = Joi.object({
     title: Joi.string()
+        .trim()
         .required()
         .max(100)
         .messages({

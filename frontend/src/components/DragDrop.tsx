@@ -10,13 +10,14 @@ type DragProps = {
     role: boolean;
 };
 
+const LESSON_ID = 0;
+
 const DragDrop: React.FC<DragProps> = (props) => {
     const [items, setItems] = useState<JSX.Element[]>(props.initialItems);
     const lessonOrderSelector = useAppSelector((state) => state.sectionSlice.orderLesson);
     const dispatch = useAppDispatch();
     let orderItems: JSX.Element[] = [];
     lessonOrderSelector.forEach((orderId: any) => {
-        console.log(orderId);
         let temp = items.filter((item) => orderId.lessonId == item.key)[0];
         if (temp) {
             orderItems.push(temp);
@@ -29,13 +30,13 @@ const DragDrop: React.FC<DragProps> = (props) => {
     const onDragEnd = (result: DropResult) => {
         const actionOrder = result.draggableId.split("-");
         if (result.destination?.index !== result.source.index) {
-            const lesson_id: number = parseInt(actionOrder[0]);
+            const lesson_id: number = parseInt(actionOrder[LESSON_ID]);
             const indexInSelector: number = lessonOrderSelector.findIndex(
                 (item: orderLesson) => item?.lessonId === lesson_id
             );
             const oldOrder: number = indexInSelector;
             const oldIndex: number = result.source.index;
-            const newIndex: number = result.destination?.index ? result.destination?.index : 0;
+            const newIndex: number = result.destination?.index as number;
             const step = newIndex - oldIndex;
             const newOrder = oldOrder + step;
             const reOrder = {
@@ -43,7 +44,6 @@ const DragDrop: React.FC<DragProps> = (props) => {
                 id: lesson_id,
                 newOrder: newOrder,
             };
-            console.log(reOrder);
             dispatch(sectionActions.reOrder(reOrder));
         }
         if (!result.destination) {

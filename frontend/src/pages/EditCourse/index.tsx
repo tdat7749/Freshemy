@@ -17,6 +17,7 @@ const EditCourse: React.FC = () => {
     const [isDisplayAddLessonModal, setIsDisplayAddLessonModal] = useState<boolean>(false);
     const [isDisplayEditLessonModal, setIsDisplayEditLessonModal] = useState<boolean>(false);
 
+    const [editOrder, setEditOrder] = useState<boolean>(false);
     const sectionOfCourse: SectionType[] = useAppSelector((state) => state.sectionSlice.sectionList);
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
     const [section, setSection] = useState<string>("");
@@ -42,11 +43,8 @@ const EditCourse: React.FC = () => {
     }, [dispatch, course_id]);
 
     const handleRerender = () => {
-        console.log("render");
         //@ts-ignore
-        dispatch(sectionActions.getSectionByCourseId(course_id)).then((res) => {
-            console.log(res);
-        });
+        dispatch(sectionActions.getSectionByCourseId(course_id));
     };
     const handleAddSection = () => {
         if (section !== "") {
@@ -170,18 +168,27 @@ const EditCourse: React.FC = () => {
     };
 
     const handleReOrderLesson = () => {
-        const newOrder: orderLesson[] = orderLessonSelector.map((item: orderLesson, index: number) => {
-            return { ...item, newOrder: index };
-        });
-        //@ts-ignore
-        dispatch(sectionActions.reOrderquest(newOrder)).then((response) => {
-            if (response.payload.status_code === 200) {
-                toast.success(response.payload.message);
+        setEditOrder(!editOrder);
+        if (editOrder) {
+            const newOrder: orderLesson[] = orderLessonSelector.map((item: orderLesson, index: number) => {
+                return { ...item, newOrder: index };
+            });
+
+            if (newOrder.length > 0) {
+                //@ts-ignore
+                dispatch(sectionActions.reOrderquest(newOrder)).then((response) => {
+                    if (response.payload.status_code === 200) {
+                        toast.success(response.payload.message);
+                    } else {
+                        toast.error(response.payload?.message as string);
+                    }
+                });
             } else {
-                toast.error(response.payload?.message as string);
+                toast.error("Please add some lessons before reorder!");
             }
-        });
+        }
     };
+
     if (isNotFound) return <NotFound />;
 
     return (
@@ -204,12 +211,20 @@ const EditCourse: React.FC = () => {
                                         setSection(e.target.value);
                                     }}
                                 />
-                                <button
-                                    className="text-white btn btn-primary text-lg flex-2"
-                                    onClick={handleAddSection}
-                                >
-                                    Add section
-                                </button>
+                                <div className=" flex flex-col-reverse tablet:flex-row items-center justify-center gap-2">
+                                    {sectionOfCourse.length > 0 && (
+                                        <button className="btn btn-primary text-lg" onClick={handleReOrderLesson}>
+                                            {editOrder ? "Submit" : "Edit order lesson"}
+                                        </button>
+                                    )}
+
+                                    <button
+                                        className="text-white btn btn-primary text-lg flex-2 ml-2"
+                                        onClick={handleAddSection}
+                                    >
+                                        Add section
+                                    </button>
+                                </div>
                             </div>
                             {errorSection && (
                                 <p className={`text-error italic font-medium mt-1`}>Section title is required</p>
@@ -221,7 +236,7 @@ const EditCourse: React.FC = () => {
                                 ) : (
                                     sectionOfCourse.map((section, index) => (
                                         <Accordion
-                                            disable={false}
+                                            disable={!editOrder}
                                             key={index}
                                             section={section}
                                             handleDeleteSection={handleDeleteSection}
@@ -234,7 +249,6 @@ const EditCourse: React.FC = () => {
                                     ))
                                 )}
                             </div>
-                            <button onClick={handleReOrderLesson}>H!!!!!!!!!!!!!!!!!!!</button>
                         </div>
                     </div>
 

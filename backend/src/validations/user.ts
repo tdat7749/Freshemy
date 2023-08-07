@@ -10,6 +10,7 @@ type ChangePassword = {
 
 export const changePasswordSchema: ObjectSchema<ChangePassword> = Joi.object({
     current_password: Joi.string()
+        .trim()
         .required()
         .messages({
             "string.base": i18n.t("errorMessages.passwordMustBeString"),
@@ -17,6 +18,7 @@ export const changePasswordSchema: ObjectSchema<ChangePassword> = Joi.object({
         }),
 
     new_password: Joi.string()
+        .trim()
         .required()
         .min(8)
         .max(32)
@@ -27,6 +29,7 @@ export const changePasswordSchema: ObjectSchema<ChangePassword> = Joi.object({
             "string.max": i18n.t("errorMessages.tooLongPassword"),
         }),
     confirm_password: Joi.string()
+        .trim()
         .required()
         .min(8)
         .max(32)
@@ -44,6 +47,7 @@ type ChangeUserInformation = {
 
 export const ChangeUserInformation: ObjectSchema<ChangePassword> = Joi.object({
     first_name: Joi.string()
+        .trim()
         .required()
         .max(32)
         .messages({
@@ -53,6 +57,7 @@ export const ChangeUserInformation: ObjectSchema<ChangePassword> = Joi.object({
         }),
 
     last_name: Joi.string()
+        .trim()
         .required()
         .max(32)
         .messages({
@@ -61,6 +66,7 @@ export const ChangeUserInformation: ObjectSchema<ChangePassword> = Joi.object({
             "string.max": i18n.t("errorMessages.tooLongLastName"),
         }),
     description: Joi.string()
+        .trim()
         .required()
         .min(8)
         .max(200)
