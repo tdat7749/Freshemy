@@ -21,14 +21,30 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
             where: {
                 id: lesson_id,
                 is_delete: false,
+                section: {
+                    is_delete: false,
+                    course: {
+                        is_delete: false,
+                    },
+                },
+            },
+            include: {
+                section: {
+                    include: {
+                        course: true,
+                    },
+                },
             },
         });
-        const data = {
-            id: isFoundLesson?.id,
-            title: isFoundLesson?.title,
-            url_video: isFoundLesson?.url_video,
-        };
-        if (isFoundLesson) return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, data);
+
+        if (isFoundLesson) {
+            const data = {
+                id: isFoundLesson.id,
+                title: isFoundLesson.title,
+                url_video: isFoundLesson.url_video, //
+            };
+            return new ResponseSuccess(200, i18n.t("successMessages.getDataSuccess"), true, data);
+        }
         return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {
@@ -49,7 +65,7 @@ const getLesson = async (req: Request): Promise<ResponseBase> => {
 const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { title, section_id } = req.body;
-        const findCourse = await configs.db.section.findFirst({
+        const isAuthor = await configs.db.section.findFirst({
             include: {
                 course: true,
             },
@@ -60,8 +76,14 @@ const createLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 },
             },
         });
-        if (!findCourse) {
-            return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+        if (!isAuthor) {
+            return new ResponseError(403, i18n.t("errorMessages.UnAuthorized"), false);
+        }
+        if (isAuthor.course.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+        }
+        if (isAuthor.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.sectionNotFound"), false);
         }
         const sectionIdConvert = parseInt(section_id);
         const uuid = uuidv4();
@@ -109,10 +131,7 @@ const updateLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
         const { title } = req.body;
         const lesson_id = +id;
         if (req.file) {
-            const isFoundLesson = await configs.db.lesson.findUnique({
-                where: {
-                    id: lesson_id,
-                },
+            const isFoundLesson = await configs.db.lesson.findFirst({
                 include: {
                     section: {
                         include: {
@@ -120,13 +139,25 @@ const updateLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
                         },
                     },
                 },
+                where: {
+                    id: lesson_id,
+                },
             });
 
             if (!isFoundLesson) {
                 return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
             }
             if (isFoundLesson.section.course.user_id !== req.user_id) {
-                return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+                return new ResponseError(403, i18n.t("errorMessages.UnAuthorized"), false);
+            }
+            if (isFoundLesson.section.course.is_delete) {
+                return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+            }
+            if (isFoundLesson.section.is_delete) {
+                return new ResponseError(404, i18n.t("errorMessages.sectionNotFound"), false);
+            }
+            if (isFoundLesson.is_delete) {
+                return new ResponseError(404, i18n.t("errorMessages.lessonNotFound"), false);
             }
 
             const urlVideoSplit = isFoundLesson.url_video.split(`${configs.general.PUBLIC_URL_FOLDER_VIDEOS}`);
@@ -212,7 +243,16 @@ const deleteLesson = async (req: RequestHasLogin): Promise<ResponseBase> => {
             },
         });
         if (!isAuthor) {
-            return new ResponseError(400, i18n.t("errorMessages.UnAuthorized"), false);
+            return new ResponseError(403, i18n.t("errorMessages.UnAuthorized"), false);
+        }
+        if (isAuthor.section.course.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+        }
+        if (isAuthor.section.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.sectionNotFound"), false);
+        }
+        if (isAuthor.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.lessonNotFound"), false);
         }
         const isDelete = await configs.db.lesson.update({
             where: {

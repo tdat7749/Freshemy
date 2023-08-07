@@ -25,7 +25,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-1  hover:cursor-default"
+                className="bg-yellow-500 mask-star-2 mask-half-1  hover:cursor-default"
             />
             <input
                 id="2"
@@ -33,7 +33,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
+                className="bg-yellow-500 mask-star-2 mask-half-2 hover:cursor-default"
                 checked={score === 1}
             />
             <input
@@ -42,7 +42,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-1 hover:cursor-default"
+                className="bg-yellow-500 mask-star-2 mask-half-1 hover:cursor-default"
                 checked={score > 1 && score < 2}
             />
             <input
@@ -51,7 +51,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
+                className="bg-yellow-500 mask-star-2 mask-half-2 hover:cursor-default"
                 checked={score >= 2}
             />
             <input
@@ -60,7 +60,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-1 hover:cursor-default"
+                className="bg-yellow-500 mask-star-2 mask-half-1 hover:cursor-default"
                 checked={score > 2 && score < 3}
             />
             <input
@@ -69,7 +69,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
+                className="bg-yellow-500 mask-star-2 mask-half-2 hover:cursor-default"
                 checked={score >= 3}
             />
             <input
@@ -78,7 +78,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-1 hover:cursor-default"
+                className="bg-yellow-500 mask-star-2 mask-half-1 hover:cursor-default"
                 checked={score > 3 && score < 4}
             />
             <input
@@ -87,7 +87,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
+                className="bg-yellow-500 mask-star-2 mask-half-2 hover:cursor-default"
                 checked={score >= 4}
             />
             <input
@@ -96,7 +96,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-1 hover:cursor-default"
+                className="bg-yellow-500 mask-star-2 mask-half-1 hover:cursor-default"
                 checked={score > 4 && score < 5}
             />
             <input
@@ -105,7 +105,7 @@ const TotalRating: React.FC<TotalRatingProps> = (props) => {
                 type="radio"
                 name={ratingName}
                 disabled
-                className="bg-yellow-300 mask-star-2 mask-half-2 hover:cursor-default"
+                className="bg-yellow-500 mask-star-2 mask-half-2 hover:cursor-default"
                 checked={score >= 5}
             />
         </div>
