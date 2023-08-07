@@ -128,6 +128,8 @@ export const errorMessages = {
     //Subscribe course
     authorSubscribeError: "You can't subscribe your own course",
     authorUnsubscribeError: "You can't unsubscribe your own course",
+    unsubscribeUser: "You haven't subscribed course yet",
+    subscribeUser: "You have already subscribed",
 
     //Auth
     loginAgain: "Please login again",
@@ -136,6 +138,8 @@ export const errorMessages = {
     reOrderRequired: "Your reOrder is missing",
     orderExisted: "Order was Existed",
     orderDuplicate: "Order item must be unique",
+
+    orderNotValid: "Order List is not valid",
 };
 
 export const successMessages = {
@@ -189,4 +193,7 @@ export const successMessages = {
 
     // Upload Image
     imageUploadSuccess: "Upload Image Successfully",
+
+    // reOrder
+    sectionReorderSuccess: "Reorder lessons successfully",
 };
