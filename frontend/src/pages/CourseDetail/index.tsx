@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { Section } from "../../types/section";
 import { CourseDetail as CourseDetailType, GetRating, RatingResponse as RatingResponseType } from "../../types/course";
-import { Section as SectionType } from "../../types/section";
+//import { Section as SectionType } from "../../types/section";
 import { Link } from "react-router-dom";
 import NotFound from "../NotFound";
 import { courseActions } from "@redux/slice";
@@ -18,7 +18,7 @@ import SubscribeUserButton from "./SubscribeUserButton";
 import UnsubscribeModal from "./UnsubcribeModal";
 import CommentSection from "./CommentSection";
 import i18n from "../../utils/i18next";
-
+import { orderLesson } from "../../types/lesson";
 type CourseDetailProps = {
     isLogin: boolean;
 };
@@ -33,11 +33,13 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
     const [idItem, setIdItem] = useState<number>(-1);
     const [pageIndex, setPageIndex] = useState<number>(Number(i18n.t("PAGE_INDEX.FIRST_PAGE")));
     const navigate = useNavigate();
-    const sectionOfCourse: SectionType[] = useAppSelector((state) => state.sectionSlice.sectionList);
+    //const sectionOfCourse: SectionType[] = useAppSelector((state) => state.sectionSlice.sectionList);
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
     const ratings: RatingResponseType[] = useAppSelector((state) => state.courseSlice.ratings) ?? [];
     const totalRatingPage: number =
         useAppSelector((state) => state.courseSlice.totalRatingPage) ?? Number(i18n.t("PAGE_INDEX.FIRST_PAGE"));
+
+    const orderLesson: orderLesson[] = useAppSelector((state) => state.courseSlice.orderLesson);
     const role: string = useAppSelector((state) => state.courseSlice.role) ?? "";
     const isGetLoading: boolean = useAppSelector((state) => state.courseSlice.isGetLoading) ?? false;
     const handleChangePageIndex = (pageIndex: number) => {
@@ -49,6 +51,8 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
         }
         return;
     };
+
+    console.log(courseDetail)
 
     const handleDeleteCourse = () => {
         //@ts-ignore
@@ -203,9 +207,10 @@ const CourseDetail: React.FC<CourseDetailProps> = ({ isLogin }) => {
                             <div className="table-of-content my-4">
                                 <h2 className="text-xl tablet:text-3xl font-bold mb-3">Table of Content</h2>
                                 <span className="w-[60px] h-1 bg-black block mb-4"></span>
-                                {sectionOfCourse.map((section: Section, index: number) => {
+                                {courseDetail.sections.map((section: Section, index: number) => {
                                     return (
                                         <Accordion
+                                        orderLesson={orderLesson}
                                             disable={true}
                                             key={index}
                                             isDisplayBtn={false}

@@ -118,6 +118,9 @@ const EditCourse: React.FC = () => {
             if (response.payload.status_code === 200) {
                 toast.success(response.payload.message);
                 dispatch(sectionActions.setDeleteSection(idItem));
+                //@ts-ignore
+                dispatch(sectionActions.getSectionByCourseId(course_id));
+
             } else {
                 toast.error(response.payload.message);
             }
@@ -240,6 +243,7 @@ const EditCourse: React.FC = () => {
                                 ) : (
                                     sectionOfCourse.map((section, index) => (
                                         <Accordion
+                                        orderLesson={orderLessonSelector}
                                             disable={!editOrder}
                                             key={index}
                                             section={section}

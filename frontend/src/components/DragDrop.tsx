@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
+import { useAppDispatch } from "../hooks/hooks";
 // import { lessonActions } from "@redux/slice";
 import { orderLesson } from "../types/lesson";
 import { sectionActions } from "@redux/slice";
@@ -8,16 +8,16 @@ import { sectionActions } from "@redux/slice";
 type DragProps = {
     initialItems: JSX.Element[];
     role: boolean;
+    lessonOrder: orderLesson[]
 };
 
 const LESSON_ID = 0;
 
 const DragDrop: React.FC<DragProps> = (props) => {
     const [items, setItems] = useState<JSX.Element[]>(props.initialItems);
-    const lessonOrderSelector = useAppSelector((state) => state.sectionSlice.orderLesson);
     const dispatch = useAppDispatch();
     let orderItems: JSX.Element[] = [];
-    lessonOrderSelector.forEach((orderId: orderLesson) => {
+    props.lessonOrder.forEach((orderId: orderLesson) => {
         let temp = items.filter((item) => orderId.lesson_id == item.key)[0];
         if (temp) {
             orderItems.push(temp);
@@ -27,11 +27,12 @@ const DragDrop: React.FC<DragProps> = (props) => {
         setItems(props.initialItems);
     }, [props.initialItems]);
 
+
     const onDragEnd = (result: DropResult) => {
         const actionOrder = result.draggableId.split("-");
         if (result.destination?.index !== result.source.index) {
             const lesson_id: number = parseInt(actionOrder[LESSON_ID]);
-            const indexInSelector: number = lessonOrderSelector.findIndex(
+            const indexInSelector: number = props.lessonOrder.findIndex(
                 (item: orderLesson) => item?.lesson_id === lesson_id
             );
             const oldOrder: number = indexInSelector;

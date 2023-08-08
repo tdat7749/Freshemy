@@ -8,11 +8,14 @@ import { VideoPlayer, Accordion, Spin } from "@src/components";
 import { Section } from "../../types/section";
 import i18n from "../../utils/i18next";
 
+import { orderLesson } from "../../types/lesson";
 const WatchVideo: React.FC = () => {
     const isLoading = useAppSelector((state) => state.courseSlice.isLoading);
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail);
     const nowUrlVideoSelector: string = useAppSelector((state) => state.lessonSlice.nowUrlVideo) || "";
     const [isNotFound, setIsNotFound] = useState<boolean>(false);
+
+    const orderLesson: orderLesson[] = useAppSelector((state) => state.courseSlice.orderLesson);
     const [isDisplayBtn] = useState<boolean>(false);
     const handleChangeSourceVideo = (source: string) => {
         dispatch(lessonActions.setNowUrlVideo(source));
@@ -64,6 +67,7 @@ const WatchVideo: React.FC = () => {
                             {courseDetail.sections.map((section: Section, index) => {
                                 return (
                                     <Accordion
+                                        orderLesson={orderLesson}
                                         disable={true}
                                         key={index}
                                         source={nowUrlVideoSelector}

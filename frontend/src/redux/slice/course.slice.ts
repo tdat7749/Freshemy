@@ -22,6 +22,7 @@ import {
 } from "../../types/course";
 
 import { CourseApis } from "@src/apis";
+import { orderLesson as OrderLessonType } from "../../types/lesson";
 
 type CourseSlice = {
     selectCategories: Category[];
@@ -36,6 +37,7 @@ type CourseSlice = {
     ratings: RatingResponseType[];
     totalRatingPage: number;
     role: string;
+    orderLesson: OrderLessonType[]
 };
 
 export const createCourses = createAsyncThunk<Response<null>, NewCourse, { rejectValue: Response<null> }>(
@@ -272,6 +274,7 @@ const initialState: CourseSlice = {
     ratings: [],
     totalRatingPage: 1,
     role: "",
+    orderLesson: [],
 };
 
 export const courseSlice = createSlice({
@@ -357,6 +360,13 @@ export const courseSlice = createSlice({
 
         builder.addCase(getCourseDetail.fulfilled, (state, action) => {
             state.courseDetail = action.payload.data as CourseDetailType;
+            let temp: any = [];
+            state.courseDetail.sections.forEach((section: any) => {
+                section.lessons.forEach((lesson: any) => {
+                    temp.push({ lesson_id: lesson.id });
+                });
+            });
+            state.orderLesson = temp;
             state.isGetLoading = false;
         });
 
