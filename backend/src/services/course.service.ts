@@ -113,7 +113,11 @@ const getCourseDetail = async (req: Request): Promise<ResponseBase> => {
                                 id: true,
                                 title: true,
                                 url_video: true,
+                                order:true
                             },
+                            orderBy:{
+                                order:"asc"
+                            }
                         },
                     },
                     where: {
@@ -640,7 +644,6 @@ const getTop10Courses = async (req: Request): Promise<ResponseBase> => {
                 },
                 created_at: course.created_at,
                 updated_at: course.updated_at,
-                s,
             };
             result.push(data);
         });

@@ -10,6 +10,7 @@ import { CourseDetail as CourseDetailType } from "../types/course";
 import { lessonActions } from "@redux/slice";
 import { DragDrop } from "@src/components";
 
+import { orderLesson } from "../types/lesson";
 type AccordionType = {
     section: Section;
     handleDisplayAddSectionModal?: (id: number) => void;
@@ -22,6 +23,7 @@ type AccordionType = {
     redirectToWatchVideo?: boolean;
     source?: string;
     disable: boolean;
+    orderLesson: orderLesson[]
 };
 
 const Accordion: React.FC<AccordionType> = (props) => {
@@ -29,6 +31,8 @@ const Accordion: React.FC<AccordionType> = (props) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const courseDetail: CourseDetailType = useAppSelector((state) => state.courseSlice.courseDetail) ?? {};
+
+    console.log(props.section.lessons)
 
     return (
         <>
@@ -145,6 +149,7 @@ const Accordion: React.FC<AccordionType> = (props) => {
                         </div>
                     ))}
                     role={props.disable}
+                    lessonOrder={props.orderLesson}
                 />
             )}
         </>
