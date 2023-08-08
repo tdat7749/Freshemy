@@ -10,6 +10,7 @@ type ChangePassword = {
 
 export const changePasswordSchema: ObjectSchema<ChangePassword> = Joi.object({
     current_password: Joi.string()
+        .trim()
         .required()
         .messages({
             "string.base": i18n.t("errorMessages.passwordMustBeString"),
@@ -17,6 +18,7 @@ export const changePasswordSchema: ObjectSchema<ChangePassword> = Joi.object({
         }),
 
     new_password: Joi.string()
+        .trim()
         .required()
         .min(8)
         .max(32)
@@ -27,11 +29,51 @@ export const changePasswordSchema: ObjectSchema<ChangePassword> = Joi.object({
             "string.max": i18n.t("errorMessages.tooLongPassword"),
         }),
     confirm_password: Joi.string()
+        .trim()
         .required()
         .min(8)
         .max(32)
         .messages({
             "string.base": i18n.t("errorMessages.passwordMustBeString"),
             "any.required": i18n.t("errorMessages.confirmPasswordIsRequired"),
+        }),
+});
+
+type ChangeUserInformation = {
+    first_name: string;
+    last_name: string;
+    description: string;
+};
+
+export const ChangeUserInformation: ObjectSchema<ChangePassword> = Joi.object({
+    first_name: Joi.string()
+        .trim()
+        .required()
+        .max(32)
+        .messages({
+            "string.base": i18n.t("errorMessages.firstNameMustBeString"),
+            "any.required": i18n.t("errorMessages.firstNameIsRequired"),
+            "string.max": i18n.t("errorMessages.tooLongFirstName"),
+        }),
+
+    last_name: Joi.string()
+        .trim()
+        .required()
+        .max(32)
+        .messages({
+            "string.base": i18n.t("errorMessages.lastNameMustBeString"),
+            "any.required": i18n.t("errorMessages.lastNameIsRequired"),
+            "string.max": i18n.t("errorMessages.tooLongLastName"),
+        }),
+    description: Joi.string()
+        .trim()
+        .required()
+        .min(8)
+        .max(200)
+        .messages({
+            "string.base": i18n.t("errorMessages.descriptionMustBeString"),
+            "any.required": i18n.t("errorMessages.descriptionIsRequired"),
+            "string.min": i18n.t("errorMessages.tooShortDescription"),
+            "string.max": i18n.t("errorMessages.tooLongDescription"),
         }),
 });

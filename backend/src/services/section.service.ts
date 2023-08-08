@@ -7,6 +7,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
 
 import i18n from "../utils/i18next";
+import { RequestHasLogin } from "src/types/request.type";
 
 const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
     try {
@@ -15,6 +16,9 @@ const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
             where: {
                 course_id: parseInt(course_id),
                 is_delete: false,
+                course: {
+                    is_delete: false,
+                },
             },
             include: {
                 lessons: {
@@ -26,8 +30,15 @@ const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
                         id: true,
                         url_video: true,
                         updated_at: true,
+                        order: true,
                     },
+                    orderBy: [
+                        {
+                            order: "asc",
+                        },
+                    ],
                 },
+                course: true,
             },
         });
         if (isFoundSection)
@@ -52,6 +63,15 @@ const getAllSectionByCourseId = async (req: Request): Promise<ResponseBase> => {
 const createSection = async (req: Request): Promise<ResponseBase> => {
     try {
         const { title, course_id } = req.body;
+        const isDeletedCourse = await configs.db.course.findFirst({
+            where: {
+                is_delete: true,
+                id: course_id,
+            },
+        });
+        if (isDeletedCourse) {
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+        }
         const section = await configs.db.section.create({
             data: {
                 title: title,
@@ -76,11 +96,32 @@ const createSection = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const updateSection = async (req: Request): Promise<ResponseBase> => {
+const updateSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
         const { title } = req.body;
         const section_id = +id;
+
+        const isAuthor = await configs.db.section.findFirst({
+            include: {
+                course: true,
+            },
+            where: {
+                id: section_id,
+                course: {
+                    user_id: req.user_id,
+                },
+            },
+        });
+        if (!isAuthor) {
+            return new ResponseError(403, i18n.t("errorMessages.UnAuthorized"), false);
+        }
+        if (isAuthor.course.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+        }
+        if (isAuthor.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.sectionNotFound"), false);
+        }
         const section = await configs.db.section.update({
             where: {
                 id: section_id,
@@ -107,10 +148,40 @@ const updateSection = async (req: Request): Promise<ResponseBase> => {
     }
 };
 
-const deleteSection = async (req: Request): Promise<ResponseBase> => {
+const deleteSection = async (req: RequestHasLogin): Promise<ResponseBase> => {
     try {
         const { id } = req.params;
         const section_id = +id;
+        const isAuthor = await configs.db.section.findFirst({
+            include: {
+                course: true,
+            },
+            where: {
+                id: section_id,
+                course: {
+                    user_id: req.user_id,
+                },
+            },
+        });
+        if (!isAuthor) {
+            return new ResponseError(403, i18n.t("errorMessages.UnAuthorized"), false);
+        }
+        if (isAuthor.course.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.courseNotFound"), false);
+        }
+        if (isAuthor.is_delete) {
+            return new ResponseError(404, i18n.t("errorMessages.sectionNotFound"), false);
+        }
+        const lessonDeleteList = await configs.db.lesson.findMany({
+            where: {
+                section_id: section_id,
+            },
+            orderBy: {
+                order: "asc",
+            },
+        });
+        const baseOrder = lessonDeleteList[0];
+        const topOrder = lessonDeleteList[lessonDeleteList.length - 1];
         const isDelete = await configs.db.section.update({
             where: {
                 id: section_id,
@@ -119,7 +190,38 @@ const deleteSection = async (req: Request): Promise<ResponseBase> => {
                 is_delete: true,
             },
         });
-        if (isDelete) return new ResponseSuccess(200, i18n.t("successMessages.deleteDataSuccess"), true);
+        if (isDelete) {
+            const isDeleteLesson = await configs.db.lesson.updateMany({
+                where: {
+                    section_id: section_id,
+                },
+                data: {
+                    is_delete: true,
+                },
+            });
+            if (isDeleteLesson && baseOrder && topOrder) {
+                const distanceOrder = topOrder.order - baseOrder.order + 1;
+                const updateOrder = await configs.db.lesson.updateMany({
+                    where: {
+                        is_delete: false,
+                        order: {
+                            gt: baseOrder.order,
+                        },
+                        section: {
+                            course_id: isDelete.course_id,
+                        },
+                    },
+                    data: {
+                        order: {
+                            decrement: distanceOrder,
+                        },
+                    },
+                });
+                if (updateOrder) {
+                    return new ResponseSuccess(200, i18n.t("successMessages.deleteDataSuccess"), true);
+                }
+            }
+        }
         return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof PrismaClientKnownRequestError) {

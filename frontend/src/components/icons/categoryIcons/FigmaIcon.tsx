@@ -4,7 +4,7 @@ const FigmaIcon: React.FC = () => {
     return (
         <>
             <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 512 512">
-                <g clip-path="url(#a)">
+                <g clipPath="url(#a)">
                     <path
                         fill="#0ACF83"
                         d="M171.333 512c47.104 0 85.334-38.229 85.334-85.333v-85.334h-85.334c-47.104 0-85.333 38.23-85.333 85.334C86 473.771 124.229 512 171.333 512Z"

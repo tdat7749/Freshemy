@@ -2,13 +2,13 @@ import { Request } from "express";
 import * as bcrypt from "bcrypt";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import jwt, { JsonWebTokenError, TokenExpiredError, NotBeforeError } from "jsonwebtoken";
-import { MyJwtPayload } from "../types/decodeToken";
+import { MyJwtPayload } from "../types/decodeToken.type";
 import { ResponseBase, ResponseError, ResponseSuccess } from "../commons/response";
-import { RequestHasLogin } from "../types/request";
+import { RequestHasLogin } from "../types/request.type";
 import { sendMail } from "../commons";
 import configs from "../configs";
 import { db } from "../configs/db.config";
-import { SendMail } from "../types/sendmail";
+import { SendMail } from "../types/sendmail.type";
 
 import { setResetEmail, setsignUpEmail } from "../configs/nodemailer.config";
 import i18n from "../utils/i18next";
@@ -233,11 +233,11 @@ const refreshToken = async (res: Request): Promise<ResponseBase> => {
         });
     } catch (error: any) {
         if (error instanceof TokenExpiredError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.loginAgain"), false);
         } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.loginAgain"), false);
         } else if (error instanceof NotBeforeError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.loginAgain"), false);
         }
 
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
@@ -260,6 +260,8 @@ const getMe = async (req: RequestHasLogin): Promise<ResponseBase> => {
                 email: isFoundUser.email,
                 first_name: isFoundUser.first_name,
                 last_name: isFoundUser.last_name,
+                url_avatar: isFoundUser.url_avatar,
+                description: isFoundUser.description
             };
             return new ResponseSuccess(200, i18n.t("successMessages.requestSuccess"), true, userInformation);
         }
@@ -322,9 +324,9 @@ const forgotPassword = async (req: Request): Promise<ResponseBase> => {
         if (error instanceof TokenExpiredError) {
             return new ResponseError(400, error.message, false);
         } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(401, error.message, false);
+            return new ResponseError(400, error.message, false);
         } else if (error instanceof NotBeforeError) {
-            return new ResponseError(401, error.message, false);
+            return new ResponseError(400, error.message, false);
         }
 
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);
@@ -339,6 +341,10 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
         var id = (<any>decoded).id;
         const hash = bcrypt.hashSync(password, salt);
 
+        const matchingPassword = password === confirmPassword;
+
+        if(!matchingPassword) return new ResponseError(403, i18n.t("errorMessages.errorMatchingPassword"), false);
+
         const isFoundUser = await configs.db.user.findUnique({
             where: {
                 id: id,
@@ -347,8 +353,11 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
                 token: true,
             },
         });
+
+        if (!isFoundUser) return new ResponseError(400, i18n.t("errorMessages.errorToken"), false);
+
         if (isFoundUser?.token !== token) {
-            return new ResponseError(404, i18n.t("errorMessages.UnAuthorized"), false);
+            return new ResponseError(400, i18n.t("errorMessages.expiredToken"), false);
         }
         const updateUser = await configs.db.user.update({
             where: {
@@ -363,11 +372,11 @@ const resetPassword = async (req: Request): Promise<ResponseBase> => {
         return new ResponseError(400, i18n.t("errorMessages.validationFailed"), false);
     } catch (error: any) {
         if (error instanceof TokenExpiredError) {
-            return new ResponseError(400, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.expiredToken"), false);
         } else if (error instanceof JsonWebTokenError) {
-            return new ResponseError(401, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.errorToken"), false);
         } else if (error instanceof NotBeforeError) {
-            return new ResponseError(401, error.message, false);
+            return new ResponseError(400, i18n.t("errorMessages.errorToken"), false);
         }
 
         return new ResponseError(500, i18n.t("errorMessages.internalServer"), false);

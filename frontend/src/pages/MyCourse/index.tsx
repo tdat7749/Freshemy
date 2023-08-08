@@ -7,6 +7,8 @@ import { courseActions } from "@redux/slice";
 import { Course } from "../../types/course";
 import toast from "react-hot-toast";
 import { Spin, DeleteModal, Navbar, Pagination, CourseCard } from "@src/components";
+import { User } from "../../types/user";
+import i18n from "../../utils/i18next";
 
 const MyCourses: React.FC = () => {
     const [userInput, setUserInput] = useState<string>("");
@@ -77,7 +79,7 @@ const MyCourses: React.FC = () => {
         <>
             {isGetLoading && <Spin />}
             <Navbar />
-            <div className="container mx-auto">
+            <div className="container mx-auto mt-[100px] laptop:mt-0">
                 <div className="px-4 tablet:px-[60px]">
                     <h1 className="text-center text-[32px] py-4 font-bold text-title">MY COURSE</h1>
                     <div className="w-full flex flex-col gap-4 justify-between shrink-0 tablet:flex-row">
@@ -99,27 +101,39 @@ const MyCourses: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="text-white flex-3 flex btn btn-primary text-lg">
-                            <CreateIcon />
-                            <Link to={"/create-course"}>Create New</Link>
-                        </div>
+                        <Link to={"/create-course"}>
+                            <div className="text-white flex-3 flex btn btn-primary text-lg">
+                                <CreateIcon />
+                                Create New
+                            </div>
+                        </Link>
                     </div>
-                    {courseList.map((course) => {
-                        return (
-                            <CourseCard
-                                key={course.id}
-                                id={course.id}
-                                thumbnail={course.thumbnail}
-                                slug={course.slug}
-                                title={course.title}
-                                summary={course.summary}
-                                author={course.author}
-                                handleDeleteCourse={handleDiplayDeleteModal}
-                                handleEditCourse={handleEditCourse}
-                            />
-                        );
-                    })}
-                    {courseList.length > 0 ? (
+                    <div className="flex-1 grid grid-cols-1">
+                        {courseList.map((course, index) => {
+                            return (
+                                <div className="w-full max-w-xs tablet:max-w-full place-self-center" key={index}>
+                                    <CourseCard
+                                        id={course.id}
+                                        thumbnail={course.thumbnail}
+                                        slug={course.slug}
+                                        title={course.title}
+                                        summary={course.summary}
+                                        rating={course.rating}
+                                        author={course.author as User}
+                                        attendees={course.attendees}
+                                        numberOfSection={course.number_section}
+                                        isEditCourse={true}
+                                        handleDeleteCourse={handleDiplayDeleteModal}
+                                        handleEditCourse={handleEditCourse}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {courseList.length === Number(i18n.t("COURSES_LENGTH.EMPTY")) && (
+                        <p className="mt-4 text-2xl text-error text-center font-bold">You don't have any courses!</p>
+                    )}
+                    {totalPage > Number(i18n.t("PAGE_INDEX.FIRST_PAGE")) && (
                         <div className="flex justify-end my-4">
                             <Pagination
                                 handleChangePageIndex={handleChangePageIndex}
@@ -127,8 +141,6 @@ const MyCourses: React.FC = () => {
                                 currentPage={pageIndex}
                             />
                         </div>
-                    ) : (
-                        <p className="mt-4 text-2xl text-error text-center font-bold">You don't have any courses!</p>
                     )}
                 </div>
             </div>

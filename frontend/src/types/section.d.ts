@@ -1,9 +1,11 @@
 import { Lesson } from "./lesson";
 
 export type Section = {
+    course_id?: number;
+    order?: number;
     id: number;
     title: string;
-    lessons?: Lesson[]
+    lessons?: Lesson[];
 };
 
 export type AddSection = {

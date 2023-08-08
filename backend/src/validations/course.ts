@@ -26,12 +26,14 @@ type CreateCourse = {
 
 export const createCourseSchema: ObjectSchema<CreateCourse> = Joi.object({
     title: Joi.string()
+        .trim()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.courseTitleIsRequired"),
             "string.base": i18n.t("errorMessages.courseTitleMustBeString"),
         }),
     slug: Joi.string()
+        .trim()
         .required()
         .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
         .messages({
@@ -47,6 +49,7 @@ export const createCourseSchema: ObjectSchema<CreateCourse> = Joi.object({
     }),
 
     description: Joi.string()
+        .trim()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.descriptionIsRequired"),
@@ -54,6 +57,7 @@ export const createCourseSchema: ObjectSchema<CreateCourse> = Joi.object({
         }),
 
     summary: Joi.string()
+        .trim()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.summaryIsRequired"),
@@ -83,18 +87,20 @@ type UpdateCourse = {
 };
 
 export const updateCourseSchema: ObjectSchema<UpdateCourse> = Joi.object({
-    id: Joi.number()
+    course_id: Joi.number()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.courseIdIsRequired"),
         }),
     title: Joi.string()
+        .trim()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.courseIdIsRequired"),
             "string.base": i18n.t("errorMessages.courseTitleIsRequired"),
         }),
     slug: Joi.string()
+        .trim()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.courseSlugIsRequired"),
@@ -107,6 +113,7 @@ export const updateCourseSchema: ObjectSchema<UpdateCourse> = Joi.object({
     }),
 
     description: Joi.string()
+        .trim()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.descriptionIsRequired"),
@@ -114,6 +121,7 @@ export const updateCourseSchema: ObjectSchema<UpdateCourse> = Joi.object({
         }),
 
     summary: Joi.string()
+        .trim()
         .required()
         .messages({
             "any.required": i18n.t("errorMessages.summaryIsRequired"),

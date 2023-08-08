@@ -35,7 +35,16 @@ const getSectionByCourseId = async (values: number) => {
     return response;
 };
 
+const reOrderLesson = async (values: any) => {
+    const path = `/lessons/reOrderLesson`;
+
+    const response = await apiCaller(i18n.t("HTTP_CALL.HTTP_PUT"), path, values);
+
+    return response;
+};
+
 const SectionApis = {
+    reOrderLesson,
     addSection,
     editSection,
     deleteSection,
